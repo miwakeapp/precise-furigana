@@ -10,6 +10,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     strategy:
       matrix:
         node: [22, 24]
@@ -21,6 +22,5 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run fetch
-      - run: npm run evaluate
       - run: npm run build
       - run: npm run validate

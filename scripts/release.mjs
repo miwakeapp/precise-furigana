@@ -63,7 +63,7 @@ async function main() {
   }
   const database = JSON.parse(await readFile(join(values.directory, "precise-furigana.json"), "utf8"));
   const evaluation = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
-  assert.ok(manifest.files["evaluation.json"], "Run evaluate and build with matching inputs before release");
+  assert.ok(manifest.files["evaluation.json"], "Run build with matching inputs before release");
   verifyEvaluation(database, evaluation, await readFile(new URL("../test/fixtures/gold.json", import.meta.url)), await generatorDigest());
   const descriptor = releaseDescriptor(database, manifest);
   const notesPath = join(values.directory, "release-notes.md");

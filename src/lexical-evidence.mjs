@@ -175,4 +175,3 @@ export function makeLexicalContextChecker(reviewedFacts) {
     return { veto: false, contexts };
   };
 }
-

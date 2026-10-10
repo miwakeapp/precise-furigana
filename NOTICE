@@ -21,8 +21,7 @@ metadata and accompanying sources.lock.json. No endorsement by EDRDG is implied.
 
 The original software is licensed under MIT; see LICENSE. Lorenzi's furigana
 data and implementation are not inputs to the generator and are not included
-in the distributed data. An optional local comparison can use a separately
-downloaded reference snapshot.
+in the distributed data.
 
 Additional reviewed lexical evidence
 ------------------------------------

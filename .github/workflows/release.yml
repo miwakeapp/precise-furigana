@@ -17,7 +17,7 @@ jobs:
     # Scheduled releases run from the default branch; dispatches must do so too.
     if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -30,7 +30,6 @@ jobs:
       - run: npm run fetch -- --update
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - run: npm run evaluate
       - run: npm run build
       - run: npm run validate
       - run: node scripts/release.mjs --publish

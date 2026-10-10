@@ -45,10 +45,12 @@ export function digest(contents) {
 }
 
 export async function generatorDigest() {
-  const names = (await readdir(new URL("./", import.meta.url))).filter(name => name.endsWith(".mjs") && name !== "reference.mjs").sort();
+  const names = (await readdir(new URL("./", import.meta.url))).filter(name => name.endsWith(".mjs")).sort();
   const inputs = [];
   for (const name of names) inputs.push(name, "\0", await readFile(new URL(name, import.meta.url)), "\0");
-  inputs.push("scripts/build.mjs", "\0", await readFile(new URL("../scripts/build.mjs", import.meta.url)));
+  for (const name of ["build.mjs", "lib/options.mjs", "lib/evaluation.mjs"]) {
+    inputs.push(`scripts/${name}`, "\0", await readFile(new URL(`../scripts/${name}`, import.meta.url)));
+  }
   inputs.push("data/lexical-evidence.json", "\0", await readFile(new URL("../data/lexical-evidence.json", import.meta.url)));
   const hash = createHash("sha256");
   for (const input of inputs) hash.update(input);

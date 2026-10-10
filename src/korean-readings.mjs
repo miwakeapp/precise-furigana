@@ -174,4 +174,3 @@ export function deriveKoreanAlignments(jmdict, kanjidic, align, {
   }
   return { wordAlignments, witnesses };
 }
-

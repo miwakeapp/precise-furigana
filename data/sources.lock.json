@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/scriptin/jmdict-simplified",
+  "release": {
+    "tag": "3.6.2+20261005200550",
+    "url": "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+    "publishedAt": "2026-10-05T20:06:00Z"
+  },
+  "license": {
+    "id": "CC-BY-SA-4.0",
+    "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "statementURL": "https://www.edrdg.org/edrdg/licence.html",
+    "attribution": "JMdict and KANJIDIC2 are copyright James William Breen and the Electronic Dictionary Research and Development Group. JSON conversion by scriptin/jmdict-simplified."
+  },
+  "sources": {
+    "jmdict": {
+      "asset": "jmdict-all-3.6.2+20261005200550.json.tgz",
+      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261005200550/jmdict-all-3.6.2%2B20261005200550.json.tgz",
+      "sha256": "305e2b2e101a344addbfe5e22c3c46c0afec3997117243caf7491a9804bab232",
+      "bytes": 25102361,
+      "file": "jmdict-all-3.6.2+20261005200550.json",
+      "jsonSHA256": "9f2dbe524df5c948c3f24e67608c73115e87123135491a883e8ff92c4a1a1d85",
+      "version": "3.6.2",
+      "dictDate": "2026-10-05",
+      "entryCount": 218863
+    },
+    "kanjidic": {
+      "asset": "kanjidic2-all-3.6.2+20261005200550.json.tgz",
+      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261005200550/kanjidic2-all-3.6.2%2B20261005200550.json.tgz",
+      "sha256": "b7266f4e8071468218bffbf0c39211fc86f7a8ebe82bc1826507369c66df0495",
+      "bytes": 1552919,
+      "file": "kanjidic2-all-3.6.2+20261005200550.json",
+      "jsonSHA256": "f6e2c30f8994e9d9df65f45f028a3020cd1844b65a02e31badd0270b90f8d0be",
+      "version": "3.6.2",
+      "dictDate": "2026-10-05",
+      "entryCount": 13108
+    }
+  },
+  "lexicalSources": {
+    "unihan": {
+      "format": "zip-text",
+      "version": "18.0.0",
+      "asset": "Unihan-18.0.0.zip",
+      "url": "https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip",
+      "sha256": "4c93ea9c1f636451729a840978f1667a53886af37ba854fdcce109721c63d43e",
+      "bytes": 8340649,
+      "member": "Unihan_Readings.txt",
+      "file": "Unihan-Readings-18.0.0.txt",
+      "textSHA256": "9d39995b5de714e8ce93716ed5d15eaa0792d68e407cdf8a0add2893b8f4150b",
+      "license": {
+        "id": "Unicode-3.0",
+        "url": "https://www.unicode.org/license.txt",
+        "attribution": "Copyright © 1991–2026 Unicode, Inc."
+      }
+    },
+    "japaneseWiktionary": {
+      "format": "bundled-json",
+      "version": "jawiktionary-20261001",
+      "file": "character-readings.json",
+      "bytes": 674862,
+      "sha256": "1433f551a99502fcfda5dce99d2240646c42e27c47a7caa4025fc79e4d8e68cd",
+      "upstream": {
+        "name": "Japanese Wiktionary character readings, extracted by Kaikki/Wiktextract",
+        "version": "jawiktionary-20261001",
+        "url": "https://kaikki.org/dictionary/downloads/ja/ja-extract.jsonl.gz",
+        "sourcePageURL": "https://kaikki.org/dictionary/rawdata.html",
+        "sourceLogURL": "https://kaikki.org/dictionary/downloads/ja/ja-extract.log",
+        "dumpDate": "2026-10-01",
+        "extractionDate": "2026-10-01",
+        "retrievedDate": "2026-10-09",
+        "bytes": 64974760,
+        "sha256": "92b85a0c09e2013e9bad4258de9e0226d23e0a20011cb66c3ba7fed33d39ee90",
+        "characterPageURLTemplate": "https://ja.wiktionary.org/wiki/{character}#日本語",
+        "license": {
+          "id": "CC-BY-SA-4.0",
+          "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "statementURL": "https://ja.wiktionary.org/wiki/Wiktionary:著作権",
+          "attribution": "Japanese Wiktionary contributors; structured extraction by Kaikki/Wiktextract; filtered and normalized by precise-furigana."
+        },
+        "modifications": [
+          "Select Japanese-language single-ideograph entries and explicit transliteration forms tagged on or kun.",
+          "Exclude untyped, historical, nanori, and marked okurigana or affix forms.",
+          "Preserve original forms and tags; normalize on readings to katakana and kun readings to hiragana.",
+          "Deduplicate identical records and sort deterministically. Do not infer phonological changes or new readings."
+        ]
+      }
+    },
+    "englishWiktionary": {
+      "format": "bundled-json",
+      "version": "enwiktionary-api-20261009-6017-pages",
+      "file": "english-character-readings.json",
+      "bytes": 2528877,
+      "sha256": "19de3d104423590dbcdc7afa68d4eb53f42727e4c35932532a541d8ecb206670",
+      "upstream": {
+        "name": "English Wiktionary explicit character readings",
+        "publisher": "English Wiktionary",
+        "field": "ja-readings",
+        "version": "enwiktionary-api-20261009-6017-pages",
+        "url": "https://en.wiktionary.org/w/api.php",
+        "sourcePageURL": "https://en.wiktionary.org/wiki/Template:ja-readings/documentation",
+        "documentationRevisionURL": "https://en.wiktionary.org/w/index.php?title=Template:ja-readings/documentation&oldid=89401685",
+        "characterPageURLTemplate": "https://en.wiktionary.org/wiki/{character}#Japanese",
+        "retrievedDate": "2026-10-09",
+        "bytes": 27720517,
+        "sha256": "168070d2cfa2da11bed52773cef17bb6fcc71e2d713d845cdeb811b083dc0d1a",
+        "inputs": {
+          "rawPages": {
+            "file": "primary-pages-complete-frozen.jsonl",
+            "bytes": 27720517,
+            "sha256": "168070d2cfa2da11bed52773cef17bb6fcc71e2d713d845cdeb811b083dc0d1a"
+          },
+          "characterFrame": {
+            "file": "jmdict-character-frame.json",
+            "bytes": 66485,
+            "sha256": "b1fa9eb57697c27d21c6da4601395bd7373c91c88911cd891457e3e5fb042e39"
+          },
+          "kanjidic": {
+            "file": "kanjidic2-all-3.6.2+20261005200550.json",
+            "bytes": 17666723,
+            "sha256": "f6e2c30f8994e9d9df65f45f028a3020cd1844b65a02e31badd0270b90f8d0be"
+          },
+          "unihan": {
+            "file": "Unihan-Readings-18.0.0.txt",
+            "bytes": 8844571,
+            "sha256": "9d39995b5de714e8ce93716ed5d15eaa0792d68e407cdf8a0add2893b8f4150b"
+          },
+          "japaneseBundle": {
+            "file": "character-readings.json",
+            "bytes": 674862,
+            "sha256": "1433f551a99502fcfda5dce99d2240646c42e27c47a7caa4025fc79e4d8e68cd"
+          }
+        },
+        "license": {
+          "id": "CC-BY-SA-4.0",
+          "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "statementURL": "https://en.wiktionary.org/wiki/Wiktionary:Copyrights",
+          "attribution": "English Wiktionary contributors; selected and normalized by precise-furigana from the public MediaWiki revision API."
+        },
+        "modifications": [
+          "Select Japanese ja-readings templates for the pinned JMdict character frame, ignoring comments and protected markup.",
+          "Use literal current-orthography on readings, kun explicitly marked without a following suffix, and the exact character-reading prefix before one documented kun hyphen. Current orthography does not establish current lexical usage.",
+          "Withhold unmarked kun, nanori, historical values, malformed historical chains, and unsupported markup. Do not infer phonological changes or inflections.",
+          "Retain the original template item, current and historical forms, source parameter, marked suffix, template context, and page revision provenance. Normalize on readings to katakana and kun readings to hiragana.",
+          "Keep only sound correspondences absent from the pinned KANJIDIC plain, stem, full, and nanori inventories, Unihan kJapanese, and Japanese Wiktionary bundle. This exclusion filter does not promote those inventories or alter the allocator's companion readings.",
+          "Prefer complete-reading evidence when the same character and sound also has marked-prefix evidence. Deduplicate records and sort deterministically."
+        ]
+      }
+    }
+  }
+}

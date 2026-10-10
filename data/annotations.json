@@ -1,0 +1,831 @@
+[
+  {
+    "id": "2268860",
+    "written": "細小小竹",
+    "reading": "いささおざさ",
+    "segments": [
+      [
+        "細小",
+        "いささ"
+      ],
+      [
+        "小",
+        "お"
+      ],
+      [
+        "竹",
+        "ざさ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2268860 explicitly pairs 細小小竹, 細小小笹 and いささ小笹 at the same reading. Independently, entry 2268900 assigns いささ to 細小. Daijisen and Nikkoku give the component division いささ/おざさ for the literal-prefix spelling. Together these fix the first two target characters as 細小いささ and the final two as 小竹おざさ; independently ordinary 小お plus the one-character 笹/竹 counterpart gives local 竹ざさ. The checked evidence does not support shifting the prefix endpoint after 細 and distributing お/ざ/さ across the next three characters. This is a word-local spelling-component argument, not a historical or whole-word-ruby veto.",
+    "sources": [
+      "https://kotobank.jp/word/いささ小笹-431807",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1581620",
+    "written": "端折る",
+    "reading": "はしょる",
+    "segments": [
+      [
+        "端",
+        "はし"
+      ],
+      [
+        "折",
+        "ょ"
+      ],
+      "る"
+    ],
+    "reason": "The inspected pinned 端折る page explicitly gives first-character はし and second-character お with the displayed override ょ, followed by literal る. Thus the small kana is deliberately assigned to 折, not inferred from a leftover substring. Pinned JMdict independently attests both はしょる/はしおる; the 尻端折り family has しりはしょり/しりはしおり, supporting the same local verb component with ordinary 尻しり and literal nominal ending り. The checked primary character inventories do not provide 折しょ as a competing complete reading. This supports the explicit source allocation while keeping the contraction strictly word-local.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=86463303",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "2559520",
+    "written": "尻端折り",
+    "reading": "しりはしょり",
+    "segments": [
+      [
+        "尻",
+        "しり"
+      ],
+      [
+        "端",
+        "はし"
+      ],
+      [
+        "折",
+        "ょ"
+      ],
+      "り"
+    ],
+    "reason": "The inspected pinned 端折る page explicitly gives first-character はし and second-character お with the displayed override ょ, followed by literal る. Thus the small kana is deliberately assigned to 折, not inferred from a leftover substring. Pinned JMdict independently attests both はしょる/はしおる; the 尻端折り family has しりはしょり/しりはしおり, supporting the same local verb component with ordinary 尻しり and literal nominal ending り. The checked primary character inventories do not provide 折しょ as a competing complete reading. This supports the explicit source allocation while keeping the contraction strictly word-local.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=86463303",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1650730",
+    "written": "藏人",
+    "reading": "くろうど",
+    "segments": [
+      [
+        "藏",
+        "くろ"
+      ],
+      [
+        "人",
+        "うど"
+      ]
+    ],
+    "reason": "The directly inspected pinned 蔵人 table explicitly overrides 蔵くら to くろ and assigns うど to 人; its headword independently repeats くろ.うど. Pinned JMdict entry 1650730 explicitly lists 蔵人 and 藏人 with the same restriction-valid くろうど reading. This fixes the same two lexical components for the traditional spelling. The checked evidence supplies no competing complete 藏くろう assignment; the present cut after くろう displaces the documented beginning of 人うど.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=88080933",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1650730",
+    "written": "蔵人",
+    "reading": "くろうど",
+    "segments": [
+      [
+        "蔵",
+        "くろ"
+      ],
+      [
+        "人",
+        "うど"
+      ]
+    ],
+    "reason": "The documented 蔵人 headword directly supports this ordinary spelling, with the same restriction-valid reading as 藏人. The directly inspected pinned 蔵人 table explicitly overrides 蔵くら to くろ and assigns うど to 人; its headword independently repeats くろ.うど. Pinned JMdict entry 1650730 explicitly lists 蔵人 and 藏人 with the same restriction-valid くろうど reading. This fixes the same two lexical components for the traditional spelling. The checked evidence supplies no competing complete 藏くろう assignment; the present cut after くろう displaces the documented beginning of 人うど.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=88080933",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1442840",
+    "written": "田圃",
+    "reading": "たんぼ",
+    "segments": [
+      [
+        "田",
+        "たん"
+      ],
+      [
+        "圃",
+        "ぼ"
+      ]
+    ],
+    "reason": "Daijisen explicitly divides たん/ぼ for 田圃 and separately marks 田 as the nonstandard reading. Fresh pinned KANJIDIC independently supplies 田 nanoriたん and 圃ホ, with the attested compound voiced to ぼ. The pinned Wiktionary table also places written-variant ん after the first character and uses displayed 圃ぼ. These independent facts support the local first-character nasal ownership and do not support 圃んぼ. Ateji status is not used as a grouping veto.",
+    "sources": [
+      "https://kotobank.jp/word/田圃-564722",
+      "https://en.wiktionary.org/w/index.php?oldid=92253174",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1600630",
+    "written": "果敢無い",
+    "reading": "はかない",
+    "segments": [
+      [
+        "果敢",
+        "はか"
+      ],
+      [
+        "無",
+        "な"
+      ],
+      "い"
+    ],
+    "reason": "Primary はか‐な・い for 果敢無い plus JMdict 果敢ない fixes 果敢はか followed by 無な/い. Baseline incorrectly puts the はか endpoint after 果 and joins 敢 to 無な. Evidence does not settle finer 果/敢 ownership; grouping is not a veto on future independently supported は/か.",
+    "sources": [
+      "https://kotobank.jp/word/果無い-599832",
+      "https://www.kanjipedia.jp/kotoba/0000659900",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "1633920",
+    "written": "敷詰める",
+    "reading": "しきつめる",
+    "segments": [
+      [
+        "敷",
+        "しき"
+      ],
+      [
+        "詰",
+        "つ"
+      ],
+      "める"
+    ],
+    "reason": "Primary しき‐つ・める with 敷（き）詰める and JMdict 敷き詰める/敷きつめる/敷詰める fixes 敷しき/詰つ/める. KD has both 敷し.く and 詰キツ, so raw phonetic availability alone is not a disproof; the explicit local compound evidence contradicts this baseline し|きつ cut.",
+    "sources": [
+      "https://kotobank.jp/word/敷詰める-517796",
+      "https://kotobank.jp/word/敷詰-2045286",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "2761530",
+    "written": "豆鼓醤",
+    "reading": "トウチージャン",
+    "segments": [
+      [
+        "豆",
+        "トウ"
+      ],
+      [
+        "鼓",
+        "チー"
+      ],
+      [
+        "醤",
+        "ジャン"
+      ]
+    ],
+    "reason": "Pinned JMdict directly attests 豆豉/豆鼓 as トウチー and records the compound source dòuchǐjiàng. The independently attested fermented-bean component ends after チー; 醤 starts at ジャン. The present チ/ージャン split assigns the preceding vowel length to the sauce character, contrary to this explicit component boundary. 鼓 is retained as the dictionary-attested spelling variant in this named word, not promoted as a Chinese sound.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://kotobank.jp/word/とうちー-1568167",
+      "https://www.jmi.or.jp/info/word/ta/ta_103.html"
+    ]
+  },
+  {
+    "id": "2761530",
+    "written": "豆豉醤",
+    "reading": "トウチージャン",
+    "segments": [
+      [
+        "豆",
+        "トウ"
+      ],
+      [
+        "豉",
+        "チー"
+      ],
+      [
+        "醤",
+        "ジャン"
+      ]
+    ],
+    "reason": "Pinned JMdict directly attests 豆豉/豆鼓 as トウチー and records the compound source dòuchǐjiàng. The independently attested fermented-bean component ends after チー; 醤 starts at ジャン. The present チ/ージャン split assigns the preceding vowel length to the sauce character, contrary to this explicit component boundary. 鼓 is retained as the dictionary-attested spelling variant in this named word, not promoted as a Chinese sound.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://kotobank.jp/word/とうちー-1568167",
+      "https://www.jmi.or.jp/info/word/ta/ta_103.html"
+    ]
+  },
+  {
+    "id": "2862973",
+    "written": "けも耳",
+    "reading": "けものみみ",
+    "segments": [
+      "け",
+      [
+        "も",
+        "もの"
+      ],
+      [
+        "耳",
+        "みみ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2862973 identifies the same compound in 獣耳/けもの耳/けも耳, with the full and shortened readings. Independent entries assign けもの to 獣 and みみ to 耳. In this cross-spelling reading, omitted の belongs inside the abbreviated noun けも, not 耳. The literal け is preserved and the noun abbreviation owns the remaining もの sound.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862973",
+    "written": "けも耳",
+    "reading": "ケモノミミ",
+    "segments": [
+      [
+        "け",
+        "ケ"
+      ],
+      [
+        "も",
+        "モノ"
+      ],
+      [
+        "耳",
+        "ミミ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2862973 identifies the same compound in 獣耳/けもの耳/けも耳, with the full and shortened readings. Independent entries assign けもの to 獣 and みみ to 耳. In this cross-spelling reading, omitted の belongs inside the abbreviated noun けも, not 耳. The literal け is preserved and the noun abbreviation owns the remaining もの sound.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "1578270",
+    "written": "鶏冠",
+    "reading": "とさか",
+    "segments": [
+      [
+        "鶏",
+        "と"
+      ],
+      [
+        "冠",
+        "さか"
+      ]
+    ],
+    "reason": "Pinned primary 鶏 and 鳥 examples explicitly assign 鶏と/冠さか; Daijisen and Nikkoku independently divide と‐さか, and Nikkoku separately attests 冠さか. Replace the unsupported 鶏とさ/冠か ownership in this exact pair while preserving every surrounding segment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92775959",
+      "https://en.wiktionary.org/w/index.php?oldid=92725343",
+      "https://kotobank.jp/word/鶏冠-105054",
+      "https://kotobank.jp/word/冠-49674",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2609510",
+    "written": "鶏冠海苔",
+    "reading": "とさかのり",
+    "segments": [
+      [
+        "鶏",
+        "と"
+      ],
+      [
+        "冠",
+        "さか"
+      ],
+      [
+        "海苔",
+        "のり"
+      ]
+    ],
+    "reason": "Pinned primary 鶏 and 鳥 examples explicitly assign 鶏と/冠さか; Daijisen and Nikkoku independently divide と‐さか, and Nikkoku separately attests 冠さか. Replace the unsupported 鶏とさ/冠か ownership in this exact pair while preserving every surrounding segment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92775959",
+      "https://en.wiktionary.org/w/index.php?oldid=92725343",
+      "https://kotobank.jp/word/鶏冠-105054",
+      "https://kotobank.jp/word/冠-49674",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2615030",
+    "written": "鶏冠に来る",
+    "reading": "とさかにくる",
+    "segments": [
+      [
+        "鶏",
+        "と"
+      ],
+      [
+        "冠",
+        "さか"
+      ],
+      "に",
+      [
+        "来",
+        "く"
+      ],
+      "る"
+    ],
+    "reason": "Pinned primary 鶏 and 鳥 examples explicitly assign 鶏と/冠さか; Daijisen and Nikkoku independently divide と‐さか, and Nikkoku separately attests 冠さか. Replace the unsupported 鶏とさ/冠か ownership in this exact pair while preserving every surrounding segment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92775959",
+      "https://en.wiktionary.org/w/index.php?oldid=92725343",
+      "https://kotobank.jp/word/鶏冠-105054",
+      "https://kotobank.jp/word/冠-49674",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2615030",
+    "written": "鶏冠にくる",
+    "reading": "とさかにくる",
+    "segments": [
+      [
+        "鶏",
+        "と"
+      ],
+      [
+        "冠",
+        "さか"
+      ],
+      "にくる"
+    ],
+    "reason": "Pinned primary 鶏 and 鳥 examples explicitly assign 鶏と/冠さか; Daijisen and Nikkoku independently divide と‐さか, and Nikkoku separately attests 冠さか. Replace the unsupported 鶏とさ/冠か ownership in this exact pair while preserving every surrounding segment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92775959",
+      "https://en.wiktionary.org/w/index.php?oldid=92725343",
+      "https://kotobank.jp/word/鶏冠-105054",
+      "https://kotobank.jp/word/冠-49674",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2751870",
+    "written": "頭黒鶏冠鳧",
+    "reading": "ずぐろとさかげり",
+    "segments": [
+      [
+        "頭",
+        "ず"
+      ],
+      [
+        "黒",
+        "ぐろ"
+      ],
+      [
+        "鶏",
+        "と"
+      ],
+      [
+        "冠",
+        "さか"
+      ],
+      [
+        "鳧",
+        "げり"
+      ]
+    ],
+    "reason": "Pinned primary 鶏 and 鳥 examples explicitly assign 鶏と/冠さか; Daijisen and Nikkoku independently divide と‐さか, and Nikkoku separately attests 冠さか. Replace the unsupported 鶏とさ/冠か ownership in this exact pair while preserving every surrounding segment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92775959",
+      "https://en.wiktionary.org/w/index.php?oldid=92725343",
+      "https://kotobank.jp/word/鶏冠-105054",
+      "https://kotobank.jp/word/冠-49674",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "1459680",
+    "written": "長刀",
+    "reading": "なぎなた",
+    "segments": [
+      [
+        "長",
+        "なぎ"
+      ],
+      [
+        "刀",
+        "なた"
+      ]
+    ],
+    "reason": "Two pinned primary pages expressly allocate 長なぎ/刀なた, independently corroborated by Daijisen なぎ‐なた. Replace unsupported 長な/刀ぎなた in this exact restricted pair while preserving all surrounding segments.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92160381",
+      "https://en.wiktionary.org/w/index.php?oldid=93436916",
+      "https://kotobank.jp/word/長刀-568906",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2002630",
+    "written": "長刀術",
+    "reading": "なぎなたじゅつ",
+    "segments": [
+      [
+        "長",
+        "なぎ"
+      ],
+      [
+        "刀",
+        "なた"
+      ],
+      [
+        "術",
+        "じゅつ"
+      ]
+    ],
+    "reason": "Two pinned primary pages expressly allocate 長なぎ/刀なた, independently corroborated by Daijisen なぎ‐なた. Replace unsupported 長な/刀ぎなた in this exact restricted pair while preserving all surrounding segments.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92160381",
+      "https://en.wiktionary.org/w/index.php?oldid=93436916",
+      "https://kotobank.jp/word/長刀-568906",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2207120",
+    "written": "そっぽ向く",
+    "reading": "そっぽをむく",
+    "segments": [
+      "そ",
+      "っ",
+      [
+        "ぽ向",
+        "ぽをむ"
+      ],
+      "く"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://kotobank.jp/word/そつぽを向く-2057339"
+    ]
+  },
+  {
+    "id": "2207120",
+    "written": "ソッポ向く",
+    "reading": "そっぽをむく",
+    "segments": [
+      [
+        "ソ",
+        "そ"
+      ],
+      [
+        "ッ",
+        "っ"
+      ],
+      [
+        "ポ向",
+        "ぽをむ"
+      ],
+      "く"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://kotobank.jp/word/そつぽを向く-2057339"
+    ]
+  },
+  {
+    "id": "2207120",
+    "written": "外方向く",
+    "reading": "そっぽをむく",
+    "segments": [
+      [
+        "外方向",
+        "そっぽをむ"
+      ],
+      "く"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://kotobank.jp/word/そつぽを向く-2057339"
+    ]
+  },
+  {
+    "id": "2263460",
+    "written": "嫁笠貝",
+    "reading": "よめがかさがい",
+    "segments": [
+      [
+        "嫁笠",
+        "よめがかさ"
+      ],
+      [
+        "貝",
+        "がい"
+      ]
+    ],
+    "reason": "Pinned same-entry 嫁が笠貝 explicitly writes が between 嫁よめ and 笠かさ at the identical reading. In 嫁笠貝 the particle is graphically absent. Keep 嫁笠 grouped across that site instead of attributing が to either character, and retain separate 貝がい.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "ケツ持つ",
+    "reading": "けつをもつ",
+    "segments": [
+      [
+        "ケ",
+        "け"
+      ],
+      [
+        "ツ持",
+        "つをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "尻持つ",
+    "reading": "けつをもつ",
+    "segments": [
+      [
+        "尻持",
+        "けつをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "尻もつ",
+    "reading": "けつをもつ",
+    "segments": [
+      [
+        "尻も",
+        "けつをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "けつ持つ",
+    "reading": "けつをもつ",
+    "segments": [
+      "け",
+      [
+        "つ持",
+        "つをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "ケツ持つ",
+    "reading": "ケツをもつ",
+    "segments": [
+      "ケ",
+      [
+        "ツ持",
+        "ツをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "尻持つ",
+    "reading": "ケツをもつ",
+    "segments": [
+      [
+        "尻持",
+        "ケツをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "尻もつ",
+    "reading": "ケツをもつ",
+    "segments": [
+      [
+        "尻も",
+        "ケツをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2862455",
+    "written": "けつ持つ",
+    "reading": "ケツをもつ",
+    "segments": [
+      [
+        "け",
+        "ケ"
+      ],
+      [
+        "つ持",
+        "ツをも"
+      ],
+      "つ"
+    ],
+    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2829328",
+    "written": "郡造",
+    "reading": "こおりのみやつこ",
+    "segments": [
+      [
+        "郡造",
+        "こおりのみやつこ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2829328 explicitly pairs 郡造 and 郡の造 with the same reading こおりのみやつこ. 郡こおり and 造みやつこ are independently documented, so the intervening の is an omitted particle rather than a suffix of 郡. Group the two written characters across that site.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://en.wiktionary.org/w/index.php?oldid=92250431",
+      "https://en.wiktionary.org/w/index.php?oldid=92930062",
+      "https://kotobank.jp/word/郡の領-2037039"
+    ]
+  },
+  {
+    "id": "1004505",
+    "written": "此方",
+    "reading": "こんた",
+    "segments": [
+      [
+        "此",
+        "こ"
+      ],
+      [
+        "方",
+        "んた"
+      ]
+    ],
+    "reason": "The frozen 此方 revision 86470423 explicitly assigns こ/んた in the こんた entry via {{ja-kanjitab|yomi=k,i|こ|んた}}. The same page assigns こ/なた for こなた. This positive target-local assignment resolves the baseline こん/た residual; inspected pinned character sources do not supply a competing target-local 方た assignment.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=86470423",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2192360",
+    "written": "立直",
+    "reading": "りいち",
+    "segments": [
+      [
+        "立",
+        "りい"
+      ],
+      [
+        "直",
+        "ち"
+      ]
+    ],
+    "reason": "The frozen 立直 revision 92246670 explicitly assigns 立リー/直チ, already accepted in lexical fact W0026. Pinned JMdict entry 2192360 pairs this same spelling with リーチ and its kana spelling variant りいち. The long first vowel therefore belongs to 立りい, preserving complete 直ち rather than shifting the second vowel into 直いち.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?oldid=92246670",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2859657",
+    "written": "木葉蟹",
+    "reading": "このはがに",
+    "segments": [
+      [
+        "木葉",
+        "このは"
+      ],
+      [
+        "蟹",
+        "がに"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2859657 explicitly pairs 木の葉蟹 and 木葉蟹 at このはがに. Ordinary 木こ and 葉は, separated by the written の in the first form, identify an omitted genitive in 木葉蟹. Group only 木葉 across that omitted-particle site and preserve independently supported 蟹がに.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "2248690",
+    "written": "八色姓",
+    "reading": "やくさのかばね",
+    "segments": [
+      [
+        "八",
+        "や"
+      ],
+      [
+        "色姓",
+        "くさのかばね"
+      ]
+    ],
+    "reason": "The exact same-lemma 八色の姓 spelling and independent dictionary division locate an unwritten genitive の between 色 and 姓. Positive 色くさ/シキ and 姓かばね ownership contradicts assigning that の to either single Han. Preserve independently supported 八 and group only 色姓 across the unwritten particle.",
+    "sources": [
+      "https://kanji.jitenon.jp/kanji/151",
+      "https://kotobank.jp/word/八色の姓-115066",
+      "https://en.wiktionary.org/w/index.php?oldid=93357114",
+      "https://www.edrdg.org/jmdictdb/cgi-bin/entr.py?svc=jmdict&sid=&q=2248690"
+    ]
+  },
+  {
+    "id": "2248690",
+    "written": "八色姓",
+    "reading": "はっしきのかばね",
+    "segments": [
+      [
+        "八",
+        "はっ"
+      ],
+      [
+        "色姓",
+        "しきのかばね"
+      ]
+    ],
+    "reason": "The exact same-lemma 八色の姓 spelling and independent dictionary division locate an unwritten genitive の between 色 and 姓. Positive 色くさ/シキ and 姓かばね ownership contradicts assigning that の to either single Han. Preserve independently supported 八 and group only 色姓 across the unwritten particle.",
+    "sources": [
+      "https://kanji.jitenon.jp/kanji/151",
+      "https://kotobank.jp/word/八色の姓-115066",
+      "https://en.wiktionary.org/w/index.php?oldid=93357114",
+      "https://www.edrdg.org/jmdictdb/cgi-bin/entr.py?svc=jmdict&sid=&q=2248690"
+    ]
+  },
+  {
+    "id": "2857685",
+    "written": "みそひと文字",
+    "reading": "みそじひともじ",
+    "segments": [
+      "み",
+      [
+        "そ",
+        "そじ"
+      ],
+      "ひと",
+      [
+        "文",
+        "も"
+      ],
+      [
+        "字",
+        "じ"
+      ]
+    ],
+    "reason": "Nikkoku explicitly records the complete みそひともじ/みそじひともじ variants and identifies the optional じ in the numeral prefix. The unique shared ひと anchors that word-local ownership: preserve literal み and ひと, assign the changed そ/そじ block locally, then retain independently supported 文も/字じ. The current literal みそ endpoint gives the following group the extra じ and must move; this proposal is separate from the compatible-refinement corpus.",
+    "sources": [
+      "https://kotobank.jp/word/三十一文字-513664",
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  }
+]

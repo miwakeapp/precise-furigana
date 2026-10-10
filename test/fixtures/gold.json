@@ -1,0 +1,1795 @@
+[
+  {
+    "written": "日本",
+    "reading": "にほん",
+    "segments": [
+      [
+        "日",
+        "に"
+      ],
+      [
+        "本",
+        "ほん"
+      ]
+    ],
+    "category": "contracted reading"
+  },
+  {
+    "written": "日本",
+    "reading": "にっぽん",
+    "segments": [
+      [
+        "日",
+        "にっ"
+      ],
+      [
+        "本",
+        "ぽん"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "日本語",
+    "reading": "にほんご",
+    "segments": [
+      [
+        "日",
+        "に"
+      ],
+      [
+        "本",
+        "ほん"
+      ],
+      [
+        "語",
+        "ご"
+      ]
+    ],
+    "category": "compound"
+  },
+  {
+    "written": "日本人",
+    "reading": "にほんじん",
+    "segments": [
+      [
+        "日",
+        "に"
+      ],
+      [
+        "本",
+        "ほん"
+      ],
+      [
+        "人",
+        "じん"
+      ]
+    ],
+    "category": "compound"
+  },
+  {
+    "written": "学校",
+    "reading": "がっこう",
+    "segments": [
+      [
+        "学",
+        "がっ"
+      ],
+      [
+        "校",
+        "こう"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "作家",
+    "reading": "さっか",
+    "segments": [
+      [
+        "作",
+        "さっ"
+      ],
+      [
+        "家",
+        "か"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "切手",
+    "reading": "きって",
+    "segments": [
+      [
+        "切",
+        "きっ"
+      ],
+      [
+        "手",
+        "て"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "一杯",
+    "reading": "いっぱい",
+    "segments": [
+      [
+        "一",
+        "いっ"
+      ],
+      [
+        "杯",
+        "ぱい"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "六本",
+    "reading": "ろっぽん",
+    "segments": [
+      [
+        "六",
+        "ろっ"
+      ],
+      [
+        "本",
+        "ぽん"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "新聞",
+    "reading": "しんぶん",
+    "segments": [
+      [
+        "新",
+        "しん"
+      ],
+      [
+        "聞",
+        "ぶん"
+      ]
+    ],
+    "category": "voicing"
+  },
+  {
+    "written": "手紙",
+    "reading": "てがみ",
+    "segments": [
+      [
+        "手",
+        "て"
+      ],
+      [
+        "紙",
+        "がみ"
+      ]
+    ],
+    "category": "voicing"
+  },
+  {
+    "written": "人々",
+    "reading": "ひとびと",
+    "segments": [
+      [
+        "人",
+        "ひと"
+      ],
+      [
+        "々",
+        "びと"
+      ]
+    ],
+    "category": "iteration"
+  },
+  {
+    "written": "時々",
+    "reading": "ときどき",
+    "segments": [
+      [
+        "時",
+        "とき"
+      ],
+      [
+        "々",
+        "どき"
+      ]
+    ],
+    "category": "iteration"
+  },
+  {
+    "written": "山々",
+    "reading": "やまやま",
+    "segments": [
+      [
+        "山",
+        "やま"
+      ],
+      [
+        "々",
+        "やま"
+      ]
+    ],
+    "category": "iteration"
+  },
+  {
+    "written": "今日",
+    "reading": "きょう",
+    "segments": [
+      [
+        "今日",
+        "きょう"
+      ]
+    ],
+    "category": "irregular"
+  },
+  {
+    "written": "今日",
+    "reading": "こんにち",
+    "segments": [
+      [
+        "今",
+        "こん"
+      ],
+      [
+        "日",
+        "にち"
+      ]
+    ],
+    "category": "regular alternative"
+  },
+  {
+    "written": "明日",
+    "reading": "あした",
+    "segments": [
+      [
+        "明日",
+        "あした"
+      ]
+    ],
+    "category": "irregular"
+  },
+  {
+    "written": "明日",
+    "reading": "あす",
+    "segments": [
+      [
+        "明",
+        "あ"
+      ],
+      [
+        "日",
+        "す"
+      ]
+    ],
+    "category": "supported character sounds",
+    "reason": "KANJIDIC2 supplies 明あ as an ordinary kun stem and 日す as an explicit nanori; together they support this complete phonetic allocation."
+  },
+  {
+    "written": "明日",
+    "reading": "みょうにち",
+    "segments": [
+      [
+        "明",
+        "みょう"
+      ],
+      [
+        "日",
+        "にち"
+      ]
+    ],
+    "category": "regular alternative"
+  },
+  {
+    "written": "昨日",
+    "reading": "きのう",
+    "segments": [
+      [
+        "昨日",
+        "きのう"
+      ]
+    ],
+    "category": "irregular"
+  },
+  {
+    "written": "大人",
+    "reading": "おとな",
+    "segments": [
+      [
+        "大人",
+        "おとな"
+      ]
+    ],
+    "category": "irregular"
+  },
+  {
+    "written": "一昨日",
+    "reading": "おととい",
+    "segments": [
+      [
+        "一昨",
+        "おとと"
+      ],
+      [
+        "日",
+        "い"
+      ]
+    ],
+    "category": "reviewed-lexical-correspondence",
+    "reason": "Refine only to 一昨おとと / 日い. Pinned source explicitly prints this partial grouping; Nikoku identifies い as the development of 日ひ. Do not further split 一昨 or assign its historical particle to either character.",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?title=一昨日&oldid=92159949#Japanese",
+      "https://kotobank.jp/word/一昨日-434136"
+    ]
+  },
+  {
+    "written": "明後日",
+    "reading": "あさって",
+    "segments": [
+      [
+        "明後日",
+        "あさって"
+      ]
+    ],
+    "category": "irregular"
+  },
+  {
+    "written": "素人",
+    "reading": "しろうと",
+    "segments": [
+      [
+        "素",
+        "しろ"
+      ],
+      [
+        "人",
+        "うと"
+      ]
+    ],
+    "category": "reviewed-lexical-correspondence",
+    "reason": "Daijisen explicitly divides しろ‐うと, and Wiktionary assigns 素しろ/人うと. The earlier grouped expectation was too coarse under the finest-supported-boundary policy.",
+    "sources": [
+      "https://kotobank.jp/word/素人-535584",
+      "https://en.wiktionary.org/w/index.php?title=素人童貞&oldid=90101172#Japanese"
+    ]
+  },
+  {
+    "written": "玄人",
+    "reading": "くろうと",
+    "segments": [
+      [
+        "玄",
+        "くろ"
+      ],
+      [
+        "人",
+        "うと"
+      ]
+    ],
+    "category": "reviewed-lexical-correspondence",
+    "sources": [
+      "https://en.wiktionary.org/w/index.php?title=玄人&oldid=92251618#Japanese",
+      "https://kotobank.jp/word/玄人-486938"
+    ],
+    "reason": "Correct the current vowel ownership to 玄くろ / 人うと. Both Daijisen and Nikoku divide くろ‐うと, and pinned source ruby explicitly assigns each character. The shorter くろと reading is separately 玄くろ / 人と and does not establish where the extra う belongs."
+  },
+  {
+    "written": "海老",
+    "reading": "えび",
+    "segments": [
+      [
+        "海",
+        "え"
+      ],
+      [
+        "老",
+        "び"
+      ]
+    ],
+    "category": "supported character sounds",
+    "reason": "KANJIDIC2 explicitly lists 海え and 老び as nanori. Complete individual sound support permits these cuts even outside names."
+  },
+  {
+    "written": "一向",
+    "reading": "ひたすら",
+    "segments": [
+      [
+        "一向",
+        "ひたすら"
+      ]
+    ],
+    "category": "reported regression"
+  },
+  {
+    "written": "一向",
+    "reading": "ひたぶる",
+    "segments": [
+      [
+        "一向",
+        "ひたぶる"
+      ]
+    ],
+    "category": "reported regression"
+  },
+  {
+    "written": "抽斗",
+    "reading": "ひきだし",
+    "segments": [
+      [
+        "抽斗",
+        "ひきだし"
+      ]
+    ],
+    "category": "reported regression"
+  },
+  {
+    "written": "欠片",
+    "reading": "かけら",
+    "segments": [
+      [
+        "欠",
+        "かけ"
+      ],
+      [
+        "片",
+        "ら"
+      ]
+    ],
+    "category": "supported word-local correspondence",
+    "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
+  },
+  {
+    "written": "欠けら",
+    "reading": "かけら",
+    "segments": [
+      [
+        "欠",
+        "か"
+      ],
+      "けら"
+    ],
+    "category": "alternate spelling"
+  },
+  {
+    "written": "ひと欠片",
+    "reading": "ひとかけら",
+    "segments": [
+      "ひと",
+      [
+        "欠",
+        "かけ"
+      ],
+      [
+        "片",
+        "ら"
+      ]
+    ],
+    "category": "supported word-local correspondence",
+    "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
+  },
+  {
+    "written": "一欠片",
+    "reading": "ひとかけら",
+    "segments": [
+      [
+        "一",
+        "ひと"
+      ],
+      [
+        "欠",
+        "かけ"
+      ],
+      [
+        "片",
+        "ら"
+      ]
+    ],
+    "category": "supported word-local correspondence",
+    "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
+  },
+  {
+    "written": "一突き",
+    "reading": "ひとつき",
+    "segments": [
+      [
+        "一",
+        "ひと"
+      ],
+      [
+        "突",
+        "つ"
+      ],
+      "き"
+    ],
+    "category": "reported regression"
+  },
+  {
+    "written": "ひと突き",
+    "reading": "ひとつき",
+    "segments": [
+      "ひと",
+      [
+        "突",
+        "つ"
+      ],
+      "き"
+    ],
+    "category": "alternate spelling"
+  },
+  {
+    "written": "ヤブ蚊",
+    "reading": "やぶっか",
+    "segments": [
+      [
+        "ヤブ",
+        "やぶ"
+      ],
+      [
+        "蚊",
+        "っか"
+      ]
+    ],
+    "category": "literal kana boundary"
+  },
+  {
+    "written": "ママ子",
+    "reading": "ままっこ",
+    "segments": [
+      [
+        "ママ",
+        "まま"
+      ],
+      [
+        "子",
+        "っこ"
+      ]
+    ],
+    "category": "literal kana boundary"
+  },
+  {
+    "written": "藪蚊",
+    "reading": "やぶっか",
+    "segments": [
+      [
+        "藪",
+        "やぶっ"
+      ],
+      [
+        "蚊",
+        "か"
+      ]
+    ],
+    "category": "gemination"
+  },
+  {
+    "written": "取り扱う",
+    "reading": "とりあつかう",
+    "segments": [
+      [
+        "取",
+        "と"
+      ],
+      "り",
+      [
+        "扱",
+        "あつか"
+      ],
+      "う"
+    ],
+    "category": "okurigana"
+  },
+  {
+    "written": "食べる",
+    "reading": "たべる",
+    "segments": [
+      [
+        "食",
+        "た"
+      ],
+      "べる"
+    ],
+    "category": "okurigana"
+  },
+  {
+    "written": "引っ越す",
+    "reading": "ひっこす",
+    "segments": [
+      [
+        "引",
+        "ひ"
+      ],
+      "っ",
+      [
+        "越",
+        "こ"
+      ],
+      "す"
+    ],
+    "category": "okurigana"
+  },
+  {
+    "written": "お祝い",
+    "reading": "おいわい",
+    "segments": [
+      "お",
+      [
+        "祝",
+        "いわ"
+      ],
+      "い"
+    ],
+    "category": "prefix"
+  },
+  {
+    "written": "お母さん",
+    "reading": "おかあさん",
+    "segments": [
+      "お",
+      [
+        "母",
+        "かあ"
+      ],
+      "さん"
+    ],
+    "category": "prefix"
+  },
+  {
+    "written": "申し込む",
+    "reading": "もうしこむ",
+    "segments": [
+      [
+        "申",
+        "もう"
+      ],
+      "し",
+      [
+        "込",
+        "こ"
+      ],
+      "む"
+    ],
+    "category": "okurigana"
+  },
+  {
+    "written": "石鹼",
+    "reading": "せっけん",
+    "segments": [
+      [
+        "石",
+        "せっ"
+      ],
+      [
+        "鹼",
+        "けん"
+      ]
+    ],
+    "category": "search-only spelling"
+  },
+  {
+    "written": "蠟燭",
+    "reading": "ろうそく",
+    "segments": [
+      [
+        "蠟",
+        "ろう"
+      ],
+      [
+        "燭",
+        "そく"
+      ]
+    ],
+    "category": "search-only spelling"
+  },
+  {
+    "written": "囊胞",
+    "reading": "のうほう",
+    "segments": [
+      [
+        "囊",
+        "のう"
+      ],
+      [
+        "胞",
+        "ほう"
+      ]
+    ],
+    "category": "search-only spelling"
+  },
+  {
+    "written": "冒瀆的",
+    "reading": "ぼうとくてき",
+    "segments": [
+      [
+        "冒",
+        "ぼう"
+      ],
+      [
+        "瀆",
+        "とく"
+      ],
+      [
+        "的",
+        "てき"
+      ]
+    ],
+    "category": "search-only spelling"
+  },
+  {
+    "written": "繫がる",
+    "reading": "つながる",
+    "segments": [
+      [
+        "繫",
+        "つな"
+      ],
+      "がる"
+    ],
+    "category": "search-only spelling"
+  },
+  {
+    "written": "カタカナ",
+    "reading": "カタカナ",
+    "segments": [
+      "カタカナ"
+    ],
+    "category": "literal"
+  },
+  {
+    "written": "ありがとう",
+    "reading": "ありがとう",
+    "segments": [
+      "ありがとう"
+    ],
+    "category": "literal"
+  },
+  {
+    "written": "生年月日",
+    "reading": "せいねんがっぴ",
+    "segments": [
+      [
+        "生",
+        "せい"
+      ],
+      [
+        "年",
+        "ねん"
+      ],
+      [
+        "月",
+        "がっ"
+      ],
+      [
+        "日",
+        "ぴ"
+      ]
+    ],
+    "category": "compound"
+  },
+  {
+    "written": "誕生日",
+    "reading": "たんじょうび",
+    "segments": [
+      [
+        "誕",
+        "たん"
+      ],
+      [
+        "生",
+        "じょう"
+      ],
+      [
+        "日",
+        "び"
+      ]
+    ],
+    "category": "voicing"
+  },
+  {
+    "written": "雨傘",
+    "reading": "あまがさ",
+    "segments": [
+      [
+        "雨",
+        "あま"
+      ],
+      [
+        "傘",
+        "がさ"
+      ]
+    ],
+    "category": "voicing"
+  },
+  {
+    "written": "雨宿り",
+    "reading": "あまやどり",
+    "segments": [
+      [
+        "雨",
+        "あま"
+      ],
+      [
+        "宿",
+        "やど"
+      ],
+      "り"
+    ],
+    "category": "okurigana"
+  },
+  {
+    "written": "大人買い",
+    "reading": "おとながい",
+    "segments": [
+      [
+        "大人",
+        "おとな"
+      ],
+      [
+        "買",
+        "が"
+      ],
+      "い"
+    ],
+    "category": "irregular compound"
+  },
+  {
+    "written": "朔日",
+    "reading": "ついたち",
+    "segments": [
+      [
+        "朔日",
+        "ついたち"
+      ]
+    ],
+    "category": "contraction regression"
+  },
+  {
+    "written": "初朔日",
+    "reading": "はつついたち",
+    "segments": [
+      [
+        "初",
+        "はつ"
+      ],
+      [
+        "朔日",
+        "ついたち"
+      ]
+    ],
+    "category": "contraction regression"
+  },
+  {
+    "written": "花相撲",
+    "reading": "はなずもう",
+    "segments": [
+      [
+        "花",
+        "はな"
+      ],
+      [
+        "相撲",
+        "ずもう"
+      ]
+    ],
+    "category": "compound voicing"
+  },
+  {
+    "written": "書換え",
+    "reading": "かきかえ",
+    "segments": [
+      [
+        "書",
+        "かき"
+      ],
+      [
+        "換",
+        "か"
+      ],
+      "え"
+    ],
+    "category": "omitted okurigana"
+  },
+  {
+    "written": "積重ねる",
+    "reading": "つみかさねる",
+    "segments": [
+      [
+        "積",
+        "つみ"
+      ],
+      [
+        "重",
+        "かさ"
+      ],
+      "ねる"
+    ],
+    "category": "omitted okurigana"
+  },
+  {
+    "written": "巻戻す",
+    "reading": "まきもどす",
+    "segments": [
+      [
+        "巻",
+        "まき"
+      ],
+      [
+        "戻",
+        "もど"
+      ],
+      "す"
+    ],
+    "category": "omitted okurigana"
+  },
+  {
+    "written": "先輩",
+    "reading": "せんぱい",
+    "segments": [
+      [
+        "先",
+        "せん"
+      ],
+      [
+        "輩",
+        "ぱい"
+      ]
+    ],
+    "category": "post-nasal plosive"
+  },
+  {
+    "written": "鉛筆",
+    "reading": "えんぴつ",
+    "segments": [
+      [
+        "鉛",
+        "えん"
+      ],
+      [
+        "筆",
+        "ぴつ"
+      ]
+    ],
+    "category": "post-nasal plosive"
+  },
+  {
+    "written": "俄景気",
+    "reading": "にわかげいき",
+    "segments": [
+      [
+        "俄",
+        "にわか"
+      ],
+      [
+        "景",
+        "げい"
+      ],
+      [
+        "気",
+        "き"
+      ]
+    ],
+    "category": "global learning regression"
+  },
+  {
+    "written": "愛想笑い",
+    "reading": "あいそわらい",
+    "segments": [
+      [
+        "愛",
+        "あい"
+      ],
+      [
+        "想",
+        "そ"
+      ],
+      [
+        "笑",
+        "わら"
+      ],
+      "い"
+    ],
+    "category": "global learning regression"
+  },
+  {
+    "written": "河原鳩",
+    "reading": "かわらばと",
+    "segments": [
+      [
+        "河",
+        "かわ"
+      ],
+      [
+        "原",
+        "ら"
+      ],
+      [
+        "鳩",
+        "ばと"
+      ]
+    ],
+    "category": "contextual sibling evidence",
+    "reason": "JMdict 1590760 gives 河原 and 川原 for かわら; 川かわ and KANJIDIC2 nanori 原ら establish the boundary. This does not accept the rejected global-reading split 河か/原わら."
+  },
+  {
+    "written": "赤海老",
+    "reading": "あかえび",
+    "segments": [
+      [
+        "赤",
+        "あか"
+      ],
+      [
+        "海",
+        "え"
+      ],
+      [
+        "老",
+        "び"
+      ]
+    ],
+    "category": "supported character sounds",
+    "reason": "Retain 赤あか and use the explicit KANJIDIC2 nanori 海え and 老び for the remaining complete phonetic allocation."
+  },
+  {
+    "written": "前肢",
+    "reading": "まえあし",
+    "segments": [
+      [
+        "前",
+        "まえ"
+      ],
+      [
+        "肢",
+        "あし"
+      ]
+    ],
+    "category": "residual regression"
+  },
+  {
+    "written": "鬼婆",
+    "reading": "おにばばあ",
+    "segments": [
+      [
+        "鬼",
+        "おに"
+      ],
+      [
+        "婆",
+        "ばばあ"
+      ]
+    ],
+    "category": "residual regression"
+  },
+  {
+    "written": "証し",
+    "reading": "あかし",
+    "segments": [
+      [
+        "証",
+        "あか"
+      ],
+      "し"
+    ],
+    "category": "literal anchor"
+  },
+  {
+    "written": "美味しい",
+    "reading": "おいしい",
+    "segments": [
+      [
+        "美味",
+        "おい"
+      ],
+      "しい"
+    ],
+    "category": "literal anchor"
+  },
+  {
+    "written": "メンド臭い",
+    "reading": "めんどうくさい",
+    "segments": [
+      [
+        "メン",
+        "めん"
+      ],
+      [
+        "ド",
+        "どう"
+      ],
+      [
+        "臭",
+        "くさ"
+      ],
+      "い"
+    ],
+    "category": "kana mismatch"
+  },
+  {
+    "written": "体によい",
+    "reading": "からだにいい",
+    "segments": [
+      [
+        "体",
+        "からだ"
+      ],
+      "に",
+      [
+        "よ",
+        "い"
+      ],
+      "い"
+    ],
+    "category": "kana mismatch"
+  },
+  {
+    "written": "植木鉢",
+    "reading": "うえきばち",
+    "segments": [
+      [
+        "植",
+        "うえ"
+      ],
+      [
+        "木",
+        "き"
+      ],
+      [
+        "鉢",
+        "ばち"
+      ]
+    ],
+    "category": "corpus audit regression"
+  },
+  {
+    "written": "説き出す",
+    "reading": "ときいだす",
+    "segments": [
+      [
+        "説",
+        "と"
+      ],
+      "き",
+      [
+        "出",
+        "いだ"
+      ],
+      "す"
+    ],
+    "category": "corpus audit regression"
+  },
+  {
+    "written": "染め出す",
+    "reading": "そめいだす",
+    "segments": [
+      [
+        "染",
+        "そ"
+      ],
+      "め",
+      [
+        "出",
+        "いだ"
+      ],
+      "す"
+    ],
+    "category": "corpus audit regression"
+  },
+  {
+    "written": "届け出伝染病",
+    "reading": "とどけいででんせんびょう",
+    "segments": [
+      [
+        "届",
+        "とど"
+      ],
+      "け",
+      [
+        "出",
+        "いで"
+      ],
+      [
+        "伝",
+        "でん"
+      ],
+      [
+        "染",
+        "せん"
+      ],
+      [
+        "病",
+        "びょう"
+      ]
+    ],
+    "category": "corpus audit regression"
+  },
+  {
+    "written": "時計",
+    "reading": "とけい",
+    "segments": [
+      [
+        "時",
+        "と"
+      ],
+      [
+        "計",
+        "けい"
+      ]
+    ],
+    "category": "contextual nanori"
+  },
+  {
+    "written": "腕時計",
+    "reading": "うでどけい",
+    "segments": [
+      [
+        "腕",
+        "うで"
+      ],
+      [
+        "時",
+        "ど"
+      ],
+      [
+        "計",
+        "けい"
+      ]
+    ],
+    "category": "voiced contextual nanori"
+  },
+  {
+    "written": "文字",
+    "reading": "もじ",
+    "segments": [
+      [
+        "文",
+        "も"
+      ],
+      [
+        "字",
+        "じ"
+      ]
+    ],
+    "category": "contextual nanori"
+  },
+  {
+    "written": "三井住友銀行",
+    "reading": "みついすみともぎんこう",
+    "segments": [
+      [
+        "三",
+        "みつ"
+      ],
+      [
+        "井",
+        "い"
+      ],
+      [
+        "住",
+        "すみ"
+      ],
+      [
+        "友",
+        "とも"
+      ],
+      [
+        "銀",
+        "ぎん"
+      ],
+      [
+        "行",
+        "こう"
+      ]
+    ],
+    "category": "complete kun reading"
+  },
+  {
+    "written": "鳴門",
+    "reading": "なると",
+    "segments": [
+      [
+        "鳴",
+        "なる"
+      ],
+      [
+        "門",
+        "と"
+      ]
+    ],
+    "category": "complete kun reading"
+  },
+  {
+    "written": "阿呆",
+    "reading": "あほ",
+    "segments": [
+      [
+        "阿",
+        "あ"
+      ],
+      [
+        "呆",
+        "ほ"
+      ]
+    ],
+    "category": "attested reading variation"
+  },
+  {
+    "written": "部屋",
+    "reading": "へや",
+    "segments": [
+      [
+        "部",
+        "へ"
+      ],
+      [
+        "屋",
+        "や"
+      ]
+    ],
+    "category": "attested unvoicing"
+  },
+  {
+    "written": "天皇",
+    "reading": "てんのう",
+    "segments": [
+      [
+        "天",
+        "てん"
+      ],
+      [
+        "皇",
+        "のう"
+      ]
+    ],
+    "category": "renjo"
+  },
+  {
+    "written": "観音",
+    "reading": "かんのん",
+    "segments": [
+      [
+        "観",
+        "かん"
+      ],
+      [
+        "音",
+        "のん"
+      ]
+    ],
+    "category": "renjo"
+  },
+  {
+    "written": "因縁",
+    "reading": "いんねん",
+    "segments": [
+      [
+        "因",
+        "いん"
+      ],
+      [
+        "縁",
+        "ねん"
+      ]
+    ],
+    "category": "renjo"
+  },
+  {
+    "written": "珈琲",
+    "reading": "コーヒー",
+    "segments": [
+      [
+        "珈",
+        "コー"
+      ],
+      [
+        "琲",
+        "ヒー"
+      ]
+    ],
+    "category": "phonetic ateji"
+  },
+  {
+    "written": "珈琲牛乳",
+    "reading": "コーヒーぎゅうにゅう",
+    "segments": [
+      [
+        "珈",
+        "コー"
+      ],
+      [
+        "琲",
+        "ヒー"
+      ],
+      [
+        "牛",
+        "ぎゅう"
+      ],
+      [
+        "乳",
+        "にゅう"
+      ]
+    ],
+    "category": "phonetic ateji within compounds"
+  },
+  {
+    "written": "亜細亜",
+    "reading": "アジア",
+    "segments": [
+      [
+        "亜",
+        "ア"
+      ],
+      [
+        "細",
+        "ジ"
+      ],
+      [
+        "亜",
+        "ア"
+      ]
+    ],
+    "category": "phonetic ateji"
+  },
+  {
+    "written": "型録",
+    "reading": "カタログ",
+    "segments": [
+      [
+        "型",
+        "カタ"
+      ],
+      [
+        "録",
+        "ログ"
+      ]
+    ],
+    "category": "phonetic ateji with an exact kun reading"
+  },
+  {
+    "written": "明白",
+    "reading": "あからさま",
+    "segments": [
+      [
+        "明白",
+        "あからさま"
+      ]
+    ],
+    "category": "ateji tag alone cannot justify a split"
+  },
+  {
+    "written": "１１月",
+    "reading": "じゅういちがつ",
+    "segments": [
+      [
+        "１",
+        "じゅう"
+      ],
+      [
+        "１",
+        "いち"
+      ],
+      [
+        "月",
+        "がつ"
+      ]
+    ],
+    "category": "positional numeral",
+    "reason": "The older grouped １１ reading remains an acceptable numeric rendering. This fixture chooses the finest independently supported positional convention: the first １ denotes one ten and owns じゅう, the units １ owns いち, and 月 retains がつ. These are local place-value assignments, not global isolated-digit readings.",
+    "sources": [
+      "https://www.mext.go.jp/a_menu/shotou/clarinet/002/20210817-mxt_kouhou02_2.pdf#page=6",
+      "https://marugoto.jpf.go.jp/assets/docs/download/starter_a/MarugotoStarterWordbook_KH.pdf#page=76"
+    ]
+  },
+  {
+    "written": "１歩",
+    "reading": "いっぽ",
+    "segments": [
+      [
+        "１",
+        "いっ"
+      ],
+      [
+        "歩",
+        "ぽ"
+      ]
+    ],
+    "category": "equivalent numeral spelling"
+  },
+  {
+    "written": "八幡の不知藪",
+    "reading": "やわたのやぶしらず",
+    "segments": [
+      [
+        "八",
+        "や"
+      ],
+      [
+        "幡",
+        "わた"
+      ],
+      "の",
+      [
+        "不知藪",
+        "やぶしらず"
+      ]
+    ],
+    "category": "internal literal anchor",
+    "reason": "The locality admits 八や plus KANJIDIC2 nanori 幡わた; the literal の survives the transposed reading of 不知藪."
+  },
+  {
+    "written": "呉の母",
+    "reading": "くれのおも",
+    "segments": [
+      [
+        "呉",
+        "くれ"
+      ],
+      "の",
+      [
+        "母",
+        "おも"
+      ]
+    ],
+    "category": "internal literal anchor without vowel stealing"
+  },
+  {
+    "written": "細小小笹",
+    "reading": "いささおざさ",
+    "segments": [
+      [
+        "細小",
+        "いささ"
+      ],
+      [
+        "小",
+        "お"
+      ],
+      [
+        "笹",
+        "ざさ"
+      ]
+    ],
+    "category": "weaker evidence cannot move stronger boundaries"
+  },
+  {
+    "written": "八咫",
+    "reading": "やあた",
+    "segments": [
+      [
+        "八",
+        "や"
+      ],
+      [
+        "咫",
+        "あた"
+      ]
+    ],
+    "category": "reading variants cannot move stronger boundaries"
+  },
+  {
+    "written": "人聞き悪い",
+    "reading": "ひとぎきのわるい",
+    "segments": [
+      [
+        "人",
+        "ひと"
+      ],
+      [
+        "聞",
+        "ぎ"
+      ],
+      [
+        "き悪",
+        "きのわる"
+      ],
+      "い"
+    ],
+    "category": "local omitted particle uncertainty"
+  },
+  {
+    "written": "Ｗｅｂ版",
+    "reading": "ウェブばん",
+    "segments": [
+      [
+        "Ｗｅｂ",
+        "ウェブ"
+      ],
+      [
+        "版",
+        "ばん"
+      ]
+    ],
+    "category": "Latin-written sibling evidence"
+  },
+  {
+    "written": "ヶ月",
+    "reading": "かげつ",
+    "segments": [
+      [
+        "ヶ",
+        "か"
+      ],
+      [
+        "月",
+        "げつ"
+      ]
+    ],
+    "category": "counter symbol sibling evidence"
+  },
+  {
+    "written": "霞ヶ関",
+    "reading": "かすみがせき",
+    "segments": [
+      [
+        "霞",
+        "かすみ"
+      ],
+      [
+        "ヶ",
+        "が"
+      ],
+      [
+        "関",
+        "せき"
+      ]
+    ],
+    "category": "name symbol sibling evidence"
+  },
+  {
+    "written": "暖簾",
+    "reading": "のれん",
+    "segments": [
+      [
+        "暖",
+        "の"
+      ],
+      [
+        "簾",
+        "れん"
+      ]
+    ],
+    "category": "contextual on-reading nasal loss"
+  },
+  {
+    "written": "絆創膏",
+    "reading": "ばんそうこう",
+    "segments": [
+      [
+        "絆",
+        "ばん"
+      ],
+      [
+        "創",
+        "そう"
+      ],
+      [
+        "膏",
+        "こう"
+      ]
+    ],
+    "category": "contextual initial voicing"
+  },
+  {
+    "written": "上海",
+    "reading": "シャンハイ",
+    "segments": [
+      [
+        "上",
+        "シャン"
+      ],
+      [
+        "海",
+        "ハイ"
+      ]
+    ],
+    "category": "independently matched pinyin character sounds"
+  },
+  {
+    "written": "提灯",
+    "reading": "ちょうちん",
+    "segments": [
+      [
+        "提",
+        "ちょう"
+      ],
+      [
+        "灯",
+        "ちん"
+      ]
+    ],
+    "category": "supplemental exact Unihan readings"
+  },
+  {
+    "written": "高麗",
+    "reading": "こうらい",
+    "segments": [
+      [
+        "高",
+        "こう"
+      ],
+      [
+        "麗",
+        "らい"
+      ]
+    ],
+    "category": "supplemental exact Unihan readings"
+  },
+  {
+    "written": "饅頭",
+    "reading": "まんじゅう",
+    "segments": [
+      [
+        "饅",
+        "まん"
+      ],
+      [
+        "頭",
+        "じゅう"
+      ]
+    ],
+    "category": "supplemental on-reading voicing"
+  },
+  {
+    "written": "栗鼠",
+    "reading": "りす",
+    "segments": [
+      [
+        "栗",
+        "り"
+      ],
+      [
+        "鼠",
+        "す"
+      ]
+    ],
+    "category": "listed character sound evidence"
+  },
+  {
+    "written": "商人",
+    "reading": "あきんど",
+    "segments": [
+      [
+        "商",
+        "あき"
+      ],
+      [
+        "人",
+        "んど"
+      ]
+    ],
+    "category": "reviewed local contraction"
+  },
+  {
+    "written": "３Ｄ",
+    "reading": "スリーディー",
+    "segments": [
+      [
+        "３",
+        "スリー"
+      ],
+      [
+        "Ｄ",
+        "ディー"
+      ]
+    ],
+    "category": "dictionary-defined foreign numeral"
+  },
+  {
+    "written": "Ｇ１０",
+    "reading": "ジーテン",
+    "segments": [
+      [
+        "Ｇ",
+        "ジー"
+      ],
+      [
+        "１０",
+        "テン"
+      ]
+    ],
+    "category": "spoken foreign cardinal stays whole"
+  }
+]

@@ -1,0 +1,119 @@
+Dictionary data attribution
+
+This project's generated alignment database uses JMdict and KANJIDIC2, which
+are copyright James William Breen and the Electronic Dictionary Research and
+Development Group (EDRDG). Source JSON conversion by scriptin/jmdict-simplified.
+
+JMdict: https://www.edrdg.org/jmdict/j_jmdict.html
+KANJIDIC2: https://www.edrdg.org/wiki/KANJIDIC_Project.html
+EDRDG license statement: https://www.edrdg.org/edrdg/licence.html
+JSON releases: https://github.com/scriptin/jmdict-simplified/releases
+
+The generated database is an adaptation: this project selects permitted
+spelling/reading pairs and adds algorithmically inferred furigana boundaries,
+quality statuses, and any independently reviewed alignment annotations.
+The generated database, its annotations, and dictionary-derived test data are
+distributed under Creative Commons Attribution-ShareAlike 4.0 International:
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Source URLs, versions, dates, and SHA256 digests are recorded in the database
+metadata and accompanying sources.lock.json. No endorsement by EDRDG is implied.
+
+The original software is licensed under MIT; see LICENSE. Lorenzi's furigana
+data and implementation are not inputs to the generator and are not included
+in the distributed data. An optional local comparison can use a separately
+downloaded reference snapshot.
+
+Additional reviewed lexical evidence
+------------------------------------
+
+The bundled character-reading forms and selected lexical facts include adapted
+material from Japanese and English Wiktionary contributors, licensed under
+Creative Commons Attribution-ShareAlike 4.0 International. Japanese character
+forms were extracted by Kaikki/wiktextract. English character forms were
+extracted directly from pinned primary MediaWiki page revisions. This project
+filters, normalizes, and reviews their applicability. Source titles, original
+forms, tags, revision or archive provenance, and modification details are
+retained in data/character-readings.json, data/english-character-readings.json,
+data/lexical-evidence.json, and sources.lock.json.
+
+The English character bundle uses source version
+enwiktionary-api-20261009-6017-pages. Its v2 bundle is 2,528,877 bytes and contains
+3,726 records for 3,560 distinct character/reading pairs across 2,243 characters.
+Bundle SHA256:
+19de3d104423590dbcdc7afa68d4eb53f42727e4c35932532a541d8ecb206670
+Primary page snapshot SHA256:
+168070d2cfa2da11bed52773cef17bb6fcc71e2d713d845cdeb811b083dc0d1a
+
+The importer retains literal on-readings, explicitly complete kun-readings,
+and documented character-reading prefixes. It withholds unmarked kun, nanori,
+historical values, and unsupported markup, and infers no sound changes or
+inflections. Individual source records preserve exact page revision URLs.
+
+Japanese Wiktionary: https://ja.wiktionary.org/
+English Wiktionary: https://en.wiktionary.org/
+Extraction: https://kaikki.org/dictionary/rawdata.html
+Primary revision API: https://en.wiktionary.org/w/api.php
+Template documentation: https://en.wiktionary.org/w/index.php?title=Template:ja-readings/documentation&oldid=89401685
+License: https://creativecommons.org/licenses/by-sa/4.0/
+Copyright: https://en.wiktionary.org/wiki/Wiktionary:Copyrights
+
+Reviewed local alignment candidates also originated in Doublevil/JmdictFurigana
+release 2.3.1+2026-09-25, whose generated data is distributed under the JMdict
+Creative Commons Attribution-ShareAlike license. Supported lexical units were
+selected and adapted after two independent AI reviews; no implementation code
+was imported. Individual source URLs, evidence, rationales, and review
+provenance are retained in data/lexical-evidence.json. Some moderately supported
+units rely on a single lexical source; independent reviews do not imply
+independent dictionary corroboration.
+
+Candidate data: https://github.com/Doublevil/JmdictFurigana
+
+No endorsement by these contributors or projects is implied. Reviews were
+performed by AI agents; they are not human lexicographer certification.
+
+Unihan supplemental Japanese readings
+-------------------------------------
+
+Source: https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip
+Documentation: https://www.unicode.org/reports/tr38/
+
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.

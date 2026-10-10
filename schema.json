@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Precise furigana database, schema 1",
+  "type": "object",
+  "required": ["schemaVersion", "metadata", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "metadata": {
+      "type": "object",
+      "required": ["algorithmVersion", "generatorSHA256", "configuration", "license", "attribution", "sources", "annotationsSHA256", "counts"],
+      "properties": {
+        "algorithmVersion": { "type": "string" },
+        "generatorSHA256": { "$ref": "#/$defs/digest" },
+        "annotationsSHA256": { "$ref": "#/$defs/digest" },
+        "configuration": { "type": "object", "additionalProperties": { "type": "boolean" } },
+        "license": { "const": "CC-BY-SA-4.0" },
+        "attribution": { "type": "string", "minLength": 1 },
+        "sources": { "type": "object", "required": ["schemaVersion", "release", "sources", "license"] },
+        "counts": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } }
+      }
+    },
+    "entries": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/pair" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "text": { "type": "string", "minLength": 1 },
+    "segment": {
+      "oneOf": [
+        { "$ref": "#/$defs/text" },
+        {
+          "type": "array",
+          "prefixItems": [{ "$ref": "#/$defs/text" }, { "$ref": "#/$defs/text" }],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        }
+      ]
+    },
+    "pair": {
+      "type": "object",
+      "required": ["written", "reading", "segments", "status", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "written": { "$ref": "#/$defs/text" },
+        "reading": { "$ref": "#/$defs/text" },
+        "segments": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/segment" } },
+        "status": { "enum": ["aligned", "ambiguous", "fallback", "reviewed"] },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["literal", "character", "phonological", "dictionary", "ambiguous", "fallback", "reviewed"] }
+        }
+      }
+    }
+  }
+}

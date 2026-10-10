@@ -30,6 +30,8 @@ For 幼馴染み[おさなじみ], knowing the longer おさななじみ form do
 
 Numerals have a rendering convention as well as pronunciation. In 三〇日, the output keeps 三〇[さんじゅう] together and splits 日[にち]; it does not give the zero placeholder the standalone sound じゅう. Other positional allocations are admitted only through specifically reviewed local evidence.
 
+寿府 stays grouped for both ジュネーブ and ジュネーヴ. [The pinned source](https://en.wiktionary.org/w/index.php?oldid=86487136#Japanese) supplies whole-word pronunciations but does not establish 府ネーブ or 府ネーヴ. Both readings therefore withhold unsupported residual inference, while remaining open to future supported splits.
+
 Residual inference is a remaining source of risk. For example, 土筆[つくづくし] currently gives 土[つく]筆[づくし] with `fallback` status; that status must not be read as a verified character reading. For 下放れ[したっぱなれ], KANJIDIC’s explicit 放 prefix `-っぱな.し` supports 下[した]放[っぱな]れ under the character-reading policy, though this does not prove a competing したっ/ぱな rendering wrong. An `aligned` label is model support, not proof of a uniquely correct boundary.
 
 A source update or correction can alter related words, so maintenance always includes a complete comparison between builds. The useful publication criterion is a reproducible, validated dataset with clear evidence and limitations—not the absence of every unresolved word.

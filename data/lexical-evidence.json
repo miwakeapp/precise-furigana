@@ -204525,7 +204525,7 @@
     }
   ],
   "residualDeferrals": {
-    "scope": "Withhold unsupported residual inference for restriction-valid spellings of the named JMdict entry at the same normalized reading. This is not a negative linguistic label and must not block separately fully supported refinements. When no JMdict ID is supplied, match the exact pair only.",
+    "scope": "Withhold unsupported residual inference for restriction-valid spellings of the named JMdict entry at the same normalized reading. This is not a negative linguistic label and must not block separately fully supported refinements.",
     "sourceReview": {
       "path": ".cache/experiments/unmarked-kun-v13/residual-110-synthesis.json",
       "sha256": "baa69148dbe8e3663f4f50f03cb44eb060f9faef7136ac09165c68e4df564988"
@@ -205250,6 +205250,14 @@
         "disposition": "rejected-inference",
         "reason": "三〇 is a positional decimal spelling for thirty; assigning じゅう to 〇 invents a zero reading. Keep the numeral together; independently split the 日 suffix.",
         "sourceReview": ".cache/experiments/residual-curation-v18/agreement-development-screening.json"
+      },
+      {
+        "written": "寿府",
+        "reading": "ジュネーヴ",
+        "disposition": "unresolved",
+        "reason": "The pinned primary word table gives whole-word overrides for both ジュネーヴ and ジュネーブ. Known 寿ジュ does not establish 府ネーヴ, just as it does not establish 府ネーブ in the already deferred variant. Withhold unsupported residual inference for this alternate reading while permitting any future independently supported allocation.",
+        "sourceReview": "https://en.wiktionary.org/w/index.php?oldid=86487136#Japanese",
+        "jmdictId": "1066140"
       }
     ],
     "additionalReviews": [

@@ -1791,5 +1791,27 @@
       ]
     ],
     "category": "spoken foreign cardinal stays whole"
+  },
+  {
+    "written": "寿府",
+    "reading": "ジュネーブ",
+    "segments": [
+      [
+        "寿府",
+        "ジュネーブ"
+      ]
+    ],
+    "category": "unresolved sound ownership across alternate foreign readings"
+  },
+  {
+    "written": "寿府",
+    "reading": "ジュネーヴ",
+    "segments": [
+      [
+        "寿府",
+        "ジュネーヴ"
+      ]
+    ],
+    "category": "unresolved sound ownership across alternate foreign readings"
   }
 ]

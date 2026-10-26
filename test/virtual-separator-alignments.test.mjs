@@ -30,7 +30,7 @@ test("virtual sources remain disabled by default and require a boolean option", 
 
 test("unique exact generated allocation records no fabricated source attestation", () => {
   const result = derive({ options: { allowVirtualSources: true } });
-  assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["甲", "あ"], ["乙・丙", "いう"]]);
+  assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["甲", "あ"], ["乙・", "い"], ["丙", "う"]]);
   assert.deepEqual(result.queried, [result.target]);
   const witness = result.witnesses[0];
   assert.deepEqual(witness.virtualSource, { kind: "generated-plain-spelling", written: "甲乙丙", reading: "あいう",
@@ -42,7 +42,6 @@ test("unique exact generated allocation records no fabricated source attestation
   assert.equal(witness.rawBaselineAgreementIsAnAdditionalVeto, true);
   assert.deepEqual(witness.completeExactAllocation.map(part => part.rawForms), [["ア"], ["イ"], ["ウ"]]);
   assert.match(witness.sourceIdentities.kanjidic.inputSHA256, /^[a-f0-9]{64}$/u);
-  assert.deepEqual(witness.withheldSeparatorBoundaries, [{ sourceWrittenOffset: 2, readingOffset: 2 }]);
 });
 
 test("an attestation elsewhere does not become a same-entry source claim", () => {
@@ -99,7 +98,7 @@ test("virtual projection preserves earlier cuts and refuses conflicting cuts", (
 test("virtual exact claims retain dotted forms without absorbing their suffixes", () => {
   const result = derive({ target: "かな・甲乙れ", reading: "かなあいれ", kanjidic: dictionary({ 甲: ["ア"], 乙: ["い.る"] }),
     options: { allowVirtualSources: true } });
-  assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["かな・甲", "かなあ"], ["乙", "い"], "れ"]);
+  assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["かな・", "かな"], ["甲", "あ"], ["乙", "い"], "れ"]);
   assert.deepEqual(result.witnesses[0].completeExactAllocation.find(part => part.written === "乙").rawForms, ["い.る"]);
 });
 

@@ -4,7 +4,8 @@ import { parseArgs } from "node:util";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { algorithmVersion, compileAnnotations, defaultConfiguration, digest, generatorDigest, schemaVersion } from "../src/dataset.mjs";
-import { recordKey, validateAlignment } from "../src/segments.mjs";
+import { recordKey } from "../src/segments.mjs";
+import { validateDisplayAlignment } from "../src/display.mjs";
 import { enumeratePairs, loadSources } from "../src/sources.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
@@ -39,11 +40,11 @@ for (const [id, records] of Object.entries(output.entries)) {
     assert.ok(["aligned", "ambiguous", "fallback", "reviewed"].includes(record.status));
     assert.equal(record.evidence.length, record.segments.length);
     assert.ok(record.evidence.every(type => ["literal", "character", "phonological", "dictionary", "ambiguous", "fallback", "reviewed"].includes(type)));
-    validateAlignment(record.written, record.reading, record.segments);
+    validateDisplayAlignment(record.written, record.reading, record.segments);
     ++count;
   }
 }
 assert.equal(expected.size, 0, "Every permitted JMdict spelling/reading pair is present");
 assert.equal(count, output.metadata.counts.pairs);
 assert.equal(Object.keys(output.entries).length, output.metadata.counts.entries);
-console.log(`Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, exact reconstruction, input provenance, gzip, and artifact checksums.`);
+console.log(`Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, gzip, and artifact checksums.`);

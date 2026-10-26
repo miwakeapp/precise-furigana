@@ -33,23 +33,18 @@ function validateRawOptions(options) {
   return result;
 }
 
-function projectBoundaries(source, target, reading, segments) {
+function projectBoundaries(source, target, reading, segments, attachSeparators) {
   const targetUnits = splitGraphemes(target), readingUnits = splitGraphemes(reading);
   const retained = targetUnits.flatMap((unit, index) => isSeparator(unit) ? [] : [index]);
   if (retained.map(index => targetUnits[index]).join("") !== source) return undefined;
-  const points = [[0, 0]], withheld = [];
+  const points = [[0, 0]];
   let writtenOffset = 0, readingOffset = 0;
   for (const segment of segments.slice(0, -1)) {
     writtenOffset += splitGraphemes(segmentText(segment)).length;
     readingOffset += splitGraphemes(segmentReading(segment)).length;
-    const left = retained[writtenOffset - 1] + 1, right = retained[writtenOffset];
-    // The positive-reading schema cannot give a silent separator its own
-    // segment. Withhold either adjacent cut instead of choosing its owner.
-    if (left !== right) {
-      withheld.push({ sourceWrittenOffset: writtenOffset, readingOffset });
-      continue;
-    }
-    points.push([left, readingOffset]);
+    // A silent separator has no sound to own. It rides with a neighboring
+    // segment, and output conversion shows it without ruby.
+    points.push([attachSeparators === "preceding" ? retained[writtenOffset] : retained[writtenOffset - 1] + 1, readingOffset]);
   }
   points.push([targetUnits.length, readingUnits.length]);
   const projected = [];
@@ -59,7 +54,7 @@ function projectBoundaries(source, target, reading, segments) {
     projected.push(text === sound ? text : [text, sound]);
   }
   validateAlignment(target, reading, projected);
-  return { segments: projected, withheld };
+  return projected;
 }
 
 /** Transfer independent raw-source boundaries into attested separator spellings. */
@@ -134,9 +129,15 @@ export function deriveSeparatorAlignments(jmdict, kanjidic, align, {
           rawBaselineAgreementIsAnAdditionalVeto: true
         };
       }
-      const projection = projectBoundaries(plain, target.written, target.reading, sourceSegments);
-      if (projection === undefined) continue;
-      const combined = combineAlignments(original.segments, projection.segments);
+      // Prefer attaching separators to the preceding segment, unless an
+      // earlier cut already placed them with the following one.
+      let combined = original.segments;
+      for (const attachSeparators of ["preceding", "following"]) {
+        const projection = projectBoundaries(plain, target.written, target.reading, sourceSegments, attachSeparators);
+        if (projection === undefined) break;
+        combined = combineAlignments(original.segments, projection);
+        if (combined !== original.segments) break;
+      }
       if (combined === original.segments) continue;
       const readings = wordAlignments.get(target.written) ?? new Map();
       readings.set(target.reading, combined);
@@ -146,8 +147,7 @@ export function deriveSeparatorAlignments(jmdict, kanjidic, align, {
         sourceIdentities: identities, rawAlignerOptions: { ...soundOptions },
         sourceSegments, sourceEvidence: independentlyAligned.evidence,
         rawCharacterReadings: Object.fromEntries([...new Set(splitGraphemes(plain))]
-          .filter(character => primary.has(character)).map(character => [character, [...primary.get(character)]])),
-        withheldSeparatorBoundaries: projection.withheld
+          .filter(character => primary.has(character)).map(character => [character, [...primary.get(character)]]))
       });
     }
   }

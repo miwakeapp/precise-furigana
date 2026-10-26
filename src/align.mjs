@@ -1,5 +1,4 @@
 import { alignKanaPronunciations, getKanaVowels, isIdeograph, isKana, kanaPronunciation, normalizeKana, readingStem, splitGraphemes } from "./kana.mjs";
-import { segmentReading, segmentText, validateAlignment } from "./segments.mjs";
 
 const voicedInitials = new Map(Array.from("かきくけこさしすせそたちつてとはひふへほ").map((character, index) =>
   [character, Array.from("がぎぐげござじずぜぞだぢづでどばびぶべぼ")[index]]
@@ -27,7 +26,7 @@ function assertReadingMap(map, name) {
 }
 
 function compareScore(left, right) {
-  return left.unknownCharacters - right.unknownCharacters || (left.residualGraphemes ?? 0) - (right.residualGraphemes ?? 0) || left.cost - right.cost;
+  return left.unknownCharacters - right.unknownCharacters || left.cost - right.cost;
 }
 
 function dictionaryEdgeCost(writtenLength) {
@@ -109,14 +108,13 @@ function stripVariationSelectors(text) {
   return text.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu, "");
 }
 
-function mergeOutput(parts, anchors = []) {
+function mergeOutput(parts) {
   const segments = [];
   const evidence = [];
-  let writtenOffset = 0, readingOffset = 0;
   for (const part of parts) {
     const plain = part.written === part.reading;
     const previous = evidence.at(-1);
-    const merge = previous && !anchors.some(([x, y]) => x === writtenOffset && y === readingOffset) && (
+    const merge = previous && (
       (plain && typeof segments.at(-1) === "string") ||
       (!plain && Array.isArray(segments.at(-1)) && part.type === "literal" && previous.type === "literal") ||
       (!plain && Array.isArray(segments.at(-1)) && part.type === "fallback" && previous.type === "fallback")
@@ -131,8 +129,6 @@ function mergeOutput(parts, anchors = []) {
       segments.push(plain ? part.written : [part.written, part.reading]);
       evidence.push({ ...part });
     }
-    writtenOffset += splitGraphemes(part.written).length;
-    readingOffset += splitGraphemes(part.reading).length;
   }
   return { segments, evidence };
 }
@@ -238,26 +234,11 @@ export function createAligner({
     return false;
   };
 
-  return function align(written, reading, finalFrame) {
+  return function align(written, reading) {
     if (typeof written !== "string" || typeof reading !== "string") {
       throw new TypeError("written and reading must be strings");
     }
-    const frameAnchors = [], frameSpans = new Map();
-    if (finalFrame !== undefined) {
-      validateAlignment(written, reading, finalFrame.segments);
-      let x = 0, y = 0;
-      for (const [index, segment] of finalFrame.segments.entries()) {
-        const startX = x, startY = y;
-        x += splitGraphemes(segmentText(segment)).length;
-        y += splitGraphemes(segmentReading(segment)).length;
-        frameAnchors.push([x, y]);
-        frameSpans.set(`${startX}:${startY}:${x}:${y}`, { segment, evidence: finalFrame.evidence?.[index] });
-      }
-      frameAnchors.pop();
-      if (finalFrame.status !== "aligned" || !finalFrame.segments.some(segment => Array.isArray(segment) && splitGraphemes(segment[0]).length > 1)) return finalFrame;
-    }
     if (written === reading) {
-      if (finalFrame !== undefined) return finalFrame;
       return {
         segments: written ? [written] : [],
         status: "aligned",
@@ -276,27 +257,22 @@ export function createAligner({
     const dictionaryByStart = new Map();
     const attestedRanges = [];
     const irregularRanges = [];
-    const ambiguousAnchorParticle = (start, end, wordReadStart, wordReading, innerStart, innerEnd, readStart, readEnd, residualInference = false) => {
+    const ambiguousAnchorParticle = (start, end, wordReadStart, wordReading, innerStart, innerEnd, readStart, readEnd) => {
       if (innerEnd !== innerStart + 1 || !isIdeograph(writtenUnits[innerStart])) return undefined;
       const character = stripVariationSelectors(writtenUnits[innerStart]);
       const known = new Set([...(characters.get(character) ?? []), ...(words.get(character) ?? [])]);
       const residual = readingData.normalized.slice(readingData.offsets[readStart], readingData.offsets[readEnd]);
-      const isKnown = (sound, position) => known.has(sound) || (residualInference &&
-        candidatesFor(innerStart, position).some(candidate => candidate.text === sound));
-      if (isKnown(residual, readStart)) return undefined;
+      if (known.has(residual)) return undefined;
       const particles = Array.from("のをがはにへとでも");
       const word = writtenUnits.slice(start, end).join("");
       const corroborated = (particle, writtenPosition, readPosition) => {
-        // An unsupported allocation cannot settle whether boundary-adjacent
-        // `の` belongs to the character or represents an unwritten particle.
-        if (residualInference && particle === "の") return true;
         const explicit = writtenUnits.slice(start, writtenPosition).join("") + particle + writtenUnits.slice(writtenPosition, end).join("");
         const offset = readingData.offsets[readPosition] - readingData.offsets[wordReadStart];
         const withoutParticle = wordReading.slice(0, offset) + wordReading.slice(offset + particle.length);
         return words.get(explicit)?.includes(wordReading) || words.get(word)?.includes(withoutParticle);
       };
-      const leading = particles.some(particle => residual.startsWith(particle) && isKnown(residual.slice(particle.length), readStart + 1) && corroborated(particle, innerStart, readStart));
-      const trailing = particles.some(particle => residual.endsWith(particle) && isKnown(residual.slice(0, -particle.length), readStart) && corroborated(particle, innerEnd, readEnd - 1));
+      const leading = particles.some(particle => residual.startsWith(particle) && known.has(residual.slice(particle.length)) && corroborated(particle, innerStart, readStart));
+      const trailing = particles.some(particle => residual.endsWith(particle) && known.has(residual.slice(0, -particle.length)) && corroborated(particle, innerEnd, readEnd - 1));
       return leading || trailing ? { leading, trailing } : undefined;
     };
     const hasAmbiguousAnchorVowel = (start, end, innerStart, innerEnd, readStart, readEnd, checkLeading = true, checkTrailing = true) => {
@@ -732,29 +708,19 @@ export function createAligner({
       return [...candidates.values()];
     }
 
-    function solve(allowFallback, residual = false, anchors = []) {
-      const states = residual ? 2 : 1;
-      const nodes = new Array((writtenUnits.length + 1) * width * states);
-      nodes[0] = { unknownCharacters: 0, residualGraphemes: 0, cost: 0, incoming: [], writtenIndex: 0, readIndex: 0, residuals: 0 };
+    function solve(allowFallback) {
+      const nodes = new Array((writtenUnits.length + 1) * width);
+      nodes[0] = { unknownCharacters: 0, cost: 0, incoming: [] };
       const addEdge = (sourceId, writtenIndex, readIndex, type, cost = 0, rules = [], unknownCharacters = 0) => {
         const source = nodes[sourceId];
-        if (residual && type === "ambiguous") return;
-        // Existing output cuts remain mandatory coordinates in every candidate.
-        if (anchors.some(([x, y]) =>
-          (source.writtenIndex < x && x < writtenIndex) || (source.readIndex < y && y < readIndex) ||
-          Math.sign(writtenIndex - x) !== Math.sign(readIndex - y)
-        )) return;
-        const residuals = source.residuals + (type === "residual" ? 1 : 0);
-        if (residuals >= states) return;
-        const destinationId = idFor(writtenIndex, readIndex) * states + residuals;
-        const score = { unknownCharacters: source.unknownCharacters + unknownCharacters, cost: source.cost + cost,
-          residualGraphemes: source.residualGraphemes + (type === "residual" ? readIndex - source.readIndex : 0) };
+        const destinationId = idFor(writtenIndex, readIndex);
+        const score = { unknownCharacters: source.unknownCharacters + unknownCharacters, cost: source.cost + cost };
         let destination = nodes[destinationId];
         const comparison = destination ? compareScore(score, destination) : -1;
         if (comparison > 0) return;
         const edge = { sourceId, destinationId, type, rules };
         if (comparison < 0) {
-          destination = { ...score, incoming: [edge], writtenIndex, readIndex, residuals };
+          destination = { ...score, incoming: [edge] };
           nodes[destinationId] = destination;
         } else if (!destination.incoming.some(previous => previous.sourceId === sourceId)) {
           destination.incoming.push(edge);
@@ -763,88 +729,67 @@ export function createAligner({
 
       for (let writtenIndex = 0; writtenIndex < writtenUnits.length; ++writtenIndex) {
         for (let readIndex = 0; readIndex < readingUnits.length; ++readIndex) {
-          for (let state = 0; state < states; ++state) {
-            const sourceId = idFor(writtenIndex, readIndex) * states + state;
-            if (!nodes[sourceId]) continue;
-            const character = writtenUnits[writtenIndex];
-            const literalEnd = readingData.match(readIndex, normalizeKana(character));
-            if (literalEnd !== undefined) addEdge(sourceId, writtenIndex + 1, literalEnd, "literal");
+          const sourceId = idFor(writtenIndex, readIndex);
+          if (!nodes[sourceId]) continue;
+          const character = writtenUnits[writtenIndex];
+          const literalEnd = readingData.match(readIndex, normalizeKana(character));
+          if (literalEnd !== undefined) addEdge(sourceId, writtenIndex + 1, literalEnd, "literal");
 
-            if (isKana(character)) {
-              const contexts = attestedRanges.filter(range => range.start <= writtenIndex && writtenIndex < range.end && range.readStart <= readIndex && readIndex < range.readEnd);
-              if (phonologicalAlternations && literalEnd !== undefined && contexts.length) {
-                const vowels = getKanaVowels(character);
-                const katakana = /^[\p{Script=Katakana}\u3099\u309a]+$/u.test(character.normalize("NFKC"));
-                // Hiragana often precedes a kanji whose reading starts with a
-                // vowel. Only katakana permits an omitted written vowel; an
-                // actual prolonged mark can extend a kana in either script.
-                for (const vowel of vowels ? [...(katakana ? vowels : []), "ー"] : []) {
-                  const readEnd = readingData.match(readIndex, normalizeKana(character) + vowel);
-                  const next = writtenUnits[writtenIndex + 1];
-                  const nextKanaMatches = readEnd !== undefined && (next === undefined || !isKana(next) || readingData.match(readEnd, normalizeKana(next)) !== undefined);
-                  if (nextKanaMatches && contexts.some(range => readEnd <= range.readEnd)) {
-                    addEdge(sourceId, writtenIndex + 1, readEnd, "phonological", 2, ["dictionary-supported-kana-vowel-extension"]);
-                  }
-                }
-              }
-              if (literalEnd === undefined && contexts.length) {
-                // Permit a single substituted kana only when the rest of its
-                // kana run remains literal. Variable-length residuals would let
-                // an incomplete kanji reading spill into the following kana.
-                let runEnd = writtenIndex + 1;
-                while (runEnd < writtenUnits.length && isKana(writtenUnits[runEnd])) ++runEnd;
-                const unchangedTail = writtenUnits.slice(writtenIndex + 1, runEnd).join("");
-                const tailEnd = unchangedTail ? readingData.match(readIndex + 1, normalizeKana(unchangedTail)) : undefined;
-                if (tailEnd !== undefined && isKana(readingUnits[readIndex]) && normalizeKana(readingUnits[readIndex]) !== "ー" && contexts.some(range => runEnd <= range.end && tailEnd <= range.readEnd)) {
-                  addEdge(sourceId, writtenIndex + 1, readIndex + 1, "ambiguous", 14, ["dictionary-kana-mismatch"]);
+          if (isKana(character)) {
+            const contexts = attestedRanges.filter(range => range.start <= writtenIndex && writtenIndex < range.end && range.readStart <= readIndex && readIndex < range.readEnd);
+            if (phonologicalAlternations && literalEnd !== undefined && contexts.length) {
+              const vowels = getKanaVowels(character);
+              const katakana = /^[\p{Script=Katakana}\u3099\u309a]+$/u.test(character.normalize("NFKC"));
+              // Hiragana often precedes a kanji whose reading starts with a
+              // vowel. Only katakana permits an omitted written vowel; an
+              // actual prolonged mark can extend a kana in either script.
+              for (const vowel of vowels ? [...(katakana ? vowels : []), "ー"] : []) {
+                const readEnd = readingData.match(readIndex, normalizeKana(character) + vowel);
+                const next = writtenUnits[writtenIndex + 1];
+                const nextKanaMatches = readEnd !== undefined && (next === undefined || !isKana(next) || readingData.match(readEnd, normalizeKana(next)) !== undefined);
+                if (nextKanaMatches && contexts.some(range => readEnd <= range.readEnd)) {
+                  addEdge(sourceId, writtenIndex + 1, readEnd, "phonological", 2, ["dictionary-supported-kana-vowel-extension"]);
                 }
               }
             }
+            if (literalEnd === undefined && contexts.length) {
+              // Permit a single substituted kana only when the rest of its
+              // kana run remains literal. Variable-length residuals would let
+              // an incomplete kanji reading spill into the following kana.
+              let runEnd = writtenIndex + 1;
+              while (runEnd < writtenUnits.length && isKana(writtenUnits[runEnd])) ++runEnd;
+              const unchangedTail = writtenUnits.slice(writtenIndex + 1, runEnd).join("");
+              const tailEnd = unchangedTail ? readingData.match(readIndex + 1, normalizeKana(unchangedTail)) : undefined;
+              if (tailEnd !== undefined && isKana(readingUnits[readIndex]) && normalizeKana(readingUnits[readIndex]) !== "ー" && contexts.some(range => runEnd <= range.end && tailEnd <= range.readEnd)) {
+                addEdge(sourceId, writtenIndex + 1, readIndex + 1, "ambiguous", 14, ["dictionary-kana-mismatch"]);
+              }
+            }
+          }
 
-            if (isIdeograph(character)) {
-              for (const candidate of candidatesFor(writtenIndex, readIndex)) {
-                const readEnd = readingData.match(readIndex, candidate.text);
-                if (readEnd !== undefined) {
-                  addEdge(sourceId, writtenIndex + 1, readEnd, candidate.type ?? (candidate.cost ? "phonological" : "character"), candidate.cost, candidate.rules);
-                }
+          if (isIdeograph(character)) {
+            for (const candidate of candidatesFor(writtenIndex, readIndex)) {
+              const readEnd = readingData.match(readIndex, candidate.text);
+              if (readEnd !== undefined) {
+                addEdge(sourceId, writtenIndex + 1, readEnd, candidate.type ?? (candidate.cost ? "phonological" : "character"), candidate.cost, candidate.rules);
               }
             }
-            for (const edge of dictionaryByStart.get(idFor(writtenIndex, readIndex)) ?? []) {
-              // A dictionary group is sound evidence, but incurs a cost for each
-              // boundary it leaves unresolved compared with character readings.
-              addEdge(sourceId, edge.end, edge.readEnd, edge.type ?? "dictionary", edge.cost, edge.rules);
-            }
-            if (residual && state === 0 && isIdeograph(character)) {
-              const supported = new Set(candidatesFor(writtenIndex, readIndex).map(candidate => candidate.text));
-              for (const edge of dictionaryByStart.get(idFor(writtenIndex, readIndex)) ?? []) {
-                if (edge.end === writtenIndex + 1) supported.add(normalizeKana(readingUnits.slice(readIndex, edge.readEnd).join("")));
-              }
-              for (let readEnd = readIndex + 1; readEnd <= Math.min(readIndex + 3, readingUnits.length); ++readEnd) {
-                const sound = readingUnits.slice(readIndex, readEnd).join("");
-                if (!isKana(sound) || supported.has(normalizeKana(sound))) continue;
-                const irregular = irregularRanges.some(range => range.start <= writtenIndex && writtenIndex < range.end &&
-                  range.readStart <= readIndex && readEnd <= range.readEnd);
-                if (!irregular) addEdge(sourceId, writtenIndex + 1, readEnd, "residual", 12, ["bounded-attested-residual"]);
-              }
-            }
-            if (allowFallback && !isKana(character)) {
-              for (let readEnd = readIndex + 1; readEnd <= readingUnits.length; ++readEnd) {
-                addEdge(sourceId, writtenIndex + 1, readEnd, "fallback", 0, [], 1);
-              }
+          }
+          for (const edge of dictionaryByStart.get(idFor(writtenIndex, readIndex)) ?? []) {
+            // A dictionary group is sound evidence, but incurs a cost for each
+            // boundary it leaves unresolved compared with character readings.
+            addEdge(sourceId, edge.end, edge.readEnd, edge.type ?? "dictionary", edge.cost, edge.rules);
+          }
+          if (allowFallback && !isKana(character)) {
+            for (let readEnd = readIndex + 1; readEnd <= readingUnits.length; ++readEnd) {
+              addEdge(sourceId, writtenIndex + 1, readEnd, "fallback", 0, [], 1);
             }
           }
         }
       }
-      return Array.from({ length: states }, (_, state) => nodes[finalId * states + state]).some(Boolean) ? nodes : undefined;
+      return nodes[finalId] ? nodes : undefined;
     }
 
-    function render(nodes, states = 1, residualOnly = false) {
-      let finals = Array.from({ length: states }, (_, state) => finalId * states + state).filter(id => nodes?.[id] && (!residualOnly || id % states === 1));
-      if (nodes && !finals.length) return undefined;
-      if (finals.length === 2) {
-        const comparison = compareScore(nodes[finals[0]], nodes[finals[1]]);
-        if (comparison !== 0) finals = [finals[comparison < 0 ? 0 : 1]];
-      }
+    function render(nodes) {
       if (!nodes) {
         return {
           segments: [[written, reading]],
@@ -855,8 +800,8 @@ export function createAligner({
         };
       }
 
-      const ancestors = new Set(finals);
-      const pending = [...finals];
+      const ancestors = new Set([finalId]);
+      const pending = [finalId];
       while (pending.length) {
         const id = pending.pop();
         for (const edge of nodes[id].incoming) {
@@ -867,141 +812,43 @@ export function createAligner({
         }
       }
       const ordered = [...ancestors].sort((left, right) => left - right);
-      const residuals = states === 2 ? ordered.flatMap(id => nodes[id].incoming.filter(edge => edge.type === "residual").map(edge => {
-        const start = nodes[edge.sourceId], end = nodes[edge.destinationId];
-        return {
-          writtenStart: start.writtenIndex, writtenEnd: end.writtenIndex,
-          readingStart: start.readIndex, readingEnd: end.readIndex,
-          written: writtenUnits.slice(start.writtenIndex, end.writtenIndex).join(""),
-          reading: readingUnits.slice(start.readIndex, end.readIndex).join(""),
-          type: "unsupported-local-residual", rules: [...edge.rules]
-        };
-      })) : [];
       const forwardCounts = new Map([[0, 1n]]);
       for (const id of ordered) {
         if (id === 0) continue;
         forwardCounts.set(id, nodes[id].incoming.reduce((count, edge) => count + forwardCounts.get(edge.sourceId), 0n));
       }
-      const backwardCounts = new Map(finals.map(id => [id, 1n]));
+      const backwardCounts = new Map([[finalId, 1n]]);
       for (const id of ordered.toReversed()) {
         for (const edge of nodes[id].incoming) {
           backwardCounts.set(edge.sourceId, (backwardCounts.get(edge.sourceId) ?? 0n) + backwardCounts.get(id));
         }
       }
-      const pathCount = finals.reduce((count, id) => count + forwardCounts.get(id), 0n);
-      const coordinates = new Map();
-      for (const id of ordered) {
-        const coordinate = Math.floor(id / states);
-        const group = coordinates.get(coordinate) ?? [];
-        group.push(id);
-        coordinates.set(coordinate, group);
-      }
-      // A path visits a coordinate once, even when its residual state differs.
-      const boundaries = [...coordinates].filter(([, ids]) =>
-        ids.reduce((count, id) => count + forwardCounts.get(id) * backwardCounts.get(id), 0n) === pathCount
-      ).map(([coordinate]) => coordinate);
-      const prefixCount = coordinate => coordinates.get(coordinate).reduce((count, id) => count + forwardCounts.get(id), 0n);
+      const pathCount = forwardCounts.get(finalId);
+      const boundaries = ordered.filter(id => forwardCounts.get(id) * backwardCounts.get(id) === pathCount);
       const parts = [];
       for (let index = 1; index < boundaries.length; ++index) {
         const startId = boundaries[index - 1];
         const endId = boundaries[index];
-        const start = nodes[coordinates.get(startId)[0]];
-        const end = nodes[coordinates.get(endId)[0]];
-        const localEdges = ordered.filter(id => Math.floor(id / states) > startId && Math.floor(id / states) <= endId).flatMap(id => nodes[id].incoming);
-        const ambiguous = prefixCount(endId) > prefixCount(startId);
-        const fallback = localEdges.some(edge => edge.type === "fallback" || edge.type === "residual");
+        const localEdges = ordered.filter(id => id > startId && id <= endId).flatMap(id => nodes[id].incoming);
+        const ambiguous = forwardCounts.get(endId) > forwardCounts.get(startId);
+        const fallback = localEdges.some(edge => edge.type === "fallback");
         parts.push({
-          written: writtenUnits.slice(start.writtenIndex, end.writtenIndex).join(""),
-          reading: readingUnits.slice(start.readIndex, end.readIndex).join(""),
+          written: writtenUnits.slice(Math.floor(startId / width), Math.floor(endId / width)).join(""),
+          reading: readingUnits.slice(startId % width, endId % width).join(""),
           type: fallback ? "fallback" : ambiguous ? "ambiguous" : localEdges[0].type,
           rules: [...new Set(localEdges.flatMap(edge => edge.rules))]
         });
       }
-      const result = mergeOutput(parts, frameAnchors);
-      const particleBoundaries = new Set(), displayedBoundaries = new Set();
-      const commonBoundaries = new Set(boundaries);
-      const originalBoundaries = new Set(frameAnchors.map(([x, y]) => idFor(x, y)));
-      let x = 0, y = 0;
-      for (const part of result.evidence) {
-        displayedBoundaries.add(idFor(x, y));
-        x += splitGraphemes(part.written).length; y += splitGraphemes(part.reading).length;
-      }
-      for (const residual of residuals) for (const range of attestedRanges) {
-        if (range.start > residual.writtenStart || residual.writtenEnd > range.end ||
-          range.readStart > residual.readingStart || residual.readingEnd > range.readEnd ||
-          !commonBoundaries.has(idFor(range.start, range.readStart)) || !commonBoundaries.has(idFor(range.end, range.readEnd))) continue;
-        const wordReading = readingData.normalized.slice(readingData.offsets[range.readStart], readingData.offsets[range.readEnd]);
-        const particle = ambiguousAnchorParticle(range.start, range.end, range.readStart, wordReading,
-          residual.writtenStart, residual.writtenEnd, residual.readingStart, residual.readingEnd, true);
-        if (!particle) continue;
-        for (const [side, cutX, cutY] of [["leading", residual.writtenStart, residual.readingStart], ["trailing", residual.writtenEnd, residual.readingEnd]]) {
-          const coordinate = idFor(cutX, cutY);
-          if (!particle[side] || coordinate === 0 || !displayedBoundaries.has(coordinate) || originalBoundaries.has(coordinate)) continue;
-          particleBoundaries.add(coordinate);
-          (residual.particleContexts ??= []).push({ side, withheldBoundary: [cutX, cutY],
-            originalPredicateMatched: Boolean(ambiguousAnchorParticle(range.start, range.end, range.readStart, wordReading,
-              residual.writtenStart, residual.writtenEnd, residual.readingStart, residual.readingEnd)?.[side]),
-            written: writtenUnits.slice(range.start, range.end).join(""), reading: wordReading,
-            writtenStart: range.start, writtenEnd: range.end, readingStart: range.readStart, readingEnd: range.readEnd });
-        }
-      }
-      if (particleBoundaries.size) {
-        const grouped = []; x = 0; y = 0;
-        for (const part of result.evidence) {
-          const previous = grouped.at(-1);
-          if (previous && particleBoundaries.has(idFor(x, y))) {
-            previous.written += part.written; previous.reading += part.reading; previous.type = "fallback";
-            previous.rules = [...new Set([...previous.rules, ...part.rules, "unwritten-particle-group"])];
-          } else grouped.push({ ...part, rules: [...part.rules] });
-          x += splitGraphemes(part.written).length; y += splitGraphemes(part.reading).length;
-        }
-        result.evidence = grouped;
-        result.segments = grouped.map(part => part.written === part.reading ? part.written : [part.written, part.reading]);
-      }
-      const score = { unknownCharacters: nodes[finals[0]].unknownCharacters, cost: nodes[finals[0]].cost,
-        ...(states === 2 ? { residualGraphemes: nodes[finals[0]].residualGraphemes } : {}) };
+      const result = mergeOutput(parts);
+      const score = { unknownCharacters: nodes[finalId].unknownCharacters, cost: nodes[finalId].cost };
       return {
         ...result,
-        status: score.unknownCharacters || residuals.length ? "fallback" : pathCount > 1n || result.evidence.some(part => part.type === "ambiguous") ? "ambiguous" : "aligned",
+        status: score.unknownCharacters ? "fallback" : pathCount > 1n || result.evidence.some(part => part.type === "ambiguous") ? "ambiguous" : "aligned",
         score,
-        optimalPathCount: pathCount.toString(),
-        ...(states === 2 ? { residuals } : {})
+        optimalPathCount: pathCount.toString()
       };
     }
 
-    // Ordinary calls never run unsupported inference. Only an explicit final
-    // frame enables a local proposal, which must not become donor evidence.
-    if (finalFrame === undefined) return render(solve(false) ?? solve(true));
-    const original = finalFrame;
-    const eligible = writtenUnits.length >= 2 && writtenUnits.length <= 6 && isKana(reading) &&
-      writtenUnits.filter(isIdeograph).length >= 2 && words.get(written)?.includes(normalizeKana(reading));
-    if (!eligible) return original;
-    const preserveEvidence = candidate => {
-      let x = 0, y = 0;
-      candidate.segments = candidate.segments.map((segment, index) => {
-        const startX = x, startY = y;
-        x += splitGraphemes(segmentText(segment)).length;
-        y += splitGraphemes(segmentReading(segment)).length;
-        const previous = frameSpans.get(`${startX}:${startY}:${x}:${y}`);
-        if (!previous) return segment;
-        if (previous.evidence !== undefined) {
-          if (candidate.evidence[index].type === "fallback") candidate.evidence[index].priorEvidence = previous.evidence;
-          else candidate.evidence[index] = previous.evidence;
-        }
-        return previous.segment;
-      });
-      validateAlignment(written, reading, candidate.segments);
-      return candidate;
-    };
-    // Prefer any finer fully supported solution before considering local residuals.
-    const supportedNodes = solve(false, false, frameAnchors);
-    const supported = supportedNodes ? render(supportedNodes) : undefined;
-    if (supported && supported.segments.length > original.segments.length) return preserveEvidence(supported);
-    // The existing whole-word group protects the primary result, but cannot
-    // compete with one-residual paths in this secondary coverage proposal.
-    const candidateNodes = solve(false, true, frameAnchors);
-    if (!candidateNodes) return original;
-    const candidate = render(candidateNodes, 2, true);
-    return candidate && candidate.segments.length > original.segments.length ? preserveEvidence(candidate) : original;
+    return render(solve(false) ?? solve(true));
   };
 }

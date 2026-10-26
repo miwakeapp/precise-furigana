@@ -45,19 +45,17 @@ Late evidence runs both with and without lexical refinement. Compatible cuts are
 Supported source words and alternate spellings can expose further boundaries:
 
 - `source-units` independently checks each source unit against raw character evidence before reusing its internal cuts.
-- `separator-alignments` transfers distant cuts across silent middle dots. Cuts next to an unpronounced dot remain grouped. A generated undotted spelling is usable only with one complete raw-character allocation and independent aligner agreement.
+- `separator-alignments` transfers cuts from the undotted spelling to one with silent middle dots. Each dot joins the preceding segment, or the following one when an earlier cut already put it there, and the release shows it without ruby. A generated undotted spelling is usable only with one complete raw-character allocation and independent aligner agreement.
 - `shared-run-alignments` transfers cuts inside a uniquely placed shared spelling span. Changed kana must have independently established sound ownership.
 
 These are bounded passes, not recursive learning. Inferred results do not feed back indefinitely into the evidence inventories.
 
-## Residual inference
+## Unsupported remainders
 
-A final bounded search can infer the remaining reading of one character in an attested word of two to six characters. It preserves existing cuts, limits the unsupported reading to three kana, and marks the result `fallback`. It is used only after supported refinements and never supplies evidence to other words.
-
-Guards exclude suspicious sound onsets, certain iteration-mark and numeral contexts, conflicts with reviewed ownership, and explicitly deferred entry/reading families. These deferrals mean the residual assignment is unresolved, not that a finer supported split is impossible. A future independent source can still supply one.
+When every character but one has a supported reading, the remainder could be assigned to that character by subtraction. The generator does not do this: such guesses were wrong too often, as in 一[つき]日[たち] or 木[ゆ]綿[う]. The word stays grouped until evidence supports a finer split.
 
 ## Complexity and limits
 
 The engine uses several small modules because the evidence types have different permissions. Combining them into a single general transformation rule would hide restrictions rather than eliminate them. The largest modules are the graph search and pipeline composition; the supporting modules have direct tests for their linguistic constraints.
 
-The main remaining risks are incorrectly inferred residuals, overconfident local evidence, interacting refinements, and source changes that invalidate assumptions. More splitting is not automatically better. Maintainable improvements come from an evidenced correction or a narrow rule whose complete effects can be reviewed, with unresolved ownership allowed to remain grouped.
+The main remaining risks are overconfident local evidence, interacting refinements, and source changes that invalidate assumptions. More splitting is not automatically better. Maintainable improvements come from an evidenced correction or a narrow rule whose complete effects can be reviewed, with unresolved ownership allowed to remain grouped.

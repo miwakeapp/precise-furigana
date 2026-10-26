@@ -3,6 +3,7 @@ import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { algorithmVersion, digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
 import { recordKey } from "../src/segments.mjs";
+import { displaySegments } from "../src/display.mjs";
 import { evaluateDataset } from "./lib/evaluation.mjs";
 import { parseGeneratorOptions } from "./lib/options.mjs";
 
@@ -27,16 +28,14 @@ for (const pair of dataset.pairs()) {
   if (seen.has(key)) continue;
   seen.add(key);
   const result = dataset.alignPair(pair);
-  const record = {
-    written: pair.written, reading: pair.reading, segments: result.segments, status: result.status,
-    evidence: result.evidence?.map(part => part.type) ?? result.segments.map(() => "reviewed")
-  };
+  const display = displaySegments(result.segments, result.evidence?.map(part => part.type) ?? result.segments.map(() => "reviewed"));
+  const record = { written: pair.written, reading: pair.reading, segments: display.segments, status: result.status, evidence: display.evidence };
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;
   if (!(result.status in counts)) throw new Error(`Unknown status: ${result.status}`);
   ++counts[result.status];
-  if (result.segments.every(segment => typeof segment === "string")) ++counts.literal;
-  else if (result.segments.length === 1) ++counts.grouped;
+  if (display.segments.every(segment => typeof segment === "string")) ++counts.literal;
+  else if (display.segments.length === 1) ++counts.grouped;
   else ++counts.split;
 }
 for (const key of dataset.annotations.keys()) {

@@ -9,7 +9,7 @@ The generator uses the checked-in evidence below and checksum-locked dictionarie
 | Unicode Unihan | Supplemental explicitly listed readings | Separately pinned archive |
 | `character-readings.json` | Selected Japanese Wiktionary character readings | Reviewed bundle |
 | `english-character-readings.json` | Selected English Wiktionary character readings | Reviewed bundle |
-| `lexical-evidence.json` | Named local allocations, selected reusable sounds, and residual deferrals | Sourced corrections |
+| `lexical-evidence.json` | Named local allocations and selected reusable sounds | Sourced corrections |
 | `annotations.json` | Exact entry/spelling/reading overrides | Sourced corrections |
 
 ## Dictionary inputs
@@ -50,8 +50,6 @@ A minimal lexical fact looks like this (illustrative; do not add a duplicate of 
 A fact's `id` identifies the evidence record, not a JMdict entry. An annotation's `id`, in contrast, is the JMdict ID and scopes the override together with its spelling and reading. Facts may refine matching occurrences inside longer words; annotations match one exact pair. Optional `reusableSegments` values are zero-based segment indices and require separately documented complete character-reading evidence.
 
 The initial inventory has 1,900 positive facts. Most remain word-local. The separately selected 79 reusable segments from 76 facts provide 76 distinct complete character sounds. Source provenance and donor exclusions stay attached to those readings. Exact corrections live in the much smaller annotations file.
-
-Residual deferrals record investigated cases where the unsupported remainder cannot safely determine character ownership. They are not negative linguistic labels: later independent evidence can justify a finer allocation. Their entry/reading scope expands only through currently permitted JMdict pairs.
 
 Some provenance includes historical review IDs, cache paths, and content hashes. These identify the original review materials; the generator never opens those paths. The maintained records contain their rationale and public source references. AI reviews are development judgments, not human lexicographer certification; multiple reviewers also do not imply multiple independent lexical sources.
 

@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Precise furigana database, schema 1",
+  "title": "Precise furigana database, schema 2",
   "type": "object",
   "required": ["schemaVersion", "metadata", "entries"],
   "additionalProperties": false,
   "properties": {
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "metadata": {
       "type": "object",
       "required": ["algorithmVersion", "generatorSHA256", "configuration", "license", "attribution", "sources", "annotationsSHA256", "counts"],

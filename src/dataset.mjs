@@ -13,8 +13,7 @@ import { deriveAtejiAlignments } from "./ateji.mjs";
 import { deriveLoanAlignments } from "./loan-readings.mjs";
 import { deriveUnihanAlignments, parseUnihanReadings } from "./unihan.mjs";
 import { deriveCharacterBundleAlignments } from "./character-readings.mjs";
-import { compileLexicalEvidence, refineWithLexicalEvidence, makeLexicalContextChecker } from "./lexical-evidence.mjs";
-import { isKana, normalizeKana, readingStem, splitGraphemes } from "./kana.mjs";
+import { compileLexicalEvidence, refineWithLexicalEvidence } from "./lexical-evidence.mjs";
 import { deriveNativeCompoundAlignments } from "./native-compounds.mjs";
 import { deriveListedPhonologyAlignments } from "./listed-phonology.mjs";
 import { deriveKoreanAlignments } from "./korean-readings.mjs";
@@ -23,7 +22,7 @@ import { deriveSourceUnitAlignments } from "./source-units.mjs";
 import { deriveSeparatorAlignments } from "./separator-alignments.mjs";
 import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 
-export const schemaVersion = 1;
+export const schemaVersion = 2;
 export const algorithmVersion = "0.1.0";
 export const defaultConfiguration = {
   terminalContraction: true, phonologicalAlternations: true, compoundVoicing: true,
@@ -75,94 +74,7 @@ export function compileAnnotations(annotations) {
 }
 
 export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources = {}) {
-  const pairs = [...enumeratePairs(jmdict)];
-  const { residualOptions, ...pipeline } = compilePipeline(jmdict, kanjidic, options, sources);
-  const deferrals = pipeline.configuration.reviewedLexicalEvidence ? compileResidualDeferrals(sources.residualDeferrals, pairs) : new Set();
-  const permitted = new Set(pairs.map(pair => pairKey(pair.written, pair.reading)));
-  const propose = createAligner(residualOptions);
-  const reject = residualGuard(residualOptions, pipeline.lexicalEvidence, deferrals);
-  // Only this public final wrapper can infer a residual. Recursive protection,
-  // donor passes and source inventories use the completed supported pipeline.
-  return { ...pipeline, align: cacheAligner((written, reading) => {
-    const original = pipeline.align(written, reading);
-    if (!permitted.has(pairKey(written, reading)) || original.status !== "aligned" ||
-      !original.segments.some(segment => Array.isArray(segment) && splitGraphemes(segment[0]).length > 1)) return original;
-    const candidate = propose(written, reading, original);
-    return candidate === original || reject({ ...original, written, reading }, candidate) ? original : candidate;
-  }) };
-}
-
-function compileResidualDeferrals(bundle, pairs) {
-  if (bundle === undefined) return new Set();
-  if (!bundle || typeof bundle.scope !== "string" || !bundle.scope.trim() ||
-    typeof bundle.sourceReview?.path !== "string" || !bundle.sourceReview.path.trim() ||
-    !/^[a-f0-9]{64}$/u.test(bundle.sourceReview?.sha256 ?? "") || !Array.isArray(bundle.pairs)) {
-    throw new Error("Residual deferrals require scope, source provenance and seed pairs");
-  }
-  const entryReading = (id, reading) => pairKey(id, normalizeKana(reading));
-  const seeds = new Set(), families = new Set();
-  for (const row of bundle.pairs) {
-    if (!row || typeof row.jmdictId !== "string" || !/^\d+$/u.test(row.jmdictId) ||
-      typeof row.written !== "string" || !row.written || typeof row.reading !== "string" || !isKana(row.reading) ||
-      [row.reason, row.disposition, row.sourceReview].some(value => typeof value !== "string" || !value.trim())) {
-      throw new Error("Residual deferral seeds require an entry, pair, reason, disposition and source review");
-    }
-    const seed = recordKey(row.jmdictId, row.written, normalizeKana(row.reading));
-    if (seeds.has(seed)) throw new Error(`Duplicate residual deferral seed: ${seed}`);
-    seeds.add(seed); families.add(entryReading(row.jmdictId, row.reading));
-  }
-  // Distinct reviewed spelling seeds may share a family. Preserve their source
-  // records, but expand each family only through restriction-valid source pairs.
-  // An absent entry/reading family leaves historical evidence intact and inactive.
-  return new Set(pairs.filter(pair => families.has(entryReading(pair.id, pair.reading)))
-    .map(pair => pairKey(pair.written, normalizeKana(pair.reading))));
-}
-
-function residualGuard(options, facts, deferrals) {
-  const checkLexical = makeLexicalContextChecker(facts), known = new Set();
-  const add = (written, reading) => known.add(pairKey(written, normalizeKana(reading)));
-  for (const [written, readings] of options.characterReadings) for (const reading of readings) add(written, readingStem(reading));
-  for (const map of [options.weakCharacterReadings, options.wordReadings, options.continuativeReadings]) {
-    for (const [written, readings] of map) if (splitGraphemes(written).length === 1) for (const reading of readings) add(written, reading);
-  }
-  const spans = segments => {
-    let x = 0, y = 0;
-    return segments.map(segment => {
-      const written = segmentText(segment), reading = segmentReading(segment), start = [x, y];
-      x += splitGraphemes(written).length; y += splitGraphemes(reading).length;
-      return { written, reading, start, end: [x, y] };
-    });
-  };
-  return (original, candidate) => {
-    const lexical = checkLexical(original, candidate.segments);
-    if (lexical.veto) return true;
-    const residuals = candidate.residuals ?? [];
-    if (!residuals.length) return false;
-    const written = splitGraphemes(original.written);
-    if (deferrals.has(pairKey(original.written, normalizeKana(original.reading))) || residuals.some(row =>
-      /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizeKana(row.reading)) || written[row.writtenEnd] === "々")) return true;
-    const digits = /^[〇零一二三四五六七八九壱弐参壹貳參]$/u;
-    const numeric = /^[〇零一二三四五六七八九壱弐参壹貳參十拾百佰千仟万萬億兆]$/u;
-    for (let start = 0; start < written.length;) {
-      if (!numeric.test(written[start])) { ++start; continue; }
-      let end = start + 1;
-      while (end < written.length && numeric.test(written[end])) ++end;
-      if (end - start >= 2 && written.slice(start, end).every(unit => digits.test(unit)) &&
-        residuals.some(row => start <= row.writtenStart && row.writtenEnd <= end)) return true;
-      start = end;
-    }
-    const originalSpans = spans(original.segments);
-    for (const span of originalSpans) if (span.end[0] - span.start[0] > 1 &&
-      residuals.some(row => span.start[0] <= row.writtenStart && row.writtenEnd <= span.end[0])) {
-      if (span.written.includes("々") || splitGraphemes(span.written).some(character => known.has(pairKey(character, normalizeKana(span.reading))))) return true;
-    }
-    const old = new Set(originalSpans.map(span => span.end.join(":")));
-    const added = spans(candidate.segments).map(span => span.end).filter(point => !old.has(point.join(":")));
-    return lexical.contexts.some(context => context.points.slice(1).some((end, index) => {
-      const start = context.points[index];
-      return end[0] - start[0] > 1 && added.some(([x, y]) => start[0] < x && x < end[0] && start[1] < y && y < end[1]);
-    }));
-  };
+  return compilePipeline(jmdict, kanjidic, options, sources);
 }
 
 function cacheAligner(align) {
@@ -507,7 +419,6 @@ function compilePipeline(jmdict, kanjidic, options, {
   );
   const lateWitnesses = name => mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {
-    residualOptions: supplementaryOptions,
     configuration,
     learnedReadings: additions,
     variantTransfers: transfers,
@@ -544,7 +455,6 @@ export async function loadDataset(options = {}) {
     unihanReadings: unihanText === undefined ? new Map() : parseUnihanReadings(unihanText),
     unihanSource: lock.lexicalSources?.unihan,
     characterReadingBundle, englishCharacterReadingBundle, lexicalEvidence: lexicalBundle.facts,
-    residualDeferrals: lexicalBundle.residualDeferrals,
     kanjidicSource: lock.sources.kanjidic, jmdictSource: lock.sources.jmdict
   });
   return {

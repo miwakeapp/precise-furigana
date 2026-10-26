@@ -14,9 +14,9 @@ const nihon = records.find(record => record.reading === "にほん");
 // nihon.segments: [["日", "に"], ["本", "ほん"]]
 ```
 
-Each record has `written`, `reading`, `segments`, `status`, and `evidence`. String segments are literal text; arrays are `[written text, reading]`. Both sides reconstruct the original strings exactly. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
+Each record has `written`, `reading`, `segments`, `status`, and `evidence`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
 
-Status reports the kind of support, not a probability of correctness. `fallback` marks unsupported local inference; `ambiguous` marks unresolved alternatives. Even an `aligned` record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
+Status reports the kind of support, not a probability of correctness. `ambiguous` marks unresolved alternatives. Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one. Even an `aligned` record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
 
 ## Build
 
@@ -42,7 +42,7 @@ To update JMdict and KANJIDIC2, run `npm run fetch -- --update`, then build and 
 
 ## What makes the alignments precise?
 
-The generator combines character readings, restricted sound changes, dictionary words, alternate spellings, and documented local allocations. A coarser dictionary reading does not veto a supported finer split. Ambiguous allocations keep only agreed boundaries, and inferred residual sounds never become evidence for unrelated words. The [algorithm guide](docs/algorithm.md) describes the stages and their safeguards.
+The generator combines character readings, restricted sound changes, dictionary words, alternate spellings, and documented local allocations. A coarser dictionary reading does not veto a supported finer split. Ambiguous allocations keep only agreed boundaries, and characters without supported readings stay grouped rather than guessed. The [algorithm guide](docs/algorithm.md) describes the stages and their safeguards.
 
 Some illustrative differences from Lorenzi's `furigana.txt` generator during development:
 

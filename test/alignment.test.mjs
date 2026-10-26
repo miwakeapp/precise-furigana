@@ -600,74 +600,9 @@ test("invalid API inputs fail explicitly", () => {
   assert.throws(() => align("山", undefined), TypeError);
 });
 
-const finalFrame = (written, reading) => ({ status: "aligned", segments: [[written, reading]], evidence: ["dictionary"] });
-
-test("only explicit final frames enable residual inference, with local fallback provenance", () => {
+test("an unsupported remainder keeps its attested word group", () => {
   const align = createAligner({ characterReadings: new Map([["甲", ["あ"]]]), wordReadings: new Map([["甲乙", ["あい"]]]) });
-  const original = finalFrame("甲乙", "あい"), saved = structuredClone(original);
-  const ordinary = align("甲乙", "あい");
-  assert.deepEqual(ordinary.segments, original.segments);
-  const proposal = align("甲乙", "あい", original);
-  assert.deepEqual(proposal.segments, [["甲", "あ"], ["乙", "い"]]);
-  assert.equal(proposal.status, "fallback");
-  assert.equal(proposal.evidence[1].type, "fallback");
-  assert.deepEqual(proposal.residuals.map(row => [row.written, row.reading, row.rules]), [["乙", "い", ["bounded-attested-residual"]]]);
-  assert.deepEqual(original, saved);
-  assert.deepEqual(align("甲乙", "あい"), ordinary);
-});
-
-test("final frames preserve literal cuts, reading coordinates and unchanged evidence", () => {
-  const align = createAligner({ characterReadings: new Map([["甲", ["が"]]]), wordReadings: new Map([["あい甲乙", ["あいがえ"]]]) });
-  const first = { type: "literal", rules: ["first"] }, second = { type: "literal", rules: ["second"] };
-  const original = { status: "aligned", segments: ["あ", "い", ["甲乙", "か\u3099え"]], evidence: [first, second, { type: "dictionary" }] };
-  const proposal = align("あい甲乙", "あいか\u3099え", original);
-  assert.deepEqual(proposal.segments, ["あ", "い", ["甲", "か\u3099"], ["乙", "え"]]);
-  assert.equal(proposal.evidence[0], first); assert.equal(proposal.evidence[1], second);
-  assert(boundaries(original.segments).every(point => boundaries(proposal.segments).includes(point)));
-  const literal = { status: "aligned", segments: [["あい", "あい"], "う"] };
-  assert.equal(align("あいう", "あいう", literal), literal);
-});
-
-test("fully supported final refinements precede unsupported residuals", () => {
-  const align = createAligner({ characterReadings: new Map([["甲", ["あ"]], ["乙", ["い"]]]), wordReadings: new Map([["甲乙", ["あい"]]]) });
-  const proposal = align("甲乙", "あい", finalFrame("甲乙", "あい"));
-  assert.deepEqual(proposal.segments, [["甲", "あ"], ["乙", "い"]]);
-  assert.equal(proposal.status, "aligned"); assert.equal(proposal.residuals, undefined);
-});
-
-test("particle withholding preserves old cuts and cannot expose literal-run cuts", () => {
-  const options = { characterReadings: new Map([["甲", ["あ"]], ["乙", ["いうう"]], ["丙", ["え"]]]),
-    wordReadings: new Map([["甲乙丙", ["あのいううえ"]]]) };
-  const original = { status: "aligned", segments: [["甲", "あの"], ["乙丙", "いううえ"]], evidence: ["reviewed", "dictionary"] };
-  const result = createAligner(options)("甲乙丙", "あのいううえ", original);
-  assert.deepEqual(result.segments, [["甲", "あの"], ["乙", "いうう"], ["丙", "え"]]);
-  assert.equal(result.evidence[0].type, "fallback"); assert.equal(result.evidence[0].priorEvidence, "reviewed");
-  const literalOptions = { characterReadings: new Map([["甲", ["か"]], ["乙", ["い"]]]),
-    wordReadings: new Map([["甲きく乙", ["かときくい", "かきくい"]]]) };
-  const literalFrame = { status: "aligned", segments: [["甲きく", "かときく"], ["乙", "い"]], evidence: ["dictionary", "character"] };
-  assert.equal(createAligner(literalOptions)("甲きく乙", "かときくい", literalFrame), literalFrame);
-});
-
-test("residual particle checks reuse weak readings and continuatives with their existing context", () => {
-  const cases = [
-    ["ああのいうえ", { characterReadings: new Map([["甲", ["ああ"]], ["丙", ["え"]]]), weakCharacterReadings: new Map([["乙", ["いう"]]]) }],
-    ["あいのうううえ", { characterReadings: new Map([["甲", ["あ.う"]], ["乙", ["ううう"]], ["丙", ["え"]]]), continuativeReadings: new Map([["甲", ["あい"]]]) }]
-  ];
-  for (const [reading, options] of cases) {
-    const align = createAligner({ ...options, wordReadings: new Map([["甲乙丙", [reading]]]) });
-    const result = align("甲乙丙", reading, finalFrame("甲乙丙", reading));
-    assert.deepEqual(result.segments, [["甲乙", reading.slice(0, -1)], ["丙", "え"]]);
-    assert.equal(result.status, "fallback"); assert.equal(result.evidence[0].type, "fallback");
-    assert.equal(result.residuals[0].particleContexts[0].originalPredicateMatched, false);
-  }
-});
-
-test("residual particle checks retain following-sound and phonology guards", () => {
-  for (const [next, phonologicalAlternations, grouped] of [["こう", true, true], ["こう", false, false], ["あ", true, false]]) {
-    const reading = "えええのかっ" + next;
-    const align = createAligner({ characterReadings: new Map([["丙", ["えええ"]], ["甲", ["かく"]], ["乙", [next]]]),
-      wordReadings: new Map([["丙甲乙", [reading]]]), phonologicalAlternations });
-    const result = align("丙甲乙", reading, finalFrame("丙甲乙", reading));
-    assert.equal(result.segments.length, grouped ? 2 : 3);
-  }
+  const result = align("甲乙", "あい");
+  assert.deepEqual(result.segments, [["甲乙", "あい"]]);
+  assert.equal(result.status, "aligned");
 });

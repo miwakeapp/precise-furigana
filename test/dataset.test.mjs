@@ -66,11 +66,8 @@ test("final sound refinements are independently switchable and cannot propagate 
   const refined = compileAlignmentPipeline(jmdict, kanjidic, {}, sources);
   const nativeOnly = compileAlignmentPipeline(jmdict, kanjidic, { unihanOnLengthening: false }, sources);
   const lengthenedOnly = compileAlignmentPipeline(jmdict, kanjidic, { nativeCompounds: false }, sources);
-  for (const [written, reading] of [pairs[0], pairs[2]]) {
-    const result = baseline.align(written, reading);
-    assert.equal(result.status, "fallback");
-    assert(result.evidence.some(evidence => evidence.type === "fallback"));
-  }
+  assert.deepEqual(baseline.align("心地", "ここち").segments, [["心地", "ここち"]]);
+  assert.deepEqual(baseline.align("御御様", "おごうさま").segments, [["御御様", "おごうさま"]]);
   assert.deepEqual(baseline.align("贔屓", "ひいき").segments, [["贔屓", "ひいき"]]);
   assert.equal(baseline.align("贔屓", "ひいき").status, "aligned");
   assert.deepEqual(refined.align("心地", "ここち").segments, [["心", "ここ"], ["地", "ち"]]);
@@ -79,7 +76,7 @@ test("final sound refinements are independently switchable and cannot propagate 
   assert.deepEqual(nativeOnly.align("贔屓", "ひいき").segments, baseline.align("贔屓", "ひいき").segments);
   assert.deepEqual(lengthenedOnly.align("心地", "ここち").segments, baseline.align("心地", "ここち").segments);
   assert.equal(nativeOnly.align("贔屓", "ひいき").status, "aligned");
-  assert.equal(lengthenedOnly.align("心地", "ここち").status, "fallback");
+  assert.equal(lengthenedOnly.align("心地", "ここち").status, "aligned");
   for (const [written, reading] of [["心心", "ここここ"], ["贔心", "ひいこころ"]]) {
     assert.deepEqual(refined.align(written, reading).segments, baseline.align(written, reading).segments);
   }
@@ -104,8 +101,7 @@ test("listed phonology honors both source and correspondence switches", () => {
   assert.deepEqual(enabled.align("愛惜", "あいじゃく").segments, [["愛", "あい"], ["惜", "じゃく"]]);
   for (const options of [{ englishCharacterReadings: false }, { listedPhonology: false }, { unihanVoicing: false }]) {
     const result = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align("愛惜", "あいじゃく");
-    assert.equal(result.status, "fallback");
-    assert.equal(result.evidence.at(-1).type, "fallback");
+    assert.deepEqual(result.segments, [["愛惜", "あいじゃく"]]);
   }
   assert.deepEqual(enabled.align("愛愛惜", "あいあいじゃく").segments, [["愛", "あい"], ["愛惜", "あいじゃく"]]);
 });
@@ -149,8 +145,7 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
   const disabled = compileAlignmentPipeline(jmdict, kanjidic, { onReadingSpelling: false });
   assert.deepEqual(enabled.align("警察", "ケーサツ").segments, [["警", "ケー"], ["察", "サツ"]]);
-  assert.equal(disabled.align("警察", "ケーサツ").status, "fallback");
-  assert.equal(disabled.align("警察", "ケーサツ").evidence[0].type, "fallback");
+  assert.deepEqual(disabled.align("警察", "ケーサツ").segments, [["警察", "ケーサツ"]]);
   assert.equal(enabled.onReadingSpelling.length, 1);
   assert.equal(disabled.onReadingSpelling.length, 0);
   assert.equal(enabled.align("警察", "ケーサツ").status, "aligned");
@@ -160,7 +155,6 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
   assert.equal(enabled.configuration.dictionaryNasalLoss, true);
   for (const [written, reading] of [["警察警察", "ケーサツケーサツ"], ["警察", "けーさつ"]]) {
     assert.deepEqual(enabled.align(written, reading), disabled.align(written, reading));
-    assert.equal(enabled.align(written, reading).residuals, undefined);
   }
 });
 
@@ -183,8 +177,7 @@ test("on-reading spelling respects each optional typed source flag", () => {
     assert.deepEqual(enabled.align("警察", "ケーサツ").segments, [["警", "ケー"], ["察", "サツ"]]);
     for (const options of [{ [flag]: false }, { onReadingSpelling: false }]) {
       const result = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align("警察", "ケーサツ");
-      assert.equal(result.status, "fallback");
-      assert.equal(result.evidence[0].type, "fallback");
+      assert.deepEqual(result.segments, [["警察", "ケーサツ"]]);
     }
   }
 });
@@ -368,7 +361,7 @@ test("separator transfers use restricted same-entry sources and an independent r
     literal, readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] }
   })) };
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
-  assert.deepEqual(enabled.align("甲乙・丙", "かがな").segments, [["甲", "か"], ["乙・丙", "がな"]]);
+  assert.deepEqual(enabled.align("甲乙・丙", "かがな").segments, [["甲", "か"], ["乙・", "が"], ["丙", "な"]]);
   assert.equal(enabled.separatorTransfers.length, 1);
   assert.deepEqual(Object.keys(enabled.separatorTransfers[0].rawAlignerOptions).sort(), [
     "compoundVoicing", "internalKanaAnchors", "kanaRunCorrespondence", "phonologicalAlternations", "terminalContraction"
@@ -389,7 +382,7 @@ test("virtual separator sources require exact independent allocation and preserv
     literal, readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] }
   })) };
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
-  assert.deepEqual(enabled.align("甲乙・丙", "あいう").segments, [["甲", "あ"], ["乙・丙", "いう"]]);
+  assert.deepEqual(enabled.align("甲乙・丙", "あいう").segments, [["甲", "あ"], ["乙・", "い"], ["丙", "う"]]);
   assert.equal(enabled.separatorTransfers.length, 1);
   const witness = enabled.separatorTransfers[0];
   assert.equal(witness.virtualSource.attestedInSameEntry, false);
@@ -425,127 +418,10 @@ test("shared runs recover supported internal cuts and honor both variant switche
   }
 });
 
-function residualFixture(pairs, sounds) {
-  return {
-    jmdict: { words: pairs.map(([written, reading], index) => ({ id: String(index + 1),
-      kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] })) },
-    kanjidic: { characters: sounds.map(([literal, ...readings]) => ({ literal,
-      readingMeaning: { groups: [{ readings: readings.map(value => ({ type: "ja_kun", value })) }] } })) }
-  };
-}
-const residualOptions = { ...Object.fromEntries(Object.keys(defaultConfiguration).map(name => [name, false])), reviewedLexicalEvidence: true };
-const residualFact = (written, reading, segments) => ({ id: written, written, reading, segments,
-  reason: "Synthetic independently reviewed local ownership", sources: [{ url: "https://example.test/local" }] });
-const deferralSeed = (written, reading, jmdictId = "1") => ({ written, reading, jmdictId,
-  reason: "Independent support for the unknown allocation remains unresolved", disposition: "unresolved", sourceReview: "source-review.json" });
-const deferralBundle = pairs => ({ scope: "Defer unsupported inference for permitted spelling siblings at this reading",
-  sourceReview: { path: "source-review.json", sha256: "a".repeat(64) }, pairs });
-
-test("residuals are final local fallbacks and never become donor or unattested evidence", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙", "あぬ"], ["甲乙丙丁戊己庚", "あぬいうえおか"]],
-    [["甲", "あ"], ["丙", "い"], ["丁", "う"], ["戊", "え"], ["己", "お"], ["庚", "か"]]);
-  const pipeline = compileAlignmentPipeline(jmdict, kanjidic);
-  const inferred = pipeline.align("甲乙", "あぬ");
-  assert.deepEqual(inferred.segments, [["甲", "あ"], ["乙", "ぬ"]]);
-  assert.equal(inferred.status, "fallback");
-  assert.equal(inferred.evidence[1].type, "fallback");
-  assert.deepEqual(inferred.residuals.map(row => [row.written, row.reading]), [["乙", "ぬ"]]);
-  assert(pipeline.align("甲乙丙丁戊己庚", "あぬいうえおか").segments.some(segment => Array.isArray(segment) && segment[0] === "甲乙"));
-  assert.equal(pipeline.align("甲乙丙丁戊己庚", "あぬいうえおか").residuals, undefined);
-  for (const [written, reading] of [["甲乙", "アヌ"], ["甲乙丙", "あぬい"], ["乙", "ぬ"]]) {
-    assert.equal(pipeline.align(written, reading).residuals, undefined);
-  }
-  for (const key of ["variantTransfers", "supplementaryVariants", "sourceUnitTransfers", "sharedRunTransfers"]) {
-    assert.equal(JSON.stringify(pipeline[key]).includes("bounded-attested-residual"), false);
-  }
-  assert.equal("residualOptions" in pipeline, false);
-});
-
-test("residual support honors weak-reading and phonology source settings", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙", "あぬ"]], []);
-  kanjidic.characters.push({ literal: "甲", readingMeaning: { nanori: ["あ"] } });
-  assert.equal(compileAlignmentPipeline(jmdict, kanjidic, { ...residualOptions, weakReadings: true }).align("甲乙", "あぬ").status, "fallback");
-  assert.deepEqual(compileAlignmentPipeline(jmdict, kanjidic, residualOptions).align("甲乙", "あぬ").segments, [["甲乙", "あぬ"]]);
-  const voiced = residualFixture([["甲乙", "ぬが"]], [["乙", "か"]]);
-  assert.equal(compileAlignmentPipeline(voiced.jmdict, voiced.kanjidic, { ...residualOptions, phonologicalAlternations: true }).align("甲乙", "ぬが").status, "fallback");
-  assert.deepEqual(compileAlignmentPipeline(voiced.jmdict, voiced.kanjidic, residualOptions).align("甲乙", "ぬが").segments, [["甲乙", "ぬが"]]);
-});
-
-test("residual cap and equal-best consensus do not choose an arbitrary allocation", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙", "あぬぬぬ"], ["甲乙", "あぬぬぬぬ"], ["甲乙丙", "あいあえ"]],
-    [["甲", "あ"], ["乙", "あ"], ["丙", "え"]]);
-  const align = compileAlignmentPipeline(jmdict, kanjidic, residualOptions).align;
-  assert.equal(align("甲乙", "あぬぬぬ").status, "fallback");
-  assert.deepEqual(align("甲乙", "あぬぬぬぬ").segments, [["甲乙", "あぬぬぬぬ"]]);
-  const tied = align("甲乙丙", "あいあえ");
-  assert.deepEqual(tied.segments, [["甲乙", "あいあ"], ["丙", "え"]]);
-  assert.equal(tied.optimalPathCount, "2"); assert.equal(tied.residuals.length, 2);
-});
-
-test("all optimal residual onsets, positional numerals and repeated characters remain guarded", () => {
-  const cases = [
-    ["甲乙丙", "あいんう", [["甲", "あい"], ["乙", "いん"], ["丙", "う"]]],
-    ["甲一二", "あいう", [["甲", "あ"], ["二", "う"]]],
-    ["甲々", "あい", [["甲", "あ"]]]
-  ];
-  for (const [written, reading, sounds] of cases) {
-    const { jmdict, kanjidic } = residualFixture([[written, reading]], sounds);
-    assert.deepEqual(compileAlignmentPipeline(jmdict, kanjidic, residualOptions).align(written, reading).segments, [[written, reading]]);
-  }
-  const { jmdict, kanjidic } = residualFixture([["甲十二", "あいう"]], [["甲", "あ"], ["二", "う"]]);
-  assert.equal(compileAlignmentPipeline(jmdict, kanjidic, residualOptions).align("甲十二", "あいう").status, "fallback");
-});
-
-test("whole-group character sounds and reviewed groups restrain only unsupported inference", () => {
-  const whole = residualFixture([["甲乙", "あい"]], [["甲", "あ", "あい"]]);
-  assert.deepEqual(compileAlignmentPipeline(whole.jmdict, whole.kanjidic, residualOptions).align("甲乙", "あい").segments, [["甲乙", "あい"]]);
-  const { jmdict, kanjidic } = residualFixture([["甲乙丙", "あぬい"]], [["甲", "あ"], ["丙", "い"]]);
-  const sources = { lexicalEvidence: [residualFact("甲乙丙", "あぬい", [["甲乙", "あぬ"], ["丙", "い"]])] };
-  const protectedResult = compileAlignmentPipeline(jmdict, kanjidic, residualOptions, sources).align("甲乙丙", "あぬい");
-  assert.deepEqual(protectedResult.segments, [["甲乙", "あぬ"], ["丙", "い"]]);
-  assert.equal(protectedResult.status, "aligned");
-  assert.equal(compileAlignmentPipeline(jmdict, kanjidic, { ...residualOptions, reviewedLexicalEvidence: false }, sources).align("甲乙丙", "あぬい").status, "fallback");
-});
-
-test("possible unwritten particles withhold only new local cuts while keeping distant support", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙丙", "あのいううえ"]], [["甲", "あ"], ["乙", "いうう"], ["丙", "え"]]);
-  const result = compileAlignmentPipeline(jmdict, kanjidic, residualOptions).align("甲乙丙", "あのいううえ");
-  assert.deepEqual(result.segments, [["甲乙", "あのいうう"], ["丙", "え"]]);
-  assert.equal(result.status, "fallback"); assert(result.evidence[0].rules.includes("unwritten-particle-group"));
-  assert.equal(result.evidence[1].type, "character");
-});
-
-test("residual deferrals expand only restriction-valid normalized-reading families", () => {
-  const { jmdict, kanjidic } = residualFixture([], [["甲", "あ"]]);
-  jmdict.words.push({ id: "7", kanji: ["甲乙", "甲丙", "甲丁"].map(text => ({ text, tags: [] })),
-    kana: [{ text: "あぬ", tags: [], appliesToKanji: ["甲乙", "甲丙"] }, { text: "あむ", tags: [], appliesToKanji: ["甲丁"] }], sense: [] });
-  const sources = { residualDeferrals: deferralBundle([deferralSeed("甲乙", "アヌ", "7"), deferralSeed("甲丙", "あぬ", "7")]) };
-  const pipeline = compileAlignmentPipeline(jmdict, kanjidic, residualOptions, sources);
-  for (const written of ["甲乙", "甲丙"]) assert.deepEqual(pipeline.align(written, "あぬ").segments, [[written, "あぬ"]]);
-  assert.equal(pipeline.align("甲丁", "あむ").status, "fallback");
-  const disabled = compileAlignmentPipeline(jmdict, kanjidic, { ...residualOptions, reviewedLexicalEvidence: false }, sources);
-  assert.equal(disabled.align("甲丙", "あぬ").status, "fallback");
-  const supported = { ...sources, lexicalEvidence: [residualFact("甲丙", "あぬ", [["甲", "あ"], ["丙", "ぬ"]])] };
-  assert.equal(compileAlignmentPipeline(jmdict, kanjidic, residualOptions, supported).align("甲丙", "あぬ").status, "aligned");
-});
-
-test("residual deferral schema rejects malformed and duplicate seed records", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙", "あぬ"]], [["甲", "あ"]]);
-  const seed = deferralSeed("甲乙", "あぬ");
-  const invalid = [[], {}, deferralBundle([{ ...seed, reason: "" }]), deferralBundle([{ ...seed, sourceReview: "" }]),
-    deferralBundle([{ ...seed, jmdictId: 1 }]), deferralBundle([{ ...seed, reading: "abc" }]),
-    deferralBundle([seed, { ...seed, reading: "アヌ" }])];
-  for (const residualDeferrals of invalid) assert.throws(() => compileAlignmentPipeline(jmdict, kanjidic, residualOptions, { residualDeferrals }), /Residual|residual/u);
-  assert.equal(compileAlignmentPipeline(jmdict, kanjidic, { ...residualOptions, reviewedLexicalEvidence: false },
-    { residualDeferrals: {} }).align("甲乙", "あぬ").status, "fallback");
-});
-
-test("historical deferral seeds survive removed spellings while absent families remain inactive", () => {
-  const { jmdict, kanjidic } = residualFixture([["甲乙", "あぬ"]], [["甲", "あ"]]);
-  const sources = { residualDeferrals: deferralBundle([deferralSeed("甲丙", "あぬ")]) };
-  assert.deepEqual(compileAlignmentPipeline(jmdict, kanjidic, residualOptions, sources).align("甲乙", "あぬ").segments, [["甲乙", "あぬ"]]);
-  for (const seed of [deferralSeed("甲乙", "あぬ", "2"), deferralSeed("甲乙", "あむ")]) {
-    const pipeline = compileAlignmentPipeline(jmdict, kanjidic, residualOptions, { residualDeferrals: deferralBundle([seed]) });
-    assert.equal(pipeline.align("甲乙", "あぬ").status, "fallback");
-  }
+test("the pipeline never guesses an unsupported character reading", () => {
+  const jmdict = { words: [{ id: "1", kanji: [{ text: "甲乙", tags: [] }], kana: [{ text: "あぬ", tags: [], appliesToKanji: ["*"] }], sense: [] }] };
+  const kanjidic = { characters: [{ literal: "甲", readingMeaning: { groups: [{ readings: [{ type: "ja_kun", value: "あ" }] }] } }] };
+  const result = compileAlignmentPipeline(jmdict, kanjidic).align("甲乙", "あぬ");
+  assert.deepEqual(result.segments, [["甲乙", "あぬ"]]);
+  assert.equal(result.status, "aligned");
 });

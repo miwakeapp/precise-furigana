@@ -22,20 +22,19 @@ function resultSegments(result, target, sound = reading) {
   return result.wordAlignments.get(target)?.get(sound);
 }
 
-test("transfers only distant cuts and retains raw source evidence", () => {
+test("transfers every cut and attaches silent separators to the preceding segment", () => {
   const { jmdict, kanjidic, target } = inputs();
   const result = deriveSeparatorAlignments(jmdict, kanjidic, earlier(target));
-  assert.deepEqual(resultSegments(result, target), [["甲", "あ"], ["乙・丙", "いう"]]);
+  assert.deepEqual(resultSegments(result, target), [["甲", "あ"], ["乙・", "い"], ["丙", "う"]]);
   assert.equal(result.witnesses.length, 1);
   assert.deepEqual(result.witnesses[0].sourceSegments, sourceSegments);
-  assert.deepEqual(result.witnesses[0].withheldSeparatorBoundaries, [{ sourceWrittenOffset: 2, readingOffset: 2 }]);
   assert.deepEqual(result.witnesses[0].rawCharacterReadings, { 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"] });
   assert.ok(result.witnesses[0].sourceEvidence.every(part => part.type === "character"));
 });
 
-test("does not pick an owner when every source cut touches a separator", () => {
+test("splits at every separator", () => {
   const { jmdict, kanjidic, target } = inputs("甲・乙・丙");
-  assert.equal(deriveSeparatorAlignments(jmdict, kanjidic, earlier(target)).wordAlignments.size, 0);
+  assert.deepEqual(resultSegments(deriveSeparatorAlignments(jmdict, kanjidic, earlier(target)), target), [["甲・", "あ"], ["乙・", "い"], ["丙", "う"]]);
 });
 
 test("keeps separate alignments and witnesses for targets sharing one plain source", () => {
@@ -43,8 +42,8 @@ test("keeps separate alignments and witnesses for targets sharing one plain sour
   const jmdict = { words: [word("1", [sourceWritten, ...targets])] };
   const align = (written, sound) => ({ status: "aligned", segments: written === sourceWritten ? sourceSegments : [[written, sound]] });
   const result = deriveSeparatorAlignments(jmdict, dictionary(), align);
-  assert.deepEqual(resultSegments(result, targets[0]), [["甲", "あ"], ["乙・丙", "いう"]]);
-  assert.deepEqual(resultSegments(result, targets[1]), [["甲・乙", "あい"], ["丙", "う"]]);
+  assert.deepEqual(resultSegments(result, targets[0]), [["甲", "あ"], ["乙・", "い"], ["丙", "う"]]);
+  assert.deepEqual(resultSegments(result, targets[1]), [["甲・", "あ"], ["乙", "い"], ["丙", "う"]]);
   assert.equal(result.witnesses.length, 2);
   for (const [index, target] of targets.entries()) {
     const witness = result.witnesses.find(value => value.written === target);

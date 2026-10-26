@@ -36,7 +36,7 @@ npm run build
 npm run compare -- .cache/before.json dist/precise-furigana.json
 ```
 
-The comparison command writes every changed pair to `dist/changes.jsonl`, classifying additions, removals, finer or coarser boundaries, incompatible allocations, and status changes. These are differences, not automatic correctness judgments. Inspect all removed or moved boundaries and check related spelling/reading families, even when a change appears local.
+The comparison command writes every changed pair to `dist/changes.jsonl`, classifying additions, removals, finer or coarser boundaries, incompatible allocations, and ruby changes at unchanged boundaries. These are differences, not automatic correctness judgments. Inspect all removed or moved boundaries and check related spelling/reading families, even when a change appears local.
 
 ## Investigate and correct an alignment
 

@@ -2,11 +2,11 @@
 
 Fine-grained furigana for every permitted spelling/reading pair in [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html), generated with Node.js and released as JSON indexed by JMdict ID.
 
-The aim is the finest **supported** alignment: 日[に]本[ほん], 時[と]計[けい], and 珈[コー]琲[ヒー]. Phonetic ateji is welcome. Words such as 大人[おとな] stay grouped when individual character assignments lack support. Original spelling, kana script, and punctuation are preserved exactly.
+The aim is the finest **supported** alignment: <ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>, <ruby>時<rt>と</rt></ruby><ruby>計<rt>けい</rt></ruby>, and <ruby>珈<rt>コー</rt></ruby><ruby>琲<rt>ヒー</rt></ruby>. Phonetic ateji is welcome. Words such as <ruby>大人<rt>おとな</rt></ruby> stay grouped when individual character assignments lack support. Original spelling, kana script, and punctuation are preserved exactly.
 
 ## Use the data
 
-The release artifacts are `precise-furigana.json` and its gzip-compressed equivalent, `precise-furigana.json.gz`. There is no npm package. The initial corpus contains about 325,000 spelling/reading pairs; the compressed database is about 8 MB.
+The release artifacts are `precise-furigana.json` and its gzip-compressed equivalent, `precise-furigana.json.gz`. There is no npm package. The initial corpus contains about 325,000 spelling/reading pairs; the compressed database is about 7 MB.
 
 ```js
 const records = database.entries["1582710"];
@@ -14,9 +14,9 @@ const nihon = records.find(record => record.reading === "にほん");
 // nihon.segments: [["日", "に"], ["本", "ほん"]]
 ```
 
-Each record has `written`, `reading`, `segments`, `status`, and `evidence`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
+Each record has `written`, `reading`, and `segments`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
 
-Status reports the kind of support, not a probability of correctness. `ambiguous` marks unresolved alternatives. Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one. Even an `aligned` record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
+Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one, so a record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
 
 ## Build
 
@@ -30,7 +30,7 @@ npm run build
 npm run validate
 ```
 
-`fetch` downloads and verifies the pinned dictionaries. Subsequent builds work offline. `build` runs the full-generator regression fixtures and writes the database, evaluation, provenance, schema, and checksums to `dist/`. `validate` checks complete coverage and exact reconstruction throughout the corpus.
+`fetch` downloads and verifies the pinned dictionaries. Subsequent builds work offline. `build` runs the full-generator regression fixtures and writes the database, evaluation, source lock, schema, and checksums to `dist/`. `validate` checks complete coverage and exact reconstruction throughout the corpus.
 
 Inspect a generated record:
 
@@ -48,11 +48,11 @@ Some illustrative differences from Lorenzi's `furigana.txt` generator during dev
 
 | Word | Precise furigana | Lorenzi comparison |
 | --- | --- | --- |
-| 蕎麦 | 蕎[そ]麦[ば] | 蕎麦[そば] |
-| 海老 | 海[え]老[び] | 海老[えび] |
-| 尻尾 | 尻[しっ]尾[ぽ] | 尻尾[しっぽ] |
-| 命の綱 | 命[いのち]の綱[つな] | 命[い]の綱[ちのつな] |
-| メーカ希望価格 | メー / カ[カー] / 希[き]望[ぼう]価[か]格[かく] | メーカ / 希望価格[ーきぼうかかく] |
+| 蕎麦 | <ruby>蕎<rt>そ</rt></ruby><ruby>麦<rt>ば</rt></ruby> | <ruby>蕎麦<rt>そば</rt></ruby> |
+| 海老 | <ruby>海<rt>え</rt></ruby><ruby>老<rt>び</rt></ruby> | <ruby>海老<rt>えび</rt></ruby> |
+| 尻尾 | <ruby>尻<rt>しっ</rt></ruby><ruby>尾<rt>ぽ</rt></ruby> | <ruby>尻尾<rt>しっぽ</rt></ruby> |
+| 命の綱 | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby> | <ruby>命<rt>い</rt></ruby><ruby>の綱<rt>ちのつな</rt></ruby> |
+| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</rt></ruby> |
 
 These are selected examples, not accuracy estimates. Grouped ruby can give the right pronunciation while omitting useful detail. The comparison used Lorenzi commit `dda498d0fd7531c9ebdb97740589e00749696789` on the same dictionary input. [Supporting evidence and remaining uncertain cases](docs/quality.md) explain the distinctions. Lorenzi's code and data are not generator inputs.
 

@@ -19,40 +19,28 @@ if (evaluation.summary.passed !== evaluation.summary.examples) {
   console.error("Regression evaluation failed; generated artifacts are not releasable");
   process.exitCode = 1;
 }
-const { provenance } = evaluation;
 const entries = {};
 const seen = new Set();
-const counts = { entries: 0, pairs: 0, aligned: 0, ambiguous: 0, fallback: 0, reviewed: 0, literal: 0, grouped: 0, split: 0 };
+const counts = { entries: 0, pairs: 0 };
 for (const pair of dataset.pairs()) {
   const key = recordKey(pair.id, pair.written, pair.reading);
   if (seen.has(key)) continue;
   seen.add(key);
-  const result = dataset.alignPair(pair);
-  const display = displaySegments(result.segments, result.evidence?.map(part => part.type) ?? result.segments.map(() => "reviewed"));
-  const record = { written: pair.written, reading: pair.reading, segments: display.segments, status: result.status, evidence: display.evidence };
-  (entries[pair.id] ??= []).push(record);
+  const { segments } = dataset.alignPair(pair);
+  (entries[pair.id] ??= []).push({ written: pair.written, reading: pair.reading, segments: displaySegments(segments) });
   ++counts.pairs;
-  if (!(result.status in counts)) throw new Error(`Unknown status: ${result.status}`);
-  ++counts[result.status];
-  if (display.segments.every(segment => typeof segment === "string")) ++counts.literal;
-  else if (display.segments.length === 1) ++counts.grouped;
-  else ++counts.split;
 }
 for (const key of dataset.annotations.keys()) {
   if (!seen.has(key)) throw new Error(`Stale annotation absent from source dictionary: ${key}`);
 }
 counts.entries = Object.keys(entries).length;
-const metadata = {
-  algorithmVersion,
-  generatorSHA256: provenance.generatorSHA256,
-  configuration,
+const output = JSON.stringify({
+  schemaVersion,
+  jmdictDate: dataset.lock.sources.jmdict.dictDate,
   license: "CC-BY-SA-4.0",
   attribution: "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE.",
-  sources: dataset.lock,
-  annotationsSHA256: dataset.annotationsSHA256,
-  counts
-};
-const output = JSON.stringify({ schemaVersion, metadata, entries }) + "\n";
+  entries
+}) + "\n";
 const compressed = gzipSync(output, { level: 9 });
 await mkdir(outputDirectory, { recursive: true });
 await writeFile(join(outputDirectory, "evaluation.json"), JSON.stringify(evaluation, undefined, 2) + "\n");

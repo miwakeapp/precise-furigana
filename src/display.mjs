@@ -18,21 +18,15 @@ const pronounced = text => normalizeKana(text).replace(/[^\p{Script=Hiragana}ー
  * punctuation at the edge of a ruby group becomes its own string, and kana
  * that differs from its reading only in script loses its ruby.
  */
-export function displaySegments(segments, evidence) {
-  const parts = [];
-  const push = (segment, type) => {
-    const previous = parts.at(-1);
-    if (typeof segment === "string" && typeof previous?.segment === "string") {
-      previous.segment += segment;
-      if (previous.type !== type) previous.type = "literal";
-    } else {
-      parts.push({ segment, type });
-    }
+export function displaySegments(segments) {
+  const result = [];
+  const push = segment => {
+    if (typeof segment === "string" && typeof result.at(-1) === "string") result[result.length - 1] += segment;
+    else result.push(segment);
   };
-  for (const [index, segment] of segments.entries()) {
-    const type = evidence[index];
+  for (const segment of segments) {
     if (typeof segment === "string") {
-      push(segment, type);
+      push(segment);
       continue;
     }
     const [written, reading] = segment;
@@ -41,13 +35,12 @@ export function displaySegments(segments, evidence) {
     let start = 0, end = units.length;
     while (start < end - 1 && silent(units[start])) ++start;
     while (end - 1 > start && silent(units[end - 1])) --end;
-    if (start > 0) push(units.slice(0, start).join(""), "literal");
+    if (start > 0) push(units.slice(0, start).join(""));
     const core = units.slice(start, end).join("");
-    if (repeatsReading(core, reading)) push(core, "literal");
-    else push([core, reading], type);
-    if (end < units.length) push(units.slice(end).join(""), "literal");
+    push(repeatsReading(core, reading) ? core : [core, reading]);
+    if (end < units.length) push(units.slice(end).join(""));
   }
-  return { segments: parts.map(part => part.segment), evidence: parts.map(part => part.type) };
+  return result;
 }
 
 /** Check that release segments are canonical and account for the record. */

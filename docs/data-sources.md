@@ -14,7 +14,7 @@ The generator uses the checked-in evidence below and checksum-locked dictionarie
 
 ## Dictionary inputs
 
-[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) and [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) are provided by the Electronic Dictionary Research and Development Group. JSON conversion comes from [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified). Archive and extracted-content hashes, source dates, entry counts, download URLs, and the release tag are retained in `data/sources.lock.json` and embedded in every database.
+[JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) and [KANJIDIC2](https://www.edrdg.org/wiki/index.php/KANJIDIC_Project) are provided by the Electronic Dictionary Research and Development Group. JSON conversion comes from [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified). Archive and extracted-content hashes, source dates, entry counts, download URLs, and the release tag are retained in `data/sources.lock.json`, which every release includes. The database itself records only the JMdict date.
 
 The [Unihan archive](https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip) is pinned independently of weekly updates. Its original readings and source restrictions remain distinguishable from Japanese dictionary evidence. See [Unicode's field documentation](https://www.unicode.org/reports/tr38/).
 

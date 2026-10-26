@@ -90,7 +90,7 @@ export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments
           }
           const available = new Set(boundaries(segments));
           // A vowel-length variant does not overrule a boundary already
-          // established for this reading, as in `見[み]出[いだ]す`.
+          // established for this reading, as in `見[み] 出[いだ] す`.
           if (boundaries(target.segments).some(boundary => !available.has(boundary))) continue;
           const values = candidates.get(targetKey) ?? [];
           values.push({ written, reading, segments, id: word.id, from });

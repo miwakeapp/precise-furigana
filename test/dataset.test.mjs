@@ -30,7 +30,7 @@ test("phonetic subword transfers cannot move accepted boundaries in a longer wor
   assert.equal(transferred.phoneticAteji.length, 1);
 
   // The transferred `乙[こ]` edge would otherwise undercut the final rendaku
-  // and shift both existing boundaries to `甲[か]乙[こ]丙[くぐ]`.
+  // and shift both existing boundaries to `甲[か] 乙[こ] 丙[くぐ]`.
   const expected = [["甲", "かこ"], ["乙", "く"], ["丙", "ぐ"]];
   assert.deepEqual(baseline.align("甲乙丙", "かこくぐ").segments, expected);
   assert.deepEqual(transferred.align("甲乙丙", "かこくぐ").segments, expected);

@@ -23,11 +23,16 @@ for (const [name, expected] of Object.entries(manifest.files)) {
 const { jmdict, lock } = await loadSources();
 const annotationsText = await readFile(new URL("../data/annotations.json", import.meta.url), "utf8");
 const annotations = compileAnnotations(JSON.parse(annotationsText));
-assert.equal(output.metadata.algorithmVersion, algorithmVersion);
-assert.equal(output.metadata.generatorSHA256, await generatorDigest(), "Output uses the current generator code");
-assert.deepEqual(output.metadata.configuration, { ...defaultConfiguration, ...output.metadata.configuration });
-assert.deepEqual(output.metadata.sources, lock, "Output uses the locked input release");
-assert.equal(output.metadata.annotationsSHA256, digest(annotationsText));
+assert.deepEqual(Object.keys(output), ["schemaVersion", "jmdictDate", "license", "attribution", "entries"]);
+assert.equal(output.jmdictDate, lock.sources.jmdict.dictDate, "Output uses the locked input release");
+// The manifest binds the evaluation to this database; its provenance records the build inputs.
+const { provenance } = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
+assert.ok(manifest.files["evaluation.json"], "The manifest covers the evaluation");
+assert.equal(provenance.algorithmVersion, algorithmVersion);
+assert.equal(provenance.generatorSHA256, await generatorDigest(), "Output uses the current generator code");
+assert.deepEqual(provenance.configuration, { ...defaultConfiguration, ...provenance.configuration });
+assert.equal(provenance.sourcesSHA256, digest(JSON.stringify(lock)), "Output uses the locked input release");
+assert.equal(provenance.annotationsSHA256, digest(annotationsText));
 const expected = new Set([...enumeratePairs(jmdict)].map(pair => recordKey(pair.id, pair.written, pair.reading)));
 for (const key of annotations.keys()) assert.ok(expected.has(key), `Stale annotation absent from source dictionary: ${key}`);
 let count = 0;
@@ -37,14 +42,12 @@ for (const [id, records] of Object.entries(output.entries)) {
   for (const record of records) {
     const key = recordKey(id, record.written, record.reading);
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
-    assert.ok(["aligned", "ambiguous", "fallback", "reviewed"].includes(record.status));
-    assert.equal(record.evidence.length, record.segments.length);
-    assert.ok(record.evidence.every(type => ["literal", "character", "phonological", "dictionary", "ambiguous", "fallback", "reviewed"].includes(type)));
+    assert.deepEqual(Object.keys(record), ["written", "reading", "segments"]);
     validateDisplayAlignment(record.written, record.reading, record.segments);
     ++count;
   }
 }
 assert.equal(expected.size, 0, "Every permitted JMdict spelling/reading pair is present");
-assert.equal(count, output.metadata.counts.pairs);
-assert.equal(Object.keys(output.entries).length, output.metadata.counts.entries);
+assert.equal(count, manifest.counts.pairs);
+assert.equal(Object.keys(output.entries).length, manifest.counts.entries);
 console.log(`Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, gzip, and artifact checksums.`);

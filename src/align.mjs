@@ -596,7 +596,7 @@ export function createAligner({
               range.readStart <= readIndex && suffixEnd <= range.readEnd
             )) {
               // A dotted reading can omit only part of its okurigana: `い.だす`
-              // supports `出す` as `出[いだ]す` when the remaining `す` is literal.
+              // supports `出す` as `出[いだ] す` when the remaining `す` is literal.
               add(candidate, 4, ["partial-okurigana"]);
             }
           }

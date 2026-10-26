@@ -4,30 +4,29 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs, isDeepStrictEqual } from "node:util";
-import { defaultConfiguration, digest, generatorDigest } from "../src/dataset.mjs";
+import { algorithmVersion, defaultConfiguration, digest, generatorDigest } from "../src/dataset.mjs";
 
-export function releaseDescriptor(database, manifest) {
-  const date = database.metadata.sources.sources.jmdict.dictDate;
+export function releaseDescriptor(manifest, lock) {
+  const date = lock.sources.jmdict.dictDate;
   const hash = digest(JSON.stringify(manifest));
-  const tag = `data-${date}-v${database.metadata.algorithmVersion}-${hash.slice(0, 12)}`;
-  const counts = database.metadata.counts;
-  const source = database.metadata.sources.release;
+  const tag = `data-${date}-v${manifest.algorithmVersion}-${hash.slice(0, 12)}`;
+  const { counts } = manifest;
   return {
     tag,
     title: `Precise furigana · ${date}`,
-    notes: `Furigana alignments for ${counts.entries.toLocaleString("en-US")} JMdict entries and ${counts.pairs.toLocaleString("en-US")} permitted spelling/reading pairs, based on [jmdict-simplified ${source.tag}](${source.url}).\n\nDownload \`precise-furigana.json.gz\` for the compressed database. The JSON is indexed by JMdict ID; plain strings are shown without ruby and two-element arrays are [written text, reading] ruby segments. The manifest contains SHA256 digests.\n\nAlgorithm ${database.metadata.algorithmVersion}, schema ${database.schemaVersion}. Statuses describe model support, not measured accuracy. Irregular or unresolved spans may remain grouped; ${counts.ambiguous} pairs have tied boundaries or unresolved kana correspondence. The accompanying evaluation is a regression suite, not a representative accuracy estimate.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. See NOTICE and sources.lock.json for attribution, source versions, and checksums.\n`
+    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`written\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[written text, reading]\` ruby. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. See NOTICE for attribution and sources.lock.json for exact inputs.\n`
   };
 }
 
-export function verifyEvaluation(database, evaluation, goldText, currentGeneratorSHA256) {
-  assert.deepEqual(database.metadata.configuration, defaultConfiguration, "Experimental configurations must not be published");
-  assert.equal(evaluation.provenance.generatorSHA256, database.metadata.generatorSHA256);
-  assert.equal(evaluation.provenance.generatorSHA256, currentGeneratorSHA256);
-  assert.equal(evaluation.provenance.algorithmVersion, database.metadata.algorithmVersion);
-  assert.equal(evaluation.provenance.sourcesSHA256, digest(JSON.stringify(database.metadata.sources)));
-  assert.equal(evaluation.provenance.annotationsSHA256, database.metadata.annotationsSHA256);
-  assert.deepEqual(evaluation.provenance.configuration, database.metadata.configuration);
-  assert.equal(evaluation.provenance.goldSHA256, digest(goldText));
+/** Bind the regression results to the inputs being released. */
+export function verifyEvaluation(evaluation, goldText, current) {
+  const { provenance } = evaluation;
+  assert.deepEqual(provenance.configuration, defaultConfiguration, "Experimental configurations must not be published");
+  assert.equal(provenance.algorithmVersion, algorithmVersion);
+  assert.equal(provenance.generatorSHA256, current.generatorSHA256);
+  assert.equal(provenance.sourcesSHA256, current.sourcesSHA256);
+  assert.equal(provenance.annotationsSHA256, current.annotationsSHA256);
+  assert.equal(provenance.goldSHA256, digest(goldText));
   const gold = JSON.parse(goldText);
   assert.ok(gold.length > 0);
   assert.equal(evaluation.results.length, gold.length);
@@ -61,11 +60,15 @@ async function main() {
     const bytes = await readFile(join(values.directory, name));
     assert.equal(digest(bytes), expected.sha256, `${name}: SHA256`);
   }
-  const database = JSON.parse(await readFile(join(values.directory, "precise-furigana.json"), "utf8"));
+  const lock = JSON.parse(await readFile(join(values.directory, "sources.lock.json"), "utf8"));
   const evaluation = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
   assert.ok(manifest.files["evaluation.json"], "Run build with matching inputs before release");
-  verifyEvaluation(database, evaluation, await readFile(new URL("../test/fixtures/gold.json", import.meta.url)), await generatorDigest());
-  const descriptor = releaseDescriptor(database, manifest);
+  verifyEvaluation(evaluation, await readFile(new URL("../test/fixtures/gold.json", import.meta.url)), {
+    generatorSHA256: await generatorDigest(),
+    sourcesSHA256: digest(JSON.stringify(lock)),
+    annotationsSHA256: digest(await readFile(new URL("../data/annotations.json", import.meta.url)))
+  });
+  const descriptor = releaseDescriptor(manifest, lock);
   const notesPath = join(values.directory, "release-notes.md");
   await writeFile(notesPath, descriptor.notes);
   console.log(JSON.stringify(descriptor, undefined, 2));

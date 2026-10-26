@@ -19,7 +19,7 @@ When equally good paths disagree, the result retains only boundaries common to a
 | Evidence | Purpose | Main modules |
 | --- | --- | --- |
 | KANJIDIC2 nanori, full kun forms, and single-kanji JMdict spellings | Recover exact sounds missing from the primary reading inventory | `sources`, `lexicon`, `weak-readings` |
-| Regular verb continuatives | Supply omitted okurigana in attested compounds, such as 植[うえ] in 植木鉢 | `morphology` |
+| Regular verb continuatives | Supply omitted okurigana in attested compounds, such as <ruby>植<rt>うえ</rt></ruby> in 植木鉢 | `morphology` |
 | Same-entry spelling and reading variants | Transfer supported ownership through omitted kana, spelling substitutions, and vowel-length variants | `variants`, `reading-variants` |
 | Decimal and fullwidth forms | Relate equivalent numeric spellings and dictionary-backed foreign number names | `numerals` |
 | Phonetic ateji and foreign readings | Test bounded correspondences against explicit source sounds | `ateji`, `loan-readings`, `korean-readings` |
@@ -52,7 +52,7 @@ These are bounded passes, not recursive learning. Inferred results do not feed b
 
 ## Unsupported remainders
 
-When every character but one has a supported reading, the remainder could be assigned to that character by subtraction. The generator does not do this: such guesses were wrong too often, as in 一[つき]日[たち] or 木[ゆ]綿[う]. The word stays grouped until evidence supports a finer split.
+When every character but one has a supported reading, the remainder could be assigned to that character by subtraction. The generator does not do this: such guesses were wrong too often, as in <ruby>一<rt>つき</rt></ruby><ruby>日<rt>たち</rt></ruby> or <ruby>木<rt>ゆ</rt></ruby><ruby>綿<rt>う</rt></ruby>. The word stays grouped until evidence supports a finer split.
 
 ## Complexity and limits
 

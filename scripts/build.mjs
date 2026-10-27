@@ -38,7 +38,7 @@ const output = JSON.stringify({
   schemaVersion,
   jmdictDate: dataset.lock.sources.jmdict.dictDate,
   license: "CC-BY-SA-4.0",
-  attribution: "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE.",
+  attribution: "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE in the source repository.",
   entries
 }) + "\n";
 const compressed = gzipSync(output, { level: 9 });
@@ -46,12 +46,8 @@ await mkdir(outputDirectory, { recursive: true });
 await writeFile(join(outputDirectory, "evaluation.json"), JSON.stringify(evaluation, undefined, 2) + "\n");
 await writeFile(join(outputDirectory, "precise-furigana.json"), output);
 await writeFile(join(outputDirectory, "precise-furigana.json.gz"), compressed);
-await writeFile(join(outputDirectory, "sources.lock.json"), JSON.stringify(dataset.lock, undefined, 2) + "\n");
-const notice = await readFile(new URL("../NOTICE", import.meta.url));
-await writeFile(join(outputDirectory, "NOTICE"), notice);
-await writeFile(join(outputDirectory, "schema.json"), await readFile(new URL("../schema.json", import.meta.url)));
 const manifest = { schemaVersion, algorithmVersion, counts, files: {} };
-const files = ["precise-furigana.json", "precise-furigana.json.gz", "sources.lock.json", "NOTICE", "schema.json", "evaluation.json"];
+const files = ["precise-furigana.json", "precise-furigana.json.gz", "evaluation.json"];
 for (const name of files) {
   const bytes = await readFile(join(outputDirectory, name));
   manifest.files[name] = { bytes: bytes.length, sha256: digest(bytes) };

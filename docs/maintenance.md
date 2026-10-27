@@ -13,7 +13,7 @@ npm run validate
 node scripts/release.mjs
 ```
 
-`build` compiles the pipeline once, evaluates the regression fixtures, and generates the corpus. It writes `evaluation.json` alongside the database and includes its digest in the manifest. A regression failure makes the command fail; its diagnostic artifacts remain available for inspection. `validate` checks source coverage, restrictions, duplicate pairs, reconstruction, labels, provenance, gzip, and checksums. The release command defaults to a local check and writes `dist/release-notes.md`.
+`build` compiles the pipeline once, evaluates the regression fixtures, and generates the corpus. It writes `evaluation.json` alongside the database and records both in `manifest.json`. These files let `validate` and the release command check the build; only the database is published. A regression failure makes the command fail; its diagnostic artifacts remain available for inspection. `validate` checks source coverage, restrictions, duplicate pairs, reconstruction, provenance, gzip, and checksums. The release command defaults to a local check and writes `dist/release-notes.md`.
 
 To evaluate the generator without emitting a full database, use `npm run evaluate`. This still compiles the complete evidence pipeline, so it is not a substitute for the fast unit tests.
 
@@ -26,7 +26,7 @@ npm run build
 npm run validate
 ```
 
-Updating resolves the latest jmdict-simplified release, verifies its published archive digests, and replaces `data/sources.lock.json` after successful download and verification. Supplemental character bundles and Unihan remain separately pinned. Without `--update`, fetching restores the exact locked inputs.
+Updating resolves the latest jmdict-simplified release, verifies its published archive digests, and replaces `data/sources.lock.json` after successful download and verification. `--update --release <tag>` resolves a specific jmdict-simplified release instead. Supplemental character bundles and Unihan remain separately pinned. Without `--update`, fetching restores the exact locked inputs.
 
 Keep the previous database before rebuilding if changes need review:
 
@@ -67,10 +67,10 @@ Experimental configurations and failing evaluations cannot be released. The glob
 
 ## Weekly releases
 
-The GitHub workflow runs every Tuesday at 03:17 UTC and also supports manual dispatch from the default branch. It tests the code, refreshes the dictionary lock in the job's checkout, builds, validates, and publishes the seven assets documented in the [data format](data-format.md). The resulting source lock is included in the release; the workflow does not push a lockfile commit to the default branch.
+The GitHub workflow runs every Tuesday at 03:17 UTC and also supports manual dispatch from the default branch. It tests the code, refreshes the dictionary lock in the job's checkout, builds, validates, and publishes the two database files. The release notes name the jmdict-simplified release; the workflow does not push a lockfile commit to the default branch.
 
-The release tag combines the dictionary date, algorithm version, and a manifest hash. A retry verifies an existing release's assets instead of overwriting them. A changed generator or reviewed dataset can therefore produce another release for the same dictionary date.
+The release tag combines the dictionary date, algorithm version, and a hash of the database. A retry verifies an existing release's files against GitHub's recorded SHA-256 digests instead of overwriting them. A generator or reviewed-data change that alters the output can therefore produce another release for the same dictionary date.
 
 Publishing is an explicit `--publish` action requiring `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`. Until publication is authorized, use the command without that flag. A local dry run does not test GitHub permissions, asset uploads, or scheduled execution.
 
-To reproduce a release with a different dictionary pin, check out its source commit and replace `data/sources.lock.json` with the released lock, then fetch and build. The commit supplies the bundled evidence; the released lock supplies the exact upstream input versions.
+To reproduce a release, check out its tag, run `npm run fetch -- --update --release <tag>` with the jmdict-simplified tag from the release notes, then build. The commit supplies the generator and bundled evidence; jmdict-simplified's published digests verify the upstream archives.

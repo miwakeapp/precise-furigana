@@ -36,12 +36,8 @@ Entry and record order follows stable upstream enumeration. Consumers should loo
 
 How each segment was derived is not part of the release. `npm run inspect -- <written> <reading> --explain` shows the generator's evidence for any pair.
 
-## Release assets
+## Releases
 
-- `precise-furigana.json` and `precise-furigana.json.gz`: database.
-- `manifest.json`: algorithm version, record counts, and byte sizes and SHA-256 hashes of the other assets.
-- `sources.lock.json`: exact upstream and bundled inputs, including dictionary versions, download URLs, and archive, content, and bundle hashes.
-- `evaluation.json`: regression results, with the generator digest, configuration, and source, annotation, and fixture digests they were produced from. The generator digest includes the maintained lexical evidence.
-- `schema.json` and `NOTICE`: format and attribution.
+A release contains only `precise-furigana.json` and the same file gzip-compressed as `precise-furigana.json.gz`. Its notes name the jmdict-simplified release the data was generated from, and its tag points at the source commit, whose [schema.json](../schema.json) and [NOTICE](../NOTICE) apply to it.
 
 No build timestamp is inserted. Rebuilding with the same inputs and runtime produces deterministic files. Compression can depend on the runtime's zlib version; record equality is the relevant comparison when changing Node.js versions.

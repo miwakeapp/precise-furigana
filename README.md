@@ -30,7 +30,7 @@ npm run build
 npm run validate
 ```
 
-`fetch` downloads and verifies the pinned dictionaries. Subsequent builds work offline. `build` runs the full-generator regression fixtures and writes the database, evaluation, source lock, schema, and checksums to `dist/`. `validate` checks complete coverage and exact reconstruction throughout the corpus.
+`fetch` downloads and verifies the pinned dictionaries. Subsequent builds work offline. `build` runs the full-generator regression fixtures and writes the database, its regression evaluation, and checksums to `dist/`. `validate` checks complete coverage and exact reconstruction throughout the corpus.
 
 Inspect a generated record:
 

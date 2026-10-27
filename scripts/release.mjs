@@ -5,16 +5,20 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs, isDeepStrictEqual } from "node:util";
 import { algorithmVersion, defaultConfiguration, digest, generatorDigest } from "../src/dataset.mjs";
+import { defaultLockPath } from "../src/sources.mjs";
+
+/** The build's other outputs verify a release but are not published with it. */
+export const releaseFiles = ["precise-furigana.json", "precise-furigana.json.gz"];
 
 export function releaseDescriptor(manifest, lock) {
   const date = lock.sources.jmdict.dictDate;
-  const hash = digest(JSON.stringify(manifest));
+  const hash = manifest.files["precise-furigana.json"].sha256;
   const tag = `data-${date}-v${manifest.algorithmVersion}-${hash.slice(0, 12)}`;
   const { counts } = manifest;
   return {
     tag,
     title: `Precise furigana · ${date}`,
-    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`written\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[written text, reading]\` ruby. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. See NOTICE for attribution and sources.lock.json for exact inputs.\n`
+    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`written\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[written text, reading]\` ruby. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`
   };
 }
 
@@ -46,7 +50,7 @@ export function verifyExistingRelease(release, assets) {
     assert.ok(asset, `Existing release is incomplete: missing ${name}`);
     assert.equal(asset.state, "uploaded", `${name} upload is incomplete`);
     assert.equal(asset.size, expected.bytes, `${name} has an unexpected size`);
-    if (asset.digest !== undefined && asset.digest !== null) assert.equal(asset.digest, `sha256:${expected.sha256}`, `${name} checksum`);
+    assert.equal(asset.digest, `sha256:${expected.sha256}`, `${name} checksum`);
   }
 }
 
@@ -60,7 +64,7 @@ async function main() {
     const bytes = await readFile(join(values.directory, name));
     assert.equal(digest(bytes), expected.sha256, `${name}: SHA256`);
   }
-  const lock = JSON.parse(await readFile(join(values.directory, "sources.lock.json"), "utf8"));
+  const lock = JSON.parse(await readFile(defaultLockPath, "utf8"));
   const evaluation = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
   assert.ok(manifest.files["evaluation.json"], "Run build with matching inputs before release");
   verifyEvaluation(evaluation, await readFile(new URL("../test/fixtures/gold.json", import.meta.url)), {
@@ -85,17 +89,13 @@ async function main() {
     signal: AbortSignal.timeout(30_000)
   });
   if (existing.ok) {
-    const assets = { ...manifest.files };
-    const manifestBytes = await readFile(join(values.directory, "manifest.json"));
-    assets["manifest.json"] = { bytes: manifestBytes.length, sha256: digest(manifestBytes) };
-    verifyExistingRelease(await existing.json(), assets);
+    verifyExistingRelease(await existing.json(), Object.fromEntries(releaseFiles.map(name => [name, manifest.files[name]])));
     console.log(`Release ${descriptor.tag} already exists; no changes published.`);
     return;
   }
   if (existing.status !== 404) throw new Error(`Release lookup failed: HTTP ${existing.status}`);
-  const files = ["precise-furigana.json", "precise-furigana.json.gz", "manifest.json", "sources.lock.json", "NOTICE", "evaluation.json", "schema.json"];
   execFileSync("gh", ["release", "create", descriptor.tag, "--repo", repository, "--target", revision,
-    "--title", descriptor.title, "--notes-file", notesPath, ...files.map(name => join(values.directory, name))], { stdio: "inherit" });
+    "--title", descriptor.title, "--notes-file", notesPath, ...releaseFiles.map(name => join(values.directory, name))], { stdio: "inherit" });
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

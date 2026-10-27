@@ -1,12 +1,13 @@
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { parseArgs } from "node:util";
 import { gunzipSync } from "node:zlib";
 import { defaultCacheDirectory, defaultLockPath, loadBundledSource, sha256 } from "../src/sources.mjs";
 import { extractZIPMember } from "./lib/zip.mjs";
 
 const repositoryURL = "https://github.com/scriptin/jmdict-simplified";
-const releaseAPIURL = "https://api.github.com/repos/scriptin/jmdict-simplified/releases/latest";
+const releasesAPIURL = "https://api.github.com/repos/scriptin/jmdict-simplified/releases";
 const sourcePrefixes = { jmdict: "jmdict-all-", kanjidic: "kanjidic2-all-" };
 
 async function fetchBytes(url, { api = false } = {}) {
@@ -79,13 +80,14 @@ export function extractJSONFromTGZ(bytes) {
   return result;
 }
 
-async function resolveLatestLock() {
-  const release = JSON.parse((await fetchBytes(releaseAPIURL, { api: true })).toString("utf8"));
+async function resolveLock(tag) {
+  const url = tag === undefined ? `${releasesAPIURL}/latest` : `${releasesAPIURL}/tags/${encodeURIComponent(tag)}`;
+  const release = JSON.parse((await fetchBytes(url, { api: true })).toString("utf8"));
   const sources = {};
   for (const [name, prefix] of Object.entries(sourcePrefixes)) {
     const asset = release.assets.find(candidate => candidate.name.startsWith(prefix) && candidate.name.endsWith(".json.tgz"));
     if (!asset || !/^sha256:[a-f0-9]{64}$/u.test(asset.digest ?? "")) {
-      throw new Error(`Latest release has no ${name} archive with a published SHA-256 digest`);
+      throw new Error(`Release ${release.tag_name} has no ${name} archive with a published SHA-256 digest`);
     }
     sources[name] = {
       asset: asset.name,
@@ -109,10 +111,10 @@ async function resolveLatestLock() {
   };
 }
 
-export async function fetchSources({ update = false, cacheDirectory = defaultCacheDirectory, lockPath = defaultLockPath } = {}) {
+export async function fetchSources({ update = false, release, cacheDirectory = defaultCacheDirectory, lockPath = defaultLockPath } = {}) {
   let lock;
   if (update) {
-    lock = await resolveLatestLock();
+    lock = await resolveLock(release);
     // Annual lexical sources remain pinned when the weekly JMdict input moves.
     try {
       const previous = JSON.parse(await readFile(lockPath, "utf8"));
@@ -204,18 +206,20 @@ export async function fetchSources({ update = false, cacheDirectory = defaultCac
 }
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const args = process.argv.slice(2);
-  if (args.includes("--help")) {
-    console.log("Usage: node scripts/fetch-sources.mjs [--update]\n\nWithout --update, download and verify the exact sources in data/sources.lock.json.\nWith --update, resolve the latest upstream release and replace the lock after verification.");
-  } else if (args.some(arg => arg !== "--update")) {
-    console.error(`Unknown argument: ${args.find(arg => arg !== "--update")}`);
-    process.exitCode = 1;
-  } else {
-    try {
-      await fetchSources({ update: args.includes("--update") });
-    } catch (error) {
-      console.error(error.message);
-      process.exitCode = 1;
+  try {
+    const { values } = parseArgs({ options: {
+      update: { type: "boolean", default: false },
+      release: { type: "string" },
+      help: { type: "boolean", default: false }
+    } });
+    if (values.help) {
+      console.log("Usage: node scripts/fetch-sources.mjs [--update [--release <tag>]]\n\nWithout --update, download and verify the exact sources in data/sources.lock.json.\nWith --update, resolve the latest upstream release, or the jmdict-simplified release tagged <tag>, and replace the lock after verification.");
+    } else {
+      if (values.release !== undefined && !values.update) throw new Error("--release requires --update");
+      await fetchSources({ update: values.update, release: values.release });
     }
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
   }
 }

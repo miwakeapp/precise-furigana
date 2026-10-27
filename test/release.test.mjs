@@ -43,13 +43,17 @@ test("release retries require complete published assets", () => {
   assert.throws(() => verifyExistingRelease({ ...release, draft: true }, assets));
   assert.throws(() => verifyExistingRelease({ ...release, assets: [] }, assets));
   assert.throws(() => verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], size: 1 }] }, assets));
+  assert.throws(() => verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], digest: "sha256:def" }] }, assets));
+  assert.throws(() => verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], digest: null }] }, assets));
 });
 
-test("release tags change with data content and retain source date", () => {
+test("release tags follow the database content and retain source date", () => {
   const lock = { release: { tag: "source-tag", url: "https://example.com/release" }, sources: { jmdict: { dictDate: "2026-10-05" } } };
-  const manifest = sha256 => ({ schemaVersion: 2, algorithmVersion: "0.1.0", counts: { entries: 1, pairs: 1 }, files: { "precise-furigana.json": { sha256 } } });
+  const manifest = (sha256, evaluation = "evaluation") => ({ schemaVersion: 2, algorithmVersion: "0.1.0", counts: { entries: 1, pairs: 1 },
+    files: { "precise-furigana.json": { sha256 }, "evaluation.json": { sha256: evaluation } } });
   const first = releaseDescriptor(manifest("1234567890abcdef"), lock);
   const second = releaseDescriptor(manifest("fedcba0987654321"), lock);
-  assert.match(first.tag, /^data-2026-10-05-v0\.1\.0-/u);
+  assert.equal(first.tag, "data-2026-10-05-v0.1.0-1234567890ab");
   assert.notEqual(first.tag, second.tag);
+  assert.equal(releaseDescriptor(manifest("1234567890abcdef", "new-evaluation"), lock).tag, first.tag);
 });

@@ -28,7 +28,9 @@ Segments describe how to display the spelling. A string segment is text shown wi
 const html = segments.map(segment => typeof segment === "string" ? segment : `<ruby>${segment[0]}<rt>${segment[1]}</rt></ruby>`).join("");
 ```
 
-Concatenating the written sides reconstructs `written` exactly. String segments that are kana are pronounced as written; other string segments, such as the dots in <ruby>士<rt>し</rt></ruby>・<ruby>農<rt>のう</rt></ruby>・<ruby>工<rt>こう</rt></ruby>・<ruby>商<rt>しょう</rt></ruby>, are silent. Kana that differs from the reading only in script is a string, so 親ネコ/おやねこ is `[["親", "おや"], "ネコ"]`. Adjacent strings are always merged. The exact reading, including its script and any punctuation, is the record's `reading`.
+Concatenating the written sides reconstructs `written` exactly. String segments that are not kana, such as the dots in <ruby>士<rt>し</rt></ruby>・<ruby>農<rt>のう</rt></ruby>・<ruby>工<rt>こう</rt></ruby>・<ruby>商<rt>しょう</rt></ruby>, are silent. Kana is shown as written, so 親ネコ/おやねこ is `[["親", "おや"], "ネコ"]`. That holds even where JMdict pairs a spelling with a reading its kana contradict, usually a search-only spelling: 気持ちよい/きもちいい is <ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちよい. Ruby over kana is kept only for ヶ, ヵ, and ケ read as counters, as in <ruby>何<rt>なん</rt></ruby><ruby>ヶ<rt>か</rt></ruby><ruby>月<rt>げつ</rt></ruby>, and for the pun <ruby>怪<rt>あや</rt></ruby><ruby>レ<rt>し</rt></ruby>い<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>. Adjacent strings are always merged.
+
+The segments describe only how to display the spelling. Their ruby follows the reading, but plain kana need not spell it out, so use `reading`, which keeps the exact script and punctuation, for pronunciation.
 
 A segment can contain several characters when their individual sound ownership is unresolved. A small kana can belong to a separate character when explicit lexical evidence supports that assignment, as in <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る.
 

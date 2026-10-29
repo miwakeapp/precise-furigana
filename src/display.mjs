@@ -4,21 +4,36 @@ import { segmentReading, segmentText } from "./segments.mjs";
 // Wave dashes can stand for から, so they are never assumed to be silent.
 const isSilentPunctuation = unit => /^\p{P}$/u.test(unit) && !/^[〜～]$/u.test(unit);
 
-// Kana and silent punctuation that sound exactly like the reading need no ruby.
-const repeatsReading = (written, reading) => {
-  const sounded = splitGraphemes(written).filter(unit => !(isSilentPunctuation(unit) && !reading.includes(unit))).join("");
-  return sounded !== "" && isKana(sounded) && normalizeKana(sounded) === normalizeKana(reading);
-};
+// As counters, ヶ, ヵ, and ケ are read か or が, so their ruby is kept.
+const isCounter = text => /^[ヶヵケ]$/u.test(text);
+
+// JMdict spellings that pun on their reading, where ruby over the kana is the point.
+const kanaPuns = new Set(["怪レい日本語/あやしいにほんご"]);
+const isKanaPun = (written, reading) => kanaPuns.has(`${written}/${reading}`);
 
 const pronounced = text => normalizeKana(text).replace(/[^\p{Script=Hiragana}ー]/gu, "");
+const escape = text => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+
+/**
+ * Kana is shown as written, even where JMdict pairs a spelling with a reading
+ * its kana contradict, as in 気持ちよい read きもちいい. Silent punctuation is
+ * ignored.
+ */
+function needsRuby(base, reading, pun) {
+  const sounded = splitGraphemes(base).filter(unit => !(isSilentPunctuation(unit) && !reading.includes(unit))).join("");
+  if (sounded === "" || !isKana(sounded)) return true;
+  if (normalizeKana(sounded) === normalizeKana(reading)) return false;
+  return isCounter(sounded) || pun;
+}
 
 /**
  * Convert generator segments, which reconstruct both strings exactly, into
  * release segments, where a string is text shown without ruby. Silent
  * punctuation at the edge of a ruby group becomes its own string, and kana
- * that differs from its reading only in script loses its ruby.
+ * loses its ruby.
  */
 export function displaySegments(segments) {
+  const pun = isKanaPun(segments.map(segmentText).join(""), segments.map(segmentReading).join(""));
   const result = [];
   const push = segment => {
     if (typeof segment === "string" && typeof result.at(-1) === "string") result[result.length - 1] += segment;
@@ -37,30 +52,44 @@ export function displaySegments(segments) {
     while (end - 1 > start && silent(units[end - 1])) --end;
     if (start > 0) push(units.slice(0, start).join(""));
     const core = units.slice(start, end).join("");
-    push(repeatsReading(core, reading) ? core : [core, reading]);
+    push(needsRuby(core, reading, pun) ? [core, reading] : core);
     if (end < units.length) push(units.slice(end).join(""));
   }
   return result;
 }
 
+// Whether the ruby readings occur in order in the reading, with plain kana standing for any reading.
+function rubyFollowsReading(segments, reading) {
+  const pattern = segments.map(segment => typeof segment !== "string" ? escape(pronounced(segment[1])) :
+    pronounced(segment) === "" ? "" : ".+?").join("");
+  return new RegExp(`^${pattern}$`, "u").test(pronounced(reading));
+}
+
 /** Check that release segments are canonical and account for the record. */
 export function validateDisplayAlignment(written, reading, segments) {
   if (!Array.isArray(segments) || segments.length === 0) throw new Error(`Missing alignment: ${written}/${reading}`);
+  const pun = isKanaPun(written, reading);
   for (const [index, segment] of segments.entries()) {
     if (typeof segment === "string") {
       if (segment.length === 0) throw new Error("Empty plain segment");
       if (typeof segments[index - 1] === "string") throw new Error(`Adjacent plain segments: ${JSON.stringify(segments)}`);
+      if (!splitGraphemes(segment).every(unit => isKana(unit) || /^[\p{P}\p{S}]$/u.test(unit))) {
+        throw new Error(`Plain text needs ruby: ${JSON.stringify(segment)}`);
+      }
     } else if (!Array.isArray(segment) || segment.length !== 2 ||
       segment.some(value => typeof value !== "string" || value.length === 0)) {
       throw new Error(`Invalid ruby segment: ${JSON.stringify(segment)}`);
-    } else if (repeatsReading(segment[0], segment[1])) {
-      throw new Error(`Ruby repeats its kana: ${JSON.stringify(segment)}`);
+    } else if (!needsRuby(segment[0], segment[1], pun)) {
+      throw new Error(`Ruby over kana: ${JSON.stringify(segment)}`);
     }
   }
   if (segments.map(segmentText).join("") !== written) {
     throw new Error(`Alignment does not reconstruct ${written}: ${JSON.stringify(segments)}`);
   }
-  if (pronounced(segments.map(segmentReading).join("")) !== pronounced(reading)) {
+  // Plain kana usually spell out their part of the reading, but where the reading differs from the written kana,
+  // they are shown as written, so only the ruby is checked against the reading. The generator has already checked
+  // that its segments reconstruct the reading exactly.
+  if (!rubyFollowsReading(segments, reading)) {
     throw new Error(`Alignment does not account for ${reading}: ${JSON.stringify(segments)}`);
   }
 }

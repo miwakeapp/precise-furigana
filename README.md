@@ -14,7 +14,7 @@ const nihon = records.find(record => record.reading === "にほん");
 // nihon.segments: [["日", "に"], ["本", "ほん"]]
 ```
 
-Each record has `written`, `reading`, and `segments`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
+Each record has `written`, `reading`, and `segments`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. Kana is shown as written, so use `reading` for pronunciation. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
 
 Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one, so a record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
 
@@ -52,7 +52,7 @@ Some illustrative differences from Lorenzi's `furigana.txt` generator during dev
 | 海老 | <ruby>海<rt>え</rt></ruby><ruby>老<rt>び</rt></ruby> | <ruby>海老<rt>えび</rt></ruby> |
 | 尻尾 | <ruby>尻<rt>しっ</rt></ruby><ruby>尾<rt>ぽ</rt></ruby> | <ruby>尻尾<rt>しっぽ</rt></ruby> |
 | 命の綱 | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby> | <ruby>命<rt>い</rt></ruby><ruby>の綱<rt>ちのつな</rt></ruby> |
-| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</rt></ruby> |
+| メーカ希望価格 | メーカ<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</rt></ruby> |
 
 These are selected examples, not accuracy estimates. Grouped ruby can give the right pronunciation while omitting useful detail. The comparison used Lorenzi commit `dda498d0fd7531c9ebdb97740589e00749696789` on the same dictionary input. [Supporting evidence and remaining uncertain cases](docs/quality.md) explain the distinctions. Lorenzi's code and data are not generator inputs.
 

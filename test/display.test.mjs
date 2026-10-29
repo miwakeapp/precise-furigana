@@ -25,13 +25,29 @@ test("kana that differs from its reading only in script loses its ruby", () => {
   assert.deepEqual(display("行けない", "イケナイ", [["行", "イ"], ["け", "ケ"], ["ない", "ナイ"]]), [["行", "イ"], "けない"]);
   assert.deepEqual(display("高フルクトース・コーン・シロップ", "こうフルクトースコーンシロップ", [["高", "こう"], ["フルクトース・コーン", "フルクトースコーン"], "・シロップ"]),
     [["高", "こう"], "フルクトース・コーン・シロップ"]);
-  assert.deepEqual(display("お早う", "おはよー", ["お", ["早", "はよ"], ["う", "ー"]]), ["お", ["早", "はよ"], ["う", "ー"]]);
 });
 
-test("validation requires canonical segments that account for the reading", () => {
-  assert.throws(() => validateDisplayAlignment("親ネコ", "おやねこ", [["親", "おや"], ["ネコ", "ねこ"]]), /repeats/u);
+test("kana that the reading contradicts is shown as written", () => {
+  assert.deepEqual(display("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]), [["気", "き"], ["持", "も"], "ちよい"]);
+  assert.deepEqual(display("サイム油", "タイムゆ", [["サ", "タ"], "イム", ["油", "ゆ"]]), ["サイム", ["油", "ゆ"]]);
+  assert.deepEqual(display("お早う", "おはよー", ["お", ["早", "はよ"], ["う", "ー"]]), ["お", ["早", "はよ"], "う"]);
+  assert.deepEqual(display("メーカ物", "メーカーもの", ["メー", ["カ", "カー"], ["物", "もの"]]), ["メーカ", ["物", "もの"]]);
+});
+
+test("counters and puns keep ruby over kana", () => {
+  assert.deepEqual(display("何ヶ月", "なんかげつ", [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]), [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]);
+  assert.deepEqual(display("二ケ所", "にかしょ", [["二", "に"], ["ケ", "か"], ["所", "しょ"]]), [["二", "に"], ["ケ", "か"], ["所", "しょ"]]);
+  assert.deepEqual(display("ケ月", "けげつ", [["ケ", "け"], ["月", "げつ"]]), ["ケ", ["月", "げつ"]]);
+  assert.deepEqual(display("怪レい日本語", "あやしいにほんご", [["怪", "あや"], ["レ", "し"], "い", ["日", "に"], ["本", "ほん"], ["語", "ご"]]),
+    [["怪", "あや"], ["レ", "し"], "い", ["日", "に"], ["本", "ほん"], ["語", "ご"]]);
+});
+
+test("validation requires canonical segments whose ruby follows the reading", () => {
+  assert.throws(() => validateDisplayAlignment("親ネコ", "おやねこ", [["親", "おや"], ["ネコ", "ねこ"]]), /Ruby over kana/u);
+  assert.throws(() => validateDisplayAlignment("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]), /Ruby over kana/u);
   assert.throws(() => validateDisplayAlignment("あい", "あい", ["あ", "い"]), /Adjacent/u);
-  assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"], "川"]), /account/u);
+  assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"], "川"]), /needs ruby/u);
+  assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"], ["川", "がわ"]]), /account/u);
   assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"]]), /reconstruct/u);
   assert.throws(() => validateDisplayAlignment("山", "やま", [["山", ""]]), /Invalid/u);
 });

@@ -34,6 +34,18 @@ test("kana that the reading contradicts is shown as written", () => {
   assert.deepEqual(display("メーカ物", "メーカーもの", ["メー", ["カ", "カー"], ["物", "もの"]]), ["メーカ", ["物", "もの"]]);
 });
 
+test("kana runs at the edge of a ruby group are plain where the reading repeats them", () => {
+  assert.deepEqual(display("そっぽ向く", "そっぽをむく", ["そっ", ["ぽ向", "ぽをむ"], "く"]), ["そっぽ", ["向", "をむ"], "く"]);
+  assert.deepEqual(display("尻もつ", "けつをもつ", [["尻も", "けつをも"], "つ"]), [["尻", "けつを"], "もつ"]);
+  assert.deepEqual(display("カメラを止めるな！", "カメラをとめるな", ["カメラを", ["止めるな", "とめるな"], "！"]), ["カメラを", ["止", "と"], "めるな！"]);
+  // Only a whole run moves, so a coincidental first kana stays in the group.
+  assert.deepEqual(display("近からずとも遠からず", "ちかからずとおからず", [["近", "ちか"], "からず", ["とも遠", "とお"], "からず"]),
+    [["近", "ちか"], "からず", ["とも遠", "とお"], "からず"]);
+  // The group keeps part of the reading.
+  assert.deepEqual(display("ア♀ウ", "アウ", [["ア♀ウ", "アウ"]]), [["ア♀ウ", "アウ"]]);
+  assert.throws(() => validateDisplayAlignment("そっぽ向く", "そっぽをむく", ["そっ", ["ぽ向", "ぽをむ"], "く"]), /Ruby over kana/u);
+});
+
 test("counters and puns keep ruby over kana", () => {
   assert.deepEqual(display("何ヶ月", "なんかげつ", [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]), [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]);
   assert.deepEqual(display("二ケ所", "にかしょ", [["二", "に"], ["ケ", "か"], ["所", "しょ"]]), [["二", "に"], ["ケ", "か"], ["所", "しょ"]]);

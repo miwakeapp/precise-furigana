@@ -27,6 +27,28 @@ function needsRuby(base, reading, pun) {
 }
 
 /**
+ * The generator can put kana into a ruby group when an unwritten particle
+ * sits beside it, as in そっぽ向く read そっぽをむく. Where the reading repeats
+ * a group's whole leading or trailing kana run, that run is shown as plain
+ * text, as long as the rest of the group keeps part of the reading.
+ */
+function peelKana([written, reading]) {
+  const units = splitGraphemes(written), sounds = splitGraphemes(reading);
+  let start = 0, end = units.length;
+  while (start < end && isKana(units[start])) ++start;
+  while (end > start && isKana(units[end - 1])) --end;
+  const repeats = (run, candidates) => run.length > 0 && run.every((unit, index) => normalizeKana(unit) === normalizeKana(candidates[index] ?? ""));
+  const leading = repeats(units.slice(0, start), sounds) ? start : 0;
+  const trailing = repeats(units.slice(end).reverse(), [...sounds].reverse()) ? units.length - end : 0;
+  if (start === end || leading + trailing === 0 || leading + trailing >= sounds.length) return [[written, reading]];
+  return [
+    units.slice(0, leading).join(""),
+    [units.slice(leading, units.length - trailing).join(""), sounds.slice(leading, sounds.length - trailing).join("")],
+    units.slice(units.length - trailing).join("")
+  ].filter(part => part !== "");
+}
+
+/**
  * Convert generator segments, which reconstruct both strings exactly, into
  * release segments, where a string is text shown without ruby. Silent
  * punctuation at the edge of a ruby group becomes its own string, and kana
@@ -52,7 +74,8 @@ export function displaySegments(segments) {
     while (end - 1 > start && silent(units[end - 1])) --end;
     if (start > 0) push(units.slice(0, start).join(""));
     const core = units.slice(start, end).join("");
-    push(needsRuby(core, reading, pun) ? [core, reading] : core);
+    if (needsRuby(core, reading, pun)) for (const part of peelKana([core, reading])) push(part);
+    else push(core);
     if (end < units.length) push(units.slice(end).join(""));
   }
   return result;
@@ -79,7 +102,7 @@ export function validateDisplayAlignment(written, reading, segments) {
     } else if (!Array.isArray(segment) || segment.length !== 2 ||
       segment.some(value => typeof value !== "string" || value.length === 0)) {
       throw new Error(`Invalid ruby segment: ${JSON.stringify(segment)}`);
-    } else if (!needsRuby(segment[0], segment[1], pun)) {
+    } else if (!needsRuby(segment[0], segment[1], pun) || peelKana(segment).length > 1) {
       throw new Error(`Ruby over kana: ${JSON.stringify(segment)}`);
     }
   }

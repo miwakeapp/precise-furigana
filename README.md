@@ -16,7 +16,7 @@ const nihon = records.find(record => record.reading === "にほん");
 
 Each record has `written`, `reading`, and `segments`. String segments are shown without ruby; arrays are `[written text, reading]` ruby. Joining the written text reconstructs the original spelling exactly. Kana is shown as written, so use `reading` for pronunciation. See the [data format](docs/data-format.md) and [JSON schema](schema.json).
 
-Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one, so a record can contain a whole-word group. The [quality notes](docs/quality.md) explain limitations and reviewed examples.
+Characters without a supported reading stay grouped with their neighbors instead of receiving a guessed one, so a record can contain a whole-word group.
 
 ## Build
 
@@ -44,7 +44,7 @@ To update JMdict and KANJIDIC2, run `npm run fetch -- --update`, then build and 
 
 The generator combines character readings, restricted sound changes, dictionary words, alternate spellings, and documented local allocations. A coarser dictionary reading does not veto a supported finer split. Ambiguous allocations keep only agreed boundaries, and characters without supported readings stay grouped rather than guessed. The [algorithm guide](docs/algorithm.md) describes the stages and their safeguards.
 
-Some illustrative differences from Lorenzi's `furigana.txt` generator during development:
+Some differences from Lorenzi's `furigana.txt` generator, at commit `dda498d0fd7531c9ebdb97740589e00749696789` on the same dictionary input:
 
 | Word | Precise furigana | Lorenzi comparison |
 | --- | --- | --- |
@@ -54,10 +54,10 @@ Some illustrative differences from Lorenzi's `furigana.txt` generator during dev
 | 命の綱 | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby> | <ruby>命<rt>い</rt></ruby><ruby>の綱<rt>ちのつな</rt></ruby> |
 | メーカ希望価格 | メーカ<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</rt></ruby> |
 
-These are selected examples, not accuracy estimates. Grouped ruby can give the right pronunciation while omitting useful detail. The comparison used Lorenzi commit `dda498d0fd7531c9ebdb97740589e00749696789` on the same dictionary input. [Supporting evidence and remaining uncertain cases](docs/quality.md) explain the distinctions. Lorenzi's code and data are not generator inputs.
+The [quality notes](docs/quality.md) give the evidence for each, along with cases that remain unresolved.
 
 ## Sources and license
 
 Original code: [MIT](LICENSE). Dictionary-derived data: **CC BY-SA 4.0**, with attribution in [NOTICE](NOTICE).
 
-Inputs include JMdict and KANJIDIC2 from EDRDG through [jmdict-simplified](https://github.com/scriptin/jmdict-simplified), Unicode Unihan, Wiktionary character readings, and reviewed lexical allocations, including selected JmdictFurigana data. The [source guide](docs/data-sources.md) explains provenance and scope. The generator, source locks, and maintained evidence are the source of truth; release JSON is the build product.
+Inputs are JMdict and KANJIDIC2 from EDRDG through [jmdict-simplified](https://github.com/scriptin/jmdict-simplified), Unicode Unihan, Wiktionary character readings, and reviewed word-level allocations, some adapted from JmdictFurigana. The [source guide](docs/data-sources.md) explains each file in `data/`.

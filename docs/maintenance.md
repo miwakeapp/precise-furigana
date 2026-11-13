@@ -2,7 +2,7 @@
 
 ## Build and check
 
-Use Node.js 22.2 or later. The complete pipeline needs a 4 GiB V8 heap limit and additional process overhead; the npm scripts provide the heap setting. No npm packages, research caches, reference datasets, or network access are needed after fetching the locked inputs.
+Use Node.js 22.2 or later. The complete pipeline needs a 4 GiB V8 heap limit and additional process overhead; the npm scripts provide the heap setting. Nothing else, including network access, is needed after fetching the locked inputs.
 
 ```sh
 npm ci
@@ -36,7 +36,7 @@ npm run build
 npm run compare -- .cache/before.json dist/precise-furigana.json
 ```
 
-The comparison command writes every changed pair to `dist/changes.jsonl`, classifying additions, removals, finer or coarser boundaries, incompatible allocations, and ruby changes at unchanged boundaries. These are differences, not automatic correctness judgments. Inspect all removed or moved boundaries and check related spelling/reading families, even when a change appears local.
+The comparison command writes every changed pair to `dist/changes.jsonl`, classifying additions, removals, finer or coarser boundaries, incompatible allocations, and ruby changes at unchanged boundaries. Inspect all removed or moved boundaries and check related spelling/reading families, even when a change appears local.
 
 ## Investigate and correct an alignment
 
@@ -71,6 +71,6 @@ The GitHub workflow runs every Tuesday at 03:17 UTC and also supports manual dis
 
 The release tag combines the dictionary date, algorithm version, and a hash of the database. A retry verifies an existing release's files against GitHub's recorded SHA-256 digests instead of overwriting them. A generator or reviewed-data change that alters the output can therefore produce another release for the same dictionary date.
 
-Publishing is an explicit `--publish` action requiring `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`. Until publication is authorized, use the command without that flag. A local dry run does not test GitHub permissions, asset uploads, or scheduled execution.
+Without `--publish`, the release command is a local dry run. `--publish` requires `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`.
 
 To reproduce a release, check out its tag, run `npm run fetch -- --update --release <tag>` with the jmdict-simplified tag from the release notes, then build. The commit supplies the generator and bundled evidence; jmdict-simplified's published digests verify the upstream archives.

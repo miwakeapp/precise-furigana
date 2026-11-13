@@ -36,7 +36,7 @@ KANJIDIC's okurigana notation separates a character's sound from its following k
 
 Facts remain local by default. A small selection of `reusableSegments` explicitly authorizes an independently supported complete character sound for reuse. Such a sound is never used for its own pair or for the JMdict entries in the fact's `jmdictEntries`, and no further pronunciations are derived from it.
 
-Late evidence runs both with and without lexical refinement. Compatible cuts are combined so a coarser local fact does not suppress an independently supported finer allocation. Contradictory exact target evidence can veto an earlier transfer before that transfer becomes protected. This interaction is a real source of complexity: adding a grouped fact can affect nearby shorter units, so every data change needs a complete corpus comparison.
+Late evidence runs both with and without lexical refinement. Compatible cuts are combined so a coarser local fact does not suppress an independently supported finer allocation. Contradictory exact target evidence can veto an earlier transfer before that transfer becomes protected. Because adding a grouped fact can affect nearby shorter units, every data change needs a complete corpus comparison.
 
 `data/annotations.json` is the final escape hatch. An annotation replaces the complete alignment for one JMdict ID, spelling, and reading. It requires a reason and source links, and a stale annotation absent from the input dictionary fails the build. Regression fixtures exercise the underlying generator without applying these exact overrides.
 
@@ -56,6 +56,4 @@ When every character but one has a supported reading, the remainder could be ass
 
 ## Complexity and limits
 
-The engine uses several small modules because the evidence types have different permissions. Combining them into a single general transformation rule would hide restrictions rather than eliminate them. The largest modules are the graph search and pipeline composition; the supporting modules have direct tests for their linguistic constraints.
-
-The main remaining risks are overconfident local evidence, interacting refinements, and source changes that invalidate assumptions. More splitting is not automatically better. Maintainable improvements come from an evidenced correction or a narrow rule whose complete effects can be reviewed, with unresolved ownership allowed to remain grouped.
+Each evidence type has its own module because each has different permissions; the supporting modules have direct tests for their linguistic constraints. The main risks are overconfident local evidence, interacting refinements, and source changes that invalidate assumptions. Improvements should come from an evidenced correction or a narrow rule whose complete effects can be reviewed.

@@ -20,6 +20,14 @@ test("reusable sound opt-ins identify complete safe single-character allocations
   ]) assert.throws(() => compileLexicalEvidence([{ ...fact(written, reading, segments), reusableSegments: [0] }]), /reusableSegments/u);
 });
 
+test("source entries are JMdict IDs", () => {
+  const source = fact("甲乙", "あい", [["甲", "あ"], ["乙", "い"]]);
+  assert.deepEqual(compileLexicalEvidence([{ ...source, jmdictEntries: ["1000390"] }])[0].jmdictEntries, ["1000390"]);
+  for (const jmdictEntries of ["1000390", [1000390], ["JMdict:1000390"]]) {
+    assert.throws(() => compileLexicalEvidence([{ ...source, jmdictEntries }]), /jmdictEntries/u);
+  }
+});
+
 test("reviewed contractions remain local while exact-script projections are retained", () => {
   const facts = compileLexicalEvidence([
     fact("商人", "あきんど", [["商", "あき"], ["人", "んど"]]),

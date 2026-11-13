@@ -260,7 +260,7 @@ test("normalized self witnesses and all restriction-valid source family identiti
   const source = reusableFact({ reusableSegments: [0] });
   const sameFamily = { words: [entry("2", "甲乙", "あい"), entry("2", "甲丙", "あう")] };
   assert.equal(lookup(exactReuse([source], { jmdict: sameFamily }), "甲乙", "あい"), undefined);
-  const nested = reusableFact({ reusableSegments: [0], sources: [{ url: "https://example.com/jmdict", witnesses: [{ id: "3" }] }] });
+  const nested = reusableFact({ reusableSegments: [0], jmdictEntries: ["3"] });
   const duplicates = { words: [entry("2", "甲乙", "あい"), entry("3", "甲乙", "アイ")] };
   assert.equal(exactReuse([nested], { jmdict: duplicates }).wordAlignments.size, 0);
   const corroboration = reusableFact({ id: "independent", written: "甲丁", reading: "あえ", segments: [["甲", "あ"], ["丁", "え"]], reusableSegments: [0] });

@@ -450,7 +450,7 @@ export async function loadDataset(options = {}) {
   const annotationsText = await readFile(new URL("../data/annotations.json", import.meta.url), "utf8");
   const annotations = compileAnnotations(JSON.parse(annotationsText));
   const lexicalBundle = JSON.parse(await readFile(new URL("../data/lexical-evidence.json", import.meta.url), "utf8"));
-  if (lexicalBundle.schemaVersion !== 1) throw new Error("Unsupported lexical evidence schema");
+  if (lexicalBundle.schemaVersion !== 2) throw new Error("Unsupported lexical evidence schema");
   const pipeline = compileAlignmentPipeline(jmdict, kanjidic, options, {
     unihanReadings: unihanText === undefined ? new Map() : parseUnihanReadings(unihanText),
     unihanSource: lock.lexicalSources?.unihan,

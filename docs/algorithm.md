@@ -32,9 +32,9 @@ KANJIDIC's okurigana notation separates a character's sound from its following k
 
 ## Local evidence and corrections
 
-`data/lexical-evidence.json` contains named units with explicit sound allocations, rationales, source links, and component evidence. [src/lexical-evidence.mjs](../src/lexical-evidence.mjs) places these units within a word and contributes their internal cuts. Outer edges are not automatically transferred: an unwritten particle between words must not become a fabricated reading of a neighboring character.
+`data/lexical-evidence.json` contains named units with explicit sound allocations, rationales, and source links. [src/lexical-evidence.mjs](../src/lexical-evidence.mjs) places these units within a word and contributes their internal cuts. Outer edges are not automatically transferred: an unwritten particle between words must not become a fabricated reading of a neighboring character.
 
-Facts remain local by default. A small selection of `reusableSegments` explicitly authorizes an independently supported complete character sound for reuse. The allocator retains its donor identity and excludes circular use of the donor pair or family. It derives no extra pronunciations from these sounds.
+Facts remain local by default. A small selection of `reusableSegments` explicitly authorizes an independently supported complete character sound for reuse. Such a sound is never used for its own pair or for the JMdict entries in the fact's `jmdictEntries`, and no further pronunciations are derived from it.
 
 Late evidence runs both with and without lexical refinement. Compatible cuts are combined so a coarser local fact does not suppress an independently supported finer allocation. Contradictory exact target evidence can veto an earlier transfer before that transfer becomes protected. This interaction is a real source of complexity: adding a grouped fact can affect nearby shorter units, so every data change needs a complete corpus comparison.
 

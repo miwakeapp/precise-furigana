@@ -183,13 +183,9 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
       ids.add(pair.id); familyByPair.set(key, ids);
     }
     for (const fact of reusable) {
+      // A sound cannot corroborate the entries it was derived from.
       const sourceFamilyIds = new Set(familyByPair.get(pairKey(fact.written, normalizeKana(fact.reading))) ?? []);
-      function inspect(value, field = "") {
-        if (Array.isArray(value)) { for (const child of value) inspect(child, field); return; }
-        if (value && typeof value === "object") { for (const [key, child] of Object.entries(value)) inspect(child, key); return; }
-        if (["id", "sourceId", "sourceIds", "entryId", "jmdictId"].includes(field) && knownIds.has(String(value))) sourceFamilyIds.add(String(value));
-      }
-      inspect(fact);
+      for (const id of fact.jmdictEntries ?? []) if (knownIds.has(id)) sourceFamilyIds.add(id);
       // An opt-in asserts independently reusable exact Japanese sound evidence.
       // Context-bound or raw foreign-transcription-only claims remain local;
       // this category must not replace their existing transcription checks.

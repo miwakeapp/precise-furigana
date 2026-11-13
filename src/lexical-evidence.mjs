@@ -10,6 +10,10 @@ export function compileLexicalEvidence(facts) {
       throw new Error("Lexical evidence requires a rationale and source URLs");
     }
     validateAlignment(fact.written, fact.reading, fact.segments);
+    if (fact.jmdictEntries !== undefined && (!Array.isArray(fact.jmdictEntries) ||
+      fact.jmdictEntries.some(id => typeof id !== "string" || !/^\d+$/u.test(id)))) {
+      throw new TypeError("jmdictEntries must list JMdict entry IDs");
+    }
     if (fact.reusableSegments !== undefined) {
       if (!Array.isArray(fact.reusableSegments) || new Set(fact.reusableSegments).size !== fact.reusableSegments.length ||
         fact.reusableSegments.length > 0 && (typeof fact.id !== "string" || !fact.id.trim()) ||

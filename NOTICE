@@ -10,14 +10,14 @@ EDRDG license statement: https://www.edrdg.org/edrdg/licence.html
 JSON releases: https://github.com/scriptin/jmdict-simplified/releases
 
 The generated database is an adaptation: this project selects permitted
-spelling/reading pairs and adds algorithmically inferred furigana boundaries,
-quality statuses, and any independently reviewed alignment annotations.
-The generated database, its annotations, and dictionary-derived test data are
-distributed under Creative Commons Attribution-ShareAlike 4.0 International:
+spelling/reading pairs and adds algorithmically inferred furigana boundaries
+and reviewed alignment annotations. The generated database, its annotations,
+and dictionary-derived test data are distributed under Creative Commons
+Attribution-ShareAlike 4.0 International:
 https://creativecommons.org/licenses/by-sa/4.0/
 
-Source URLs, versions, dates, and SHA256 digests are recorded in the database
-metadata and accompanying sources.lock.json. No endorsement by EDRDG is implied.
+Source URLs, versions, dates, and SHA256 digests are recorded in the source
+repository's data/sources.lock.json. No endorsement by EDRDG is implied.
 
 The original software is licensed under MIT; see LICENSE. Lorenzi's furigana
 data and implementation are not inputs to the generator and are not included
@@ -33,8 +33,8 @@ forms were extracted by Kaikki/wiktextract. English character forms were
 extracted directly from pinned primary MediaWiki page revisions. This project
 filters, normalizes, and reviews their applicability. Source titles, original
 forms, tags, revision or archive provenance, and modification details are
-retained in data/character-readings.json, data/english-character-readings.json,
-data/lexical-evidence.json, and sources.lock.json.
+retained in data/character-readings.json and data/english-character-readings.json,
+and each lexical fact in data/lexical-evidence.json lists its source URLs.
 
 The English character bundle uses source version
 enwiktionary-api-20261009-6017-pages. Its v2 bundle is 2,528,877 bytes and contains
@@ -60,16 +60,13 @@ Copyright: https://en.wiktionary.org/wiki/Wiktionary:Copyrights
 Reviewed local alignment candidates also originated in Doublevil/JmdictFurigana
 release 2.3.1+2026-09-25, whose generated data is distributed under the JMdict
 Creative Commons Attribution-ShareAlike license. Supported lexical units were
-selected and adapted after two independent AI reviews; no implementation code
-was imported. Individual source URLs, evidence, rationales, and review
-provenance are retained in data/lexical-evidence.json. Some moderately supported
-units rely on a single lexical source; independent reviews do not imply
-independent dictionary corroboration.
+selected and adapted after two AI reviews; no implementation code was
+imported. Each adopted unit's rationale and source URLs are retained in
+data/lexical-evidence.json.
 
 Candidate data: https://github.com/Doublevil/JmdictFurigana
 
-No endorsement by these contributors or projects is implied. Reviews were
-performed by AI agents; they are not human lexicographer certification.
+No endorsement by these contributors or projects is implied.
 
 Unihan supplemental Japanese readings
 -------------------------------------

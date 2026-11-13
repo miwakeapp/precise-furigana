@@ -51,7 +51,7 @@ Ordinary inspection reads the generated database quickly. `--explain` compiles t
 Choose the narrowest justified change:
 
 - Fix an incorrect source restriction or general rule in code when it affects a coherent class of words.
-- Add a sourced local fact to `data/lexical-evidence.json` when ownership is specific to a word. Include the original sound assignment, source URL or revision, and why it supports each boundary. Keep readings local unless separate evidence justifies `reusableSegments`.
+- Add a sourced local fact to `data/lexical-evidence.json` when ownership is specific to a word. Include the original sound assignment, source URL or revision, and why it supports each boundary. Keep readings local unless separate evidence justifies `reusableSegments`, and then list the JMdict entries that evidence came from in `jmdictEntries`.
 - Add an exact annotation to `data/annotations.json` when an existing boundary must be replaced. Include the JMdict ID, spelling, reading, full segments, reason, and source links. A source update removing that pair deliberately fails the build so the annotation is reviewed.
 
 Add a regression example to `test/fixtures/gold.json` for generator behavior, or a focused unit test for a general rule. Exact annotations do not mask failures in the generator's regression set. Run tests, build, validate, and compare the complete output before accepting a correction.

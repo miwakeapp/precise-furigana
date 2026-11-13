@@ -4,7 +4,7 @@ import { createAligner } from "./align.mjs";
 import { loadSources, enumeratePairs, makeCharacterReadings, makeWordReadings, makeIrregularWordReadings } from "./sources.mjs";
 import { boundaries, combineAlignments, pairKey, recordKey, segmentReading, segmentText, validateAlignment } from "./segments.mjs";
 import { deriveCharacterReadings } from "./lexicon.mjs";
-import { deriveVariantAlignments } from "./variants.mjs";
+import { deriveOmittedParticles, deriveVariantAlignments, joinOmittedParticles, omittedParticleSites } from "./variants.mjs";
 import { deriveContinuativeReadings } from "./morphology.mjs";
 import { deriveWeakReadings, refineAlignment } from "./weak-readings.mjs";
 import { deriveNumeralAlignments, deriveNumeralReadings } from "./numerals.mjs";
@@ -414,8 +414,13 @@ function compilePipeline(jmdict, kanjidic, options, {
       internalKanaAnchors: configuration.internalKanaAnchors
     }
   }) : { wordAlignments: new Map(), witnesses: [] };
-  const align = sharedRuns.wordAlignments.size === 0 ? alignSeparators : (written, reading) => applyRefinement(
+  const alignSharedRuns = sharedRuns.wordAlignments.size === 0 ? alignSeparators : (written, reading) => applyRefinement(
     alignSeparators(written, reading), sharedRuns.wordAlignments.get(written)?.get(reading), "same-entry-shared-run"
+  );
+  // Any stage can cut beside an omitted particle, so the grouping is applied last.
+  const omittedParticles = configuration.variantTransfers ? deriveOmittedParticles(jmdict) : undefined;
+  const align = omittedParticles === undefined ? alignSharedRuns : (written, reading) => joinOmittedParticles(
+    alignSharedRuns(written, reading), omittedParticleSites(omittedParticles, written, reading)
   );
   const lateWitnesses = name => mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {

@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createAligner } from "../src/align.mjs";
-import { deriveVariantAlignments } from "../src/variants.mjs";
+import { deriveOmittedParticles, deriveVariantAlignments, joinOmittedParticles, omittedParticleSites } from "../src/variants.mjs";
+import { pairKey } from "../src/segments.mjs";
 
 const substitutions = { kanaSubstitutions: true, characterReadings: new Map(), continuativeReadings: new Map() };
 
@@ -35,6 +36,35 @@ test("omitted okurigana attaches its reading to the immediately preceding kanji"
     id: "1000000", from: "取り扱い", to: "取扱い", reading: "とりあつかい"
   });
   assert.deepEqual(sourceSegments, sourceSnapshot);
+});
+
+test("an omitted particle groups its two neighbors, wherever an earlier stage put it", () => {
+  const jmdict = { words: [
+    entry("1000000", ["五重の塔", "五重塔"], "ごじゅうのとう"),
+    entry("1000001", ["水を差す", "水差す"], "みずをさす"),
+    entry("1000002", ["取り扱い", "取扱い"], "とりあつかい")
+  ] };
+  const particles = deriveOmittedParticles(jmdict);
+  assert.deepEqual([...particles.pairs], [[pairKey("五重塔", "ごじゅうのとう"), [2]], [pairKey("水差す", "みずをさす"), [1]]]);
+  const join = (written, reading, segments) => joinOmittedParticles({ segments }, omittedParticleSites(particles, written, reading)).segments;
+  assert.deepEqual(join("五重塔", "ごじゅうのとう", [["五", "ご"], ["重", "じゅうの"], ["塔", "とう"]]), [["五", "ご"], ["重塔", "じゅうのとう"]]);
+  assert.deepEqual(join("五重塔", "ごじゅうのとう", [["五", "ご"], ["重", "じゅう"], ["塔", "のとう"]]), [["五", "ご"], ["重塔", "じゅうのとう"]]);
+  assert.deepEqual(join("水差す", "みずをさす", [["水", "みずを"], ["差", "さ"], "す"]), [["水差", "みずをさ"], "す"]);
+  assert.deepEqual(join("取扱い", "とりあつかい", [["取", "とり"], ["扱", "あつか"], "い"]), [["取", "とり"], ["扱", "あつか"], "い"]);
+  // Inside a longer word, the particle must be beside the cut.
+  assert.deepEqual(join("五重塔跡", "ごじゅうのとうあと", [["五", "ご"], ["重", "じゅうの"], ["塔", "とう"], ["跡", "あと"]]),
+    [["五", "ご"], ["重塔", "じゅうのとう"], ["跡", "あと"]]);
+  assert.deepEqual(join("五重塔跡", "ごじゅうとうあと", [["五", "ご"], ["重", "じゅう"], ["塔", "とう"], ["跡", "あと"]]),
+    [["五", "ご"], ["重", "じゅう"], ["塔", "とう"], ["跡", "あと"]]);
+});
+
+test("the の or が of a determiner, or a particle the reading skips, is not an omitted particle", () => {
+  const jmdict = { words: [
+    entry("1000000", ["其の後", "其後"], "そのご"),
+    entry("1000001", ["我が家", "我家"], "わがや"),
+    entry("1000002", ["お腹が空く", "お腹空く"], "おなかすく")
+  ] };
+  assert.equal(deriveOmittedParticles(jmdict).pairs.size, 0);
 });
 
 test("existing grouped kanji spans remain grouped when interior and following kana disappear", () => {

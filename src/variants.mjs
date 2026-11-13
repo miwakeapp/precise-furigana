@@ -49,6 +49,88 @@ function pushSegment(segments, written, reading) {
   }
 }
 
+// Omitted okurigana belongs to the preceding character, but an omitted particle
+// belongs to neither neighbor, as in 五重塔 beside 五重の塔. The の or が of a
+// determiner such as 此の or 我が is okurigana instead.
+const particles = new Set(["の", "を", "が"]);
+const determiners = new Set(["此", "其", "彼", "何", "我", "吾"]);
+
+/**
+ * Find where spellings omit a particle that a sibling spelling writes between
+ * two kanji. `pairs` maps each spelling/reading pair that pronounces the
+ * particle to its written offsets, and `words` maps the spelling alone to its
+ * offsets and particles, for occurrences inside longer words.
+ */
+export function deriveOmittedParticles(jmdict) {
+  const pairs = new Map(), words = new Map();
+  for (const word of jmdict.words) {
+    const spellings = new Set(word.kanji.map(kanji => kanji.text));
+    const readings = spelling => word.kana.filter(kana => kana.appliesToKanji.includes("*") || kana.appliesToKanji.includes(spelling)).map(kana => kana.text);
+    for (const source of spellings) {
+      const units = splitGraphemes(source);
+      for (let index = 1; index < units.length - 1; ++index) {
+        if (!particles.has(normalizeKana(units[index])) || !isIdeograph(units[index - 1]) || !isIdeograph(units[index + 1]) ||
+          determiners.has(units[index - 1])) continue;
+        const target = [...units.slice(0, index), ...units.slice(index + 1)].join("");
+        if (!spellings.has(target)) continue;
+        const sourceReadings = new Set(readings(source));
+        // A reading can also skip the particle, as in おなかすく for お腹空く.
+        const particle = normalizeKana(units[index]);
+        const count = text => Array.from(normalizeKana(text)).filter(unit => unit === particle).length;
+        const pronounced = readings(target).filter(value => sourceReadings.has(value) && count(value) > count(target));
+        for (const reading of pronounced) {
+          const key = pairKey(target, reading);
+          pairs.set(key, [...new Set([...(pairs.get(key) ?? []), index])]);
+        }
+        const sites = words.get(target) ?? [];
+        if (pronounced.length && !sites.some(site => site.offset === index)) words.set(target, [...sites, { offset: index, particle }]);
+      }
+    }
+  }
+  return { pairs, words };
+}
+
+/**
+ * List the omitted-particle sites of a spelling/reading pair. Sites of a
+ * shorter word inside it carry their particle, which must then be beside the
+ * cut in the reading.
+ */
+export function omittedParticleSites({ pairs, words }, written, reading) {
+  const sites = (pairs.get(pairKey(written, reading)) ?? []).map(offset => ({ offset }));
+  const units = splitGraphemes(written);
+  for (const [word, wordSites] of words) {
+    if (word === written || !written.includes(word)) continue;
+    const length = splitGraphemes(word).length;
+    for (let start = 0; start + length <= units.length; ++start) {
+      if (units.slice(start, start + length).join("") !== word) continue;
+      for (const site of wordSites) sites.push({ offset: start + site.offset, particle: site.particle });
+    }
+  }
+  return sites;
+}
+
+/** Merge the ruby on either side of each omitted particle, whichever side an earlier stage gave it to. */
+export function joinOmittedParticles(result, sites) {
+  if (sites.length === 0) return result;
+  const segments = [], evidence = [];
+  let writtenOffset = 0;
+  for (const [index, segment] of result.segments.entries()) {
+    const previous = segments.at(-1);
+    const joins = Array.isArray(previous) && Array.isArray(segment) && sites.some(site => site.offset === writtenOffset &&
+      (site.particle === undefined || normalizeKana(previous[1]).endsWith(site.particle) || normalizeKana(segment[1]).startsWith(site.particle)));
+    if (joins) {
+      segments[segments.length - 1] = [previous[0] + segment[0], previous[1] + segment[1]];
+      evidence[evidence.length - 1] = { written: previous[0] + segment[0], reading: previous[1] + segment[1], type: "dictionary", rules: ["omitted-particle-group"] };
+    } else {
+      segments.push(segment);
+      evidence.push(result.evidence?.[index]);
+    }
+    writtenOffset += splitGraphemes(typeof segment === "string" ? segment : segment[0]).length;
+  }
+  if (segments.length === result.segments.length) return result;
+  return { ...result, segments, ...(result.evidence ? { evidence } : {}) };
+}
+
 function attachDeletedReading(segments, reading) {
   const previous = segments.at(-1);
   if (!Array.isArray(previous) || !isIdeograph(splitGraphemes(previous[0]).at(-1))) return false;

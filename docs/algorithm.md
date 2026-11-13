@@ -28,6 +28,8 @@ When equally good paths disagree, the result retains only boundaries common to a
 
 Transfers require restriction-valid source pairs. Conflicting witnesses and ambiguous placements are withheld. Source-language restrictions apply to foreign transcriptions; Korean correspondences exclude unsupported liaison and assimilation contexts. An exact word-local result does not become a globally available character pronunciation.
 
+Omitted okurigana joins the preceding character, so 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>. An omitted particle belongs to neither neighbor: where a sibling spelling writes の, を, or が between two kanji and the reading pronounces it, a final pass gives those two kanji one ruby, as in <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs after every other stage because several can cut beside the particle independently.
+
 KANJIDIC's okurigana notation separates a character's sound from its following kana. The English Wiktionary bundle likewise distinguishes complete readings from explicitly marked character prefixes. Unmarked kun forms are not guessed to be prefixes.
 
 ## Local evidence and corrections

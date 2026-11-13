@@ -51,9 +51,44 @@ function pushSegment(segments, written, reading) {
 
 // Omitted okurigana belongs to the preceding character, but an omitted particle
 // belongs to neither neighbor, as in 五重塔 beside 五重の塔. The の or が of a
-// determiner such as 此の or 我が is okurigana instead.
+// determiner such as 此の or 我が is okurigana instead, as is a kana that
+// starts a KANJIDIC okurigana of the preceding kanji, such as 曲が for ま.がる.
 const particles = new Set(["の", "を", "が"]);
 const determiners = new Set(["此", "其", "彼", "何", "我", "吾"]);
+const startsOkurigana = (characterReadings, kanji, kana) => (characterReadings.get(kanji) ?? []).some(reading =>
+  normalizeKana(reading.replace(/^-|-$/gu, "").split(".")[1] ?? "").startsWith(kana));
+
+/**
+ * Align a sibling spelling with a shorter one by deleting the sibling's kana,
+ * also letting one kanji stand for another, as in 枕草紙 beside 枕の草子.
+ * Returns each sibling unit's target index, or -1 when deleted, only if the
+ * alignment is unique.
+ */
+function siblingDeletionMapping(source, target) {
+  if (source.length <= target.length || source.filter(isIdeograph).length !== target.filter(isIdeograph).length) return undefined;
+  const matches = (left, right) => sameGrapheme(left, right) || isIdeograph(left) && isIdeograph(right);
+  const width = target.length + 1;
+  const paths = new Uint8Array((source.length + 1) * width);
+  paths[source.length * width + target.length] = 1;
+  for (let sourceIndex = source.length - 1; sourceIndex >= 0; --sourceIndex) {
+    for (let targetIndex = target.length; targetIndex >= 0; --targetIndex) {
+      let count = isKana(source[sourceIndex]) ? paths[(sourceIndex + 1) * width + targetIndex] : 0;
+      if (targetIndex < target.length && matches(source[sourceIndex], target[targetIndex])) count += paths[(sourceIndex + 1) * width + targetIndex + 1];
+      paths[sourceIndex * width + targetIndex] = Math.min(2, count);
+    }
+  }
+  if (paths[0] !== 1) return undefined;
+  const mapping = [];
+  let targetIndex = 0;
+  for (let sourceIndex = 0; sourceIndex < source.length; ++sourceIndex) {
+    if (targetIndex < target.length && matches(source[sourceIndex], target[targetIndex]) && paths[(sourceIndex + 1) * width + targetIndex + 1] !== 0) {
+      mapping.push(targetIndex++);
+    } else {
+      mapping.push(-1);
+    }
+  }
+  return mapping;
+}
 
 /**
  * Find where spellings omit a particle that a sibling spelling writes between
@@ -61,29 +96,37 @@ const determiners = new Set(["此", "其", "彼", "何", "我", "吾"]);
  * particle to its written offsets, and `words` maps the spelling alone to its
  * offsets and particles, for occurrences inside longer words.
  */
-export function deriveOmittedParticles(jmdict) {
+export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
   const pairs = new Map(), words = new Map();
   for (const word of jmdict.words) {
-    const spellings = new Set(word.kanji.map(kanji => kanji.text));
+    const spellings = [...new Set(word.kanji.map(kanji => kanji.text))];
     const readings = spelling => word.kana.filter(kana => kana.appliesToKanji.includes("*") || kana.appliesToKanji.includes(spelling)).map(kana => kana.text);
     for (const source of spellings) {
       const units = splitGraphemes(source);
-      for (let index = 1; index < units.length - 1; ++index) {
-        if (!particles.has(normalizeKana(units[index])) || !isIdeograph(units[index - 1]) || !isIdeograph(units[index + 1]) ||
-          determiners.has(units[index - 1])) continue;
-        const target = [...units.slice(0, index), ...units.slice(index + 1)].join("");
-        if (!spellings.has(target)) continue;
+      for (const target of spellings) {
+        const targetUnits = splitGraphemes(target);
+        const mapping = siblingDeletionMapping(units, targetUnits);
+        if (mapping === undefined) continue;
         const sourceReadings = new Set(readings(source));
-        // A reading can also skip the particle, as in おなかすく for お腹空く.
-        const particle = normalizeKana(units[index]);
-        const count = text => Array.from(normalizeKana(text)).filter(unit => unit === particle).length;
-        const pronounced = readings(target).filter(value => sourceReadings.has(value) && count(value) > count(target));
-        for (const reading of pronounced) {
-          const key = pairKey(target, reading);
-          pairs.set(key, [...new Set([...(pairs.get(key) ?? []), index])]);
+        for (let index = 1; index < units.length - 1; ++index) {
+          // A substituted neighbor can own the sound itself, as 金 owns がね in 雁金 beside 雁が音.
+          if (mapping[index] !== -1 || !particles.has(normalizeKana(units[index])) || !isIdeograph(units[index - 1]) ||
+            !isIdeograph(units[index + 1]) || determiners.has(units[index - 1]) || mapping[index - 1] === -1 ||
+            mapping[index + 1] !== mapping[index - 1] + 1 || units[index - 1] !== targetUnits[mapping[index - 1]] ||
+            units[index + 1] !== targetUnits[mapping[index + 1]]) continue;
+          const offset = mapping[index + 1];
+          // A reading can also skip the particle, as in おなかすく for お腹空く.
+          const particle = normalizeKana(units[index]);
+          if (startsOkurigana(characterReadings, units[index - 1], particle)) continue;
+          const count = text => Array.from(normalizeKana(text)).filter(unit => unit === particle).length;
+          const pronounced = readings(target).filter(value => sourceReadings.has(value) && count(value) > count(target));
+          for (const reading of pronounced) {
+            const key = pairKey(target, reading);
+            pairs.set(key, [...new Set([...(pairs.get(key) ?? []), offset])]);
+          }
+          const sites = words.get(target) ?? [];
+          if (pronounced.length && !sites.some(site => site.offset === offset)) words.set(target, [...sites, { offset, particle }]);
         }
-        const sites = words.get(target) ?? [];
-        if (pronounced.length && !sites.some(site => site.offset === index)) words.set(target, [...sites, { offset: index, particle }]);
       }
     }
   }

@@ -58,13 +58,23 @@ test("an omitted particle groups its two neighbors, wherever an earlier stage pu
     [["五", "ご"], ["重", "じゅう"], ["塔", "とう"], ["跡", "あと"]]);
 });
 
-test("the の or が of a determiner, or a particle the reading skips, is not an omitted particle", () => {
+test("a sibling can also drop other kana and substitute kanji away from the particle", () => {
+  const jmdict = { words: [
+    entry("1000000", ["身の回り品", "身回品"], "みのまわりひん"),
+    entry("1000001", ["枕の草子", "枕草紙"], "まくらのそうし")
+  ] };
+  assert.deepEqual([...deriveOmittedParticles(jmdict).pairs], [[pairKey("身回品", "みのまわりひん"), [1]], [pairKey("枕草紙", "まくらのそうし"), [1]]]);
+});
+
+test("the の or が of a determiner or okurigana, a particle the reading skips, or a substituted neighbor is not an omitted particle", () => {
   const jmdict = { words: [
     entry("1000000", ["其の後", "其後"], "そのご"),
     entry("1000001", ["我が家", "我家"], "わがや"),
-    entry("1000002", ["お腹が空く", "お腹空く"], "おなかすく")
+    entry("1000002", ["お腹が空く", "お腹空く"], "おなかすく"),
+    entry("1000003", ["曲が曲がしい", "曲曲しい"], "まがまがしい"),
+    entry("1000004", ["雁が音", "雁金"], "かりがね")
   ] };
-  assert.equal(deriveOmittedParticles(jmdict).pairs.size, 0);
+  assert.equal(deriveOmittedParticles(jmdict, new Map([["曲", ["キョク", "ま.がる"]]])).pairs.size, 0);
 });
 
 test("existing grouped kanji spans remain grouped when interior and following kana disappear", () => {

@@ -418,7 +418,7 @@ function compilePipeline(jmdict, kanjidic, options, {
     alignSeparators(written, reading), sharedRuns.wordAlignments.get(written)?.get(reading), "same-entry-shared-run"
   );
   // Any stage can cut beside an omitted particle, so the grouping is applied last.
-  const omittedParticles = configuration.variantTransfers ? deriveOmittedParticles(jmdict) : undefined;
+  const omittedParticles = configuration.variantTransfers ? deriveOmittedParticles(jmdict, baseReadings) : undefined;
   const align = omittedParticles === undefined ? alignSharedRuns : (written, reading) => joinOmittedParticles(
     alignSharedRuns(written, reading), omittedParticleSites(omittedParticles, written, reading)
   );

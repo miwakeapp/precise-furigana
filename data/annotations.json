@@ -827,5 +827,57 @@
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
       "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
     ]
+  },
+  {
+    "id": "2525980",
+    "written": "氏長",
+    "reading": "うじのかみ",
+    "segments": [
+      [
+        "氏長",
+        "うじのかみ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry lists 氏の上 beside 氏長 at the same reading, so the の of the reading is a particle that 氏長 leaves unwritten between 氏 and 長. It belongs to neither character, so the two share one ruby. The sibling also substitutes the kanji next to the particle, so the generator's sibling rule, which requires both neighbors unchanged, does not apply.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "2525980",
+    "written": "氏宗",
+    "reading": "うじのかみ",
+    "segments": [
+      [
+        "氏宗",
+        "うじのかみ"
+      ]
+    ],
+    "reason": "Pinned JMdict entry lists 氏の上 beside 氏宗 at the same reading, so the の of the reading is a particle that 氏宗 leaves unwritten between 氏 and 宗. It belongs to neither character, so the two share one ruby. The sibling also substitutes the kanji next to the particle, so the generator's sibling rule, which requires both neighbors unchanged, does not apply.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
+  },
+  {
+    "id": "2243690",
+    "written": "八尺瓊曲玉",
+    "reading": "やさかにのまがたま",
+    "segments": [
+      [
+        "八尺瓊曲",
+        "やさかにのまが"
+      ],
+      [
+        "玉",
+        "たま"
+      ]
+    ],
+    "reason": "Pinned JMdict entry lists 八尺瓊の勾玉 beside 八尺瓊曲玉 at the same reading, so the の of the reading is a particle that 八尺瓊曲玉 leaves unwritten between 瓊 and 曲. It belongs to neither character, so the two share one ruby. The sibling also substitutes the kanji next to the particle, so the generator's sibling rule, which requires both neighbors unchanged, does not apply. The grouping matches 八尺瓊勾玉 in the same entry.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
+      "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
+    ]
   }
 ]

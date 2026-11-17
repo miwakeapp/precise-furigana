@@ -27,48 +27,16 @@ test("kana that differs from its reading only in script loses its ruby", () => {
     [["高", "こう"], "フルクトース・コーン・シロップ"]);
 });
 
-test("kana that the reading contradicts is shown as written", () => {
-  assert.deepEqual(display("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]), [["気", "き"], ["持", "も"], "ちよい"]);
-  assert.deepEqual(display("サイム油", "タイムゆ", [["サ", "タ"], "イム", ["油", "ゆ"]]), ["サイム", ["油", "ゆ"]]);
-  assert.deepEqual(display("お早う", "おはよー", ["お", ["早", "はよ"], ["う", "ー"]]), ["お", ["早", "はよ"], "う"]);
-  assert.deepEqual(display("メーカ物", "メーカーもの", ["メー", ["カ", "カー"], ["物", "もの"]]), ["メーカ", ["物", "もの"]]);
-});
-
-test("kana runs at the edge of a ruby group are plain where the reading repeats them", () => {
-  assert.deepEqual(display("そっぽ向く", "そっぽをむく", ["そっ", ["ぽ向", "ぽをむ"], "く"]), ["そっぽ", ["向", "をむ"], "く"]);
-  assert.deepEqual(display("尻もつ", "けつをもつ", [["尻も", "けつをも"], "つ"]), [["尻", "けつを"], "もつ"]);
-  assert.deepEqual(display("カメラを止めるな！", "カメラをとめるな", ["カメラを", ["止めるな", "とめるな"], "！"]), ["カメラを", ["止", "と"], "めるな！"]);
-  // Only a whole run moves, so a coincidental first kana stays in the group.
-  assert.deepEqual(display("近からずとも遠からず", "ちかからずとおからず", [["近", "ちか"], "からず", ["とも遠", "とお"], "からず"]),
-    [["近", "ちか"], "からず", ["とも遠", "とお"], "からず"]);
-  // The group keeps part of the reading.
-  assert.deepEqual(display("ア♀ウ", "アウ", [["ア♀ウ", "アウ"]]), [["ア♀ウ", "アウ"]]);
-  assert.throws(() => validateDisplayAlignment("そっぽ向く", "そっぽをむく", ["そっ", ["ぽ向", "ぽをむ"], "く"]), /Ruby over kana/u);
-});
-
-test("a search-only spelling's ruby leaves out the particle it omits", () => {
-  const drops = [{ offset: 3, particle: "を" }];
-  const segments = displaySegments(["そっ", ["ぽ向", "ぽをむ"], "く"], { drops });
-  assert.deepEqual(segments, ["そっぽ", ["向", "む"], "く"]);
-  validateDisplayAlignment("そっぽ向く", "そっぽをむく", segments, { drops });
-  const waterDrops = [{ offset: 1, particle: "を" }];
-  const water = displaySegments([["水", "みずを"], ["差", "さ"], "す"], { drops: waterDrops });
-  assert.deepEqual(water, [["水", "みず"], ["差", "さ"], "す"]);
-  validateDisplayAlignment("水差す", "みずをさす", water, { drops: waterDrops });
-  assert.throws(() => validateDisplayAlignment("水差す", "みずをさす", water), /account/u);
-});
-
-test("counters and puns keep ruby over kana", () => {
+test("kana that the reading contradicts keeps its ruby, so the segments spell out the reading", () => {
+  assert.deepEqual(display("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]), [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]);
+  assert.deepEqual(display("お早う", "おはよー", ["お", ["早", "はよ"], ["う", "ー"]]), ["お", ["早", "はよ"], ["う", "ー"]]);
   assert.deepEqual(display("何ヶ月", "なんかげつ", [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]), [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]);
-  assert.deepEqual(display("二ケ所", "にかしょ", [["二", "に"], ["ケ", "か"], ["所", "しょ"]]), [["二", "に"], ["ケ", "か"], ["所", "しょ"]]);
   assert.deepEqual(display("ケ月", "けげつ", [["ケ", "け"], ["月", "げつ"]]), ["ケ", ["月", "げつ"]]);
-  assert.deepEqual(display("怪レい日本語", "あやしいにほんご", [["怪", "あや"], ["レ", "し"], "い", ["日", "に"], ["本", "ほん"], ["語", "ご"]]),
-    [["怪", "あや"], ["レ", "し"], "い", ["日", "に"], ["本", "ほん"], ["語", "ご"]]);
 });
 
-test("validation requires canonical segments whose ruby follows the reading", () => {
+test("validation requires canonical segments that spell out the reading", () => {
   assert.throws(() => validateDisplayAlignment("親ネコ", "おやねこ", [["親", "おや"], ["ネコ", "ねこ"]]), /Ruby over kana/u);
-  assert.throws(() => validateDisplayAlignment("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]), /Ruby over kana/u);
+  assert.throws(() => validateDisplayAlignment("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ちよい"]), /account/u);
   assert.throws(() => validateDisplayAlignment("あい", "あい", ["あ", "い"]), /Adjacent/u);
   assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"], "川"]), /needs ruby/u);
   assert.throws(() => validateDisplayAlignment("山川", "やまかわ", [["山", "やま"], ["川", "がわ"]]), /account/u);

@@ -11,6 +11,7 @@ The generator reads the dictionaries that `npm run fetch` downloads and the file
 | `english-character-readings.json` | 3,726 single-character readings from English Wiktionary, each linked to its page revision | Fill gaps in KANJIDIC2's character readings |
 | `lexical-evidence.json` | 1,900 word-level facts, each a spelling, a reading, and how that reading divides among the characters | Split words whose division the character readings can't explain, such as <ruby>達<rt>だる</rt></ruby><ruby>磨<rt>ま</rt></ruby> |
 | `annotations.json` | 38 complete alignments, each for one JMdict ID, spelling, and reading | Replace the generator's result for that one record |
+| `synthesized-pairs.json` | 480 readings for spellings that JMdict pairs only with readings their kana contradict, each with whether it is worth proposing upstream | Add a `"synthesized"` record so every spelling has a reading that fits it |
 
 The three kinds of hand-maintained evidence differ in reach. A character reading applies to its character everywhere. A lexical fact applies to its word wherever it appears, including inside longer words, but adds no character readings unless it marks `reusableSegments`. An annotation affects one record and nothing else.
 

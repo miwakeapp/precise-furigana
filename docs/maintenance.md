@@ -65,6 +65,16 @@ npm run compare -- dist/precise-furigana.json .cache/without-variants/precise-fu
 
 Experimental configurations and failing evaluations cannot be released. The global reading-learning experiment is disabled by default; its candidates are too permissive to become unconditional character readings.
 
+## Synthesized pairs
+
+The build fails when a spelling has no record whose reading fits its kana and no entry in `data/synthesized-pairs.json`, when an entry's reading no longer fits its spelling, when JMdict now pairs the spelling with that reading, or when a listed spelling no longer needs one. After a dictionary update, regenerate the list:
+
+```sh
+npm run build -- --update-synthesized-pairs
+```
+
+This keeps existing entries and adds new ones with the reading the spelling implies and `"upstream": "unreviewed"`. Review each new entry: check the reading, then set `upstream` to `"propose"` for a pronunciation worth adding to JMdict as a search-only reading, `"restricted"` when JMdict has the reading but restricts it to other spellings, or `"none"` for a misspelling, kana variant, or historical spelling, and give a short `note`. Remove entries the build reports as obsolete.
+
 ## Weekly releases
 
 The GitHub workflow runs every Tuesday at 03:17 UTC and also supports manual dispatch from the default branch. It tests the code, refreshes the dictionary lock in the job's checkout, builds, validates, and publishes the two database files. The release notes name the jmdict-simplified release; the workflow does not push a lockfile commit to the default branch.

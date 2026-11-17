@@ -38,7 +38,8 @@
       "properties": {
         "written": { "$ref": "#/$defs/text" },
         "reading": { "$ref": "#/$defs/text" },
-        "segments": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/segment" } }
+        "segments": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/segment" } },
+        "pairing": { "enum": ["mismatched", "synthesized"] }
       }
     }
   }

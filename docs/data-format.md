@@ -20,7 +20,7 @@ This example shortens the attribution and omits the entry's other reading. [sche
 
 ## Records and segments
 
-Keys in `entries` are original JMdict IDs represented as strings. Values contain every permitted spelling/reading pair for that entry, including search-only spellings. Reading restrictions exclude invalid combinations. Kana-only entries and explicitly standalone kana readings receive literal records.
+Keys in `entries` are original JMdict IDs represented as strings. Values contain every permitted spelling/reading pair for that entry, including search-only spellings, plus the synthesized pairs described [below](#pairing). Reading restrictions exclude invalid combinations. Kana-only entries and explicitly standalone kana readings receive literal records.
 
 Segments describe only how to display the spelling. A string segment is text shown without ruby. A two-element array is `[written text, reading]`, both nonempty, shown as ruby. Rendering HTML needs nothing else:
 
@@ -28,7 +28,15 @@ Segments describe only how to display the spelling. A string segment is text sho
 const html = segments.map(segment => typeof segment === "string" ? segment : `<ruby>${segment[0]}<rt>${segment[1]}</rt></ruby>`).join("");
 ```
 
-Concatenating the written sides reconstructs `written` exactly. String segments that are not kana, such as the dots in <ruby>士<rt>し</rt></ruby>・<ruby>農<rt>のう</rt></ruby>・<ruby>工<rt>こう</rt></ruby>・<ruby>商<rt>しょう</rt></ruby>, are silent. Kana is shown as written, so 親ネコ/おやねこ is `[["親", "おや"], "ネコ"]`. That holds even where JMdict pairs a spelling with a reading its kana contradict, usually a search-only spelling: 気持ちよい/きもちいい is <ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちよい. Kana at the edge of a ruby group also stays outside it, so 君の名は。/きみのなは is <ruby>君<rt>きみ</rt></ruby>の<ruby>名<rt>な</rt></ruby>は。. A search-only spelling that omits を or が, as JMdict records colloquial phrases, inherits the entry's reading with the particle, but its ruby leaves the particle out: そっぽ向く/そっぽをむく is そっぽ<ruby>向<rt>む</rt></ruby>く. Otherwise, an unwritten particle between two kanji belongs to neither, so they share one ruby: 五重塔/ごじゅうのとう is <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. Ruby over kana is kept only for ヶ, ヵ, and ケ read as counters, as in <ruby>何<rt>なん</rt></ruby><ruby>ヶ<rt>か</rt></ruby><ruby>月<rt>げつ</rt></ruby>, and for the pun <ruby>怪<rt>あや</rt></ruby><ruby>レ<rt>し</rt></ruby>い<ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>. Adjacent strings are always merged. Ruby follows the reading, but plain kana need not spell it out, so take pronunciation from `reading`, which keeps the exact script and punctuation.
+Concatenating the written sides reconstructs `written` exactly, and concatenating the readings of ruby segments and kana strings spells out `reading`, up to script and the long-vowel mark. String segments that are not kana, such as the dots in <ruby>士<rt>し</rt></ruby>・<ruby>農<rt>のう</rt></ruby>・<ruby>工<rt>こう</rt></ruby>・<ruby>商<rt>しょう</rt></ruby>, are silent. Kana that the reading repeats is shown without ruby, so 親ネコ/おやねこ is `[["親", "おや"], "ネコ"]`, and kana at the edge of a ruby group stays outside it, so 君の名は。/きみのなは is <ruby>君<rt>きみ</rt></ruby>の<ruby>名<rt>な</rt></ruby>は。. Kana the reading contradicts gets ruby with the reading's kana: 宣ふ/のたまう is <ruby>宣<rt>のたま</rt></ruby><ruby>ふ<rt>う</rt></ruby>. An unwritten particle between two kanji belongs to neither, so they share one ruby: 五重塔/ごじゅうのとう is <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. Adjacent strings are always merged.
+
+### Pairing
+
+JMdict does not restrict which readings go with search-only spellings and readings, so it permits some pairs whose reading contradicts the spelling. Every such pair is still included, marked `"pairing": "mismatched"`, with segments that spell out its reading: 気持ちよい/きもちいい is <ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い, and そっぽ向く/そっぽをむく, which omits a particle, is そっぽ<ruby>向<rt>をむ</rt></ruby>く.
+
+Every spelling also has at least one record whose reading fits its kana. Where JMdict has none, the database adds a pair with the spelling's own reading, marked `"pairing": "synthesized"`: 気持ちよい/きもちよい is <ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちよい, and 宣ふ/のたまふ is <ruby>宣<rt>のたま</rt></ruby>ふ. Synthesized readings are kept in [data/synthesized-pairs.json](../data/synthesized-pairs.json); some are pronunciations JMdict lacks, and others only read a misspelling, kana variant, or historical spelling as written.
+
+Records without `pairing` are JMdict pairs whose reading fits the spelling, or visible pairs such as 宣ふ/のたまう whose kana differ only by orthographic convention. A consumer that has only a spelling and chooses a reading should prefer those records and synthesized ones, and avoid mismatched records when another exists.
 
 A segment can contain several characters when their individual sound ownership is unresolved. A small kana can belong to a separate character when explicit lexical evidence supports that assignment, as in <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る.
 

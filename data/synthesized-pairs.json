@@ -1,0 +1,3362 @@
+[
+  {
+    "id": "1000390",
+    "written": "あっとゆう間に",
+    "reading": "あっとゆうまに",
+    "upstream": "none",
+    "note": "Kana variant: ゆう spells the normal pronunciation of いう, so this is the same sound as the existing reading."
+  },
+  {
+    "id": "1000390",
+    "written": "アッとゆう間に",
+    "reading": "アッとゆうまに",
+    "upstream": "none",
+    "note": "Kana variant: ゆう spells the normal pronunciation of いう, so this is the same sound as the existing reading."
+  },
+  {
+    "id": "1001720",
+    "written": "お願いしまあす",
+    "reading": "おねがいしまあす",
+    "upstream": "propose",
+    "note": "Colloquial drawn-out ending しまあす, a distinct spoken form; unsure, since JMdict may not want readings for expressive lengthening."
+  },
+  {
+    "id": "1009740",
+    "written": "に関しちゃ",
+    "reading": "にかんしちゃ",
+    "upstream": "propose",
+    "note": "Contraction: に関しちゃ is the spoken contraction of に関しては, a distinct real form."
+  },
+  {
+    "id": "1021150",
+    "written": "活きがよい",
+    "reading": "いきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has いきがよい, but restricted to 活きが良い、生きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1021150",
+    "written": "生きがよい",
+    "reading": "いきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has いきがよい, but restricted to 活きが良い、生きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1025130",
+    "written": "ウイジャ盤",
+    "reading": "ウイジャばん",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "1027010",
+    "written": "Ａ／Ｄコンバータ",
+    "reading": "エーディーコンバータ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "1039450",
+    "written": "カンツリー倶楽部",
+    "reading": "カンツリークラブ",
+    "upstream": "none",
+    "note": "Loanword kana variant: dated transliteration カンツリー (kept in golf club names), treated like ロシヤ; somewhat unsure."
+  },
+  {
+    "id": "1093370",
+    "written": "ノースウエスト準州",
+    "reading": "ノースウエストじゅんしゅう",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "1147340",
+    "written": "ロシヤ語",
+    "reading": "ロシヤご",
+    "upstream": "propose",
+    "note": "Kana attached in the wrong place: the ア of ロシア was kept after ロシヤ; the literal reading is a dated kana variant not worth proposing."
+  },
+  {
+    "id": "1152830",
+    "written": "よし笛",
+    "reading": "よしぶえ",
+    "upstream": "restricted",
+    "note": "JMdict has よしぶえ, but restricted to 葦笛、蘆笛、芦笛; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1162380",
+    "written": "一口商ひ",
+    "reading": "ひとくちあきなひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "1162510",
+    "written": "一刻でも早く",
+    "reading": "いっこくでもはやく",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading: 一刻 lost its く; the corrected reading is a real variant probably worth proposing."
+  },
+  {
+    "id": "1166580",
+    "written": "一泡吹かす",
+    "reading": "ひとあわふかす",
+    "upstream": "propose",
+    "note": "Kana doubled: か repeated; the corrected reading is a real alternate ending (godan 吹かす) worth proposing."
+  },
+  {
+    "id": "1188710",
+    "written": "何故かいうと",
+    "reading": "なぜかいうと",
+    "upstream": "propose",
+    "note": "Kana doubled: か repeated; the corrected reading drops と colloquially and is plausibly worth proposing."
+  },
+  {
+    "id": "1202230",
+    "written": "みんな殺し",
+    "reading": "みんなごろし",
+    "upstream": "propose",
+    "note": "Colloquial variant: みんな for みな gives a distinct spoken form."
+  },
+  {
+    "id": "1221400",
+    "written": "帰すう",
+    "reading": "きすう",
+    "upstream": "restricted",
+    "note": "JMdict has きすう, but restricted to 帰趨; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1222230",
+    "written": "気持ちよい",
+    "reading": "きもちよい",
+    "upstream": "restricted",
+    "note": "JMdict has きもちよい, but restricted to 気持ち良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1260990",
+    "written": "元どうり",
+    "reading": "もとどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "1264560",
+    "written": "言葉つかい",
+    "reading": "ことばつかい",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "1281230",
+    "written": "こう薬",
+    "reading": "こうやく",
+    "upstream": "restricted",
+    "note": "JMdict has こうやく, but restricted to 膏薬; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1285130",
+    "written": "合点がゆく",
+    "reading": "がてんがゆく",
+    "upstream": "restricted",
+    "note": "JMdict has がてんがゆく, but restricted to 合点が行く; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1287515",
+    "written": "黒んぼう",
+    "reading": "くろんぼう",
+    "upstream": "restricted",
+    "note": "JMdict has くろんぼう, but restricted to 黒ん坊; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1298940",
+    "written": "こすれ合う",
+    "reading": "こすれあう",
+    "upstream": "restricted",
+    "note": "JMdict has こすれあう, but restricted to 擦れ合う; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1310950",
+    "written": "ﾀﾋ亡",
+    "reading": "ﾀﾋぼう",
+    "upstream": "propose",
+    "note": "Joke spelling (ﾀﾋ mimics 死): 亡 was given the whole word's reading; the literal rendering is ﾀﾋぼう, spoken しぼう; not worth proposing."
+  },
+  {
+    "id": "1315700",
+    "written": "持ってゆく",
+    "reading": "もってゆく",
+    "upstream": "restricted",
+    "note": "JMdict has もってゆく, but restricted to 持って行く; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1322360",
+    "written": "捨てせりふ",
+    "reading": "すてせりふ",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "1366480",
+    "written": "人のよい",
+    "reading": "ひとのよい",
+    "upstream": "restricted",
+    "note": "JMdict has ひとのよい, but restricted to 人の良い、人の好い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1368860",
+    "written": "人ずて",
+    "reading": "ひとずて",
+    "upstream": "none",
+    "note": "Kana variant: ず for づ, same pronunciation."
+  },
+  {
+    "id": "1371290",
+    "written": "水さす",
+    "reading": "みずさす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1371290",
+    "written": "水刺す",
+    "reading": "みずさす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1371290",
+    "written": "水差す",
+    "reading": "みずさす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1371290",
+    "written": "水注す",
+    "reading": "みずさす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1401950",
+    "written": "草かんむり",
+    "reading": "くさかんむり",
+    "upstream": "restricted",
+    "note": "JMdict has くさかんむり, but restricted to 草冠; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1404930",
+    "written": "足ふみ",
+    "reading": "あしふみ",
+    "upstream": "none",
+    "note": "Unwritten dakuten: still said あしぶみ."
+  },
+  {
+    "id": "1413660",
+    "written": "大ちゅき",
+    "reading": "だいちゅき",
+    "upstream": "propose",
+    "note": "Joke baby-talk spelling: 大 lost its い; the corrected reading is not worth proposing."
+  },
+  {
+    "id": "1416590",
+    "written": "脱兎のごとき",
+    "reading": "だっとのごとき",
+    "upstream": "propose",
+    "note": "Different ending: attributive ごとき instead of adverbial ごとく, a real distinct form."
+  },
+  {
+    "id": "1416590",
+    "written": "脱兎の如き",
+    "reading": "だっとのごとき",
+    "upstream": "propose",
+    "note": "Different ending: attributive ごとき instead of adverbial ごとく, a real distinct form."
+  },
+  {
+    "id": "1425720",
+    "written": "仲がよい",
+    "reading": "なかがよい",
+    "upstream": "restricted",
+    "note": "JMdict has なかがよい, but restricted to 仲が良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1426690",
+    "written": "虫がよい",
+    "reading": "むしがよい",
+    "upstream": "restricted",
+    "note": "JMdict has むしがよい, but restricted to 虫が良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1426710",
+    "written": "虫のよい",
+    "reading": "むしのよい",
+    "upstream": "restricted",
+    "note": "JMdict has むしのよい, but restricted to 虫の良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1429030",
+    "written": "蝶つがい",
+    "reading": "ちょうつがい",
+    "upstream": "restricted",
+    "note": "JMdict has ちょうつがい, but restricted to 蝶番; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1429030",
+    "written": "蝶番い",
+    "reading": "ちょうつがい",
+    "upstream": "restricted",
+    "note": "JMdict has ちょうつがい, but restricted to 蝶番; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1432940",
+    "written": "通りがかる",
+    "reading": "とおりがかる",
+    "upstream": "propose",
+    "note": "Voiced variant: とおりがかる is a real distinct pronunciation (compare 通りがかり)."
+  },
+  {
+    "id": "1443350",
+    "written": "電子メイル",
+    "reading": "でんしメイル",
+    "upstream": "none",
+    "note": "Loanword kana variant: メイル for メール."
+  },
+  {
+    "id": "1471110",
+    "written": "波乱バンジョー",
+    "reading": "はらんバンジョー",
+    "upstream": "none",
+    "note": "Joke spelling: バンジョー puns on ばんじょう with the same sound."
+  },
+  {
+    "id": "1482930",
+    "written": "否めぬ",
+    "reading": "いなめぬ",
+    "upstream": "propose",
+    "note": "Kana doubled: め repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "1482930",
+    "written": "否めん",
+    "reading": "いなめん",
+    "upstream": "propose",
+    "note": "Kana doubled: め repeated; the corrected reading is a colloquial ending worth proposing."
+  },
+  {
+    "id": "1496340",
+    "written": "付属もの",
+    "reading": "ふぞくもの",
+    "upstream": "propose",
+    "note": "Different reading: kun もの instead of on ぶつ, as the kana spelling indicates; a real if minor form."
+  },
+  {
+    "id": "1505420",
+    "written": "文字どうり",
+    "reading": "もじどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "1514900",
+    "written": "墓じるし",
+    "reading": "はかじるし",
+    "upstream": "restricted",
+    "note": "JMdict has はかじるし, but restricted to 墓標; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1535180",
+    "written": "目をつむる",
+    "reading": "めをつむる",
+    "upstream": "restricted",
+    "note": "JMdict has めをつむる, but restricted to 目を瞑る; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1535180",
+    "written": "眼をつむる",
+    "reading": "めをつむる",
+    "upstream": "restricted",
+    "note": "JMdict has めをつむる, but restricted to 目を瞑る; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1537070",
+    "written": "呼ばひ",
+    "reading": "よばひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "1543180",
+    "written": "予想どうり",
+    "reading": "よそうどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "1547420",
+    "written": "ヨー素",
+    "reading": "ヨーそ",
+    "upstream": "propose",
+    "note": "Kana attached in the wrong place: the う of よう was kept after ヨー; the corrected reading is just a kana variant, not worth proposing."
+  },
+  {
+    "id": "1548970",
+    "written": "乱交パーティ",
+    "reading": "らんこうパーティ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "1566190",
+    "written": "カカァ天下",
+    "reading": "カカァでんか",
+    "upstream": "none",
+    "note": "Small ァ already lengthens カ but the あ of かかあ was added again; the corrected reading is a kana variant."
+  },
+  {
+    "id": "1573270",
+    "written": "膝まずく",
+    "reading": "ひざまずく",
+    "upstream": "restricted",
+    "note": "JMdict has ひざまずく, but restricted to 跪く; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1581090",
+    "written": "えり分ける",
+    "reading": "えりわける",
+    "upstream": "restricted",
+    "note": "JMdict has えりわける, but restricted to 選り分ける; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1598380",
+    "written": "手なづける",
+    "reading": "てなづける",
+    "upstream": "restricted",
+    "note": "JMdict has てなづける, but restricted to 手懐ける; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1601360",
+    "written": "万事キュース",
+    "reading": "ばんじキュース",
+    "upstream": "none",
+    "note": "Joke spelling: キュース for きゅうす, same sound."
+  },
+  {
+    "id": "1605240",
+    "written": "持ちもん",
+    "reading": "もちもん",
+    "upstream": "propose",
+    "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "1605270",
+    "written": "基ずく",
+    "reading": "もとずく",
+    "upstream": "none",
+    "note": "Kana variant: ず for づ, same pronunciation."
+  },
+  {
+    "id": "1610770",
+    "written": "イスラーム教",
+    "reading": "イスラームきょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: イスラーム is the academic transcription and arguably a distinct pronunciation; leaning none, unsure."
+  },
+  {
+    "id": "1612500",
+    "written": "寝とぼける",
+    "reading": "ねとぼける",
+    "upstream": "restricted",
+    "note": "JMdict has ねとぼける, but restricted to 寝惚ける; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1638750",
+    "written": "人間ドッグ",
+    "reading": "にんげんドッグ",
+    "upstream": "none",
+    "note": "Misspelling: ドッグ for ドック, not a distinct reading."
+  },
+  {
+    "id": "1642960",
+    "written": "二段ベット",
+    "reading": "にだんベット",
+    "upstream": "none",
+    "note": "Misspelling: ベット for ベッド, not a distinct reading."
+  },
+  {
+    "id": "1647950",
+    "written": "立ちんぼう",
+    "reading": "たちんぼう",
+    "upstream": "restricted",
+    "note": "JMdict has たちんぼう, but restricted to 立ちん坊; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1652770",
+    "written": "うすっ気味悪い",
+    "reading": "うすっきみわるい",
+    "upstream": "propose",
+    "note": "Emphatic gemination: うすっきみわるい is a real colloquial pronunciation."
+  },
+  {
+    "id": "1652770",
+    "written": "薄っ気味悪い",
+    "reading": "うすっきみわるい",
+    "upstream": "propose",
+    "note": "Small っ placed in the wrong spot: it follows 薄 (read うす), so the reading is うすっ, not うっす; the corrected reading is a real emphatic form worth proposing."
+  },
+  {
+    "id": "1663790",
+    "written": "帳づけ",
+    "reading": "ちょうづけ",
+    "upstream": "restricted",
+    "note": "JMdict has ちょうづけ, but restricted to 帳付; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1675690",
+    "written": "空ふかし",
+    "reading": "からふかし",
+    "upstream": "restricted",
+    "note": "JMdict has からふかし, but restricted to 空吹かし; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1679070",
+    "written": "半端もん",
+    "reading": "はんぱもん",
+    "upstream": "propose",
+    "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "1690820",
+    "written": "布ぎれ",
+    "reading": "ぬのぎれ",
+    "upstream": "restricted",
+    "note": "JMdict has ぬのぎれ, but restricted to 布切れ; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1707720",
+    "written": "取りのがす",
+    "reading": "とりのがす",
+    "upstream": "restricted",
+    "note": "JMdict has とりのがす, but restricted to 取り逃す; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1747780",
+    "written": "泡たて器",
+    "reading": "あわたてき",
+    "upstream": "restricted",
+    "note": "JMdict has あわたてき, but restricted to 泡立て器; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1747950",
+    "written": "飽き足らぬ",
+    "reading": "あきたらぬ",
+    "upstream": "propose",
+    "note": "Kana doubled: ら repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "1756510",
+    "written": "言いざま",
+    "reading": "いいざま",
+    "upstream": "restricted",
+    "note": "JMdict has いいざま, but restricted to 言い様; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1762560",
+    "written": "若いもの",
+    "reading": "わかいもの",
+    "upstream": "restricted",
+    "note": "JMdict has わかいもの, but restricted to 若い者; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1787040",
+    "written": "おおくま座",
+    "reading": "おおくまざ",
+    "upstream": "restricted",
+    "note": "JMdict has おおくまざ, but restricted to 大熊座; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1820030",
+    "written": "たけ狩り",
+    "reading": "たけがり",
+    "upstream": "restricted",
+    "note": "JMdict has たけがり, but restricted to 茸狩り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1822590",
+    "written": "盆ちょうちん",
+    "reading": "ぼんちょうちん",
+    "upstream": "propose",
+    "note": "Unvoiced variant: ぼんちょうちん is a common spoken pronunciation alongside ぼんぢょうちん; fairly but not fully sure."
+  },
+  {
+    "id": "1835640",
+    "written": "よい子",
+    "reading": "よいこ",
+    "upstream": "restricted",
+    "note": "JMdict has よいこ, but restricted to 良い子; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1838120",
+    "written": "立ち待ちの月",
+    "reading": "たちまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "1838120",
+    "written": "立待ちの月",
+    "reading": "たちまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "1838120",
+    "written": "立待の月",
+    "reading": "たちまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "1849320",
+    "written": "つゆ知らぬ",
+    "reading": "つゆしらぬ",
+    "upstream": "propose",
+    "note": "Different ending: attributive ぬ instead of adverbial ず, a real distinct form."
+  },
+  {
+    "id": "1849320",
+    "written": "露知らぬ",
+    "reading": "つゆしらぬ",
+    "upstream": "propose",
+    "note": "Different ending: attributive ぬ instead of adverbial ず, a real distinct form."
+  },
+  {
+    "id": "1850880",
+    "written": "色ずく",
+    "reading": "いろずく",
+    "upstream": "none",
+    "note": "Kana variant: ず for づ, same pronunciation."
+  },
+  {
+    "id": "1861690",
+    "written": "縁きる",
+    "reading": "えんきる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1861690",
+    "written": "縁切る",
+    "reading": "えんきる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1862380",
+    "written": "圧しとめる",
+    "reading": "おしとめる",
+    "upstream": "restricted",
+    "note": "JMdict has おしとめる, but restricted to 押し止める、押し留める; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1908670",
+    "written": "本腰いれる",
+    "reading": "ほんごしいれる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1908670",
+    "written": "本腰入れる",
+    "reading": "ほんごしいれる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1917660",
+    "written": "割のよい",
+    "reading": "わりのよい",
+    "upstream": "restricted",
+    "note": "JMdict has わりのよい, but restricted to 割の良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1917660",
+    "written": "割りのよい",
+    "reading": "わりのよい",
+    "upstream": "restricted",
+    "note": "JMdict has わりのよい, but restricted to 割の良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1919400",
+    "written": "へそ曲げる",
+    "reading": "へそまげる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1919400",
+    "written": "ヘソ曲げる",
+    "reading": "へそまげる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1919400",
+    "written": "臍曲げる",
+    "reading": "へそまげる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "1925360",
+    "written": "ワンウエー瓶",
+    "reading": "ワンウエーびん",
+    "upstream": "propose",
+    "note": "Kana garbled: ェイ appended after ワンウエー; the corrected reading is a kana variant of the existing ワンウェーびん[sk], not worth proposing."
+  },
+  {
+    "id": "1961760",
+    "written": "イディシュ語",
+    "reading": "イディシュご",
+    "upstream": "none",
+    "note": "Loanword kana variant: イディシュ for イディッシュ."
+  },
+  {
+    "id": "1961970",
+    "written": "ウオーム歯車",
+    "reading": "ウオームはぐるま",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "1963310",
+    "written": "クラッシク音楽",
+    "reading": "クラッシクおんがく",
+    "upstream": "propose",
+    "note": "Kana garbled: ック appended after クラッシク; the spelling is a misspelling, not worth proposing."
+  },
+  {
+    "id": "1963310",
+    "written": "クラッシック音楽",
+    "reading": "クラッシックおんがく",
+    "upstream": "none",
+    "note": "Common nonstandard loanword variant (gemination); leaning none."
+  },
+  {
+    "id": "1965320",
+    "written": "スラプスティック喜劇",
+    "reading": "スラプスティックきげき",
+    "upstream": "none",
+    "note": "Misspelling of the loanword (wrong voicing or kana); not a distinct reading."
+  },
+  {
+    "id": "1966130",
+    "written": "テング熱",
+    "reading": "テングねつ",
+    "upstream": "none",
+    "note": "Misspelling: テング for デング."
+  },
+  {
+    "id": "1966390",
+    "written": "ドーナッツ現象",
+    "reading": "ドーナッツげんしょう",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "1966880",
+    "written": "バズーカー砲",
+    "reading": "バズーカーほう",
+    "upstream": "none",
+    "note": "Loanword kana variant: final ー added to バズーカ."
+  },
+  {
+    "id": "1968260",
+    "written": "ペルシア猫",
+    "reading": "ペルシアねこ",
+    "upstream": "propose",
+    "note": "Kana garbled: ャ of ペルシャ appended; the corrected reading is a loanword kana variant, not worth proposing."
+  },
+  {
+    "id": "1987760",
+    "written": "パンコマイシン耐性腸球菌",
+    "reading": "パンコマイシンたいせいちょうきゅうきん",
+    "upstream": "none",
+    "note": "Misspelling: パンコマイシン for バンコマイシン."
+  },
+  {
+    "id": "1992430",
+    "written": "光ファイバケーブル",
+    "reading": "ひかりファイバケーブル",
+    "upstream": "none",
+    "note": "Loanword kana variant: ファイバ for ファイバー is a spelling, not a distinct pronunciation."
+  },
+  {
+    "id": "1995480",
+    "written": "情報スーパーハイウエー",
+    "reading": "じょうほうスーパーハイウエー",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2010190",
+    "written": "簡易ベット",
+    "reading": "かんいベット",
+    "upstream": "none",
+    "note": "Misspelling: ベット for ベッド."
+  },
+  {
+    "id": "2011860",
+    "written": "川ぶち",
+    "reading": "かわぶち",
+    "upstream": "restricted",
+    "note": "JMdict has かわぶち, but restricted to 川縁; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2018160",
+    "written": "早いもん勝ち",
+    "reading": "はやいもんがち",
+    "upstream": "propose",
+    "note": "Kana garbled: の inserted; the corrected reading is a colloquial もん form worth proposing."
+  },
+  {
+    "id": "2027760",
+    "written": "萌ゑ",
+    "reading": "もゑ",
+    "upstream": "none",
+    "note": "Joke/historical-kana spelling: ゑ for え, same sound."
+  },
+  {
+    "id": "2037510",
+    "written": "情報セキュリティー",
+    "reading": "じょうほうセキュリティー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2047920",
+    "written": "税金ドロボー",
+    "reading": "ぜいきんドロボー",
+    "upstream": "none",
+    "note": "Kana variant: ドロボー for どろぼう, same sound."
+  },
+  {
+    "id": "2055480",
+    "written": "宣ふ",
+    "reading": "のたまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2055480",
+    "written": "曰ふ",
+    "reading": "のたまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2057860",
+    "written": "ロー付け",
+    "reading": "ローづけ",
+    "upstream": "none",
+    "note": "Kana attached in the wrong place: the う of ろう was kept after ロー; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2065430",
+    "written": "バター臭い",
+    "reading": "バターくさい",
+    "upstream": "propose",
+    "note": "Loanword variant: modern バター instead of the older バタ gives a real distinct pronunciation."
+  },
+  {
+    "id": "2068850",
+    "written": "目合ひ",
+    "reading": "まぐわひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2072570",
+    "written": "ドリア式",
+    "reading": "ドリアしき",
+    "upstream": "none",
+    "note": "Loanword kana variant: ドリア for ドーリア."
+  },
+  {
+    "id": "2073080",
+    "written": "往生際悪い",
+    "reading": "おうじょうぎわわるい",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2076970",
+    "written": "崇ふ",
+    "reading": "あがまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2076970",
+    "written": "崇まふ",
+    "reading": "あがまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2078980",
+    "written": "虚勢張る",
+    "reading": "きょせいはる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2079440",
+    "written": "腹くくる",
+    "reading": "はらくくる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2079440",
+    "written": "腹括る",
+    "reading": "はらくくる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2083790",
+    "written": "禊祓え",
+    "reading": "みそぎはらえ",
+    "upstream": "restricted",
+    "note": "JMdict has みそぎはらえ, but restricted to 禊祓; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2089720",
+    "written": "鍵かかる",
+    "reading": "かぎかかる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2102540",
+    "written": "落とし前はつける",
+    "reading": "おとしまえはつける",
+    "upstream": "propose",
+    "note": "Particle swap: contrastive は instead of を; the spelling is in JMdict, so its reading is a real distinct form."
+  },
+  {
+    "id": "2103620",
+    "written": "時間どうり",
+    "reading": "じかんどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2103630",
+    "written": "言うとうり",
+    "reading": "いうとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2104640",
+    "written": "ハイブリット車",
+    "reading": "ハイブリットしゃ",
+    "upstream": "propose",
+    "note": "Kana garbled: ド of ハイブリッド appended; the spelling is a misspelling, not worth proposing."
+  },
+  {
+    "id": "2105490",
+    "written": "近からずとも遠からず",
+    "reading": "ちかからずともとおからず",
+    "upstream": "propose",
+    "note": "Kana lost: と of とおからず dropped; the corrected reading (with とも) is a real variant worth proposing."
+  },
+  {
+    "id": "2105490",
+    "written": "近からずも遠からず",
+    "reading": "ちかからずもとおからず",
+    "upstream": "propose",
+    "note": "Particle insertion: も between the clauses gives a real distinct form."
+  },
+  {
+    "id": "2111220",
+    "written": "ひと筋縄じゃいかない",
+    "reading": "ひとすじなわじゃいかない",
+    "upstream": "propose",
+    "note": "Contraction: じゃ for では, a real colloquial form."
+  },
+  {
+    "id": "2111220",
+    "written": "ひと筋縄じゃ行かない",
+    "reading": "ひとすじなわじゃいかない",
+    "upstream": "propose",
+    "note": "Kana misplaced: じゃ was attached inside 筋 and では left in place; the corrected reading is the じゃ contraction worth proposing."
+  },
+  {
+    "id": "2111220",
+    "written": "一筋縄じゃいかない",
+    "reading": "ひとすじなわじゃいかない",
+    "upstream": "propose",
+    "note": "Contraction: じゃ for では, a real colloquial form."
+  },
+  {
+    "id": "2111220",
+    "written": "一筋縄じゃ行かない",
+    "reading": "ひとすじなわじゃいかない",
+    "upstream": "propose",
+    "note": "Kana misplaced: じゃ was attached inside 筋 and では left in place; the corrected reading is the じゃ contraction worth proposing."
+  },
+  {
+    "id": "2116150",
+    "written": "近所つきあい",
+    "reading": "きんじょつきあい",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2116150",
+    "written": "近所つき合い",
+    "reading": "きんじょつきあい",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2119890",
+    "written": "割が合う",
+    "reading": "わりがあう",
+    "upstream": "propose",
+    "note": "Kana misplaced: が was put inside 割 and に kept; the corrected reading (が for に) is a real variant worth proposing."
+  },
+  {
+    "id": "2119890",
+    "written": "割りが合う",
+    "reading": "わりがあう",
+    "upstream": "propose",
+    "note": "Kana misplaced: が was put inside 割 and に kept; the corrected reading (が for に) is a real variant worth proposing."
+  },
+  {
+    "id": "2120160",
+    "written": "自己チュー",
+    "reading": "じこチュー",
+    "upstream": "restricted",
+    "note": "JMdict has ジコチュー, but restricted to ; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2122840",
+    "written": "グーの音も出ない",
+    "reading": "グーのねもでない",
+    "upstream": "none",
+    "note": "Kana variant: ー/ぅ for う, same sound as ぐう."
+  },
+  {
+    "id": "2122840",
+    "written": "ぐぅの音も出ない",
+    "reading": "ぐぅのねもでない",
+    "upstream": "none",
+    "note": "Kana variant: ー/ぅ for う, same sound as ぐう."
+  },
+  {
+    "id": "2122840",
+    "written": "グゥの音も出ない",
+    "reading": "グゥのねもでない",
+    "upstream": "none",
+    "note": "Kana variant: ー/ぅ for う, same sound as ぐう."
+  },
+  {
+    "id": "2131660",
+    "written": "約束どうり",
+    "reading": "やくそくどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2144120",
+    "written": "光化学スモック",
+    "reading": "こうかがくスモック",
+    "upstream": "none",
+    "note": "Misspelling: スモック for スモッグ."
+  },
+  {
+    "id": "2144130",
+    "written": "光化学スモック注意報",
+    "reading": "こうかがくスモックちゅういほう",
+    "upstream": "propose",
+    "note": "Kana garbled: グ of スモッグ appended; the spelling is a misspelling, not worth proposing."
+  },
+  {
+    "id": "2152910",
+    "written": "焼けた石に水",
+    "reading": "やけたいしにみず",
+    "upstream": "propose",
+    "note": "Inflection variant: 焼けた instead of the compound 焼け, a real distinct form of the proverb."
+  },
+  {
+    "id": "2153810",
+    "written": "ケータイ番号",
+    "reading": "けータイばんごう",
+    "upstream": "propose",
+    "note": "Katakana ケ was converted to hiragana while ータイ was kept; the corrected reading is a kana variant (ケータイ for けいたい) not worth proposing."
+  },
+  {
+    "id": "2159000",
+    "written": "よいとこ取り",
+    "reading": "よいとこどり",
+    "upstream": "restricted",
+    "note": "JMdict has よいとこどり, but restricted to 良いとこ取り、良い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2159000",
+    "written": "よい所取り",
+    "reading": "よいとこどり",
+    "upstream": "restricted",
+    "note": "JMdict has よいとこどり, but restricted to 良いとこ取り、良い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2171110",
+    "written": "紙ヒコーキ",
+    "reading": "かみヒコーキ",
+    "upstream": "none",
+    "note": "Kana variant: ヒコーキ for ひこうき, same sound."
+  },
+  {
+    "id": "2178460",
+    "written": "言ふ方無し",
+    "reading": "いふかたなし",
+    "upstream": "propose",
+    "note": "Kana doubled: う of いう appended after いふ; the corrected reading is historical kana, not worth proposing."
+  },
+  {
+    "id": "2180360",
+    "written": "むさっ苦しい",
+    "reading": "むさっくるしい",
+    "upstream": "propose",
+    "note": "Emphatic gemination: むさっくるしい is a real colloquial pronunciation."
+  },
+  {
+    "id": "2181250",
+    "written": "ハンティング帽",
+    "reading": "ハンティングぼう",
+    "upstream": "none",
+    "note": "Loanword kana variant: ハンティング for the established ハンチング."
+  },
+  {
+    "id": "2185570",
+    "written": "腰低い",
+    "reading": "こしひくい",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2190790",
+    "written": "慢性関節リューマチ",
+    "reading": "まんせいかんせつリューマチ",
+    "upstream": "propose",
+    "note": "Loanword variant: リューマチ/リュウマチ is a real, widely said pronunciation distinct from リウマチ."
+  },
+  {
+    "id": "2190790",
+    "written": "慢性関節リュウマチ",
+    "reading": "まんせいかんせつリュウマチ",
+    "upstream": "propose",
+    "note": "Loanword variant: リューマチ/リュウマチ is a real, widely said pronunciation distinct from リウマチ."
+  },
+  {
+    "id": "2196600",
+    "written": "ニュルンベルグ裁判",
+    "reading": "ニュルンベルグさいばん",
+    "upstream": "propose",
+    "note": "Kana garbled: ク of ニュルンベルク appended; the corrected reading is a loanword kana variant, not worth proposing."
+  },
+  {
+    "id": "2197260",
+    "written": "マライポリネシア語族",
+    "reading": "マライポリネシアごぞく",
+    "upstream": "none",
+    "note": "Loanword kana variant of マレー (Malay/Malayo); leaning none."
+  },
+  {
+    "id": "2197260",
+    "written": "マラヨポリネシア語族",
+    "reading": "マラヨポリネシアごぞく",
+    "upstream": "none",
+    "note": "Loanword kana variant of マレー (Malay/Malayo); leaning none."
+  },
+  {
+    "id": "2202170",
+    "written": "ご覧のとーり",
+    "reading": "ごらんのとーり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2202170",
+    "written": "ご覧のとうり",
+    "reading": "ごらんのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2202170",
+    "written": "御覧のとうり",
+    "reading": "ごらんのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2202510",
+    "written": "今までどうり",
+    "reading": "いままでどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2207120",
+    "written": "そっぽ向く",
+    "reading": "そっぽむく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2207120",
+    "written": "ソッポ向く",
+    "reading": "そっぽむく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2207120",
+    "written": "外方向く",
+    "reading": "そっぽむく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2207940",
+    "written": "羽振りがよい",
+    "reading": "はぶりがよい",
+    "upstream": "restricted",
+    "note": "JMdict has はぶりがよい, but restricted to 羽振りが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2214830",
+    "written": "捨てたもんではない",
+    "reading": "すてたもんではない",
+    "upstream": "propose",
+    "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "2225930",
+    "written": "ビオーサバールの法則",
+    "reading": "ビオーサバールのほうそく",
+    "upstream": "none",
+    "note": "Loanword kana variant of ビオサバール."
+  },
+  {
+    "id": "2225930",
+    "written": "ビオサヴァールの法則",
+    "reading": "ビオサヴァールのほうそく",
+    "upstream": "none",
+    "note": "Loanword kana variant of ビオサバール."
+  },
+  {
+    "id": "2232470",
+    "written": "お行儀悪い",
+    "reading": "おぎょうぎわるい",
+    "upstream": "propose",
+    "note": "Honorific prefix お adds a distinct, commonly said form."
+  },
+  {
+    "id": "2233910",
+    "written": "ジェリー缶",
+    "reading": "ジェリーカン",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2235740",
+    "written": "神経とがらせる",
+    "reading": "しんけいとがらせる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2235740",
+    "written": "神経尖らせる",
+    "reading": "しんけいとがらせる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2237010",
+    "written": "油圧シャベル",
+    "reading": "ゆあつシャベル",
+    "upstream": "none",
+    "note": "Loanword kana variant: シャベル for ショベル."
+  },
+  {
+    "id": "2243740",
+    "written": "八咫からす",
+    "reading": "やたからす",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2249810",
+    "written": "絵をえがく",
+    "reading": "えをえがく",
+    "upstream": "restricted",
+    "note": "JMdict has えをえがく, but restricted to 絵を描く; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2250200",
+    "written": "人がよい",
+    "reading": "ひとがよい",
+    "upstream": "restricted",
+    "note": "JMdict has ひとがよい, but restricted to 人が良い、人が好い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2251580",
+    "written": "寝つきがよい",
+    "reading": "ねつきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has ねつきがよい, but restricted to 寝付きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2251580",
+    "written": "寝付きがよい",
+    "reading": "ねつきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has ねつきがよい, but restricted to 寝付きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2259100",
+    "written": "見てのとうり",
+    "reading": "みてのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2259560",
+    "written": "質がよい",
+    "reading": "たちがよい",
+    "upstream": "restricted",
+    "note": "JMdict has たちがよい, but restricted to たちが良い、質が良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2279450",
+    "written": "アクティブマトリックス方式",
+    "reading": "アクティブマトリックスほうしき",
+    "upstream": "none",
+    "note": "Loanword kana variant: マトリックス for マトリクス."
+  },
+  {
+    "id": "2279700",
+    "written": "アセンブリー言語",
+    "reading": "アセンブリーげんご",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2306340",
+    "written": "ソフトウエア工学",
+    "reading": "ソフトウエアこうがく",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2306360",
+    "written": "ソフトウエア使用許諾契約",
+    "reading": "ソフトウエアしようきょだくけいやく",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2306390",
+    "written": "ソフトウエア製品",
+    "reading": "ソフトウエアせいひん",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2311440",
+    "written": "ディザー法",
+    "reading": "ディザーほう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2312180",
+    "written": "ディレクトリー名",
+    "reading": "ディレクトリーめい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2318550",
+    "written": "バイナリー互換",
+    "reading": "バイナリーごかん",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2320460",
+    "written": "パラメタ空間",
+    "reading": "パラメタくうかん",
+    "upstream": "none",
+    "note": "Kana garbled: ータ of パラメータ appended after パラメタ; the corrected reading is a loanword kana variant."
+  },
+  {
+    "id": "2320500",
+    "written": "パラメーター値",
+    "reading": "パラメーターち",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2320500",
+    "written": "パラメタ値",
+    "reading": "パラメタち",
+    "upstream": "none",
+    "note": "Kana garbled: ータ of パラメータ appended after パラメタ; the corrected reading is a loanword kana variant."
+  },
+  {
+    "id": "2322970",
+    "written": "フーリェ変換",
+    "reading": "フーリェへんかん",
+    "upstream": "none",
+    "note": "Kana garbled: エ of フーリエ appended after フーリェ; the corrected reading is a misspelling."
+  },
+  {
+    "id": "2326170",
+    "written": "ブラウザー戦争",
+    "reading": "ブラウザーせんそう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2329130",
+    "written": "ベジエ曲線",
+    "reading": "ベジエきょくせん",
+    "upstream": "none",
+    "note": "Kana garbled: ェ of ベジェ appended after ベジエ; the corrected reading is a loanword kana variant."
+  },
+  {
+    "id": "2336160",
+    "written": "ラスター化",
+    "reading": "ラスターか",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2342440",
+    "written": "液晶ディスプレー",
+    "reading": "えきしょうディスプレー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2343640",
+    "written": "仮パラメタ",
+    "reading": "かりパラメタ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2350890",
+    "written": "共有ライブラリー",
+    "reading": "きょうゆうライブラリー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2352080",
+    "written": "型パラメーター",
+    "reading": "かたパラメーター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2352080",
+    "written": "型パラメタ",
+    "reading": "かたパラメタ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2361320",
+    "written": "実パラメタ",
+    "reading": "じつパラメタ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2365830",
+    "written": "情報ハイウェー",
+    "reading": "じょうほうハイウェー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2371320",
+    "written": "サービス総合デジタル網",
+    "reading": "サービスそうごうデジタルもう",
+    "upstream": "propose",
+    "note": "Kana garbled: デ duplicated; the corrected reading uses デジタル, the dominant real pronunciation, and is probably worth proposing."
+  },
+  {
+    "id": "2373400",
+    "written": "第５世代コンピューター",
+    "reading": "だいごせだいコンピューター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2373400",
+    "written": "第五世代コンピューター",
+    "reading": "だいごせだいコンピューター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2375490",
+    "written": "頂点シェーダー",
+    "reading": "ちょうてんシェーダー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2378580",
+    "written": "動的ルーチング",
+    "reading": "どうてきルーチング",
+    "upstream": "none",
+    "note": "Loanword kana variant: dated ルーチング for ルーティング, treated like ロシヤ."
+  },
+  {
+    "id": "2381980",
+    "written": "薄膜トランジスター",
+    "reading": "うすまくトランジスター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2384620",
+    "written": "不良セクター",
+    "reading": "ふりょうセクター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2388810",
+    "written": "補助バッテリ",
+    "reading": "ほじょバッテリ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2395280",
+    "written": "脳ドッグ",
+    "reading": "のうドッグ",
+    "upstream": "none",
+    "note": "Misspelling: ドッグ for ドック."
+  },
+  {
+    "id": "2395790",
+    "written": "候ふ",
+    "reading": "そうろふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2399440",
+    "written": "口のへらん",
+    "reading": "くちのへらん",
+    "upstream": "propose",
+    "note": "Different ending: colloquial negative ん, a real distinct form."
+  },
+  {
+    "id": "2399440",
+    "written": "口の減らん",
+    "reading": "くちのへらん",
+    "upstream": "propose",
+    "note": "Kana doubled: ら repeated; the corrected reading is the colloquial ん ending worth proposing."
+  },
+  {
+    "id": "2402240",
+    "written": "聞き耳たてる",
+    "reading": "ききみみたてる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2402240",
+    "written": "聞き耳立てる",
+    "reading": "ききみみたてる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2403210",
+    "written": "アメリカン英語",
+    "reading": "アメリカンえいご",
+    "upstream": "propose",
+    "note": "Different word form: アメリカン instead of アメリカ, a real distinct pronunciation."
+  },
+  {
+    "id": "2403990",
+    "written": "口からついて出る",
+    "reading": "くちからついてでる",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading: 口 lost ち (and を was kept); the corrected reading (から for を) is a real variant worth proposing."
+  },
+  {
+    "id": "2403990",
+    "written": "口から突いて出る",
+    "reading": "くちからついてでる",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading: 口 lost ち (and を was kept); the corrected reading (から for を) is a real variant worth proposing."
+  },
+  {
+    "id": "2406570",
+    "written": "食品メーカ",
+    "reading": "しょくひんメーカ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2417780",
+    "written": "捨てる神ありゃ拾う神あり",
+    "reading": "すてるかみありゃひろうかみあり",
+    "upstream": "propose",
+    "note": "Kana garbled: れば kept after ありゃ; the corrected reading is a real colloquial contraction worth proposing."
+  },
+  {
+    "id": "2418480",
+    "written": "雀百まで踊りを忘れず",
+    "reading": "すずめひゃくまでおどりをわすれず",
+    "upstream": "propose",
+    "note": "Particle insertion: を added, a real distinct form of the proverb."
+  },
+  {
+    "id": "2419680",
+    "written": "くそもみそもも一緒",
+    "reading": "くそもみそももいっしょ",
+    "upstream": "none",
+    "note": "The spelling looks like a typo for くそもみそも一緒 (doubled も); its literal reading is not worth proposing, though the spelling itself may deserve a report."
+  },
+  {
+    "id": "2421220",
+    "written": "ダイアモンド婚式",
+    "reading": "ダイアモンドこんしき",
+    "upstream": "none",
+    "note": "Loanword kana variant: ダイア for ダイヤ, same sound."
+  },
+  {
+    "id": "2424260",
+    "written": "味噌たき",
+    "reading": "みそたき",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2426970",
+    "written": "ゲーム機エミュレーター",
+    "reading": "ゲームきエミュレーター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2429060",
+    "written": "敵を知り己を知らば百戦危うからず",
+    "reading": "てきをしりおのれをしらばひゃくせんあやうからず",
+    "upstream": "propose",
+    "note": "Different inflection: classical conditional 知らば instead of 知れば, a real variant of the saying."
+  },
+  {
+    "id": "2436550",
+    "written": "同じうする",
+    "reading": "おなじうする",
+    "upstream": "propose",
+    "note": "Kana doubled: じ repeated; the corrected reading is a historical-style kana spelling of じゅう, not worth proposing."
+  },
+  {
+    "id": "2440920",
+    "written": "ウエブ検索",
+    "reading": "ウエブけんさく",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2451020",
+    "written": "ウエブ上",
+    "reading": "ウエブじょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2455360",
+    "written": "けつ状",
+    "reading": "けつじょう",
+    "upstream": "restricted",
+    "note": "JMdict has けつじょう, but restricted to 楔状; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2462540",
+    "written": "聞く耳をもたん",
+    "reading": "きくみみをもたん",
+    "upstream": "propose",
+    "note": "Different ending: colloquial negative ん, a real distinct form."
+  },
+  {
+    "id": "2462540",
+    "written": "聞く耳を持たん",
+    "reading": "きくみみをもたん",
+    "upstream": "propose",
+    "note": "Different ending: colloquial negative ん, a real distinct form."
+  },
+  {
+    "id": "2475950",
+    "written": "伝え歩き",
+    "reading": "つたえあるき",
+    "upstream": "propose",
+    "note": "Kana misplaced: え was put inside 伝 instead of after it; the spelling looks like a misspelling of 伝い歩き, so not worth proposing."
+  },
+  {
+    "id": "2499150",
+    "written": "３ウエイ",
+    "reading": "スリーウエイ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2518150",
+    "written": "航空ショウ",
+    "reading": "こうくうショウ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ショウ for ショー, same sound."
+  },
+  {
+    "id": "2523160",
+    "written": "彼は誰時",
+    "reading": "かはたれどき",
+    "upstream": "propose",
+    "note": "Kana duplicated: は is the particle (pronounced わ) and わ was added again; the corrected reading is a historical-kana spelling, not worth proposing."
+  },
+  {
+    "id": "2530430",
+    "written": "角がっこ",
+    "reading": "かくがっこ",
+    "upstream": "restricted",
+    "note": "JMdict has かくがっこ, but restricted to 角括弧; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2540150",
+    "written": "計画どうり",
+    "reading": "けいかくどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2542470",
+    "written": "覚えていろ",
+    "reading": "おぼえていろ",
+    "upstream": "propose",
+    "note": "Uncontracted form: 覚えていろ is a real distinct spoken form of 覚えてろ."
+  },
+  {
+    "id": "2550210",
+    "written": "幸運の女神には前髪しかない",
+    "reading": "こううんのめがみにはまえがみしかない",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading: 女神 lost み; the corrected reading (には for は) is a real variant worth proposing."
+  },
+  {
+    "id": "2566710",
+    "written": "ドーナッツ化現象",
+    "reading": "ドーナッツかげんしょう",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2612840",
+    "written": "甘い顔する",
+    "reading": "あまいかおする",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2640790",
+    "written": "家電メーカ",
+    "reading": "かでんメーカ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2648160",
+    "written": "撮りだめる",
+    "reading": "とりだめる",
+    "upstream": "restricted",
+    "note": "JMdict has とりだめる, but restricted to 撮り溜める、録り溜める; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2648160",
+    "written": "録りだめる",
+    "reading": "とりだめる",
+    "upstream": "restricted",
+    "note": "JMdict has とりだめる, but restricted to 撮り溜める、録り溜める; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2664080",
+    "written": "鳴りをしずめ",
+    "reading": "なりをしずめ",
+    "upstream": "none",
+    "note": "The spelling looks like a typo for 鳴りをしずめる (missing る); its literal reading is not worth proposing, though the spelling itself may deserve a report."
+  },
+  {
+    "id": "2688140",
+    "written": "相語らふ",
+    "reading": "あいかたらふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2688950",
+    "written": "ニュルンベルグ法",
+    "reading": "ニュルンベルグほう",
+    "upstream": "none",
+    "note": "Kana garbled: ク of ニュルンベルク appended; the corrected reading is a loanword kana variant."
+  },
+  {
+    "id": "2694010",
+    "written": "脱法ドラック",
+    "reading": "だっぽうドラック",
+    "upstream": "none",
+    "note": "Misspelling: ドラック for ドラッグ."
+  },
+  {
+    "id": "2694020",
+    "written": "違法ドラック",
+    "reading": "いほうドラック",
+    "upstream": "none",
+    "note": "Misspelling: ドラック for ドラッグ."
+  },
+  {
+    "id": "2699560",
+    "written": "ドーナッツ型",
+    "reading": "ドーナッツがた",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2699560",
+    "written": "ドーナッツ形",
+    "reading": "ドーナッツがた",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2699640",
+    "written": "ドーナッツ状",
+    "reading": "ドーナッツじょう",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2699770",
+    "written": "寝待ちの月",
+    "reading": "ねまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2699770",
+    "written": "寝待の月",
+    "reading": "ねまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2699810",
+    "written": "臥し待ちの月",
+    "reading": "ふしまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2699810",
+    "written": "臥待の月",
+    "reading": "ふしまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2700080",
+    "written": "ガン泣き",
+    "reading": "ガンなき",
+    "upstream": "propose",
+    "note": "Kanji reading duplicated: ぎゃん kept after ガン; ガン泣き is its own colloquial word, and the corrected reading is probably worth proposing."
+  },
+  {
+    "id": "2700620",
+    "written": "人聞きが悪い",
+    "reading": "ひとぎきがわるい",
+    "upstream": "propose",
+    "note": "Particle duplicated: の kept after が; the corrected reading (が for の) is a real variant worth proposing."
+  },
+  {
+    "id": "2703780",
+    "written": "焼きドーナッツ",
+    "reading": "やきドーナッツ",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2710650",
+    "written": "あほうの一つ覚え",
+    "reading": "あほうのひとつおぼえ",
+    "upstream": "propose",
+    "note": "Variant form: あほう instead of あほ, a real distinct pronunciation."
+  },
+  {
+    "id": "2715480",
+    "written": "替へ言葉",
+    "reading": "かへことば",
+    "upstream": "propose",
+    "note": "Kana duplicated: え kept after へ; the corrected reading is historical kana, not worth proposing."
+  },
+  {
+    "id": "2715480",
+    "written": "替へ詞",
+    "reading": "かへことば",
+    "upstream": "propose",
+    "note": "Kana duplicated: え kept after へ; the corrected reading is historical kana, not worth proposing."
+  },
+  {
+    "id": "2717360",
+    "written": "えも言はず",
+    "reading": "えもいはず",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2717360",
+    "written": "えも言はぬ",
+    "reading": "えもいはぬ",
+    "upstream": "none",
+    "note": "Historical kana plus a different ending; the historical spelling itself is not worth proposing, though modern えもいわぬ might be."
+  },
+  {
+    "id": "2727670",
+    "written": "我がニッポン",
+    "reading": "わがニッポン",
+    "upstream": "propose",
+    "note": "Distinct pronunciation: ニッポン instead of にほん, commonly said."
+  },
+  {
+    "id": "2729000",
+    "written": "額縁ショウ",
+    "reading": "がくぶちショウ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ショウ for ショー, same sound."
+  },
+  {
+    "id": "2733000",
+    "written": "糸ごんにゃく",
+    "reading": "いとごんにゃく",
+    "upstream": "restricted",
+    "note": "JMdict has いとごんにゃく, but restricted to 糸蒟蒻; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2734450",
+    "written": "御入り候ふ",
+    "reading": "おんいりそうろふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2734460",
+    "written": "候へ",
+    "reading": "そへ",
+    "upstream": "none",
+    "note": "Historical kana: へ pronounced え; unsure about the entry's own reading そえ, but the literal reading matches it."
+  },
+  {
+    "id": "2739350",
+    "written": "珍しもん",
+    "reading": "めずらしもん",
+    "upstream": "restricted",
+    "note": "JMdict has めずらしもん, but restricted to 珍し物; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2742150",
+    "written": "舟たまり",
+    "reading": "ふなたまり",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2742150",
+    "written": "船たまり",
+    "reading": "ふなたまり",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2746880",
+    "written": "外堀から埋める",
+    "reading": "そとぼりからうめる",
+    "upstream": "propose",
+    "note": "Kana misplaced: から was put inside 外 and を kept; the corrected reading is a real variant worth proposing."
+  },
+  {
+    "id": "2748640",
+    "written": "隣どおし",
+    "reading": "となりどおし",
+    "upstream": "none",
+    "note": "Kana variant: どおし misspells どうし, same pronunciation."
+  },
+  {
+    "id": "2748850",
+    "written": "恐るるにたりぬ",
+    "reading": "おそるるにたりぬ",
+    "upstream": "propose",
+    "note": "Different ending: classical negative ぬ instead of ない, a real distinct form."
+  },
+  {
+    "id": "2748850",
+    "written": "恐るるに足りぬ",
+    "reading": "おそるるにたりぬ",
+    "upstream": "propose",
+    "note": "Kana doubled: り repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "2751670",
+    "written": "狙いどうり",
+    "reading": "ねらいどうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2755600",
+    "written": "白黒をつける",
+    "reading": "しろくろをつける",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading and を was misplaced; the corrected reading (with を) is a real variant worth proposing."
+  },
+  {
+    "id": "2755600",
+    "written": "白黒を付ける",
+    "reading": "しろくろをつける",
+    "upstream": "propose",
+    "note": "Kanji got the wrong part of the reading and を was misplaced; the corrected reading (with を) is a real variant worth proposing."
+  },
+  {
+    "id": "2756410",
+    "written": "悪いところどり",
+    "reading": "わるいところどり",
+    "upstream": "restricted",
+    "note": "JMdict has わるいところどり, but restricted to 悪い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2756410",
+    "written": "悪いところ取り",
+    "reading": "わるいところどり",
+    "upstream": "restricted",
+    "note": "JMdict has わるいところどり, but restricted to 悪い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2773710",
+    "written": "オフイス街",
+    "reading": "オフイスがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2776780",
+    "written": "嫌われもん",
+    "reading": "きらわれもん",
+    "upstream": "propose",
+    "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "2778610",
+    "written": "ご承知のとうり",
+    "reading": "ごしょうちのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2780080",
+    "written": "給ふ",
+    "reading": "たまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2780080",
+    "written": "賜ふ",
+    "reading": "たまふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2783770",
+    "written": "答ふ",
+    "reading": "こたふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2793090",
+    "written": "知ってのとうり",
+    "reading": "しってのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2803030",
+    "written": "ごっご遊び",
+    "reading": "ごっごあそび",
+    "upstream": "propose",
+    "note": "Kana garbled: こ of ごっこ appended; the spelling is a misspelling, not worth proposing."
+  },
+  {
+    "id": "2808600",
+    "written": "ふるい管",
+    "reading": "ふるいかん",
+    "upstream": "restricted",
+    "note": "JMdict has ふるいかん, but restricted to 篩管; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2812210",
+    "written": "患ふ",
+    "reading": "うれふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2812210",
+    "written": "愁ふ",
+    "reading": "うれふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2812210",
+    "written": "憂ふ",
+    "reading": "うれふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2817540",
+    "written": "ストリー性",
+    "reading": "ストリーせい",
+    "upstream": "propose",
+    "note": "Kana duplicated: リー repeated; the corrected reading is a misspelling, not worth proposing."
+  },
+  {
+    "id": "2823350",
+    "written": "危険ドラック",
+    "reading": "きけんドラック",
+    "upstream": "none",
+    "note": "Misspelling: ドラック for ドラッグ."
+  },
+  {
+    "id": "2824170",
+    "written": "イスラーム国",
+    "reading": "イスラームこく",
+    "upstream": "none",
+    "note": "Loanword kana variant: イスラーム for イスラム; leaning none, unsure (same as イスラーム教)."
+  },
+  {
+    "id": "2824910",
+    "written": "黄泉竃食ひ",
+    "reading": "よもつへぐひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2824910",
+    "written": "黄泉竈食ひ",
+    "reading": "よもつへぐひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2825883",
+    "written": "情報リテラシ",
+    "reading": "じょうほうリテラシ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2825915",
+    "written": "能ふ限り",
+    "reading": "あたふかぎり",
+    "upstream": "propose",
+    "note": "Kana misplaced: ふ was put after あ instead of after あた; the corrected reading is historical kana, not worth proposing."
+  },
+  {
+    "id": "2826060",
+    "written": "境界性パーソナリティー障害",
+    "reading": "きょうかいせいパーソナリティーしょうがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2826269",
+    "written": "勢ふ",
+    "reading": "きおふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2826269",
+    "written": "競ふ",
+    "reading": "きおふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2826932",
+    "written": "丹精を込める",
+    "reading": "たんせいをこめる",
+    "upstream": "propose",
+    "note": "Particle misplaced: を was put inside 丹 instead of after 丹精; the corrected reading is a real variant worth proposing."
+  },
+  {
+    "id": "2827084",
+    "written": "別ウィンドー",
+    "reading": "べつウィンドー",
+    "upstream": "none",
+    "note": "Loanword kana variant of ウィンドウ (ウイ/ウィ, ー/ウ), same word."
+  },
+  {
+    "id": "2827084",
+    "written": "別ウインドー",
+    "reading": "べつウインドー",
+    "upstream": "none",
+    "note": "Loanword kana variant of ウィンドウ (ウイ/ウィ, ー/ウ), same word."
+  },
+  {
+    "id": "2827084",
+    "written": "別ウインドウ",
+    "reading": "べつウインドウ",
+    "upstream": "none",
+    "note": "Loanword kana variant of ウィンドウ (ウイ/ウィ, ー/ウ), same word."
+  },
+  {
+    "id": "2827365",
+    "written": "仲よい",
+    "reading": "なかよい",
+    "upstream": "restricted",
+    "note": "JMdict has なかよい, but restricted to 仲良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2827410",
+    "written": "相向ふ",
+    "reading": "あいむかふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2829466",
+    "written": "喉鳴らす",
+    "reading": "のどならす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2829480",
+    "written": "合法ドラック",
+    "reading": "ごうほうドラック",
+    "upstream": "none",
+    "note": "Misspelling: ドラック for ドラッグ."
+  },
+  {
+    "id": "2829890",
+    "written": "人感センサ",
+    "reading": "じんかんセンサ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2831887",
+    "written": "カノーラ油",
+    "reading": "カノーラゆ",
+    "upstream": "none",
+    "note": "Loanword kana variant: カノーラ for キャノーラ; leaning none."
+  },
+  {
+    "id": "2832321",
+    "written": "潮ふく",
+    "reading": "しおふく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2832321",
+    "written": "潮吹く",
+    "reading": "しおふく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2832321",
+    "written": "潮噴く",
+    "reading": "しおふく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2834410",
+    "written": "微々たるもん",
+    "reading": "びびたるもん",
+    "upstream": "propose",
+    "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "2834798",
+    "written": "自己愛性パーソナリティー障害",
+    "reading": "じこあいせいパーソナリティーしょうがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2835386",
+    "written": "口すべらす",
+    "reading": "くちすべらす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2835386",
+    "written": "口滑らす",
+    "reading": "くちすべらす",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2836181",
+    "written": "持つべきは友",
+    "reading": "もつべきはとも",
+    "upstream": "propose",
+    "note": "Kana garbled: ものは kept after べきは; the corrected reading is a real variant worth proposing."
+  },
+  {
+    "id": "2836229",
+    "written": "ニッポン流",
+    "reading": "ニッポンりゅう",
+    "upstream": "propose",
+    "note": "Distinct pronunciation: ニッポン instead of にほん, commonly said."
+  },
+  {
+    "id": "2836246",
+    "written": "べらんめぇ調",
+    "reading": "べらんめぇちょう",
+    "upstream": "none",
+    "note": "Kana duplicated: え kept after small ぇ; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2836251",
+    "written": "べらんめぇ口調",
+    "reading": "べらんめぇくちょう",
+    "upstream": "none",
+    "note": "Kana duplicated: え kept after small ぇ; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2836555",
+    "written": "ハイブリット戦争",
+    "reading": "ハイブリットせんそう",
+    "upstream": "none",
+    "note": "Kana garbled: ド of ハイブリッド appended; the spelling is a misspelling."
+  },
+  {
+    "id": "2837535",
+    "written": "ウエブ予約",
+    "reading": "ウエブよやく",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2837543",
+    "written": "塩まく",
+    "reading": "しおまく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2837543",
+    "written": "塩撒く",
+    "reading": "しおまく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2838559",
+    "written": "保険ベット",
+    "reading": "ほけんベット",
+    "upstream": "none",
+    "note": "Misspelling: ベット for ベッド."
+  },
+  {
+    "id": "2838739",
+    "written": "捨てたものじゃない",
+    "reading": "すてたものじゃない",
+    "upstream": "propose",
+    "note": "Uncontracted form: もの instead of もん, a real distinct form."
+  },
+  {
+    "id": "2838758",
+    "written": "パーソナリティー障害",
+    "reading": "パーソナリティーしょうがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2838832",
+    "written": "敷きパット",
+    "reading": "しきパット",
+    "upstream": "none",
+    "note": "Misspelling: パット for パッド."
+  },
+  {
+    "id": "2838957",
+    "written": "ファクス番号",
+    "reading": "ファクスばんごう",
+    "upstream": "none",
+    "note": "Loanword kana variant: ファクス is the official spelling but mostly said ファックス; leaning none, unsure."
+  },
+  {
+    "id": "2839662",
+    "written": "よい具合に",
+    "reading": "よいぐあいに",
+    "upstream": "restricted",
+    "note": "JMdict has よいぐあいに, but restricted to 良い具合に; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2840145",
+    "written": "時計メーカ",
+    "reading": "とけいメーカ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2840979",
+    "written": "与えたまう",
+    "reading": "あたえたまう",
+    "upstream": "restricted",
+    "note": "JMdict has あたえたまう, but restricted to 与え給う、与え賜う; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2844316",
+    "written": "住宅メーカ",
+    "reading": "じゅうたくメーカ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2847049",
+    "written": "イスラーム共和国",
+    "reading": "イスラームきょうわこく",
+    "upstream": "none",
+    "note": "Loanword kana variant: イスラーム for イスラム; leaning none, unsure (same as イスラーム教)."
+  },
+  {
+    "id": "2847104",
+    "written": "ルクセンブルグ大公国",
+    "reading": "ルクセンブルグたいこうこく",
+    "upstream": "none",
+    "note": "Kana garbled: ク of ルクセンブルク appended; the corrected reading is a loanword kana variant."
+  },
+  {
+    "id": "2847609",
+    "written": "持ってけドロボー",
+    "reading": "もってけドロボー",
+    "upstream": "restricted",
+    "note": "JMdict has もってけドロボー, but restricted to ; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2848041",
+    "written": "きゆう師",
+    "reading": "きゆうし",
+    "upstream": "none",
+    "note": "Misspelling: large ゆ for small ゅ."
+  },
+  {
+    "id": "2848556",
+    "written": "トゥーレット症候群",
+    "reading": "トゥーレットしょうこうぐん",
+    "upstream": "none",
+    "note": "Loanword kana variant: トゥーレット for トゥレット."
+  },
+  {
+    "id": "2848721",
+    "written": "まな板ショウ",
+    "reading": "まないたショウ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ショウ for ショー, same sound."
+  },
+  {
+    "id": "2849616",
+    "written": "ローソク足",
+    "reading": "ローソクあし",
+    "upstream": "none",
+    "note": "Kana variant: ロー for ろう, same sound."
+  },
+  {
+    "id": "2850252",
+    "written": "割がよい",
+    "reading": "わりがよい",
+    "upstream": "restricted",
+    "note": "JMdict has わりがよい, but restricted to 割が良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2850274",
+    "written": "寝つきのよい",
+    "reading": "ねつきのよい",
+    "upstream": "restricted",
+    "note": "JMdict has ねつきのよい, but restricted to 寝付きの良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2850274",
+    "written": "寝付きのよい",
+    "reading": "ねつきのよい",
+    "upstream": "restricted",
+    "note": "JMdict has ねつきのよい, but restricted to 寝付きの良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2851557",
+    "written": "専門メーカ",
+    "reading": "せんもんメーカ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2851869",
+    "written": "魚ジラミ",
+    "reading": "うおジラミ",
+    "upstream": "restricted",
+    "note": "JMdict has ウオジラミ, but restricted to ; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2853638",
+    "written": "給料ドロボー",
+    "reading": "きゅうりょうドロボー",
+    "upstream": "none",
+    "note": "Kana variant: ドロボー for どろぼう, same sound."
+  },
+  {
+    "id": "2855906",
+    "written": "片っぽう",
+    "reading": "かたっぽう",
+    "upstream": "restricted",
+    "note": "JMdict has かたっぽう, but restricted to 片っ方; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2856589",
+    "written": "わたくし流",
+    "reading": "わたくしりゅう",
+    "upstream": "restricted",
+    "note": "JMdict has わたくしりゅう, but restricted to 私流; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2858555",
+    "written": "婚活パーティ",
+    "reading": "こんかつパーティ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2858581",
+    "written": "リューマチ性",
+    "reading": "リューマチせい",
+    "upstream": "propose",
+    "note": "Loanword variant: リューマチ/リュウマチ is a real, widely said pronunciation distinct from リウマチ."
+  },
+  {
+    "id": "2858581",
+    "written": "リュウマチ性",
+    "reading": "リュウマチせい",
+    "upstream": "propose",
+    "note": "Loanword variant: リューマチ/リュウマチ is a real, widely said pronunciation distinct from リウマチ."
+  },
+  {
+    "id": "2858587",
+    "written": "ウィルス性",
+    "reading": "ウィルスせい",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2858884",
+    "written": "ドーナッツ屋",
+    "reading": "ドーナッツや",
+    "upstream": "propose",
+    "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2859148",
+    "written": "食いつきがよい",
+    "reading": "くいつきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has くいつきがよい, but restricted to 食い付きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2859148",
+    "written": "食い付きがよい",
+    "reading": "くいつきがよい",
+    "upstream": "restricted",
+    "note": "JMdict has くいつきがよい, but restricted to 食い付きが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2859320",
+    "written": "手さげバック",
+    "reading": "てさげバック",
+    "upstream": "none",
+    "note": "Misspelling: バック for バッグ."
+  },
+  {
+    "id": "2859320",
+    "written": "手提げバック",
+    "reading": "てさげバック",
+    "upstream": "none",
+    "note": "Misspelling: バック for バッグ."
+  },
+  {
+    "id": "2859320",
+    "written": "手提バック",
+    "reading": "てさげバック",
+    "upstream": "none",
+    "note": "Misspelling: バック for バッグ."
+  },
+  {
+    "id": "2859599",
+    "written": "ヴェネチア共和国",
+    "reading": "ヴェネチアきょうわこく",
+    "upstream": "propose",
+    "note": "Kana garbled: ツィア of ヴェネツィア appended; the corrected reading is a loanword kana variant, leaning not worth proposing."
+  },
+  {
+    "id": "2859599",
+    "written": "ベネチア共和国",
+    "reading": "ベネチアきょうわこく",
+    "upstream": "propose",
+    "note": "Kana garbled: ヴェネツィア appended after ベネチア; ベネチア is the common Japanese form, so the corrected reading might be worth proposing (unsure)."
+  },
+  {
+    "id": "2859710",
+    "written": "廃プラスティック",
+    "reading": "はいプラスティック",
+    "upstream": "none",
+    "note": "Loanword kana variant: プラスティック for プラスチック."
+  },
+  {
+    "id": "2859782",
+    "written": "先陣きる",
+    "reading": "せんじんきる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2859782",
+    "written": "先陣切る",
+    "reading": "せんじんきる",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2860442",
+    "written": "ヲタ活",
+    "reading": "ヲタかつ",
+    "upstream": "none",
+    "note": "Kana variant: ヲ for オ, same sound."
+  },
+  {
+    "id": "2861180",
+    "written": "もー無理",
+    "reading": "もーむり",
+    "upstream": "none",
+    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2861299",
+    "written": "痛気持ちよい",
+    "reading": "いたきもちよい",
+    "upstream": "restricted",
+    "note": "JMdict has いたきもちよい, but restricted to 痛気持ち良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2861367",
+    "written": "ＳＤメモリカード",
+    "reading": "エスディーメモリカード",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2861530",
+    "written": "抗ウィルス",
+    "reading": "こうウィルス",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2861623",
+    "written": "土台つくり",
+    "reading": "どだいつくり",
+    "upstream": "none",
+    "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
+  },
+  {
+    "id": "2861870",
+    "written": "エンゼル投資家",
+    "reading": "エンゼルとうしか",
+    "upstream": "propose",
+    "note": "Kana garbled: ジェル appended after エンゼル; エンゼル is an established older loan form, so the corrected reading might be worth proposing (unsure)."
+  },
+  {
+    "id": "2862224",
+    "written": "油圧モータ",
+    "reading": "ゆあつモータ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2862343",
+    "written": "有人オペレータ",
+    "reading": "ゆうじんオペレータ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2862418",
+    "written": "性格がよい",
+    "reading": "せいかくがよい",
+    "upstream": "restricted",
+    "note": "JMdict has せいかくがよい, but restricted to 性格が良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2862429",
+    "written": "口吸ひ",
+    "reading": "くちすひ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2862455",
+    "written": "けつ持つ",
+    "reading": "けつもつ",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2862455",
+    "written": "ケツ持つ",
+    "reading": "けつもつ",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2862455",
+    "written": "尻もつ",
+    "reading": "けつもつ",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2862455",
+    "written": "尻持つ",
+    "reading": "けつもつ",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2862508",
+    "written": "鍋パー",
+    "reading": "なべパー",
+    "upstream": "propose",
+    "note": "Colloquial variant: 鍋パー (なべパー) is said alongside 鍋パ."
+  },
+  {
+    "id": "2862683",
+    "written": "ファブリーペロー干渉計",
+    "reading": "ファブリーペローかんしょうけい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2862899",
+    "written": "ヴィジュアル化",
+    "reading": "ヴィジュアルか",
+    "upstream": "none",
+    "note": "Loanword kana variant: ヴ-row versus バ-row spelling of the same word."
+  },
+  {
+    "id": "2863169",
+    "written": "最先端をゆく",
+    "reading": "さいせんたんをゆく",
+    "upstream": "propose",
+    "note": "Different reading: ゆく instead of いく for 行く, a real distinct form."
+  },
+  {
+    "id": "2863342",
+    "written": "知ったこっちゃねー",
+    "reading": "しったこっちゃねー",
+    "upstream": "none",
+    "note": "Kana variant of ねえ (ー/ぇ), same sound; the ねえ spelling carries the proposal."
+  },
+  {
+    "id": "2863342",
+    "written": "知ったこっちゃねぇ",
+    "reading": "しったこっちゃねぇ",
+    "upstream": "none",
+    "note": "Kana variant of ねえ (ー/ぇ), same sound; the ねえ spelling carries the proposal."
+  },
+  {
+    "id": "2863342",
+    "written": "知ったこっちゃねえ",
+    "reading": "しったこっちゃねえ",
+    "upstream": "propose",
+    "note": "Colloquial ending: ねえ for ない, a real distinct spoken form."
+  },
+  {
+    "id": "2863415",
+    "written": "ソフトウエア開発キット",
+    "reading": "ソフトウエアかいはつキット",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2863429",
+    "written": "居待ちの月",
+    "reading": "いまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2863429",
+    "written": "居待の月",
+    "reading": "いまちのつき",
+    "upstream": "propose",
+    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+  },
+  {
+    "id": "2863435",
+    "written": "み歌",
+    "reading": "みうた",
+    "upstream": "restricted",
+    "note": "JMdict has みうた, but restricted to 御歌; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2863787",
+    "written": "蓋する",
+    "reading": "ふたする",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2863899",
+    "written": "アセンブラー言語",
+    "reading": "アセンブラーげんご",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2863930",
+    "written": "接続コネクター",
+    "reading": "せつぞくコネクター",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2864144",
+    "written": "原因ウィルス",
+    "reading": "げんいんウィルス",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2864145",
+    "written": "ウィルス株",
+    "reading": "ウィルスかぶ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2864198",
+    "written": "リビルド品",
+    "reading": "リビルドひん",
+    "upstream": "propose",
+    "note": "Kana garbled: ト of リビルト appended; the spelling is a misspelling, not worth proposing."
+  },
+  {
+    "id": "2864377",
+    "written": "体によい",
+    "reading": "からだによい",
+    "upstream": "restricted",
+    "note": "JMdict has からだによい, but restricted to 体に良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2864480",
+    "written": "筋道が通った",
+    "reading": "すじみちがとおった",
+    "upstream": "propose",
+    "note": "Kana misplaced: が was put inside 筋 and の kept; the corrected reading (が for の) is a real variant worth proposing."
+  },
+  {
+    "id": "2864701",
+    "written": "検索クエリー",
+    "reading": "けんさくクエリー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2864843",
+    "written": "ご存知のとうり",
+    "reading": "ごぞんじのとうり",
+    "upstream": "none",
+    "note": "Kana variant: どうり/とうり misspells どおり/とおり with the same pronunciation."
+  },
+  {
+    "id": "2864891",
+    "written": "ラニャーニャ現象",
+    "reading": "ラニャーニャげんしょう",
+    "upstream": "none",
+    "note": "Misspelling: ラニャーニャ for ラニーニャ."
+  },
+  {
+    "id": "2864973",
+    "written": "ヴァージョン管理",
+    "reading": "ヴァージョンかんり",
+    "upstream": "none",
+    "note": "Loanword kana variant: ヴ-row versus バ-row spelling of the same word."
+  },
+  {
+    "id": "2865031",
+    "written": "逆コンパイラー",
+    "reading": "ぎゃくコンパイラー",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2865153",
+    "written": "バンダル人",
+    "reading": "バンダルじん",
+    "upstream": "none",
+    "note": "Loanword kana variant: ヴ-row versus バ-row spelling of the same word."
+  },
+  {
+    "id": "2865176",
+    "written": "ビア缶",
+    "reading": "ビアかん",
+    "upstream": "propose",
+    "note": "Kana garbled: ール of ビール appended; ビア is a real word form, so the corrected reading is probably worth proposing."
+  },
+  {
+    "id": "2865384",
+    "written": "グリオキサル酸",
+    "reading": "グリオキサルさん",
+    "upstream": "propose",
+    "note": "Different name: glyoxalic (グリオキサル) is a real alternate name with a distinct pronunciation; unsure."
+  },
+  {
+    "id": "2865906",
+    "written": "トー横",
+    "reading": "トーよこ",
+    "upstream": "none",
+    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2865907",
+    "written": "トー横キッズ",
+    "reading": "トーよこキッズ",
+    "upstream": "none",
+    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+  },
+  {
+    "id": "2866028",
+    "written": "体いくつあっても足りない",
+    "reading": "からだいくつあってもたりない",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2866203",
+    "written": "粉がらし",
+    "reading": "こながらし",
+    "upstream": "propose",
+    "note": "Voiced variant: こながらし is a real rendaku pronunciation (compare ねりがらし)."
+  },
+  {
+    "id": "2866807",
+    "written": "ギョーザの皮",
+    "reading": "ギョーザのかわ",
+    "upstream": "none",
+    "note": "Kana variant: ギョーザ for ぎょうざ, same sound."
+  },
+  {
+    "id": "2867482",
+    "written": "サイム油",
+    "reading": "サイムゆ",
+    "upstream": "none",
+    "note": "Misspelling: サイム for タイム."
+  },
+  {
+    "id": "2867772",
+    "written": "テイザー銃",
+    "reading": "テイザーじゅう",
+    "upstream": "none",
+    "note": "Loanword kana variant: テイザー for テーザー."
+  },
+  {
+    "id": "2868025",
+    "written": "コンピュータビジョン症候群",
+    "reading": "コンピュータビジョンしょうこうぐん",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2868487",
+    "written": "移籍ウインドウ",
+    "reading": "いせきウインドウ",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2868533",
+    "written": "選手層の厚い",
+    "reading": "せんしゅそうのあつい",
+    "upstream": "propose",
+    "note": "Kana misplaced: の was put inside 選 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+  },
+  {
+    "id": "2868535",
+    "written": "層の厚い",
+    "reading": "そうのあつい",
+    "upstream": "propose",
+    "note": "Kana misplaced: の was put inside 層 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+  },
+  {
+    "id": "2868536",
+    "written": "層の薄い",
+    "reading": "そうのうすい",
+    "upstream": "propose",
+    "note": "Kana misplaced: の was put inside 層 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+  },
+  {
+    "id": "2868676",
+    "written": "コンピューター組版",
+    "reading": "コンピューターくみはん",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2868709",
+    "written": "レヴィー小体",
+    "reading": "レヴィーしょうたい",
+    "upstream": "none",
+    "note": "Loanword kana variant: ヴ-row versus バ-row spelling of the same word."
+  },
+  {
+    "id": "2868903",
+    "written": "缶チューハイ",
+    "reading": "かんチューハイ",
+    "upstream": "none",
+    "note": "Kana variant: チュー for ちゅう, same sound."
+  },
+  {
+    "id": "2868911",
+    "written": "おーけー牧場",
+    "reading": "おーけーぼくじょう",
+    "upstream": "none",
+    "note": "Kana variant; おーけー is a distinct pronunciation from オッケー, but the catchphrase is said オッケー; unsure."
+  },
+  {
+    "id": "2868911",
+    "written": "オーケー牧場",
+    "reading": "オーケーぼくじょう",
+    "upstream": "propose",
+    "note": "Kana garbled: ッ inserted after オー; the corrected reading is a kana variant (unsure whether worth proposing; see おーけー牧場)."
+  },
+  {
+    "id": "2868911",
+    "written": "おっけい牧場",
+    "reading": "おっけいぼくじょう",
+    "upstream": "none",
+    "note": "Kana garbled: ー appended after い; the corrected reading is a kana variant of オッケー."
+  },
+  {
+    "id": "2868911",
+    "written": "オッケイ牧場",
+    "reading": "オッケイぼくじょう",
+    "upstream": "none",
+    "note": "Kana garbled: ー appended after イ; the corrected reading is a kana variant of オッケー."
+  },
+  {
+    "id": "2869118",
+    "written": "機内エンターテイメント",
+    "reading": "きないエンターテイメント",
+    "upstream": "none",
+    "note": "Loanword kana variant: common エンターテイメント for エンターテインメント; leaning none."
+  },
+  {
+    "id": "2869137",
+    "written": "ウインブルドン選手権",
+    "reading": "ウインブルドンせんしゅけん",
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
+  },
+  {
+    "id": "2869552",
+    "written": "急患センタ",
+    "reading": "きゅうかんセンタ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2869620",
+    "written": "気持ちがよい",
+    "reading": "きもちがよい",
+    "upstream": "restricted",
+    "note": "JMdict has きもちがよい, but restricted to 気持ちが良い; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2869699",
+    "written": "けんかするほど仲がよい",
+    "reading": "けんかするほどなかがよい",
+    "upstream": "propose",
+    "note": "Different reading: よい instead of いい, a real distinct form."
+  },
+  {
+    "id": "2869699",
+    "written": "ケンカするほど仲がよい",
+    "reading": "けンカするほどなかがよい",
+    "upstream": "propose",
+    "note": "Katakana partly converted: ケ became け while ンカ stayed katakana; the corrected reading is the よい variant worth proposing."
+  },
+  {
+    "id": "2869699",
+    "written": "喧嘩するほど仲がよい",
+    "reading": "けんかするほどなかがよい",
+    "upstream": "propose",
+    "note": "Different reading: よい instead of いい, a real distinct form."
+  },
+  {
+    "id": "2869938",
+    "written": "反社会性パーソナリティー障害",
+    "reading": "はんしゃかいせいパーソナリティーしょうがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2869939",
+    "written": "非社会性パーソナリティー障害",
+    "reading": "ひしゃかいせいパーソナリティーしょうがい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2870020",
+    "written": "反社会性パーソナリティー症",
+    "reading": "はんしゃかいせいパーソナリティーしょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2870021",
+    "written": "パーソナリティー症",
+    "reading": "パーソナリティーしょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2870029",
+    "written": "境界性パーソナリティー症",
+    "reading": "きょうかいせいパーソナリティーしょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2870265",
+    "written": "星のしたに生まれる",
+    "reading": "ほしのしたにうまれる",
+    "upstream": "restricted",
+    "note": "JMdict has ほしのしたにうまれる, but restricted to 星の下に生まれる; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2870432",
+    "written": "言ったもの勝ち",
+    "reading": "いったものがち",
+    "upstream": "restricted",
+    "note": "JMdict has いったものがち, but restricted to 言った者勝ち; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2870532",
+    "written": "眉１つ動かさぬ",
+    "reading": "まゆひとつうごかさぬ",
+    "upstream": "propose",
+    "note": "Different ending: classical negative ぬ instead of ない, a real distinct form."
+  },
+  {
+    "id": "2870532",
+    "written": "眉一つ動かさぬ",
+    "reading": "まゆひとつうごかさぬ",
+    "upstream": "propose",
+    "note": "Different ending: classical negative ぬ instead of ない, a real distinct form."
+  },
+  {
+    "id": "2870548",
+    "written": "大バーバ",
+    "reading": "おおバーバ",
+    "upstream": "none",
+    "note": "Kana variant: バーバ for ばあば, same sound."
+  },
+  {
+    "id": "2870701",
+    "written": "羞恥プレー",
+    "reading": "しゅうちプレー",
+    "upstream": "none",
+    "note": "Loanword kana variant: プレー for プレイ."
+  },
+  {
+    "id": "2870729",
+    "written": "攻勢かける",
+    "reading": "こうせいかける",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2870729",
+    "written": "攻勢掛ける",
+    "reading": "こうせいかける",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2870777",
+    "written": "侍ふ",
+    "reading": "さぶらふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2870777",
+    "written": "候ふ",
+    "reading": "さぶらふ",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2870927",
+    "written": "追随を許さず",
+    "reading": "ついずいをゆるさず",
+    "upstream": "propose",
+    "note": "Kana doubled: さ repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "2870927",
+    "written": "追随を許さぬ",
+    "reading": "ついずいをゆるさぬ",
+    "upstream": "propose",
+    "note": "Kana doubled: さ repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "2871293",
+    "written": "こっから先",
+    "reading": "こっからさき",
+    "upstream": "propose",
+    "note": "Colloquial contraction: っから for こから, a real distinct spoken form."
+  },
+  {
+    "id": "2871306",
+    "written": "そっから先",
+    "reading": "そっからさき",
+    "upstream": "propose",
+    "note": "Colloquial contraction: っから for こから, a real distinct spoken form."
+  },
+  {
+    "id": "2871551",
+    "written": "雲つく",
+    "reading": "くもつく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2871551",
+    "written": "雲衝く",
+    "reading": "くもつく",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2871731",
+    "written": "思へらく",
+    "reading": "おもへらく",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2871731",
+    "written": "謂へらく",
+    "reading": "おもへらく",
+    "upstream": "none",
+    "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
+  },
+  {
+    "id": "2871810",
+    "written": "おさまりの悪い",
+    "reading": "おさまりのわるい",
+    "upstream": "propose",
+    "note": "Particle duplicated: が kept after の; the corrected reading (の for が) is a real variant worth proposing."
+  },
+  {
+    "id": "2871810",
+    "written": "収まりのわるい",
+    "reading": "おさまりのわるい",
+    "upstream": "propose",
+    "note": "Particle swap: の instead of が in attributive use, a real distinct form."
+  },
+  {
+    "id": "2871810",
+    "written": "収まりの悪い",
+    "reading": "おさまりのわるい",
+    "upstream": "propose",
+    "note": "Particle duplicated: が kept after の; the corrected reading (の for が) is a real variant worth proposing."
+  },
+  {
+    "id": "2872436",
+    "written": "引くに引かれぬ",
+    "reading": "ひくにひかれぬ",
+    "upstream": "propose",
+    "note": "Different form: 引かれぬ (older potential) instead of 引けない, a real variant."
+  },
+  {
+    "id": "2872436",
+    "written": "引くに引けぬ",
+    "reading": "ひくにひけぬ",
+    "upstream": "propose",
+    "note": "Kana doubled: け repeated; the corrected reading is a real classical ending worth proposing."
+  },
+  {
+    "id": "2872981",
+    "written": "身の程知れ",
+    "reading": "みのほどしれ",
+    "upstream": "propose",
+    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "5741603",
+    "written": "坊つちやん",
+    "reading": "ぼつちやん",
+    "upstream": "none",
+    "note": "Historical kana: full-size つ and や for っ and ゃ; the literal reading is correct."
+  },
+  {
+    "id": "5743381",
+    "written": "石川五ェ門",
+    "reading": "いしかわごェもん",
+    "upstream": "none",
+    "note": "Small ェ belongs to 五ェ門 (ごェもん), not after い."
+  }
+]

@@ -51,6 +51,8 @@ export async function generatorDigest() {
     inputs.push(`scripts/${name}`, "\0", await readFile(new URL(`../scripts/${name}`, import.meta.url)));
   }
   inputs.push("data/lexical-evidence.json", "\0", await readFile(new URL("../data/lexical-evidence.json", import.meta.url)));
+  const synthesizedPairs = new URL("../data/synthesized-pairs.json", import.meta.url);
+  inputs.push("data/synthesized-pairs.json", "\0", await readFile(synthesizedPairs).catch(() => ""));
   const hash = createHash("sha256");
   for (const input of inputs) hash.update(input);
   return hash.digest("hex");

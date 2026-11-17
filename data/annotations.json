@@ -984,5 +984,29 @@
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
+  },
+  {
+    "id": "1838120",
+    "written": "立待ちの月",
+    "reading": "たちまちづき",
+    "segments": [
+      [
+        "立",
+        "たち"
+      ],
+      [
+        "待",
+        "ま"
+      ],
+      "ち",
+      [
+        "の月",
+        "づき"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 1838120 pairs the search-only spelling 立待ちの月, which writes の, with たちまちづき, the reading of 立待月, which has no の. The okurigana ち after 待 is pronounced and stays outside the ruby; the unpronounced の belongs with 月 under its rendaku reading づき.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
   }
 ]

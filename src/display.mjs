@@ -17,9 +17,16 @@ function needsRuby(base, reading) {
  * sits beside it, as in そっぽ向く read そっぽをむく. Where the reading repeats
  * a group's whole leading or trailing kana run, that run is shown as plain
  * text, as long as the rest of the group keeps part of the reading.
+ *
+ * A group of only kana holds no character whose sound peeling could take, so
+ * any kana the reading repeats at its edges is shown plain, leaving the
+ * smallest group that carries the contradiction: 黒んぼう read くろんぼ shows
+ * ん plain beside ぼう read ぼ. A cut never falls before a small kana, which
+ * belongs with the kana before it.
  */
 function peelKana([written, reading]) {
   const units = splitGraphemes(written), sounds = splitGraphemes(reading);
+  if (units.every(isKana)) return peelKanaGroup(units, sounds) ?? [[written, reading]];
   let start = 0, end = units.length;
   while (start < end && isKana(units[start])) ++start;
   while (end > start && isKana(units[end - 1])) --end;
@@ -27,6 +34,23 @@ function peelKana([written, reading]) {
   const leading = repeats(units.slice(0, start), sounds) ? start : 0;
   const trailing = repeats(units.slice(end).reverse(), [...sounds].reverse()) ? units.length - end : 0;
   if (start === end || leading + trailing === 0 || leading + trailing >= sounds.length) return [[written, reading]];
+  return [
+    units.slice(0, leading).join(""),
+    [units.slice(leading, units.length - trailing).join(""), sounds.slice(leading, sounds.length - trailing).join("")],
+    units.slice(units.length - trailing).join("")
+  ].filter(part => part !== "");
+}
+
+const isSmallKana = unit => /^[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ]$/u.test(unit);
+const sameKana = (left, right) => right !== undefined && normalizeKana(left) === normalizeKana(right);
+
+function peelKanaGroup(units, sounds) {
+  let leading = 0, trailing = 0;
+  // Keep at least one written unit and one sound in the group.
+  const room = () => units.length - leading - trailing > 1 && sounds.length - leading - trailing > 1;
+  while (room() && sameKana(units[leading], sounds[leading]) && !isSmallKana(units[leading + 1]) && !isSmallKana(sounds[leading + 1])) ++leading;
+  while (room() && sameKana(units.at(-1 - trailing), sounds.at(-1 - trailing)) && !isSmallKana(units.at(-1 - trailing))) ++trailing;
+  if (leading + trailing === 0) return undefined;
   return [
     units.slice(0, leading).join(""),
     [units.slice(leading, units.length - trailing).join(""), sounds.slice(leading, sounds.length - trailing).join("")],

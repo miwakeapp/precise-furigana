@@ -19,8 +19,12 @@ export function splitGraphemes(text) {
   return Array.from(graphemeSegmenter.segment(text), part => part.segment);
 }
 
+// Hiragana, the long-vowel mark, 々, and unified ideographs are unchanged by normalization.
+const alreadyNormal = /^[\u3041-\u3096\u30fc\u3005\u3400-\u4dbf\u4e00-\u9fff]*$/u;
+
 /** Normalize only for comparison; callers retain the original text for output. */
 export function normalizeKana(text) {
+  if (alreadyNormal.test(text)) return text;
   return text.normalize("NFKC").replace(/[\u30a1-\u30f6]/gu, character =>
     String.fromCodePoint(character.codePointAt(0) - 0x60)
   ).normalize("NFC");

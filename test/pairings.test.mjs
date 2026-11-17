@@ -22,7 +22,7 @@ test("a reading fits a spelling when the spelling's kana appear in it in order",
 });
 
 test("only pairs with a search-only form are flagged as mismatched", () => {
-  const pair = (written, reading, writtenTags = [], readingTags = []) => ({ written, reading, writtenTags, readingTags });
+  const pair = (spelling, reading, spellingTags = [], readingTags = []) => ({ spelling, reading, spellingTags, readingTags });
   assert.ok(isMismatched(pair("気持ちよい", "きもちいい", ["sK"])));
   assert.ok(isMismatched(pair("一日じゅう", "いちにちぢゅう", [], ["sk"])));
   assert.ok(!isMismatched(pair("宣ふ", "のたまう")));
@@ -38,20 +38,20 @@ test("the implied reading keeps contradicted kana as written and removes an omit
 
 test("only spellings without a fitting pair need a synthesized one, and the reviewed list must match", () => {
   const records = [
-    { id: "1", written: "気持ちよい", reading: "きもちいい", segments: [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"] },
-    { id: "2", written: "一日じゅう", reading: "いちにちじゅう", segments: [["一", "いち"], ["日", "にち"], "じゅう"] },
-    { id: "2", written: "一日じゅう", reading: "いちにちぢゅう", segments: [["一", "いち"], ["日", "にち"], ["じ", "ぢ"], "ゅう"] }
+    { id: "1", spelling: "気持ちよい", reading: "きもちいい", segments: [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"] },
+    { id: "2", spelling: "一日じゅう", reading: "いちにちじゅう", segments: [["一", "いち"], ["日", "にち"], "じゅう"] },
+    { id: "2", spelling: "一日じゅう", reading: "いちにちぢゅう", segments: [["一", "いち"], ["日", "にち"], ["じ", "ぢ"], "ゅう"] }
   ];
-  const jmdictPairs = new Set(records.map(record => `${record.id}\t${record.written}\t${record.reading}`));
+  const jmdictPairs = new Set(records.map(record => `${record.id}\t${record.spelling}\t${record.reading}`));
   const missing = planSynthesizedPairs(records, new Map(), [], jmdictPairs);
-  assert.deepEqual(missing.missing.map(item => [item.written, item.reading]), [["気持ちよい", "きもちよい"]]);
+  assert.deepEqual(missing.missing.map(item => [item.spelling, item.reading]), [["気持ちよい", "きもちよい"]]);
   assert.ok(missing.problems.length > 0);
-  const item = { id: "1", written: "気持ちよい", reading: "きもちよい", upstream: "none", note: "" };
+  const item = { id: "1", spelling: "気持ちよい", reading: "きもちよい", upstream: "none", note: "" };
   const planned = planSynthesizedPairs(records, new Map(), [item], jmdictPairs);
   assert.deepEqual(planned.problems, []);
   assert.deepEqual(planned.pairs, [item]);
   // A listed pair that JMdict now has, or that no longer needs synthesizing, must be removed.
-  assert.ok(planSynthesizedPairs(records, new Map(), [item, { ...item, id: "2", written: "一日じゅう", reading: "いちにちじゅう" }], jmdictPairs).problems.length > 0);
+  assert.ok(planSynthesizedPairs(records, new Map(), [item, { ...item, id: "2", spelling: "一日じゅう", reading: "いちにちじゅう" }], jmdictPairs).problems.length > 0);
   assert.ok(planSynthesizedPairs(records, new Map(), [item], new Set([...jmdictPairs, "1\t気持ちよい\tきもちよい"])).problems.length > 0);
   assert.ok(planSynthesizedPairs(records, new Map(), [{ ...item, reading: "きもちええ" }], jmdictPairs).problems.length > 0);
   assert.ok(planSynthesizedPairs(records, new Map(), [{ ...item, upstream: "unreviewed" }], jmdictPairs).problems.length > 0);

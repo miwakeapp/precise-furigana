@@ -24,16 +24,16 @@ function needsRuby(base, reading) {
  * ん plain beside ぼう read ぼ. A cut never falls before a small kana, which
  * belongs with the kana before it.
  */
-function peelKana([written, reading]) {
-  const units = splitGraphemes(written), sounds = splitGraphemes(reading);
-  if (units.every(isKana)) return peelKanaGroup(units, sounds) ?? [[written, reading]];
+function peelKana([spelling, reading]) {
+  const units = splitGraphemes(spelling), sounds = splitGraphemes(reading);
+  if (units.every(isKana)) return peelKanaGroup(units, sounds) ?? [[spelling, reading]];
   let start = 0, end = units.length;
   while (start < end && isKana(units[start])) ++start;
   while (end > start && isKana(units[end - 1])) --end;
   const repeats = (run, candidates) => run.length > 0 && run.every((unit, index) => normalizeKana(unit) === normalizeKana(candidates[index] ?? ""));
   const leading = repeats(units.slice(0, start), sounds) ? start : 0;
   const trailing = repeats(units.slice(end).reverse(), [...sounds].reverse()) ? units.length - end : 0;
-  if (start === end || leading + trailing === 0 || leading + trailing >= sounds.length) return [[written, reading]];
+  if (start === end || leading + trailing === 0 || leading + trailing >= sounds.length) return [[spelling, reading]];
   return [
     units.slice(0, leading).join(""),
     [units.slice(leading, units.length - trailing).join(""), sounds.slice(leading, sounds.length - trailing).join("")],
@@ -75,8 +75,8 @@ export function displaySegments(segments) {
       push(segment);
       continue;
     }
-    const [written, reading] = segment;
-    const units = splitGraphemes(written);
+    const [spelling, reading] = segment;
+    const units = splitGraphemes(spelling);
     const silent = unit => isSilentPunctuation(unit) && !reading.includes(unit);
     let start = 0, end = units.length;
     while (start < end - 1 && silent(units[start])) ++start;
@@ -91,8 +91,8 @@ export function displaySegments(segments) {
 }
 
 /** Check that release segments are canonical and spell out the record's reading. */
-export function validateDisplayAlignment(written, reading, segments) {
-  if (!Array.isArray(segments) || segments.length === 0) throw new Error(`Missing alignment: ${written}/${reading}`);
+export function validateDisplayAlignment(spelling, reading, segments) {
+  if (!Array.isArray(segments) || segments.length === 0) throw new Error(`Missing alignment: ${spelling}/${reading}`);
   for (const [index, segment] of segments.entries()) {
     if (typeof segment === "string") {
       if (segment.length === 0) throw new Error("Empty plain segment");
@@ -107,8 +107,8 @@ export function validateDisplayAlignment(written, reading, segments) {
       throw new Error(`Ruby over kana: ${JSON.stringify(segment)}`);
     }
   }
-  if (segments.map(segmentText).join("") !== written) {
-    throw new Error(`Alignment does not reconstruct ${written}: ${JSON.stringify(segments)}`);
+  if (segments.map(segmentText).join("") !== spelling) {
+    throw new Error(`Alignment does not reconstruct ${spelling}: ${JSON.stringify(segments)}`);
   }
   if (pronounced(segments.map(segmentReading).join("")) !== pronounced(reading)) {
     throw new Error(`Alignment does not account for ${reading}: ${JSON.stringify(segments)}`);

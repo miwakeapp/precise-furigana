@@ -15,7 +15,7 @@ function entry(id, spellings, reading) {
 }
 
 function fixtureAligner(alignments) {
-  return (written, reading) => alignments.get(written) ?? { status: "fallback", segments: [[written, reading]] };
+  return (spelling, reading) => alignments.get(spelling) ?? { status: "fallback", segments: [[spelling, reading]] };
 }
 
 test("omitted okurigana attaches its reading to the immediately preceding kanji", () => {
@@ -46,7 +46,7 @@ test("an omitted particle groups its two neighbors, wherever an earlier stage pu
   ] };
   const particles = deriveOmittedParticles(jmdict);
   assert.deepEqual([...particles.pairs], [[pairKey("五重塔", "ごじゅうのとう"), [2]], [pairKey("水差す", "みずをさす"), [1]]]);
-  const join = (written, reading, segments) => joinOmittedParticles({ segments }, omittedParticleSites(particles, written, reading)).segments;
+  const join = (spelling, reading, segments) => joinOmittedParticles({ segments }, omittedParticleSites(particles, spelling, reading)).segments;
   assert.deepEqual(join("五重塔", "ごじゅうのとう", [["五", "ご"], ["重", "じゅうの"], ["塔", "とう"]]), [["五", "ご"], ["重塔", "じゅうのとう"]]);
   assert.deepEqual(join("五重塔", "ごじゅうのとう", [["五", "ご"], ["重", "じゅう"], ["塔", "のとう"]]), [["五", "ご"], ["重塔", "じゅうのとう"]]);
   assert.deepEqual(join("水差す", "みずをさす", [["水", "みずを"], ["差", "さ"], "す"]), [["水差", "みずをさ"], "す"]);
@@ -326,7 +326,7 @@ test("kanji substitutions require a shared kanji anchor, unchanged kana, and exp
     entry("1000002", ["押し図", "推す図"], "おしず"),
     entry("1000003", ["人事", "人々"], "ひとごと")
   ] };
-  const result = deriveVariantAlignments(jmdict, (written, reading) => ({ status: "aligned", segments: [[written, reading]] }), { hanSubstitutions: true });
+  const result = deriveVariantAlignments(jmdict, (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] }), { hanSubstitutions: true });
   assert.equal(result.wordAlignments.size, 0);
 });
 
@@ -385,7 +385,7 @@ test("counter symbol substitution cannot change other characters or evade readin
     entry("1000001", ["ヶ所", "か処"], "かしょ"),
     entry("1000002", ["ヶ所", "き所"], "かしょ")
   ] };
-  const result = deriveVariantAlignments(jmdict, (written, reading) => ({ status: "aligned", segments: [[written, reading]] }), { counterSymbols: true });
+  const result = deriveVariantAlignments(jmdict, (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] }), { counterSymbols: true });
   assert.equal(result.wordAlignments.size, 0);
 });
 

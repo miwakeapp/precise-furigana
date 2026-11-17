@@ -10,10 +10,10 @@ export async function evaluateDataset(dataset, goldText) {
   let falsePositive = 0;
   let falseNegative = 0;
   for (const example of gold) {
-    validateAlignment(example.written, example.reading, example.segments);
+    validateAlignment(example.spelling, example.reading, example.segments);
     // Evaluate the algorithm directly; reviewed annotations cannot conceal regressions.
-    const actual = dataset.align(example.written, example.reading);
-    validateAlignment(example.written, example.reading, actual.segments);
+    const actual = dataset.align(example.spelling, example.reading);
+    validateAlignment(example.spelling, example.reading, actual.segments);
     const expectedBoundaries = new Set(boundaries(example.segments));
     const actualBoundaries = new Set(boundaries(actual.segments));
     for (const boundary of actualBoundaries) {

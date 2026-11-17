@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveNativeCompoundAlignments } from "../src/native-compounds.mjs";
 
-const entry = (id, written, reading, readingTags = [], writtenTags = []) => ({
-  id, kanji: [{ text: written, tags: writtenTags }], kana: [{ text: reading, tags: readingTags, appliesToKanji: ["*"] }]
+const entry = (id, spelling, reading, readingTags = [], spellingTags = []) => ({
+  id, kanji: [{ text: spelling, tags: spellingTags }], kana: [{ text: reading, tags: readingTags, appliesToKanji: ["*"] }]
 });
-const grouped = (written, reading) => ({ status: "aligned", segments: [[written, reading]] });
+const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
 
 test("attested native contractions preserve original reading script and expose source evidence", () => {
   const jmdict = { words: [entry("1", "心地", "ココチ")] };
@@ -13,12 +13,12 @@ test("attested native contractions preserve original reading script and expose s
   const result = deriveNativeCompoundAlignments(jmdict, primary, grouped);
   assert.deepEqual(result.wordAlignments.get("心地").get("ココチ"), [["心", "ココ"], ["地", "チ"]]);
   assert.deepEqual(result.witnesses[0].characters, [{
-    character: "心", written: "心", reading: "ココ", codepoint: "U+5FC3",
+    character: "心", spelling: "心", reading: "ココ", codepoint: "U+5FC3",
     rule: "attested-native-final-mora-contraction",
     derivations: [{ source: "KANJIDIC2", field: "ja_kun", value: "こころ", omittedMora: "ろ" }],
-    span: { written: "心地", reading: "ココチ", writtenStart: 0, readingStart: 0 }
+    span: { spelling: "心地", reading: "ココチ", spellingStart: 0, readingStart: 0 }
   }]);
-  assert.deepEqual(result.witnesses[0].companions, [{ character: "地", written: "地", reading: "チ", source: "KANJIDIC2", values: ["チ"] }]);
+  assert.deepEqual(result.witnesses[0].companions, [{ character: "地", spelling: "地", reading: "チ", source: "KANJIDIC2", values: ["チ"] }]);
   assert.equal(result.wordAlignments.has("心知"), false);
 });
 
@@ -90,12 +90,12 @@ test("irregular subwords prohibit extrapolation while spelling-specific phonetic
 test("the complete supplied baseline keeps every existing boundary and uncertain status", () => {
   const jmdict = { words: [entry("1", "居心地", "いごこち"), entry("2", "心地", "ここち")] };
   const primary = new Map([["居", ["い"]], ["心", ["こころ", "-ごころ"]], ["地", ["チ"]]]);
-  const align = (written, reading) => written === "居心地" ? {
+  const align = (spelling, reading) => spelling === "居心地" ? {
     status: "aligned", segments: [["居", "い"], ["心地", "ごこち"]]
-  } : { status: "ambiguous", segments: [[written, reading]] };
+  } : { status: "ambiguous", segments: [[spelling, reading]] };
   const result = deriveNativeCompoundAlignments(jmdict, primary, align);
   assert.deepEqual(result.wordAlignments.get("居心地").get("いごこち"), [["居", "い"], ["心", "ごこ"], ["地", "ち"]]);
-  assert.equal(result.witnesses[0].characters[0].span.writtenStart, 1);
+  assert.equal(result.witnesses[0].characters[0].span.spellingStart, 1);
   assert.equal(result.wordAlignments.has("心地"), false);
 });
 

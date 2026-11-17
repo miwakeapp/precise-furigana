@@ -79,11 +79,11 @@ function compileReadings(characterReadings, weakCharacterReadings, unihanReading
   return { exact, native, whole };
 }
 
-function findIrregularRanges(written, reading, irregularWords) {
+function findIrregularRanges(spelling, reading, irregularWords) {
   const result = [];
-  for (let start = 0; start < written.length; ++start) {
-    for (let end = start + 1; end <= written.length; ++end) {
-      const candidates = irregularWords.get(written.slice(start, end).join(""));
+  for (let start = 0; start < spelling.length; ++start) {
+    for (let end = start + 1; end <= spelling.length; ++end) {
+      const candidates = irregularWords.get(spelling.slice(start, end).join(""));
       if (candidates === undefined) continue;
       for (let readStart = 0; readStart < reading.length; ++readStart) {
         for (const candidate of candidates) {
@@ -97,8 +97,8 @@ function findIrregularRanges(written, reading, irregularWords) {
   return result;
 }
 
-function refineSpan(written, reading, readings, ranges, writtenOffset, readingOffset) {
-  const characters = splitGraphemes(written), kana = splitGraphemes(reading);
+function refineSpan(spelling, reading, readings, ranges, spellingOffset, readingOffset) {
+  const characters = splitGraphemes(spelling), kana = splitGraphemes(reading);
   if (characters.length < 2 || !characters.every(isIdeograph) || !isKana(reading)) return undefined;
   const normalizedSpan = normalizeKana(reading);
   const memo = new Map();
@@ -117,7 +117,7 @@ function refineSpan(written, reading, readings, ranges, writtenOffset, readingOf
       const target = normalizeKana(piece);
       if (/^[ぁぃぅぇぉゃゅょゎっんー]/u.test(target)) continue;
       const direct = exact.get(target);
-      const irregular = ranges.some(range => range.start <= writtenOffset + index && writtenOffset + index < range.end &&
+      const irregular = ranges.some(range => range.start <= spellingOffset + index && spellingOffset + index < range.end &&
         range.readStart <= readingOffset + offset && readingOffset + end <= range.readEnd);
       if (direct !== undefined && !direct.primary && irregular) continue;
       // A full known reading that crosses the proposed cut can explain the
@@ -127,14 +127,14 @@ function refineSpan(written, reading, readings, ranges, writtenOffset, readingOf
       if (direct === undefined && derivations.length === 0) continue;
       const evidence = derivations.length === 0 ? [] : [{
         character,
-        written: characters[index],
+        spelling: characters[index],
         reading: piece,
         codepoint: `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`,
         rule: "attested-native-final-mora-contraction",
         derivations: derivations.map(({ value, omittedMora }) => ({ source: "KANJIDIC2", field: "ja_kun", value, omittedMora })),
-        span: { written, reading, writtenStart: writtenOffset, readingStart: readingOffset }
+        span: { spelling, reading, spellingStart: spellingOffset, readingStart: readingOffset }
       }];
-      const companions = direct?.primary ? [{ character, written: characters[index], reading: piece, source: "KANJIDIC2", values: direct.values }] : [];
+      const companions = direct?.primary ? [{ character, spelling: characters[index], reading: piece, source: "KANJIDIC2", values: direct.values }] : [];
       for (const suffix of visit(index + 1, end, inferred || derivations.length > 0)) {
         solutions.push({
           segments: [[characters[index], piece], ...suffix.segments],
@@ -163,30 +163,30 @@ export function deriveNativeCompoundAlignments(jmdict, characterReadings, align,
   characterReadingBundle
 } = {}) {
   const readings = compileReadings(characterReadings, weakCharacterReadings, unihanReadings, characterReadingBundle, jmdict);
-  const irregularWords = new Map([...makeIrregularWordReadings(jmdict)].map(([written, values]) => [written, values.map(value => splitGraphemes(normalizeKana(value)))]));
+  const irregularWords = new Map([...makeIrregularWordReadings(jmdict)].map(([spelling, values]) => [spelling, values.map(value => splitGraphemes(normalizeKana(value)))]));
   const wordAlignments = new Map();
   const witnesses = [];
   const seen = new Set();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written") continue;
-    const key = pairKey(pair.written, pair.reading);
+    if (pair.kind !== "kanji") continue;
+    const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
-    const original = align(pair.written, pair.reading);
+    const original = align(pair.spelling, pair.reading);
     if (original.status !== "aligned") continue;
     if (!original.segments.some(segment => {
       if (typeof segment === "string") return false;
       const units = splitGraphemes(segment[0]);
       return units.length > 1 && units.every(isIdeograph);
     })) continue;
-    const ranges = findIrregularRanges(splitGraphemes(pair.written), splitGraphemes(pair.reading), irregularWords);
+    const ranges = findIrregularRanges(splitGraphemes(pair.spelling), splitGraphemes(pair.reading), irregularWords);
     const characters = [];
     const companions = [];
-    let writtenOffset = 0, readingOffset = 0;
+    let spellingOffset = 0, readingOffset = 0;
     const segments = original.segments.flatMap(segment => {
-      const written = segmentText(segment), reading = segmentReading(segment);
-      const result = refineSpan(written, reading, readings, ranges, writtenOffset, readingOffset);
-      writtenOffset += splitGraphemes(written).length;
+      const spelling = segmentText(segment), reading = segmentReading(segment);
+      const result = refineSpan(spelling, reading, readings, ranges, spellingOffset, readingOffset);
+      spellingOffset += splitGraphemes(spelling).length;
       readingOffset += splitGraphemes(reading).length;
       if (result === undefined) return [segment];
       characters.push(...result.characters);
@@ -194,11 +194,11 @@ export function deriveNativeCompoundAlignments(jmdict, characterReadings, align,
       return result.segments;
     });
     if (characters.length === 0) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const variants = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const variants = wordAlignments.get(pair.spelling) ?? new Map();
     variants.set(pair.reading, segments);
-    wordAlignments.set(pair.written, variants);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading, characters, companions });
+    wordAlignments.set(pair.spelling, variants);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, characters, companions });
   }
   return { wordAlignments, witnesses };
 }

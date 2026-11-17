@@ -17,7 +17,7 @@ const evaluation = await evaluateDataset(dataset, goldText);
 console.log(JSON.stringify(evaluation.summary, undefined, 2));
 if (evaluation.summary.passed !== evaluation.summary.examples) {
   for (const failure of evaluation.results.filter(result => !result.pass)) {
-    console.error(`${failure.written}/${failure.reading}: expected ${JSON.stringify(failure.segments)}, got ${JSON.stringify(failure.actual)}`);
+    console.error(`${failure.spelling}/${failure.reading}: expected ${JSON.stringify(failure.segments)}, got ${JSON.stringify(failure.actual)}`);
   }
   console.error("Regression evaluation failed; generated artifacts are not releasable");
   process.exitCode = 1;
@@ -28,25 +28,25 @@ const counts = { entries: 0, pairs: 0, synthesized: 0 };
 const drops = dataset.omittedParticles?.drops ?? new Map();
 const records = [];
 for (const pair of dataset.pairs()) {
-  const key = recordKey(pair.id, pair.written, pair.reading);
+  const key = recordKey(pair.id, pair.spelling, pair.reading);
   if (seen.has(key)) continue;
   seen.add(key);
   const { segments } = dataset.alignPair(pair);
-  const record = { written: pair.written, reading: pair.reading, segments: displaySegments(segments) };
-  records.push({ id: pair.id, written: pair.written, reading: pair.reading, segments, displaySegments: record.segments });
-  if (isMismatched(pair, drops.get(pairKey(pair.written, pair.reading)), record.segments)) record.pairing = "mismatched";
+  const record = { spelling: pair.spelling, reading: pair.reading, segments: displaySegments(segments) };
+  records.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, segments, displaySegments: record.segments });
+  if (isMismatched(pair, drops.get(pairKey(pair.spelling, pair.reading)), record.segments)) record.pairing = "mismatched";
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;
 }
 
 // Every spelling keeps at least one pair that fits its kana; where JMdict has none, the reviewed list supplies one.
 const reviewed = existsSync(synthesizedPairsURL) ? JSON.parse(await readFile(synthesizedPairsURL, "utf8")) : [];
-const jmdictPairs = new Set(records.map(record => `${record.id}\t${record.written}\t${record.reading}`));
+const jmdictPairs = new Set(records.map(record => `${record.id}\t${record.spelling}\t${record.reading}`));
 const plan = planSynthesizedPairs(records, drops, reviewed, jmdictPairs);
 if (updateSynthesizedPairs) {
   // Keep every listed entry, even one with a problem, unless it is obsolete; problems are fixed by hand.
   const kept = reviewed.filter(item => !plan.obsolete.includes(item));
-  const next = [...kept, ...plan.missing].sort((left, right) => left.id.localeCompare(right.id) || left.written.localeCompare(right.written));
+  const next = [...kept, ...plan.missing].sort((left, right) => left.id.localeCompare(right.id) || left.spelling.localeCompare(right.spelling));
   await writeFile(synthesizedPairsURL, JSON.stringify(next, undefined, 2) + "\n");
   console.log(`Wrote ${next.length} synthesized pairs, ${plan.missing.length} of them new and unreviewed`);
 } else if (plan.problems.length) {
@@ -56,9 +56,9 @@ if (updateSynthesizedPairs) {
 }
 for (const item of plan.pairs) {
   const { segments } = dataset.alignPair(item);
-  validateAlignment(item.written, item.reading, segments);
-  seen.add(recordKey(item.id, item.written, item.reading));
-  (entries[item.id] ??= []).push({ written: item.written, reading: item.reading, segments: displaySegments(segments), pairing: "synthesized" });
+  validateAlignment(item.spelling, item.reading, segments);
+  seen.add(recordKey(item.id, item.spelling, item.reading));
+  (entries[item.id] ??= []).push({ spelling: item.spelling, reading: item.reading, segments: displaySegments(segments), pairing: "synthesized" });
   ++counts.synthesized;
 }
 for (const key of dataset.annotations.keys()) {

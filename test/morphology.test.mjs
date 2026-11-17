@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveContinuativeReadings } from "../src/morphology.mjs";
 
-function entry(id, written, reading, partOfSpeech, readingTags = []) {
+function entry(id, spelling, reading, partOfSpeech, readingTags = []) {
   return {
     id,
-    kanji: [{ text: written, tags: [] }],
+    kanji: [{ text: spelling, tags: [] }],
     kana: [{ text: reading, appliesToKanji: ["*"], tags: readingTags }],
     sense: [{ partOfSpeech: [partOfSpeech], appliesToKanji: ["*"], appliesToKana: ["*"] }]
   };
@@ -29,7 +29,7 @@ test("regular ichidan and godan classes produce the continuative form", () => {
     ["植", "うえ"], ["書", "かき"], ["泳", "およぎ"], ["遊", "あそび"], ["読", "よみ"],
     ["死", "しに"], ["帰", "かえり"], ["話", "はなし"], ["待", "まち"], ["買", "かい"]
   ]) assert.deepEqual(readings.get(character), [expected]);
-  assert.deepEqual(witnesses.find(witness => witness.written === "植える"), { id: "1000000", written: "植える", reading: "うえる", stem: "うえ" });
+  assert.deepEqual(witnesses.find(witness => witness.spelling === "植える"), { id: "1000000", spelling: "植える", reading: "うえる", stem: "うえ" });
 });
 
 test("irregular classes, adjectives, nouns, expressions, and suspect readings are excluded", () => {
@@ -83,7 +83,7 @@ test("attested verb components also identify a compound whose second verb is wri
   ];
   const { readings, witnesses } = deriveContinuativeReadings({ words });
   assert.deepEqual(readings.get("押"), ["おし"]);
-  assert.equal(witnesses.some(witness => witness.written === "押しのける"), false);
+  assert.equal(witnesses.some(witness => witness.spelling === "押しのける"), false);
 });
 
 test("written okurigana and verb endings must agree with the reading and class", () => {
@@ -99,5 +99,5 @@ test("normalized stems retain exact source witnesses and deduplicate equivalent 
   const { readings, witnesses } = deriveContinuativeReadings({ words });
   assert.deepEqual(readings.get("植"), ["うえ"]);
   assert.equal(witnesses.length, 2);
-  assert.ok(witnesses.some(witness => witness.written === "植エル" && witness.reading === "ウエル"));
+  assert.ok(witnesses.some(witness => witness.spelling === "植エル" && witness.reading === "ウエル"));
 });

@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { compileLexicalEvidence, refineWithLexicalEvidence } from "../src/lexical-evidence.mjs";
 
-const fact = (written, reading, segments) => ({ id: written, written, reading, segments, reason: "Independently reviewed local sound correspondence", sources: [{ url: "https://example.com/dictionary" }] });
+const fact = (spelling, reading, segments) => ({ id: spelling, spelling, reading, segments, reason: "Independently reviewed local sound correspondence", sources: [{ url: "https://example.com/dictionary" }] });
 const original = segments => ({ status: "aligned", segments });
 
 test("reusable sound opt-ins identify complete safe single-character allocations", () => {
@@ -14,10 +14,10 @@ test("reusable sound opt-ins identify complete safe single-character allocations
     assert.throws(() => compileLexicalEvidence([{ ...source, reusableSegments }]), /reusableSegments/u);
   }
   assert.throws(() => compileLexicalEvidence([{ ...source, id: undefined, reusableSegments: [0] }]), /fact ID/u);
-  for (const [written, reading, segments] of [
+  for (const [spelling, reading, segments] of [
     ["甲乙", "あい", [["甲乙", "あい"]]], ["あ", "あ", ["あ"]], ["々", "あ", [["々", "あ"]]],
     ...["ぁ", "っ", "ん", "ー"].map(reading => ["甲", reading, [["甲", reading]]])
-  ]) assert.throws(() => compileLexicalEvidence([{ ...fact(written, reading, segments), reusableSegments: [0] }]), /reusableSegments/u);
+  ]) assert.throws(() => compileLexicalEvidence([{ ...fact(spelling, reading, segments), reusableSegments: [0] }]), /reusableSegments/u);
 });
 
 test("source entries are JMdict IDs", () => {
@@ -148,8 +148,8 @@ test("reviewed source data has complete projections and no duplicate normalized 
 const compile = (...facts) => compileLexicalEvidence(facts);
 
 test("a complete fact crosses a literal boundary and preserves unchanged evidence", () => {
-  const literal = { written: "う", reading: "う", type: "literal", rules: ["original-literal"] };
-  const known = { written: "丙", reading: "く", type: "character", rules: ["original-proof"] };
+  const literal = { spelling: "う", reading: "う", type: "literal", rules: ["original-literal"] };
+  const known = { spelling: "丙", reading: "く", type: "character", rules: ["original-proof"] };
   const original = { segments: [["甲乙", "かき"], "う", ["丙", "く"]], evidence: [{ type: "dictionary" }, literal, known], status: "ambiguous", score: { cost: 99 } };
   const result = refineWithLexicalEvidence(original, compile(fact("甲乙う丙", "かきうく", [["甲", "か"], ["乙", "き"], "う", ["丙", "く"]])));
   assert.deepEqual(result.segments, [["甲", "か"], ["乙", "き"], "う", ["丙", "く"]]);

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveOnReadingSpellingAlignments } from "../src/on-reading-spelling.mjs";
 
-const entry = (id, written, reading, tags = []) => ({
-  id, kanji: [{ text: written, tags: [] }],
+const entry = (id, spelling, reading, tags = []) => ({
+  id, kanji: [{ text: spelling, tags: [] }],
   kana: [{ text: reading, tags, appliesToKanji: ["*"] }], sense: []
 });
 const source = forms => ({ characters: forms.map(([literal, readings]) => ({
@@ -11,7 +11,7 @@ const source = forms => ({ characters: forms.map(([literal, readings]) => ({
     type: /^[ァ-ヺ]/u.test(value) ? "ja_on" : "ja_kun", value
   } : value) }] }
 })) });
-const grouped = (written, reading) => ({ status: "aligned", segments: [[written, reading]] });
+const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
 const bundle = readings => ({
   schemaVersion: 1,
   source: { name: "Typed fixture", version: "1", sha256: "b".repeat(64), publisher: "English Wiktionary" },
@@ -19,8 +19,8 @@ const bundle = readings => ({
     character, reading, kind, originalForm: reading, tags: [kind, "transliteration"], revisionId: 123
   }))
 });
-function run(written, reading, forms, options, align = grouped) {
-  return deriveOnReadingSpellingAlignments({ words: [entry("1", written, reading)] }, source(forms), align, options);
+function run(spelling, reading, forms, options, align = grouped) {
+  return deriveOnReadingSpellingAlignments({ words: [entry("1", spelling, reading)] }, source(forms), align, options);
 }
 const police = [["警", ["ケイ"]], ["察", ["サツ"]]];
 
@@ -82,7 +82,7 @@ test("old boundaries and nonaligned statuses are preserved", () => {
   const result = run("甲乙丙", "こうえけー", forms, undefined, () => original);
   assert.deepEqual(result.wordAlignments.get("甲乙丙").get("こうえけー"), [["甲", "こ"], ["乙", "うえ"], ["丙", "けー"]]);
   for (const status of ["ambiguous", "fallback", "reviewed"]) {
-    assert.equal(run("警察", "ケーサツ", police, undefined, (written, reading) => ({ ...grouped(written, reading), status })).wordAlignments.size, 0);
+    assert.equal(run("警察", "ケーサツ", police, undefined, (spelling, reading) => ({ ...grouped(spelling, reading), status })).wordAlignments.size, 0);
   }
 });
 
@@ -123,7 +123,7 @@ test("all source claims for the same allocation are retained without creating fa
 test("typed final sokuon checks actual following sounds across existing segment boundaries", () => {
   const characterReadingBundle = bundle([["乙", "カッ"]]);
   const forms = [["甲", ["コウ"]], ["丙", ["カ", "ア"]]];
-  const align = (written, reading) => ({ status: "aligned", segments: [["甲乙", "こーかっ"], ["丙", reading.at(-1)]] });
+  const align = (spelling, reading) => ({ status: "aligned", segments: [["甲乙", "こーかっ"], ["丙", reading.at(-1)]] });
   assert.deepEqual(run("甲乙丙", "こーかっか", forms, { characterReadingBundle }, align).wordAlignments.get("甲乙丙").get("こーかっか"), [["甲", "こー"], ["乙", "かっ"], ["丙", "か"]]);
   assert.equal(run("甲乙丙", "こーかっあ", forms, { characterReadingBundle }, align).wordAlignments.size, 0);
 });

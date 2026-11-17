@@ -16,7 +16,7 @@ test("build and evaluation defaults match the release configuration", () => {
 
 test("regressions exercise the generator without exact annotations masking errors", async () => {
   const segments = [["日", "に"], ["本", "ほん"]];
-  const goldText = JSON.stringify([{ written: "日本", reading: "にほん", segments }]);
+  const goldText = JSON.stringify([{ spelling: "日本", reading: "にほん", segments }]);
   const dataset = { lock: {}, configuration: defaultConfiguration, annotationsSHA256: "annotations",
     align: () => ({ segments: [["日本", "にほん"]], status: "aligned" }),
     alignPair: () => { throw new Error("Annotations must not be applied"); }

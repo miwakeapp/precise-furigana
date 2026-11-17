@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveCharacterReadings } from "../src/lexicon.mjs";
 
-function word(id, written, reading, tags = []) {
+function word(id, spelling, reading, tags = []) {
   return {
     id,
-    kanji: [{ text: written, tags: [] }],
+    kanji: [{ text: spelling, tags: [] }],
     kana: [{ text: reading, appliesToKanji: ["*"], tags }]
   };
 }
@@ -22,8 +22,8 @@ test("single-kanji readings and exact kana anchors provide source witnesses", ()
   assert.deepEqual(characterReadings.get("食"), ["た"]);
   assert.deepEqual(characterReadings.get("𠮟"), ["しか"]);
   assert.deepEqual(additions.find(addition => addition.character === "母").witnesses, [
-    { id: "1000000", written: "母", reading: "かあ" },
-    { id: "1000001", written: "お母さん", reading: "おかあさん" }
+    { id: "1000000", spelling: "母", reading: "かあ" },
+    { id: "1000001", spelling: "お母さん", reading: "おかあさん" }
   ]);
 });
 

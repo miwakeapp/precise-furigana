@@ -4,8 +4,8 @@ import { createAligner } from "../src/align.mjs";
 import { deriveNumeralAlignments, deriveNumeralReadings } from "../src/numerals.mjs";
 import { compileAlignmentPipeline } from "../src/dataset.mjs";
 
-function dictionary(written, reading) {
-  return { words: [{ id: "1000000", kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] }] };
+function dictionary(spelling, reading) {
+  return { words: [{ id: "1000000", kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] }] };
 }
 
 test("decimal numerals retain one base while their adjacent kanji stay precise", () => {
@@ -26,7 +26,7 @@ test("unsupported synthetic spellings cannot establish new boundaries", () => {
 });
 
 test("width normalization also keeps an entire decimal numeral together", () => {
-  const align = written => ({ status: "aligned", segments: written === "11月" ? [["1", "じゅう"], ["1", "いち"], ["月", "がつ"]] : [[written, "じゅういちがつ"]] });
+  const align = spelling => ({ status: "aligned", segments: spelling === "11月" ? [["1", "じゅう"], ["1", "いち"], ["月", "がつ"]] : [[spelling, "じゅういちがつ"]] });
   const result = deriveNumeralAlignments(dictionary("１１月", "じゅういちがつ"), align);
   assert.deepEqual(result.wordAlignments.get("１１月").get("じゅういちがつ"), [["１１", "じゅういち"], ["月", "がつ"]]);
 });
@@ -44,14 +44,14 @@ test("number definitions respect reading restrictions and exclude incidental tra
   assert.deepEqual(readings.get("３"), ["スリー"]);
   assert.deepEqual(original.get("3"), ["さん"]);
   assert.equal(readings.size, 2);
-  assert.deepEqual(witnesses, [{ id: "1", written: "3", reading: "スリー", definition: "three" }]);
+  assert.deepEqual(witnesses, [{ id: "1", spelling: "3", reading: "スリー", definition: "three" }]);
 });
 
 test("source number words refine mixed alphanumerics while spoken cardinals stay whole", () => {
   const words = [];
-  const add = (written, reading, gloss) => words.push({
+  const add = (spelling, reading, gloss) => words.push({
     id: String(words.length + 1),
-    kanji: written === undefined ? [] : [{ text: written, tags: [] }],
+    kanji: spelling === undefined ? [] : [{ text: spelling, tags: [] }],
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
     sense: gloss === undefined ? [] : [{ appliesToKanji: ["*"], appliesToKana: ["*"], partOfSpeech: ["n"], languageSource: [], gloss: [{ lang: "eng", text: gloss }] }]
   });
@@ -70,9 +70,9 @@ test("source number words refine mixed alphanumerics while spoken cardinals stay
 });
 
 test("foreign number candidates cannot move a supported numeral boundary", () => {
-  const align = written => written === "十二月" ? {
+  const align = spelling => spelling === "十二月" ? {
     status: "aligned", segments: [["十", "じゅう"], ["二", "に"], ["月", "がつ"]]
-  } : { status: "fallback", segments: [[written, "じゅうにがつ"]] };
+  } : { status: "fallback", segments: [[spelling, "じゅうにがつ"]] };
   const foreignAlign = () => ({ status: "aligned", segments: [["１２", "じゅう"], ["月", "にがつ"]] });
   const result = deriveNumeralAlignments(dictionary("１２月", "じゅうにがつ"), align, { foreignAlign });
   assert.deepEqual(result.wordAlignments.get("１２月").get("じゅうにがつ"), [["１２", "じゅうに"], ["月", "がつ"]]);

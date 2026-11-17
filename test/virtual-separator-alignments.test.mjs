@@ -4,8 +4,8 @@ import { deriveSeparatorAlignments } from "../src/separator-alignments.mjs";
 import { uniqueExactCharacterAlignment } from "../src/exact-character-allocation.mjs";
 import { makeCharacterReadings } from "../src/sources.mjs";
 
-function word(id, written, reading) {
-  return { id, kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] };
+function word(id, spelling, reading) {
+  return { id, kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] };
 }
 function dictionary(values = { 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"] }) {
   return { characters: Object.entries(values).map(([literal, forms]) => ({ literal,
@@ -14,10 +14,10 @@ function dictionary(values = { 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"] }) {
 function derive({ target = "甲乙・丙", reading = "あいう", kanjidic = dictionary(), extraWords = [], targetSegments, targetStatus = "aligned", options = {} } = {}) {
   const jmdict = { words: [word("1", target, reading), ...extraWords] };
   const queried = [];
-  const result = deriveSeparatorAlignments(jmdict, kanjidic, (written, sound) => {
-    queried.push(written);
-    assert.equal(written, target, "Generated spellings must never query earlier accepted output");
-    return { status: targetStatus, segments: targetSegments ?? [[written, sound]] };
+  const result = deriveSeparatorAlignments(jmdict, kanjidic, (spelling, sound) => {
+    queried.push(spelling);
+    assert.equal(spelling, target, "Generated spellings must never query earlier accepted output");
+    return { status: targetStatus, segments: targetSegments ?? [[spelling, sound]] };
   }, options);
   return { ...result, queried, target, reading };
 }
@@ -33,7 +33,7 @@ test("unique exact generated allocation records no fabricated source attestation
   assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["甲", "あ"], ["乙・", "い"], ["丙", "う"]]);
   assert.deepEqual(result.queried, [result.target]);
   const witness = result.witnesses[0];
-  assert.deepEqual(witness.virtualSource, { kind: "generated-plain-spelling", written: "甲乙丙", reading: "あいう",
+  assert.deepEqual(witness.virtualSource, { kind: "generated-plain-spelling", spelling: "甲乙丙", reading: "あいう",
     attestedInSameEntry: false, wholePairAttestationUsed: false });
   assert.ok(!("id" in witness.virtualSource));
   assert.ok(!("sourcePair" in witness));
@@ -99,14 +99,14 @@ test("virtual exact claims retain dotted forms without absorbing their suffixes"
   const result = derive({ target: "かな・甲乙れ", reading: "かなあいれ", kanjidic: dictionary({ 甲: ["ア"], 乙: ["い.る"] }),
     options: { allowVirtualSources: true } });
   assert.deepEqual(result.wordAlignments.get(result.target)?.get(result.reading), [["かな・", "かな"], ["甲", "あ"], ["乙", "い"], "れ"]);
-  assert.deepEqual(result.witnesses[0].completeExactAllocation.find(part => part.written === "乙").rawForms, ["い.る"]);
+  assert.deepEqual(result.witnesses[0].completeExactAllocation.find(part => part.spelling === "乙").rawForms, ["い.る"]);
 });
 
 test("enabling virtual sources leaves existing sibling provenance and output unchanged", () => {
   const source = word("1", "甲乙丙", "あいう");
   source.kanji.push({ text: "甲乙・丙", tags: [] });
   const jmdict = { words: [source] }, kanjidic = dictionary();
-  const align = written => ({ status: "aligned", segments: written === "甲乙丙" ? [["甲", "あ"], ["乙", "い"], ["丙", "う"]] : [[written, "あいう"]] });
+  const align = spelling => ({ status: "aligned", segments: spelling === "甲乙丙" ? [["甲", "あ"], ["乙", "い"], ["丙", "う"]] : [[spelling, "あいう"]] });
   const original = deriveSeparatorAlignments(jmdict, kanjidic, align);
   const enabled = deriveSeparatorAlignments(jmdict, kanjidic, align, { allowVirtualSources: true });
   assert.deepEqual(enabled, original);

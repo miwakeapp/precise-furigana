@@ -45,11 +45,11 @@ function makeInventory(kanjidic, bundles, kanjidicSource) {
   return inventory;
 }
 
-function findIrregularRanges(written, reading, irregularWords) {
+function findIrregularRanges(spelling, reading, irregularWords) {
   const ranges = [];
-  for (let start = 0; start < written.length; ++start) {
-    for (let end = start + 1; end <= written.length; ++end) {
-      const values = irregularWords.get(written.slice(start, end).join(""));
+  for (let start = 0; start < spelling.length; ++start) {
+    for (let end = start + 1; end <= spelling.length; ++end) {
+      const values = irregularWords.get(spelling.slice(start, end).join(""));
       if (values === undefined) continue;
       for (let readStart = 0; readStart < reading.length; ++readStart) {
         for (const value of values) {
@@ -66,8 +66,8 @@ function findIrregularRanges(written, reading, irregularWords) {
   return ranges;
 }
 
-function splitSpan(written, reading, inventory, ranges, writtenOffset, readingOffset, fullWritten, fullReading) {
-  const characters = splitGraphemes(written);
+function splitSpan(spelling, reading, inventory, ranges, spellingOffset, readingOffset, fullSpelling, fullReading) {
+  const characters = splitGraphemes(spelling);
   const kana = splitGraphemes(reading);
   if (characters.length < 2 || !characters.every(isIdeograph) || !isKana(reading) || characters.includes("々")) return undefined;
   const memo = new Map();
@@ -82,7 +82,7 @@ function splitSpan(written, reading, inventory, ranges, writtenOffset, readingOf
       const normalized = normalizeKana(piece);
       if (/^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalized)) continue;
       const pronunciation = kanaPronunciation(piece);
-      const inIrregular = ranges.some(range => range.start <= writtenOffset + index && writtenOffset + index < range.end &&
+      const inIrregular = ranges.some(range => range.start <= spellingOffset + index && spellingOffset + index < range.end &&
         range.readStart <= readingOffset + offset && readingOffset + end <= range.readEnd);
       const evidence = candidates.flatMap(candidate => {
         const exact = candidate.exact === normalized;
@@ -91,14 +91,14 @@ function splitSpan(written, reading, inventory, ranges, writtenOffset, readingOf
         // remain usable; weaker or changed correspondences need regular context.
         if ((!candidate.primary || !exact) && inIrregular) return [];
         if (candidate.finalSokuonGuard && normalized.endsWith("っ") && (
-          !isIdeograph(fullWritten[writtenOffset + index + 1] ?? "") ||
+          !isIdeograph(fullSpelling[spellingOffset + index + 1] ?? "") ||
           !/^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(fullReading[readingOffset + end] ?? ""))
         )) return [];
         return [{ ...candidate.claim, rules: exact ? [] : ["on-long-vowel-notation-equivalence"] }];
       });
       if (!evidence.length) continue;
       const character = {
-        character: characters[index], written: characters[index], reading: piece,
+        character: characters[index], spelling: characters[index], reading: piece,
         codepoint: `U+${characters[index].codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`, evidence
       };
       for (const suffix of visit(index + 1, end)) {
@@ -130,41 +130,41 @@ export function deriveOnReadingSpellingAlignments(jmdict, kanjidic, align, {
     throw new TypeError("KANJIDIC source identity requires a version and JSON SHA256");
   }
   const inventory = makeInventory(kanjidic, [characterReadingBundle, englishCharacterReadingBundle], kanjidicSource);
-  const irregularWords = new Map([...makeIrregularWordReadings(jmdict)].map(([written, readings]) => [written, readings.map(normalizeKana)]));
+  const irregularWords = new Map([...makeIrregularWordReadings(jmdict)].map(([spelling, readings]) => [spelling, readings.map(normalizeKana)]));
   const wordAlignments = new Map(), witnesses = [], seen = new Set();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written") continue;
-    const key = pairKey(pair.written, pair.reading);
+    if (pair.kind !== "kanji") continue;
+    const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
-    const original = align(pair.written, pair.reading);
+    const original = align(pair.spelling, pair.reading);
     if (original.status !== "aligned") continue;
     if (!original.segments.some(segment => {
       const characters = splitGraphemes(segmentText(segment));
       return characters.length > 1 && characters.every(isIdeograph) && !characters.includes("々") && isKana(segmentReading(segment));
     })) continue;
-    const writtenUnits = splitGraphemes(pair.written);
+    const spellingUnits = splitGraphemes(pair.spelling);
     const readUnits = splitGraphemes(pair.reading);
-    const ranges = findIrregularRanges(writtenUnits, readUnits, irregularWords);
+    const ranges = findIrregularRanges(spellingUnits, readUnits, irregularWords);
     const spans = [];
-    let writtenOffset = 0;
+    let spellingOffset = 0;
     let readingOffset = 0;
     const segments = original.segments.flatMap(segment => {
-      const written = segmentText(segment);
+      const spelling = segmentText(segment);
       const reading = segmentReading(segment);
-      const split = splitSpan(written, reading, inventory, ranges, writtenOffset, readingOffset, writtenUnits, readUnits);
-      writtenOffset += splitGraphemes(written).length;
+      const split = splitSpan(spelling, reading, inventory, ranges, spellingOffset, readingOffset, spellingUnits, readUnits);
+      spellingOffset += splitGraphemes(spelling).length;
       readingOffset += splitGraphemes(reading).length;
       if (split === undefined) return [segment];
-      spans.push({ written, reading, segments: split.segments, characters: split.characters });
+      spans.push({ spelling, reading, segments: split.segments, characters: split.characters });
       return split.segments;
     });
     if (!spans.length) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, segments);
-    wordAlignments.set(pair.written, readings);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading,
+    wordAlignments.set(pair.spelling, readings);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading,
       interpretation: "Exact listed on-reading notation equivalence with literal companions; not an etymological claim", spans });
   }
   return { wordAlignments, witnesses };

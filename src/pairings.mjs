@@ -20,8 +20,8 @@ const kanaPattern = text => {
 };
 const sameKana = (unit, sound) => normalizeKana(unit) === normalizeKana(sound) || fullSize.get(normalizeKana(unit)) === normalizeKana(sound);
 // Consecutive kanji or letters share a reading, as in 海鷂魚 for えい or ＡＳＣＩＩ for アスキー.
-function units(written) {
-  const result = [], graphemes = splitGraphemes(written);
+function units(spelling) {
+  const result = [], graphemes = splitGraphemes(spelling);
   for (const [index, unit] of graphemes.entries()) {
     const kind = unitKind(unit, graphemes[index - 1], graphemes[index + 1]);
     if (kind === "other" && result.at(-1)?.kind === "other") result.at(-1).text += unit;
@@ -37,9 +37,9 @@ const escape = text => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
  * with kanji and other characters standing for any reading. 気持ちよい does not
  * fit きもちいい, and 元どうり does not fit もとどおり.
  */
-export function fitsSpelling(written, reading) {
-  if (written === reading || kanaPuns.has(pairKey(written, reading))) return true;
-  const pattern = units(written).map(({ kind, text }) => kind === "kana" ? kanaPattern(text) : kind === "symbol" ? ".*?" : ".+?").join("");
+export function fitsSpelling(spelling, reading) {
+  if (spelling === reading || kanaPuns.has(pairKey(spelling, reading))) return true;
+  const pattern = units(spelling).map(({ kind, text }) => kind === "kana" ? kanaPattern(text) : kind === "symbol" ? ".*?" : ".+?").join("");
   return new RegExp(`^${pattern}$`, "u").test(pronounced(reading));
 }
 
@@ -52,9 +52,9 @@ export function fitsSpelling(written, reading) {
  * with 耳 read のみみ, and is segmented け も[もの] 耳[みみ]. Every spelling needs
  * at least one pair that does not contradict it.
  */
-export function contradictsSpelling(written, reading, drops, segments = []) {
-  if (kanaPuns.has(pairKey(written, reading))) return false;
-  return !fitsSpelling(written, reading) || (drops?.length ?? 0) > 0 ||
+export function contradictsSpelling(spelling, reading, drops, segments = []) {
+  if (kanaPuns.has(pairKey(spelling, reading))) return false;
+  return !fitsSpelling(spelling, reading) || (drops?.length ?? 0) > 0 ||
     segments.some(segment => typeof segment !== "string" && !fitsSpelling(segment[0], segment[1]));
 }
 
@@ -65,8 +65,8 @@ export function contradictsSpelling(written, reading, drops, segments = []) {
  * のたまう contradicts its kana only by orthographic convention and is not flagged.
  */
 export function isMismatched(pair, drops, segments) {
-  return (pair.writtenTags.includes("sK") || pair.readingTags.includes("sk")) &&
-    contradictsSpelling(pair.written, pair.reading, drops, segments);
+  return (pair.spellingTags.includes("sK") || pair.readingTags.includes("sk")) &&
+    contradictsSpelling(pair.spelling, pair.reading, drops, segments);
 }
 
 /**
@@ -77,8 +77,8 @@ export function isMismatched(pair, drops, segments) {
  * counterpart costs a little more, so 元どうり with もとどおり implies もとどうり
  * but the silent の of の月 with づき leaves づき alone.
  */
-function literalReading(written, reading) {
-  const runs = units(written), sounds = [...reading];
+function literalReading(spelling, reading) {
+  const runs = units(spelling), sounds = [...reading];
   const width = sounds.length + 1, cost = new Float64Array((runs.length + 1) * width).fill(Infinity), from = new Int32Array(cost.length).fill(-1);
   cost[0] = 0;
   for (let i = 0; i < runs.length; ++i) {
@@ -118,11 +118,11 @@ function literalReading(written, reading) {
 export function impliedReading(segments, drops = []) {
   if (drops.length > 0) {
     const cuts = new Map();
-    let writtenOffset = 0, readingOffset = 0;
+    let spellingOffset = 0, readingOffset = 0;
     for (const segment of segments) {
-      writtenOffset += splitGraphemes(segmentText(segment)).length;
+      spellingOffset += splitGraphemes(segmentText(segment)).length;
       readingOffset += segmentReading(segment).length;
-      cuts.set(writtenOffset, readingOffset);
+      cuts.set(spellingOffset, readingOffset);
     }
     let reading = segments.map(segmentReading).join("");
     for (const { offset, particle } of [...drops].sort((left, right) => right.offset - left.offset)) {
@@ -139,9 +139,9 @@ export function impliedReading(segments, drops = []) {
   const parts = [];
   for (const segment of segments) {
     if (typeof segment === "string") { parts.push(segment); continue; }
-    const [written, reading] = segment;
-    const hasKana = units(written).some(unit => unit.kind === "kana");
-    const literal = hasKana ? literalReading(written, reading) : reading;
+    const [spelling, reading] = segment;
+    const hasKana = units(spelling).some(unit => unit.kind === "kana");
+    const literal = hasKana ? literalReading(spelling, reading) : reading;
     if (literal === undefined) return undefined;
     parts.push(literal);
   }
@@ -150,41 +150,42 @@ export function impliedReading(segments, drops = []) {
 
 /**
  * Work out which spellings need a synthesized pair, because none of their JMdict
- * pairs fits, and check them against the reviewed list. `records` maps each
- * record key to `{ id, written, reading, segments }` with generator segments.
+ * pairs fits, and check them against the reviewed list. `records` lists
+ * `{ id, spelling, reading, segments, displaySegments }`, with the generator's
+ * segments and the release's.
  * Returns the synthesized pairs to add and any problems that should stop the build.
  */
 export function planSynthesizedPairs(records, drops, reviewed, jmdictPairs) {
   const bySpelling = new Map();
   for (const record of records) {
-    const key = `${record.id}\t${record.written}`;
+    const key = `${record.id}\t${record.spelling}`;
     (bySpelling.get(key) ?? bySpelling.set(key, []).get(key)).push(record);
   }
-  const listed = new Map(reviewed.map(item => [`${item.id}\t${item.written}`, item]));
+  const listed = new Map(reviewed.map(item => [`${item.id}\t${item.spelling}`, item]));
   const pairs = [], problems = [], missing = [], obsolete = [];
   for (const [key, spellingRecords] of bySpelling) {
     const invalid = spellingRecords.filter(record =>
-      contradictsSpelling(record.written, record.reading, drops.get(pairKey(record.written, record.reading)), record.displaySegments ?? record.segments));
+      contradictsSpelling(record.spelling, record.reading, drops.get(pairKey(record.spelling, record.reading)), record.displaySegments ?? record.segments));
     if (invalid.length < spellingRecords.length) continue;
-    const { id, written } = invalid[0];
-    const implied = [...new Set(invalid.map(record => impliedReading(record.segments, drops.get(pairKey(record.written, record.reading))))
-      .filter(value => value !== undefined && fitsSpelling(written, value)))];
+    const { id, spelling } = invalid[0];
+    const implied = [...new Set(invalid.map(record => impliedReading(record.segments, drops.get(pairKey(record.spelling, record.reading))))
+      .filter(value => value !== undefined && fitsSpelling(spelling, value)))];
     const item = listed.get(key);
     listed.delete(key);
     if (item === undefined) {
-      missing.push({ id, written, reading: implied[0] ?? "", upstream: "unreviewed", note: implied.length === 1 ? "" : "Choose the reading this spelling implies." });
+      missing.push({ id, spelling, reading: implied[0] ?? "", upstream: "unreviewed", note: implied.length === 1 ? "" : "Choose the reading this spelling implies." });
       continue;
     }
-    if (!fitsSpelling(written, item.reading)) problems.push(`Synthesized reading ${item.reading} does not fit ${written} (${id})`);
-    else if (item.upstream === "unreviewed") problems.push(`Review the synthesized reading ${item.reading} for ${written} (${id})`);
-    else if (jmdictPairs.has(`${id}\t${written}\t${item.reading}`)) {
-      problems.push(`JMdict now pairs ${written} with ${item.reading} (${id}); remove it from the synthesized pairs`);
+    if (!fitsSpelling(spelling, item.reading)) problems.push(`Synthesized reading ${item.reading} does not fit ${spelling} (${id})`);
+    else if (item.upstream === "unreviewed") problems.push(`Review the synthesized reading ${item.reading} for ${spelling} (${id})`);
+    else if (jmdictPairs.has(`${id}\t${spelling}\t${item.reading}`)) {
+      problems.push(`JMdict now pairs ${spelling} with ${item.reading} (${id}); remove it from the synthesized pairs`);
       obsolete.push(item);
     }
     else pairs.push(item);
   }
   for (const item of listed.values()) {
-    problems.push(`${item.written} (${item.id}) no longer needs a synthesized pair; remove it`);
+    problems.push(`${item.spelling} (${item.id}) no longer needs a synthesized pair; remove it`);
     obsolete.push(item);
   }
   if (missing.length) problems.push(`${missing.length} spellings need a synthesized pair:\n${missing.map(item => JSON.stringify(item)).join(",\n")}`);

@@ -12,7 +12,7 @@ Coverage and exact reconstruction are checked mechanically for every record. Lin
 | 海老 | <ruby>海<rt>え</rt></ruby><ruby>老<rt>び</rt></ruby> | Both exact sounds occur in the pinned KANJIDIC2 nanori inventory. Whole-word ruby elsewhere does not negate them. |
 | 尻尾 | <ruby>尻<rt>しっ</rt></ruby><ruby>尾<rt>ぽ</rt></ruby> | [The word table](https://en.wiktionary.org/w/index.php?oldid=92237397#Japanese) explicitly assigns the contracted sounds. |
 | 命の綱 | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby> | Complete character readings establish which の is the literal particle. Matching kana greedily would put it inside 命's reading. |
-| メーカ希望価格 | メーカ<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | The same JMdict entry's spelling variants put the reading's extra vowel with カ, so it is not attached to 希望価格. The written kana show no ruby. |
+| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | JMdict pairs this search-only spelling only with メーカーきぼうかかく. The same entry's other spellings put the extra ー with カ, so it is not attached to 希望価格. The record is marked mismatched, and a synthesized pair, メーカ<ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby>, shows the kana as written. |
 | 達磨 | <ruby>達<rt>だる</rt></ruby><ruby>磨<rt>ま</rt></ruby> | [The lexical allocation](https://en.wiktionary.org/w/index.php?oldid=92643544#Japanese) supplies the unusual local reading of 達. |
 | 端折る | <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る | [Explicit local ownership](https://en.wiktionary.org/w/index.php?oldid=86463303#Japanese) supports the small kana on 折. |
 

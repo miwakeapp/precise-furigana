@@ -15,10 +15,10 @@ export function deriveCharacterReadings(jmdict, baseMap = new Map()) {
   const candidates = new Map();
 
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written" || pair.readingTags.some(tag => excludedReadingTags.has(tag)) || !isKana(pair.reading)) {
+    if (pair.kind !== "kanji" || pair.readingTags.some(tag => excludedReadingTags.has(tag)) || !isKana(pair.reading)) {
       continue;
     }
-    const graphemes = splitGraphemes(pair.written);
+    const graphemes = splitGraphemes(pair.spelling);
     const characterIndex = graphemes.findIndex(grapheme => hanGraphemePattern.test(grapheme));
     if (characterIndex === -1 || graphemes.some((grapheme, index) => index !== characterIndex && !isKana(grapheme))) {
       continue;
@@ -41,8 +41,8 @@ export function deriveCharacterReadings(jmdict, baseMap = new Map()) {
       candidate = { character, reading, witnesses: [] };
       candidates.set(candidateKey, candidate);
     }
-    if (!candidate.witnesses.some(witness => witness.id === pair.id && witness.written === pair.written && witness.reading === pair.reading)) {
-      candidate.witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading });
+    if (!candidate.witnesses.some(witness => witness.id === pair.id && witness.spelling === pair.spelling && witness.reading === pair.reading)) {
+      candidate.witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading });
     }
   }
 

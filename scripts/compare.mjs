@@ -13,14 +13,14 @@ if (positionals.length !== 2) {
   throw new Error("Usage: npm run compare -- before.json after.json [--output changes.jsonl]");
 }
 // Release segments partition the spelling; plain text can be silent, so only
-// written positions identify a boundary.
+// spelling positions identify a boundary.
 function boundaries(segments) {
   let offset = 0;
   return segments.slice(0, -1).map(segment => offset += [...segmentText(segment)].length);
 }
 function records(database) {
   return new Map(Object.entries(database.entries).flatMap(([id, pairs]) =>
-    pairs.map(pair => [recordKey(id, pair.written, pair.reading), { id, ...pair }])));
+    pairs.map(pair => [recordKey(id, pair.spelling, pair.reading), { id, ...pair }])));
 }
 const before = records(JSON.parse(await readFile(positionals[0], "utf8")));
 const after = records(JSON.parse(await readFile(positionals[1], "utf8")));

@@ -83,12 +83,12 @@ export function* enumeratePairs(jmdict) {
       if (word.kanji.length === 0 || kana.appliesToKanji.length === 0) {
         yield {
           id: word.id,
-          written: kana.text,
+          spelling: kana.text,
           reading: kana.text,
           kanjiIndex: null,
           readingIndex,
           kind: "kana",
-          writtenTags: [],
+          spellingTags: [],
           readingTags: kana.tags
         };
         continue;
@@ -99,12 +99,12 @@ export function* enumeratePairs(jmdict) {
         }
         yield {
           id: word.id,
-          written: kanji.text,
+          spelling: kanji.text,
           reading: kana.text,
           kanjiIndex,
           readingIndex,
-          kind: "written",
-          writtenTags: kanji.tags,
+          kind: "kanji",
+          spellingTags: kanji.tags,
           readingTags: kana.tags
         };
       }
@@ -112,10 +112,10 @@ export function* enumeratePairs(jmdict) {
   }
 }
 
-function addReading(map, written, reading) {
-  const readings = map.get(written);
+function addReading(map, spelling, reading) {
+  const readings = map.get(spelling);
   if (readings === undefined) {
-    map.set(written, [reading]);
+    map.set(spelling, [reading]);
   } else if (!readings.includes(reading)) {
     readings.push(reading);
   }
@@ -150,8 +150,8 @@ export function makeNanoriReadings(kanjidic) {
 export function makeWordReadings(jmdict) {
   const result = new Map();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind === "written") {
-      addReading(result, pair.written, pair.reading);
+    if (pair.kind === "kanji") {
+      addReading(result, pair.spelling, pair.reading);
     }
   }
   return result;
@@ -162,8 +162,8 @@ export function makeWordReadings(jmdict) {
 export function makeIrregularWordReadings(jmdict) {
   const result = new Map();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind === "written" && pair.readingTags.includes("gikun") && !pair.writtenTags.includes("ateji")) {
-      addReading(result, pair.written, pair.reading);
+    if (pair.kind === "kanji" && pair.readingTags.includes("gikun") && !pair.spellingTags.includes("ateji")) {
+      addReading(result, pair.spelling, pair.reading);
     }
   }
   return result;

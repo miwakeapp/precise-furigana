@@ -61,17 +61,17 @@ export function deriveCharacterBundleAlignments(jmdict, characterReadings, bundl
   }
   const result = deriveUnihanAlignments(jmdict, characterReadings, readings, align, {
     weakCharacterReadings: companionReadings(weakCharacterReadings, unihanReadings),
-    supplementalReadingFilter: ({ reading, followingWritten, followingReading }) => !normalizeKana(reading).endsWith("っ") || (
-      followingWritten !== undefined && isIdeograph(followingWritten) && /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(followingReading))
+    supplementalReadingFilter: ({ reading, followingSpelling, followingReading }) => !normalizeKana(reading).endsWith("っ") || (
+      followingSpelling !== undefined && isIdeograph(followingSpelling) && /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(followingReading))
     )
   });
   const witnesses = result.witnesses.map(witness => ({
     id: witness.id,
-    written: witness.written,
+    spelling: witness.spelling,
     reading: witness.reading,
     characters: witness.characters.map(character => ({
       character: character.character,
-      written: character.written,
+      spelling: character.spelling,
       reading: character.reading,
       codepoint: character.codepoint,
       source: bundle.source.publisher ?? "Japanese Wiktionary",

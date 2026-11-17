@@ -12,7 +12,7 @@ const numberNames = new Map([
 
 /** Derive numeral sounds from exact dictionary definitions of number words. */
 export function deriveNumeralReadings(jmdict, wordReadings) {
-  const readings = new Map([...wordReadings].map(([written, values]) => [written, [...values]]));
+  const readings = new Map([...wordReadings].map(([spelling, values]) => [spelling, [...values]]));
   const witnesses = [];
   for (const word of jmdict.words) {
     // Written numeral entries already supply their readings. This layer
@@ -22,17 +22,17 @@ export function deriveNumeralReadings(jmdict, wordReadings) {
     for (const sense of word.sense) {
       const definitions = sense.gloss?.filter(gloss => gloss.lang === "eng" && numberNames.has(gloss.text)) ?? [];
       for (const definition of definitions) {
-        const written = numberNames.get(definition.text);
-        const fullwidth = written.replace(/[0-9]/gu, digit => String.fromCodePoint(digit.codePointAt(0) + 0xFEE0));
+        const spelling = numberNames.get(definition.text);
+        const fullwidth = spelling.replace(/[0-9]/gu, digit => String.fromCodePoint(digit.codePointAt(0) + 0xFEE0));
         for (const kana of word.kana) {
           if (!/^[ァ-ヶー]+$/u.test(kana.text) ||
             !sense.appliesToKana?.some(form => form === "*" || form === kana.text)) continue;
-          for (const spelling of [written, fullwidth]) {
-            const values = readings.get(spelling) ?? [];
+          for (const form of [spelling, fullwidth]) {
+            const values = readings.get(form) ?? [];
             if (!values.includes(kana.text)) values.push(kana.text);
-            readings.set(spelling, values);
+            readings.set(form, values);
           }
-          witnesses.push({ id: word.id, written, reading: kana.text, definition: definition.text });
+          witnesses.push({ id: word.id, spelling, reading: kana.text, definition: definition.text });
         }
       }
     }
@@ -59,8 +59,8 @@ function cardinalSpelling(text) {
   return groups.join("");
 }
 
-function transform(written, style) {
-  const units = splitGraphemes(written);
+function transform(spelling, style) {
+  const units = splitGraphemes(spelling);
   const offsets = new Map([[0, 0]]);
   const parts = [];
   let sourceOffset = 0;
@@ -82,7 +82,7 @@ function transform(written, style) {
     offsets.set(sourceOffset, end);
     index = end;
   }
-  return { written: parts.join(""), original: units, offsets };
+  return { spelling: parts.join(""), original: units, offsets };
 }
 
 function transfer(transformation, reading, result) {
@@ -96,11 +96,11 @@ function transfer(transformation, reading, result) {
     pendingReading += segmentReading(part);
     const end = transformation.offsets.get(sourceOffset);
     if (end === undefined) continue;
-    const written = transformation.original.slice(originalOffset, end).join("");
-    if (written === pendingReading) {
-      if (typeof segments.at(-1) === "string") segments[segments.length - 1] += written;
-      else segments.push(written);
-    } else segments.push([written, pendingReading]);
+    const spelling = transformation.original.slice(originalOffset, end).join("");
+    if (spelling === pendingReading) {
+      if (typeof segments.at(-1) === "string") segments[segments.length - 1] += spelling;
+      else segments.push(spelling);
+    } else segments.push([spelling, pendingReading]);
     originalOffset = end;
     pendingReading = "";
   }
@@ -114,14 +114,14 @@ export function deriveNumeralAlignments(jmdict, align, { foreignAlign } = {}) {
   const wordAlignments = new Map();
   const witnesses = [];
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written" || !/[0-9\uFF01-\uFF60]/u.test(pair.written)) continue;
+    if (pair.kind !== "kanji" || !/[0-9\uFF01-\uFF60]/u.test(pair.spelling)) continue;
     const alternatives = [];
     for (const style of ["width", "cardinal", "digits"]) {
-      const transformation = transform(pair.written, style);
-      if (transformation === undefined || transformation.written === pair.written) continue;
-      const segments = transfer(transformation, pair.reading, align(transformation.written, pair.reading));
+      const transformation = transform(pair.spelling, style);
+      if (transformation === undefined || transformation.spelling === pair.spelling) continue;
+      const segments = transfer(transformation, pair.reading, align(transformation.spelling, pair.reading));
       if (segments === undefined) continue;
-      alternatives.push({ segments, from: transformation.written });
+      alternatives.push({ segments, from: transformation.spelling });
     }
     // Choose a refinement only if it preserves every boundary from every
     // supported interpretation; differing allocations remain unresolved.
@@ -129,18 +129,18 @@ export function deriveNumeralAlignments(jmdict, align, { foreignAlign } = {}) {
       const available = new Set(boundaries(option.segments));
       return alternatives.every(other => boundaries(other.segments).every(boundary => available.has(boundary)));
     });
-    if (foreignAlign !== undefined && /[0-9０-９]/u.test(pair.written)) {
-      const result = foreignAlign(pair.written, pair.reading);
+    if (foreignAlign !== undefined && /[0-9０-９]/u.test(pair.spelling)) {
+      const result = foreignAlign(pair.spelling, pair.reading);
       const available = new Set(boundaries(result.segments));
       if (result.status === "aligned" && alternatives.every(other => boundaries(other.segments).every(boundary => available.has(boundary)))) {
         candidate = { segments: result.segments, from: "JMdict number-word definitions" };
       }
     }
     if (candidate === undefined) continue;
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, candidate.segments);
-    wordAlignments.set(pair.written, readings);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading, from: candidate.from });
+    wordAlignments.set(pair.spelling, readings);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, from: candidate.from });
   }
   return { wordAlignments, witnesses };
 }

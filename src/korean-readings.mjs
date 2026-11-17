@@ -86,8 +86,8 @@ function makeKoreanInventory(kanjidic) {
   return inventory;
 }
 
-function allocateKorean(written, reading, inventory) {
-  const characters = [...written], normalized = normalizeKana(reading), original = [...reading];
+function allocateKorean(spelling, reading, inventory) {
+  const characters = [...spelling], normalized = normalizeKana(reading), original = [...reading];
   // Matching must preserve the original reading's code-point positions.
   if ([...normalized].length !== original.length) return undefined;
   const solutions = new Map();
@@ -137,32 +137,32 @@ export function deriveKoreanAlignments(jmdict, kanjidic, align, {
   const words = new Map(jmdict.words.map(word => [word.id, word]));
   const wordAlignments = new Map(), witnesses = [], seen = new Set();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written" || pair.readingTags.some(tag => ["ik", "sk"].includes(tag)) || !/^\p{Unified_Ideograph}{2,}$/u.test(pair.written)) continue;
+    if (pair.kind !== "kanji" || pair.readingTags.some(tag => ["ik", "sk"].includes(tag)) || !/^\p{Unified_Ideograph}{2,}$/u.test(pair.spelling)) continue;
     const languageSources = words.get(pair.id).sense
-      .filter(sense => applies(sense.appliesToKanji, pair.written) && applies(sense.appliesToKana, pair.reading))
+      .filter(sense => applies(sense.appliesToKanji, pair.spelling) && applies(sense.appliesToKana, pair.reading))
       .flatMap(sense => sense.languageSource.filter(source => source.lang === "kor" && !source.wasei));
     const tagged = languageSources.length > 0;
     if (!tagged && (!untaggedKatakana || !/^[\p{Script=Katakana}ー]+$/u.test(pair.reading.normalize("NFKC")))) continue;
-    const key = pairKey(pair.written, pair.reading);
+    const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
-    const original = align(pair.written, pair.reading);
+    const original = align(pair.spelling, pair.reading);
     if (original.status !== "aligned") continue;
-    const split = allocateKorean(pair.written, pair.reading, inventory);
+    const split = allocateKorean(pair.spelling, pair.reading, inventory);
     if (split === undefined) continue;
     const oldPoints = new Set(boundaries(original.segments)), newPoints = new Set(boundaries(split.segments));
     if (newPoints.size <= oldPoints.size || [...oldPoints].some(point => !newPoints.has(point))) continue;
-    validateAlignment(pair.written, pair.reading, split.segments);
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, split.segments);
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, split.segments);
-    wordAlignments.set(pair.written, readings);
+    wordAlignments.set(pair.spelling, readings);
     witnesses.push({
-      id: pair.id, written: pair.written, reading: pair.reading,
+      id: pair.id, spelling: pair.spelling, reading: pair.reading,
       interpretation: "Listed Korean sound compatibility; not an etymological claim",
       eligibility: tagged ? "source-language-kor" : "korean-only-katakana",
       languageSources: structuredClone(languageSources),
       sourcePaths: split.paths.map(path => path.map(character => ({
-        character: character.character, written: character.character, reading: character.reading,
+        character: character.character, spelling: character.character, reading: character.reading,
         codepoint: `U+${character.character.codePointAt(0).toString(16).toUpperCase()}`,
         evidence: character.claims.map(claim => ({
           source: "KANJIDIC2", field: "korean_h", sourceIdentity,

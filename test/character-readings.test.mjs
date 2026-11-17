@@ -6,8 +6,8 @@ import { boundaries } from "../src/segments.mjs";
 const source = { name: "Japanese Wiktionary fixture", version: "fixture-1", sha256: "a".repeat(64) };
 const bundle = readings => ({ schemaVersion: 1, source, readings });
 const form = (character, reading, kind = "on", originalForm = reading) => ({ character, reading, kind, originalForm, tags: [kind, "transliteration"] });
-const grouped = (written, reading) => ({ status: "aligned", segments: [[written, reading]] });
-const entry = (id, written, reading, tags = []) => ({ id, kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags, appliesToKanji: ["*"] }] });
+const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
+const entry = (id, spelling, reading, tags = []) => ({ id, kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags, appliesToKanji: ["*"] }] });
 
 test("exact bundle readings preserve input script and carry Wiktionary form provenance", () => {
   const jmdict = { words: [entry("1", "余所", "ヨソ")] };
@@ -15,7 +15,7 @@ test("exact bundle readings preserve input script and carry Wiktionary form prov
   const result = deriveCharacterBundleAlignments(jmdict, new Map([["余", ["ヨ"]], ["所", ["ショ"]]]), bundle([original]), grouped);
   assert.deepEqual(result.wordAlignments.get("余所").get("ヨソ"), [["余", "ヨ"], ["所", "ソ"]]);
   assert.deepEqual(result.witnesses[0].characters, [{
-    character: "所", written: "所", reading: "ソ", codepoint: "U+6240",
+    character: "所", spelling: "所", reading: "ソ", codepoint: "U+6240",
     source: "Japanese Wiktionary", sourceName: source.name, sourceVersion: source.version, sourceSHA256: source.sha256,
     field: "forms", title: "所", forms: [{ originalForm: "そ", reading: "ソ", kind: "on", tags: ["on", "transliteration"] }]
   }]);
@@ -70,7 +70,7 @@ test("bundle readings cannot move complete baseline boundaries or choose an ambi
   const jmdict = { words: [entry("1", "前余所", "ぜんよそ"), entry("2", "甲乙", "あいき")] };
   const primary = new Map([["前", ["ゼン"]], ["余", ["ヨ"]], ["甲", ["あい"]], ["乙", ["き"]]]);
   const records = bundle([form("所", "ソ"), form("甲", "あ", "kun"), form("乙", "いき", "kun")]);
-  const align = (written, reading) => written === "前余所" ? { status: "aligned", segments: [["前", "ぜん"], ["余所", "よそ"]] } : grouped(written, reading);
+  const align = (spelling, reading) => spelling === "前余所" ? { status: "aligned", segments: [["前", "ぜん"], ["余所", "よそ"]] } : grouped(spelling, reading);
   const result = deriveCharacterBundleAlignments(jmdict, primary, records, align);
   const segments = result.wordAlignments.get("前余所").get("ぜんよそ");
   assert.deepEqual(segments, [["前", "ぜん"], ["余", "よ"], ["所", "そ"]]);
@@ -93,11 +93,11 @@ test("listed sokuon-final bundle readings require a following voiceless obstruen
   ] };
   const primary = new Map([["子", ["シ"]], ["亜", ["ア"]], ["名", ["ナ"]], ["乙", ["オツ"]]]);
   const records = bundle([form("甲", "カッ")]);
-  const align = (written, reading) => written === "乙甲子" ? { status: "aligned", segments: [["乙甲", "おつかっ"], ["子", "し"]] } : grouped(written, reading);
+  const align = (spelling, reading) => spelling === "乙甲子" ? { status: "aligned", segments: [["乙甲", "おつかっ"], ["子", "し"]] } : grouped(spelling, reading);
   const result = deriveCharacterBundleAlignments(jmdict, primary, records, align);
   assert.deepEqual(result.wordAlignments.get("甲子").get("かっし"), [["甲", "かっ"], ["子", "し"]]);
   assert.deepEqual(result.wordAlignments.get("乙甲子").get("おつかっし"), [["乙", "おつ"], ["甲", "かっ"], ["子", "し"]]);
-  for (const written of ["甲亜", "甲名", "乙甲"]) assert.equal(result.wordAlignments.has(written), false);
+  for (const spelling of ["甲亜", "甲名", "乙甲"]) assert.equal(result.wordAlignments.has(spelling), false);
 });
 
 test("plain kun forms remain exact without shortening, inflection, or voicing guesses", () => {

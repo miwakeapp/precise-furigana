@@ -4,13 +4,13 @@ import { deriveListedPhonologyAlignments } from "../src/listed-phonology.mjs";
 import { boundaries } from "../src/segments.mjs";
 import { compileLexicalEvidence } from "../src/lexical-evidence.mjs";
 
-const entry = (id, written, reading, tags = []) => ({ id, kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags, appliesToKanji: ["*"] }] });
-const grouped = (written, reading) => ({ status: "aligned", segments: [[written, reading]] });
+const entry = (id, spelling, reading, tags = []) => ({ id, kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags, appliesToKanji: ["*"] }] });
+const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
 const form = (character, reading, kind = "on", extra = {}) => ({ character, reading, kind, originalForm: reading, tags: [kind, "transliteration"], ...extra });
 const bundle = (readings, publisher = "Japanese Wiktionary") => ({
   schemaVersion: 1, source: { name: `${publisher} fixture`, publisher, version: "fixture-1", sha256: "a".repeat(64) }, readings
 });
-const lookup = (result, written, reading) => result.wordAlignments.get(written)?.get(reading);
+const lookup = (result, spelling, reading) => result.wordAlignments.get(spelling)?.get(reading);
 
 test("listed on phonology preserves raw source identity and actual publisher", () => {
   const jmdict = { words: [entry("1", "愛惜", "アイジャク"), entry("2", "外戚", "げさく")] };
@@ -69,7 +69,7 @@ test("unknown Unihan upstream identity is represented only by a stable map finge
 test("old boundaries and nonaligned statuses remain protected", () => {
   const jmdict = { words: [entry("1", "前愛惜", "ぜんあいじゃく"), entry("2", "愛惜", "あいじゃく")] };
   const prior = { status: "aligned", segments: [["前", "ぜん"], ["愛惜", "あいじゃく"]] };
-  const align = (written, reading) => written === "前愛惜" ? prior : { ...grouped(written, reading), status: "ambiguous" };
+  const align = (spelling, reading) => spelling === "前愛惜" ? prior : { ...grouped(spelling, reading), status: "ambiguous" };
   const result = deriveListedPhonologyAlignments(jmdict, new Map([["前", ["ゼン"]], ["愛", ["アイ"]]]), align, {
     englishCharacterReadingBundle: bundle([form("惜", "シャク")], "English Wiktionary")
   });
@@ -91,7 +91,7 @@ test("kun and marked prefix evidence remains exact and cannot acquire on phonolo
 test("typed final sokuon checks the following original word across old boundaries", () => {
   const jmdict = { words: [entry("1", "乙甲子", "おつかっし"), entry("2", "乙甲名", "おつかっな"), entry("3", "乙甲", "おつかっ")] };
   const primary = new Map([["乙", ["オツ"]], ["子", ["シ"]], ["名", ["ナ"]]]);
-  const align = (written, reading) => written.length === 3 ? { status: "aligned", segments: [["乙甲", "おつかっ"], [written[2], reading.at(-1)]] } : grouped(written, reading);
+  const align = (spelling, reading) => spelling.length === 3 ? { status: "aligned", segments: [["乙甲", "おつかっ"], [spelling[2], reading.at(-1)]] } : grouped(spelling, reading);
   const result = deriveListedPhonologyAlignments(jmdict, primary, align, { characterReadingBundle: bundle([form("甲", "カッ")]) });
   assert.deepEqual(lookup(result, "乙甲子", "おつかっし"), [["乙", "おつ"], ["甲", "かっ"], ["子", "し"]]);
   assert.equal(result.wordAlignments.has("乙甲名"), false);
@@ -147,16 +147,16 @@ test("arguments reject malformed maps, bundles, identities and null defaults", (
 const kanjidicCharacter = (literal, readings = [], nanori = []) => ({
   literal, readingMeaning: { groups: [{ readings }], nanori }
 });
-const pooledWitness = (result, written) => result.witnesses.find(witness =>
-  witness.written === written && witness.interpretation.startsWith("Unique exact allocation")
+const pooledWitness = (result, spelling) => result.witnesses.find(witness =>
+  witness.spelling === spelling && witness.interpretation.startsWith("Unique exact allocation")
 );
 
 test("complete explicit nanori allocations remain valid outside names and retain source identities", () => {
   const jmdict = { words: [entry("1", "甲乙", "あい", ["gikun"])] };
   const kanjidic = { characters: [kanjidicCharacter("甲", [], ["あ"]), kanjidicCharacter("乙", [], ["い"])] };
   const weakWitnesses = [
-    { written: "甲", reading: "あ", source: "KANJIDIC2 nanori" },
-    { written: "乙", reading: "い", source: "KANJIDIC2 nanori" }
+    { spelling: "甲", reading: "あ", source: "KANJIDIC2 nanori" },
+    { spelling: "乙", reading: "い", source: "KANJIDIC2 nanori" }
   ];
   const options = { kanjidic, weakWitnesses, kanjidicSource: { version: "fixture", jsonSHA256: "d".repeat(64) } };
   const before = structuredClone(options);
@@ -168,7 +168,7 @@ test("complete explicit nanori allocations remain valid outside names and retain
     assert.equal(character.newlyAllocated, true);
     assert.equal(character.evidence[0].category, "KANJIDIC2 nanori");
     assert.deepEqual(character.evidence[0].sourceIdentity, options.kanjidicSource);
-    assert.equal(character.evidence[0].witness.written, character.written);
+    assert.equal(character.evidence[0].witness.spelling, character.spelling);
   }
   assert.deepEqual(options, before);
 });
@@ -177,9 +177,9 @@ test("JMdict-derived weak sounds require an independent witness and a multi-Han 
   const jmdict = { words: [entry("1", "甲い", "アイ"), entry("2", "甲乙", "あい")] };
   const kanjidic = { characters: [kanjidicCharacter("乙", [{ type: "ja_on", value: "イ" }])] };
   const weakWitnesses = [
-    { written: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "3", written: "甲い", reading: "あい" } },
-    { written: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "4", written: "甲う", reading: "あう" } },
-    { written: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "5", written: "甲乙", reading: "アイ" } }
+    { spelling: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "3", spelling: "甲い", reading: "あい" } },
+    { spelling: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "4", spelling: "甲う", reading: "あう" } },
+    { spelling: "甲", reading: "あ", source: "JMdict single-kanji spelling", witness: { id: "5", spelling: "甲乙", reading: "アイ" } }
   ];
   const result = deriveListedPhonologyAlignments(jmdict, new Map([["乙", ["イ"]]]), grouped, { kanjidic, weakWitnesses });
   assert.equal(lookup(result, "甲い", "アイ"), undefined);
@@ -196,7 +196,7 @@ test("pooled Korean sounds retain contextual voicing across old cuts and reset a
     kanjidicCharacter("乙", [{ type: "korean_h", value: "가" }]),
     kanjidicCharacter("丙", [{ type: "ja_on", value: "イ" }])
   ] };
-  const align = (written, reading) => written === "甲丙乙" ? { status: "aligned", segments: [["甲", "な"], ["丙乙", reading.slice(1)]] } : grouped(written, reading);
+  const align = (spelling, reading) => spelling === "甲丙乙" ? { status: "aligned", segments: [["甲", "な"], ["丙乙", reading.slice(1)]] } : grouped(spelling, reading);
   const result = deriveListedPhonologyAlignments(jmdict, new Map([["丙", ["イ"]]]), align, { kanjidic });
   assert.deepEqual(lookup(result, "甲乙", "なが"), [["甲", "な"], ["乙", "が"]]);
   assert.equal(lookup(result, "甲乙", "なか"), undefined);
@@ -223,18 +223,18 @@ test("equal Korean kana do not merge raw states with different following-syllabl
 test("exact pooled allocation respects reviewed local endpoints without treating grouping as a veto", () => {
   const jmdict = { words: [entry("1", "甲乙丙", "あいうえ")] };
   const kanjidic = { characters: [kanjidicCharacter("甲", [{ type: "ja_on", value: "ア" }]), kanjidicCharacter("乙", [{ type: "ja_on", value: "イウ" }]), kanjidicCharacter("丙", [{ type: "ja_on", value: "エ" }])] };
-  const fact = segments => compileLexicalEvidence([{ id: "fixture", written: "甲乙丙", reading: "あいうえ", segments, reason: "Synthetic word-local evidence", sources: [{ url: "https://example.com/dictionary" }] }]);
+  const fact = segments => compileLexicalEvidence([{ id: "fixture", spelling: "甲乙丙", reading: "あいうえ", segments, reason: "Synthetic word-local evidence", sources: [{ url: "https://example.com/dictionary" }] }]);
   const compatible = deriveListedPhonologyAlignments(jmdict, new Map(), grouped, { kanjidic, lexicalFacts: fact([["甲乙", "あいう"], ["丙", "え"]]) });
   assert.deepEqual(lookup(compatible, "甲乙丙", "あいうえ"), [["甲", "あ"], ["乙", "いう"], ["丙", "え"]]);
   const contradictory = deriveListedPhonologyAlignments(jmdict, new Map(), grouped, { kanjidic, lexicalFacts: fact([["甲乙", "あい"], ["丙", "うえ"]]) });
   assert.equal(contradictory.wordAlignments.size, 0);
 });
 
-const reusableFact = (extra = {}) => ({ id: "synthetic-source", written: "甲丙", reading: "あう", segments: [["甲", "あ"], ["丙", "う"]],
+const reusableFact = (extra = {}) => ({ id: "synthetic-source", spelling: "甲丙", reading: "あう", segments: [["甲", "あ"], ["丙", "う"]],
   reason: "Independent exact Japanese sound allocation; reuse separately reviewed.", sources: [{ url: "https://example.com/exact-sound" }], ...extra });
 const exactReuse = (facts, { jmdict = { words: [entry("2", "甲乙", "あい")] }, align = grouped,
   readings = [["乙", "イ"]], ...options } = {}) => deriveListedPhonologyAlignments(jmdict, new Map(), align, {
-  kanjidic: { characters: readings.map(([written, reading]) => kanjidicCharacter(written, [{ type: "ja_on", value: reading }])) },
+  kanjidic: { characters: readings.map(([spelling, reading]) => kanjidicCharacter(spelling, [{ type: "ja_on", value: reading }])) },
   lexicalFacts: compileLexicalEvidence(facts), ...options
 });
 
@@ -250,12 +250,12 @@ test("lexical sounds require a per-segment opt-in and keep immutable exact sourc
   assert.deepEqual(claim.sources, source.sources); assert.deepEqual(claim.witness.segments, source.segments);
   assert.match(claim.sourceIdentity.factSHA256, /^[a-f0-9]{64}$/u);
   assert.deepEqual(source, before);
-  const transformed = reusableFact({ written: "甲丙", reading: "かくう", segments: [["甲", "かく"], ["丙", "う"]], reusableSegments: [0] });
+  const transformed = reusableFact({ spelling: "甲丙", reading: "かくう", segments: [["甲", "かく"], ["丙", "う"]], reusableSegments: [0] });
   assert.equal(exactReuse([transformed], { jmdict: { words: [entry("2", "甲乙", "かっこう")] }, readings: [["乙", "コウ"]] }).wordAlignments.size, 0);
 });
 
 test("normalized self witnesses and all restriction-valid source family identities are excluded", () => {
-  const self = reusableFact({ written: "甲乙", reading: "アイ", segments: [["甲", "ア"], ["乙", "イ"]], reusableSegments: [0] });
+  const self = reusableFact({ spelling: "甲乙", reading: "アイ", segments: [["甲", "ア"], ["乙", "イ"]], reusableSegments: [0] });
   assert.equal(exactReuse([self]).wordAlignments.size, 0);
   const source = reusableFact({ reusableSegments: [0] });
   const sameFamily = { words: [entry("2", "甲乙", "あい"), entry("2", "甲丙", "あう")] };
@@ -263,7 +263,7 @@ test("normalized self witnesses and all restriction-valid source family identiti
   const nested = reusableFact({ reusableSegments: [0], jmdictEntries: ["3"] });
   const duplicates = { words: [entry("2", "甲乙", "あい"), entry("3", "甲乙", "アイ")] };
   assert.equal(exactReuse([nested], { jmdict: duplicates }).wordAlignments.size, 0);
-  const corroboration = reusableFact({ id: "independent", written: "甲丁", reading: "あえ", segments: [["甲", "あ"], ["丁", "え"]], reusableSegments: [0] });
+  const corroboration = reusableFact({ id: "independent", spelling: "甲丁", reading: "あえ", segments: [["甲", "あ"], ["丁", "え"]], reusableSegments: [0] });
   const result = exactReuse([nested, corroboration], { jmdict: duplicates });
   assert.deepEqual(lookup(result, "甲乙", "あい"), [["甲", "あ"], ["乙", "い"]]);
   assert.deepEqual(pooledWitness(result, "甲乙").characters[0].evidence.map(claim => claim.factId), ["independent"]);
@@ -284,17 +284,17 @@ test("reusable sounds preserve old coordinates and ambiguity instead of selectin
   const result = exactReuse([source], { jmdict, align: () => prior, readings: [["丁", "エ"], ["乙", "イ"]] });
   assert.deepEqual(lookup(result, "お丁甲乙", "おえあい"), ["お", ["丁", "え"], ["甲", "あ"], ["乙", "い"]]);
   assert.ok(boundaries(prior.segments).every(point => boundaries(lookup(result, "お丁甲乙", "おえあい")).includes(point)));
-  assert.equal(exactReuse([source], { align: (written, reading) => ({ ...grouped(written, reading), status: "reviewed" }) }).wordAlignments.size, 0);
-  const longer = reusableFact({ id: "longer", written: "甲丁", reading: "あいう", segments: [["甲", "あい"], ["丁", "う"]], reusableSegments: [0] });
+  assert.equal(exactReuse([source], { align: (spelling, reading) => ({ ...grouped(spelling, reading), status: "reviewed" }) }).wordAlignments.size, 0);
+  const longer = reusableFact({ id: "longer", spelling: "甲丁", reading: "あいう", segments: [["甲", "あい"], ["丁", "う"]], reusableSegments: [0] });
   assert.equal(exactReuse([source, longer], { jmdict: { words: [entry("2", "甲乙", "あいい")] }, readings: [["乙", "イ"], ["乙", "イイ"]] }).wordAlignments.size, 0);
-  const contrary = reusableFact({ id: "local-context", written: "甲", reading: "あ", segments: [["甲", "あ"]] });
+  const contrary = reusableFact({ id: "local-context", spelling: "甲", reading: "あ", segments: [["甲", "あ"]] });
   assert.equal(exactReuse([longer, contrary], { jmdict: { words: [entry("2", "甲乙", "あいう")] }, readings: [["乙", "ウ"]] }).wordAlignments.size, 0);
 });
 
 test("unopted Korean local facts cannot reset transcription context or bypass its source switch", () => {
   const jmdict = { words: [entry("2", "甲乙", "なむちょ"), entry("3", "甲乙", "なむじょ")] };
   const kanjidic = { characters: [kanjidicCharacter("甲", [{ type: "korean_h", value: "남" }]), kanjidicCharacter("乙", [{ type: "korean_h", value: "조" }])] };
-  const lexicalFacts = compileLexicalEvidence([reusableFact({ written: "甲丙", reading: "なむど", segments: [["甲", "なむ"], ["丙", "ど"]],
+  const lexicalFacts = compileLexicalEvidence([reusableFact({ spelling: "甲丙", reading: "なむど", segments: [["甲", "なむ"], ["丙", "ど"]],
     reason: "Synthetic raw Korean source 남도 establishes only the local transcription; no independent Japanese sound reuse is asserted." })]);
   const result = deriveListedPhonologyAlignments(jmdict, new Map(), grouped, { kanjidic, lexicalFacts });
   assert.equal(lookup(result, "甲乙", "なむちょ"), undefined);
@@ -310,7 +310,7 @@ test("new Mandarin syllable alternatives retain raw proofs, eligibility and exis
   ] };
   const jmdict = { words: [entry("1", "丙甲乙", "カウェイデー"), entry("2", "甲乙", "ウェイデ", ["ik"]), entry("3", "甲乙", "ウェイデー", ["sk"])] };
   const prior = { status: "aligned", segments: [["丙", "カ"], ["甲乙", "ウェイデー"]] };
-  const align = (written, reading) => written === "丙甲乙" ? prior : grouped(written, reading);
+  const align = (spelling, reading) => spelling === "丙甲乙" ? prior : grouped(spelling, reading);
   const options = { kanjidic, kanjidicSource: { version: "fixture", jsonSHA256: "e".repeat(64) } };
   const result = deriveListedPhonologyAlignments(jmdict, new Map(), align, options);
   assert.deepEqual(lookup(result, "丙甲乙", "カウェイデー"), [["丙", "カ"], ["甲", "ウェイ"], ["乙", "デー"]]);

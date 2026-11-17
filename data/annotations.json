@@ -1,7 +1,7 @@
 [
   {
     "id": "2268860",
-    "written": "細小小竹",
+    "spelling": "細小小竹",
     "reading": "いささおざさ",
     "segments": [
       [
@@ -26,7 +26,7 @@
   },
   {
     "id": "1581620",
-    "written": "端折る",
+    "spelling": "端折る",
     "reading": "はしょる",
     "segments": [
       [
@@ -48,7 +48,7 @@
   },
   {
     "id": "2559520",
-    "written": "尻端折り",
+    "spelling": "尻端折り",
     "reading": "しりはしょり",
     "segments": [
       [
@@ -74,7 +74,7 @@
   },
   {
     "id": "1650730",
-    "written": "藏人",
+    "spelling": "藏人",
     "reading": "くろうど",
     "segments": [
       [
@@ -95,7 +95,7 @@
   },
   {
     "id": "1650730",
-    "written": "蔵人",
+    "spelling": "蔵人",
     "reading": "くろうど",
     "segments": [
       [
@@ -116,7 +116,7 @@
   },
   {
     "id": "1442840",
-    "written": "田圃",
+    "spelling": "田圃",
     "reading": "たんぼ",
     "segments": [
       [
@@ -138,7 +138,7 @@
   },
   {
     "id": "1600630",
-    "written": "果敢無い",
+    "spelling": "果敢無い",
     "reading": "はかない",
     "segments": [
       [
@@ -161,7 +161,7 @@
   },
   {
     "id": "1633920",
-    "written": "敷詰める",
+    "spelling": "敷詰める",
     "reading": "しきつめる",
     "segments": [
       [
@@ -184,7 +184,7 @@
   },
   {
     "id": "2761530",
-    "written": "豆鼓醤",
+    "spelling": "豆鼓醤",
     "reading": "トウチージャン",
     "segments": [
       [
@@ -209,7 +209,7 @@
   },
   {
     "id": "2761530",
-    "written": "豆豉醤",
+    "spelling": "豆豉醤",
     "reading": "トウチージャン",
     "segments": [
       [
@@ -234,7 +234,7 @@
   },
   {
     "id": "2862973",
-    "written": "けも耳",
+    "spelling": "けも耳",
     "reading": "けものみみ",
     "segments": [
       "け",
@@ -254,7 +254,7 @@
   },
   {
     "id": "2862973",
-    "written": "けも耳",
+    "spelling": "けも耳",
     "reading": "ケモノミミ",
     "segments": [
       [
@@ -277,7 +277,7 @@
   },
   {
     "id": "1578270",
-    "written": "鶏冠",
+    "spelling": "鶏冠",
     "reading": "とさか",
     "segments": [
       [
@@ -300,7 +300,7 @@
   },
   {
     "id": "2609510",
-    "written": "鶏冠海苔",
+    "spelling": "鶏冠海苔",
     "reading": "とさかのり",
     "segments": [
       [
@@ -327,7 +327,7 @@
   },
   {
     "id": "2615030",
-    "written": "鶏冠に来る",
+    "spelling": "鶏冠に来る",
     "reading": "とさかにくる",
     "segments": [
       [
@@ -356,7 +356,7 @@
   },
   {
     "id": "2615030",
-    "written": "鶏冠にくる",
+    "spelling": "鶏冠にくる",
     "reading": "とさかにくる",
     "segments": [
       [
@@ -380,7 +380,7 @@
   },
   {
     "id": "2751870",
-    "written": "頭黒鶏冠鳧",
+    "spelling": "頭黒鶏冠鳧",
     "reading": "ずぐろとさかげり",
     "segments": [
       [
@@ -415,7 +415,7 @@
   },
   {
     "id": "1459680",
-    "written": "長刀",
+    "spelling": "長刀",
     "reading": "なぎなた",
     "segments": [
       [
@@ -437,7 +437,7 @@
   },
   {
     "id": "2002630",
-    "written": "長刀術",
+    "spelling": "長刀術",
     "reading": "なぎなたじゅつ",
     "segments": [
       [
@@ -463,7 +463,7 @@
   },
   {
     "id": "2207120",
-    "written": "そっぽ向く",
+    "spelling": "そっぽ向く",
     "reading": "そっぽをむく",
     "segments": [
       "そっぽ",
@@ -481,7 +481,7 @@
   },
   {
     "id": "2207120",
-    "written": "ソッポ向く",
+    "spelling": "ソッポ向く",
     "reading": "そっぽをむく",
     "segments": [
       [
@@ -502,7 +502,7 @@
   },
   {
     "id": "2207120",
-    "written": "外方向く",
+    "spelling": "外方向く",
     "reading": "そっぽをむく",
     "segments": [
       [
@@ -523,7 +523,7 @@
   },
   {
     "id": "2263460",
-    "written": "嫁笠貝",
+    "spelling": "嫁笠貝",
     "reading": "よめがかさがい",
     "segments": [
       [
@@ -542,7 +542,7 @@
   },
   {
     "id": "2862455",
-    "written": "ケツ持つ",
+    "spelling": "ケツ持つ",
     "reading": "けつをもつ",
     "segments": [
       [
@@ -562,7 +562,7 @@
   },
   {
     "id": "2862455",
-    "written": "尻持つ",
+    "spelling": "尻持つ",
     "reading": "けつをもつ",
     "segments": [
       [
@@ -582,7 +582,7 @@
   },
   {
     "id": "2862455",
-    "written": "尻もつ",
+    "spelling": "尻もつ",
     "reading": "けつをもつ",
     "segments": [
       [
@@ -598,7 +598,7 @@
   },
   {
     "id": "2862455",
-    "written": "けつ持つ",
+    "spelling": "けつ持つ",
     "reading": "けつをもつ",
     "segments": [
       "けつ",
@@ -615,7 +615,7 @@
   },
   {
     "id": "2862455",
-    "written": "ケツ持つ",
+    "spelling": "ケツ持つ",
     "reading": "ケツをもつ",
     "segments": [
       "ケツ",
@@ -632,7 +632,7 @@
   },
   {
     "id": "2862455",
-    "written": "尻持つ",
+    "spelling": "尻持つ",
     "reading": "ケツをもつ",
     "segments": [
       [
@@ -652,7 +652,7 @@
   },
   {
     "id": "2862455",
-    "written": "尻もつ",
+    "spelling": "尻もつ",
     "reading": "ケツをもつ",
     "segments": [
       [
@@ -668,7 +668,7 @@
   },
   {
     "id": "2862455",
-    "written": "けつ持つ",
+    "spelling": "けつ持つ",
     "reading": "ケツをもつ",
     "segments": [
       [
@@ -688,7 +688,7 @@
   },
   {
     "id": "2829328",
-    "written": "郡造",
+    "spelling": "郡造",
     "reading": "こおりのみやつこ",
     "segments": [
       [
@@ -706,7 +706,7 @@
   },
   {
     "id": "1004505",
-    "written": "此方",
+    "spelling": "此方",
     "reading": "こんた",
     "segments": [
       [
@@ -726,7 +726,7 @@
   },
   {
     "id": "2192360",
-    "written": "立直",
+    "spelling": "立直",
     "reading": "りいち",
     "segments": [
       [
@@ -746,7 +746,7 @@
   },
   {
     "id": "2859657",
-    "written": "木葉蟹",
+    "spelling": "木葉蟹",
     "reading": "このはがに",
     "segments": [
       [
@@ -766,7 +766,7 @@
   },
   {
     "id": "2248690",
-    "written": "八色姓",
+    "spelling": "八色姓",
     "reading": "やくさのかばね",
     "segments": [
       [
@@ -788,7 +788,7 @@
   },
   {
     "id": "2248690",
-    "written": "八色姓",
+    "spelling": "八色姓",
     "reading": "はっしきのかばね",
     "segments": [
       [
@@ -810,7 +810,7 @@
   },
   {
     "id": "2857685",
-    "written": "みそひと文字",
+    "spelling": "みそひと文字",
     "reading": "みそじひともじ",
     "segments": [
       "み",
@@ -837,7 +837,7 @@
   },
   {
     "id": "2525980",
-    "written": "氏長",
+    "spelling": "氏長",
     "reading": "うじのかみ",
     "segments": [
       [
@@ -853,7 +853,7 @@
   },
   {
     "id": "2525980",
-    "written": "氏宗",
+    "spelling": "氏宗",
     "reading": "うじのかみ",
     "segments": [
       [
@@ -869,7 +869,7 @@
   },
   {
     "id": "2243690",
-    "written": "八尺瓊曲玉",
+    "spelling": "八尺瓊曲玉",
     "reading": "やさかにのまがたま",
     "segments": [
       [
@@ -889,7 +889,7 @@
   },
   {
     "id": "1838120",
-    "written": "立ち待ちの月",
+    "spelling": "立ち待ちの月",
     "reading": "たちまちづき",
     "segments": [
       [
@@ -914,7 +914,7 @@
   },
   {
     "id": "2699770",
-    "written": "寝待ちの月",
+    "spelling": "寝待ちの月",
     "reading": "ねまちづき",
     "segments": [
       [
@@ -938,7 +938,7 @@
   },
   {
     "id": "2699810",
-    "written": "臥し待ちの月",
+    "spelling": "臥し待ちの月",
     "reading": "ふしまちづき",
     "segments": [
       [
@@ -963,7 +963,7 @@
   },
   {
     "id": "2863429",
-    "written": "居待ちの月",
+    "spelling": "居待ちの月",
     "reading": "いまちづき",
     "segments": [
       [
@@ -987,7 +987,7 @@
   },
   {
     "id": "1838120",
-    "written": "立待ちの月",
+    "spelling": "立待ちの月",
     "reading": "たちまちづき",
     "segments": [
       [

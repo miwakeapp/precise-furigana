@@ -10,16 +10,16 @@ function transferReadings(source, targetReading) {
   const target = splitGraphemes(targetReading);
   let paths = [{ end: 0, segments: [] }];
   for (const segment of source.segments) {
-    const written = segmentText(segment);
+    const spelling = segmentText(segment);
     const reading = segmentReading(segment);
-    const literal = normalizeKana(written) === normalizeKana(reading);
+    const literal = normalizeKana(spelling) === normalizeKana(reading);
     const key = soundKey(reading);
     const next = [];
     for (const path of paths) {
       for (let end = path.end + 1; end <= target.length; ++end) {
         const candidate = target.slice(path.end, end).join("");
         if (literal ? normalizeKana(candidate) !== normalizeKana(reading) : soundKey(candidate) !== key) continue;
-        next.push({ end, segments: [...path.segments, written === candidate ? written : [written, candidate]] });
+        next.push({ end, segments: [...path.segments, spelling === candidate ? spelling : [spelling, candidate]] });
       }
     }
     // Ambiguous repeated vowels cannot establish a unique character boundary.
@@ -39,12 +39,12 @@ function normalizedBoundaries(segments) {
 export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments = new Map() } = {}) {
   if (!(targetAlignments instanceof Map)) throw new TypeError("targetAlignments must be a Map");
   const constraints = new Map();
-  for (const [written, readings] of targetAlignments) {
-    if (typeof written !== "string" || !(readings instanceof Map)) throw new TypeError("Target alignments require spelling and reading maps");
+  for (const [spelling, readings] of targetAlignments) {
+    if (typeof spelling !== "string" || !(readings instanceof Map)) throw new TypeError("Target alignments require spelling and reading maps");
     for (const [reading, segments] of readings) {
       if (typeof reading !== "string") throw new TypeError("Target alignment readings must be strings");
-      validateAlignment(written, reading, segments);
-      const key = pairKey(written, normalizeKana(reading));
+      validateAlignment(spelling, reading, segments);
+      const key = pairKey(spelling, normalizeKana(reading));
       constraints.set(key, new Set([...(constraints.get(key) ?? []), ...normalizedBoundaries(segments)]));
     }
   }
@@ -53,28 +53,28 @@ export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments
   for (const word of jmdict.words) {
     const spellings = new Map();
     for (const pair of enumeratePairs({ words: [word] })) {
-      if (pair.kind !== "written" || !isKana(pair.reading)) continue;
-      const readings = spellings.get(pair.written) ?? new Set();
+      if (pair.kind !== "kanji" || !isKana(pair.reading)) continue;
+      const readings = spellings.get(pair.spelling) ?? new Set();
       readings.add(pair.reading);
-      spellings.set(pair.written, readings);
+      spellings.set(pair.spelling, readings);
     }
-    for (const [written, readings] of spellings) {
+    for (const [spelling, readings] of spellings) {
       if (readings.size < 2) continue;
       for (const from of readings) {
         const targets = [...readings].filter(to => to !== from && soundKey(to) === soundKey(from));
         if (targets.length === 0) continue;
-        const key = pairKey(written, from);
+        const key = pairKey(spelling, from);
         let source = cache.get(key);
         if (source === undefined) {
-          source = align(written, from);
+          source = align(spelling, from);
           cache.set(key, source);
         }
         if (source.status !== "aligned" || source.segments.length < 2) continue;
         for (const reading of targets) {
           const segments = transferReadings(source, reading);
           if (segments === undefined) continue;
-          validateAlignment(written, reading, segments);
-          const required = constraints.get(pairKey(written, normalizeKana(reading)));
+          validateAlignment(spelling, reading, segments);
+          const required = constraints.get(pairKey(spelling, normalizeKana(reading)));
           if (required !== undefined) {
             const available = new Set(normalizedBoundaries(segments));
             // A unique vowel transfer can still misassign the following
@@ -82,10 +82,10 @@ export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments
             // it never supplies a source alignment or character reading.
             if ([...required].some(boundary => !available.has(boundary))) continue;
           }
-          const targetKey = pairKey(written, reading);
+          const targetKey = pairKey(spelling, reading);
           let target = cache.get(targetKey);
           if (target === undefined) {
-            target = align(written, reading);
+            target = align(spelling, reading);
             cache.set(targetKey, target);
           }
           const available = new Set(boundaries(segments));
@@ -93,7 +93,7 @@ export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments
           // established for this reading, as in `見[み] 出[いだ] す`.
           if (boundaries(target.segments).some(boundary => !available.has(boundary))) continue;
           const values = candidates.get(targetKey) ?? [];
-          values.push({ written, reading, segments, id: word.id, from });
+          values.push({ spelling, reading, segments, id: word.id, from });
           candidates.set(targetKey, values);
         }
       }
@@ -107,10 +107,10 @@ export function deriveReadingVariantAlignments(jmdict, align, { targetAlignments
       return values.every(other => boundaries(other.segments).every(boundary => available.has(boundary)));
     });
     if (candidate === undefined) continue;
-    const readings = wordAlignments.get(candidate.written) ?? new Map();
+    const readings = wordAlignments.get(candidate.spelling) ?? new Map();
     readings.set(candidate.reading, candidate.segments);
-    wordAlignments.set(candidate.written, readings);
-    witnesses.push({ id: candidate.id, written: candidate.written, reading: candidate.reading, from: candidate.from });
+    wordAlignments.set(candidate.spelling, readings);
+    witnesses.push({ id: candidate.id, spelling: candidate.spelling, reading: candidate.reading, from: candidate.from });
   }
   return { wordAlignments, witnesses };
 }

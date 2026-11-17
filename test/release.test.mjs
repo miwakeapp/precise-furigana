@@ -4,7 +4,7 @@ import { algorithmVersion, defaultConfiguration, digest } from "../src/dataset.m
 import { releaseDescriptor, verifyEvaluation, verifyExistingRelease } from "../scripts/release.mjs";
 
 function fixture() {
-  const goldText = JSON.stringify([{ written: "日本", reading: "にほん", segments: [["日", "に"], ["本", "ほん"]] }]);
+  const goldText = JSON.stringify([{ spelling: "日本", reading: "にほん", segments: [["日", "に"], ["本", "ほん"]] }]);
   const current = { generatorSHA256: "generator", sourcesSHA256: "sources", annotationsSHA256: "annotations" };
   const evaluation = {
     provenance: { algorithmVersion, configuration: { ...defaultConfiguration }, ...current, goldSHA256: digest(goldText) },

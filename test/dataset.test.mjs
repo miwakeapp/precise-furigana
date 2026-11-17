@@ -3,9 +3,9 @@ import test from "node:test";
 import { compileAlignmentPipeline, defaultConfiguration } from "../src/dataset.mjs";
 
 function fixtures() {
-  const word = (id, written, reading, tags = []) => ({
+  const word = (id, spelling, reading, tags = []) => ({
     id,
-    kanji: [{ text: written, tags }],
+    kanji: [{ text: spelling, tags }],
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
     sense: []
   });
@@ -51,8 +51,8 @@ test("undefined pipeline options retain defaults while false disables a feature"
 
 test("final sound refinements are independently switchable and cannot propagate to unattested compounds", () => {
   const pairs = [["心地", "ここち"], ["贔屓", "ひいき"], ["御御様", "おごうさま"]];
-  const jmdict = { words: pairs.map(([written, reading], index) => ({
-    id: String(index), kanji: [{ text: written, tags: [] }],
+  const jmdict = { words: pairs.map(([spelling, reading], index) => ({
+    id: String(index), kanji: [{ text: spelling, tags: [] }],
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: []
   })) };
   const readings = new Map([["心", ["こころ"]], ["地", ["チ"]], ["贔", ["ヒ"]], ["屓", ["キ"]], ["御", ["お"]], ["様", ["さま"]]]);
@@ -77,8 +77,8 @@ test("final sound refinements are independently switchable and cannot propagate 
   assert.deepEqual(lengthenedOnly.align("心地", "ここち").segments, baseline.align("心地", "ここち").segments);
   assert.equal(nativeOnly.align("贔屓", "ひいき").status, "aligned");
   assert.equal(lengthenedOnly.align("心地", "ここち").status, "aligned");
-  for (const [written, reading] of [["心心", "ここここ"], ["贔心", "ひいこころ"]]) {
-    assert.deepEqual(refined.align(written, reading).segments, baseline.align(written, reading).segments);
+  for (const [spelling, reading] of [["心心", "ここここ"], ["贔心", "ひいこころ"]]) {
+    assert.deepEqual(refined.align(spelling, reading).segments, baseline.align(spelling, reading).segments);
   }
   assert.equal(refined.nativeCompounds.length, 1);
   assert.equal(refined.unihanOnLengthening.length, 2);
@@ -118,14 +118,14 @@ test("reviewed target facts constrain variant transfers before protected boundar
     literal, readingMeaning: { groups: [{ readings: [{ type: "ja_kun", value }] }] }
   })) };
   const lexicalEvidence = [
-    { id: "expert", written: "玄人", reading: "くろうと", segments: [["玄", "くろ"], ["人", "うと"]] },
-    { id: "day", written: "一昨日", reading: "おととい", segments: [["一昨", "おとと"], ["日", "い"]] }
+    { id: "expert", spelling: "玄人", reading: "くろうと", segments: [["玄", "くろ"], ["人", "うと"]] },
+    { id: "day", spelling: "一昨日", reading: "おととい", segments: [["一昨", "おとと"], ["日", "い"]] }
   ].map(fact => ({ ...fact, reason: "Independently reviewed exact target sound ownership", sources: [{ url: "https://example.test/source" }] }));
   const enabled = compileAlignmentPipeline(jmdict, kanjidic, {}, { lexicalEvidence });
   assert.deepEqual(enabled.align("玄人", "くろうと").segments, [["玄", "くろ"], ["人", "うと"]]);
   assert.deepEqual(enabled.align("玄人", "くろと").segments, [["玄", "くろ"], ["人", "と"]]);
   assert.deepEqual(enabled.align("一昨日", "おととい").segments, [["一昨", "おとと"], ["日", "い"]]);
-  assert.equal(enabled.readingVariants.some(witness => witness.written === "玄人" && witness.reading === "くろうと"), false);
+  assert.equal(enabled.readingVariants.some(witness => witness.spelling === "玄人" && witness.reading === "くろうと"), false);
 
   const disabled = compileAlignmentPipeline(jmdict, kanjidic, { reviewedLexicalEvidence: false }, { lexicalEvidence });
   assert.deepEqual(disabled.align("玄人", "くろうと").segments, [["玄", "くろう"], ["人", "と"]]);
@@ -153,8 +153,8 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
   // Default weak-sound protection must not run this late stage early and
   // hide its witness before the complete pipeline reaches the final pass.
   assert.equal(enabled.configuration.dictionaryNasalLoss, true);
-  for (const [written, reading] of [["警察警察", "ケーサツケーサツ"], ["警察", "けーさつ"]]) {
-    assert.deepEqual(enabled.align(written, reading), disabled.align(written, reading));
+  for (const [spelling, reading] of [["警察警察", "ケーサツケーサツ"], ["警察", "けーさつ"]]) {
+    assert.deepEqual(enabled.align(spelling, reading), disabled.align(spelling, reading));
   }
 });
 
@@ -183,8 +183,8 @@ test("on-reading spelling respects each optional typed source flag", () => {
 });
 
 function lateEvidenceFixture() {
-  const word = (id, written, readings) => ({
-    id, kanji: [{ text: written, tags: [] }],
+  const word = (id, spelling, readings) => ({
+    id, kanji: [{ text: spelling, tags: [] }],
     kana: readings.map(text => ({ text, tags: [], appliesToKanji: ["*"] })), sense: []
   });
   const bundle = (name, records) => ({
@@ -193,8 +193,8 @@ function lateEvidenceFixture() {
       character, reading, kind, originalForm: reading, tags: [kind, "transliteration"]
     }))
   });
-  const fact = (id, written, reading, segments) => ({
-    id, written, reading, segments, reason: "Reviewed local sound boundaries",
+  const fact = (id, spelling, reading, segments) => ({
+    id, spelling, reading, segments, reason: "Reviewed local sound boundaries",
     sources: [{ url: "https://example.test/local-reading" }]
   });
   const options = { ...Object.fromEntries(Object.keys(defaultConfiguration).map(name => [name, false])),
@@ -239,12 +239,12 @@ test("coarse lexical facts cannot erase finer independently witnessed character 
 
 test("independent and lexical paths union disjoint cuts with their source attribution", () => {
   const { word, fact, options, kanjidic, sources } = lateEvidenceFixture();
-  const written = "母刀自で甲乙", reading = "おもとじでこうおつ";
-  const jmdict = { words: [word("1", written, [reading])] };
+  const spelling = "母刀自で甲乙", reading = "おもとじでこうおつ";
+  const jmdict = { words: [word("1", spelling, [reading])] };
   sources.lexicalEvidence.push(fact("right", "甲乙", "こうおつ", [["甲", "こう"], ["乙", "おつ"]]));
   const independent = compileAlignmentPipeline(jmdict, kanjidic, { ...options, reviewedLexicalEvidence: false }, sources);
-  const result = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align(written, reading);
-  assert.deepEqual(independent.align(written, reading).segments, [["母", "おも"], ["刀", "と"], ["自", "じ"], "で", ["甲乙", "こうおつ"]]);
+  const result = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align(spelling, reading);
+  assert.deepEqual(independent.align(spelling, reading).segments, [["母", "おも"], ["刀", "と"], ["自", "じ"], "で", ["甲乙", "こうおつ"]]);
   assert.deepEqual(result.segments, [["母", "おも"], ["刀", "と"], ["自", "じ"], "で", ["甲", "こう"], ["乙", "おつ"]]);
   assert.ok(result.evidence[1].rules.includes("english-listed-character-evidence"));
   assert.ok(result.evidence.at(-1).rules.includes("reviewed-lexical-unit"));
@@ -272,16 +272,16 @@ test("conflicting independent cuts cannot override a reviewed local boundary", (
 
 test("a conflicting region cannot erase compatible independent cuts beyond shared anchors", () => {
   const { word, fact, options, kanjidic, sources } = lateEvidenceFixture();
-  const written = "甲乙丙で母刀自", reading = "かきくけでおもとじ";
-  const jmdict = { words: [word("1", written, [reading])] };
+  const spelling = "甲乙丙で母刀自", reading = "かきくけでおもとじ";
+  const jmdict = { words: [word("1", spelling, [reading])] };
   for (const [literal, value] of [["甲", "カキ"], ["乙", "ク"]]) {
     kanjidic.characters.push({ literal, readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] } });
   }
   sources.englishCharacterReadingBundle.readings.push({ character: "丙", reading: "ケ", kind: "on", originalForm: "ケ", tags: ["on", "transliteration"] });
   sources.lexicalEvidence.push(fact("left", "甲乙", "かきく", [["甲", "か"], ["乙", "きく"]]));
   const independent = compileAlignmentPipeline(jmdict, kanjidic, { ...options, reviewedLexicalEvidence: false }, sources);
-  assert.deepEqual(independent.align(written, reading).segments, [["甲", "かき"], ["乙", "く"], ["丙", "け"], "で", ["母", "おも"], ["刀", "と"], ["自", "じ"]]);
-  const integrated = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align(written, reading);
+  assert.deepEqual(independent.align(spelling, reading).segments, [["甲", "かき"], ["乙", "く"], ["丙", "け"], "で", ["母", "おも"], ["刀", "と"], ["自", "じ"]]);
+  const integrated = compileAlignmentPipeline(jmdict, kanjidic, options, sources).align(spelling, reading);
   assert.deepEqual(integrated.segments, [["甲", "か"], ["乙丙", "きくけ"], "で", ["母", "おも"], ["刀", "と"], ["自", "じ"]]);
   assert.ok(integrated.evidence.at(-1).rules.includes("english-listed-character-evidence"));
   assert.ok(integrated.evidence[0].rules.includes("reviewed-lexical-unit"));
@@ -331,8 +331,8 @@ test("disabled optional sources cannot affect native competing-reading guards", 
 });
 
 test("source-unit transfers refine attested compounds and honor source switches", () => {
-  const jmdict = { words: [["禍津日", "まがつひ"], ["禍津日神", "まがつひのかみ"]].map(([written, reading], index) => ({
-    id: String(index), kanji: [{ text: written, tags: [] }],
+  const jmdict = { words: [["禍津日", "まがつひ"], ["禍津日神", "まがつひのかみ"]].map(([spelling, reading], index) => ({
+    id: String(index), kanji: [{ text: spelling, tags: [] }],
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: []
   })) };
   const kanjidic = { characters: [["津", "つ"], ["日", "ひ"], ["神", "かみ"]].map(([literal, value]) => ({
@@ -407,7 +407,7 @@ test("shared runs recover supported internal cuts and honor both variant switche
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
   assert.deepEqual(enabled.align("寧楽時代", "ならじだい").segments, [["寧楽時", "ならじ"], ["代", "だい"]]);
   assert.equal(enabled.sharedRunTransfers.length, 1);
-  assert.equal(enabled.sharedRunTransfers[0].units[0].sourcePair.written, "奈良時代");
+  assert.equal(enabled.sharedRunTransfers[0].units[0].sourcePair.spelling, "奈良時代");
   assert.deepEqual(Object.keys(enabled.sharedRunTransfers[0].units[0].rawAlignerOptions).sort(), [
     "compoundVoicing", "internalKanaAnchors", "kanaRunCorrespondence", "phonologicalAlternations", "terminalContraction"
   ]);

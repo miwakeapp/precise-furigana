@@ -42,11 +42,11 @@ function readingCoordinates(reading) {
   return { units, normalized, offsets, ends: new Map(offsets.map((offset, index) => [offset, index])) };
 }
 
-function findIrregularRanges(written, reading, irregularWords) {
+function findIrregularRanges(spelling, reading, irregularWords) {
   const ranges = [];
-  for (let start = 0; start < written.length; ++start) {
-    for (let end = start + 1; end <= written.length; ++end) {
-      const candidates = irregularWords.get(written.slice(start, end).join(""));
+  for (let start = 0; start < spelling.length; ++start) {
+    for (let end = start + 1; end <= spelling.length; ++end) {
+      const candidates = irregularWords.get(spelling.slice(start, end).join(""));
       if (candidates === undefined) continue;
       for (let readStart = 0; readStart < reading.units.length; ++readStart) {
         const offset = reading.offsets[readStart];
@@ -61,10 +61,10 @@ function findIrregularRanges(written, reading, irregularWords) {
   return ranges;
 }
 
-function splitSpan(written, reading, readings, ranges, writtenOffset, readingOffset, supplementalReadingFilter, {
+function splitSpan(spelling, reading, readings, ranges, spellingOffset, readingOffset, supplementalReadingFilter, {
   iterationInheritance = false, previousCharacter, previousReading, followingIterationReading
 } = {}) {
-  const characters = splitGraphemes(written);
+  const characters = splitGraphemes(spelling);
   const kana = splitGraphemes(reading);
   if (characters.length < 2 || !characters.every(isIdeograph) || !isKana(reading)) return undefined;
   const memo = new Map();
@@ -97,16 +97,16 @@ function splitSpan(written, reading, readings, ranges, writtenOffset, readingOff
       if (supplemental && !evidence.weak && supplementalReadingFilter !== undefined && !supplementalReadingFilter({
         character,
         reading: piece,
-        writtenEnd: writtenOffset + index + 1,
+        spellingEnd: spellingOffset + index + 1,
         readingEnd: readingOffset + end
       })) continue;
       if (supplemental && ranges.some(range =>
-        range.start <= writtenOffset + index && writtenOffset + index < range.end &&
+        range.start <= spellingOffset + index && spellingOffset + index < range.end &&
         range.readStart <= readingOffset + offset && readingOffset + end <= range.readEnd
       )) continue;
       const witnesses = supplemental && !evidence.weak ? [{
         character,
-        written: characters[index],
+        spelling: characters[index],
         reading: piece,
         field: "kJapanese",
         codepoint: `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`,
@@ -202,23 +202,23 @@ export function deriveUnihanAlignments(jmdict, characterReadings, unihanReadings
       }
     }
   }
-  const irregularWords = new Map([...irregularWordReadings].map(([written, values]) => [written, [...new Set(values.map(normalizeKana))]]));
+  const irregularWords = new Map([...irregularWordReadings].map(([spelling, values]) => [spelling, [...new Set(values.map(normalizeKana))]]));
   const seen = new Set();
   const wordAlignments = new Map();
   const witnesses = [];
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written") continue;
-    const key = pairKey(pair.written, pair.reading);
+    if (pair.kind !== "kanji") continue;
+    const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
-    const original = align(pair.written, pair.reading);
+    const original = align(pair.spelling, pair.reading);
     if (original.status !== "aligned") continue;
-    const writtenUnits = splitGraphemes(pair.written);
+    const spellingUnits = splitGraphemes(pair.spelling);
     const coordinates = readingCoordinates(pair.reading);
-    const ranges = findIrregularRanges(writtenUnits, coordinates, irregularWords);
+    const ranges = findIrregularRanges(spellingUnits, coordinates, irregularWords);
     const readingFilter = supplementalReadingFilter === undefined ? undefined : candidate => supplementalReadingFilter({
       ...candidate,
-      followingWritten: writtenUnits[candidate.writtenEnd],
+      followingSpelling: spellingUnits[candidate.spellingEnd],
       followingReading: coordinates.units.slice(candidate.readingEnd).join("")
     });
     const characterEvidence = [];
@@ -227,20 +227,20 @@ export function deriveUnihanAlignments(jmdict, characterReadings, unihanReadings
     // A competing phonological path must not erase an already supported split.
     for (const candidates of [readings, phonologicalReadings, lengthenedReadings]) {
       if (candidates === undefined) continue;
-      let writtenOffset = 0;
+      let spellingOffset = 0;
       let readingOffset = 0;
       let previousCharacter;
       let previousReading;
       segments = segments.flatMap((segment, index) => {
-        const written = segmentText(segment);
+        const spelling = segmentText(segment);
         const reading = segmentReading(segment);
         const following = segments[index + 1];
-        const split = splitSpan(written, reading, candidates, ranges, writtenOffset, readingOffset, readingFilter, {
+        const split = splitSpan(spelling, reading, candidates, ranges, spellingOffset, readingOffset, readingFilter, {
           iterationInheritance: candidates === lengthenedReadings,
           previousCharacter, previousReading,
           followingIterationReading: following !== undefined && segmentText(following) === "々" ? segmentReading(following) : undefined
         });
-        writtenOffset += splitGraphemes(written).length;
+        spellingOffset += splitGraphemes(spelling).length;
         readingOffset += splitGraphemes(reading).length;
         const replacement = split?.segments ?? [segment];
         for (const part of replacement) {
@@ -259,11 +259,11 @@ export function deriveUnihanAlignments(jmdict, characterReadings, unihanReadings
       });
     }
     if (characterEvidence.length === 0) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const variants = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const variants = wordAlignments.get(pair.spelling) ?? new Map();
     variants.set(pair.reading, segments);
-    wordAlignments.set(pair.written, variants);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading, characters: characterEvidence });
+    wordAlignments.set(pair.spelling, variants);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, characters: characterEvidence });
   }
   return { wordAlignments, witnesses };
 }

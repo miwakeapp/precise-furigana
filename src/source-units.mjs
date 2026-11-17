@@ -38,9 +38,9 @@ export function deriveSourceUnitAlignments(jmdict, kanjidic, align, {
   const opaqueSubstrings = new Set();
   const minUnitLength = 2, maxUnitLength = 8;
   for (const pair of enumeratePairs(jmdict)) {
-    const result = align(pair.written, pair.reading);
-    const record = { ...result, written: pair.written, reading: pair.reading };
-    accepted.set(pairKey(record.written, record.reading), record);
+    const result = align(pair.spelling, pair.reading);
+    const record = { ...result, spelling: pair.spelling, reading: pair.reading };
+    accepted.set(pairKey(record.spelling, record.reading), record);
     for (const segment of record.segments) {
       if (!Array.isArray(segment)) continue;
       const chars = splitGraphemes(segmentText(segment));
@@ -53,13 +53,13 @@ export function deriveSourceUnitAlignments(jmdict, kanjidic, align, {
   }
   const eligible = new Set();
   for (const [key, record] of accepted) {
-    if (record.status === "aligned" && opaqueSubstrings.has(record.written) &&
-      record.segments.length === splitGraphemes(record.written).length &&
+    if (record.status === "aligned" && opaqueSubstrings.has(record.spelling) &&
+      record.segments.length === splitGraphemes(record.spelling).length &&
       record.segments.every(segment => Array.isArray(segment) && splitGraphemes(segmentText(segment)).length === 1)) eligible.add(key);
   }
   // The independent source replay sees no accepted cut. Accepted source results
   // are compared afterward; unaligned or incomplete outputs cannot seed units.
-  const grouped = (written, reading) => ({ segments: [[written, reading]], status: eligible.has(pairKey(written, reading)) ? "aligned" : "withheld" });
+  const grouped = (spelling, reading) => ({ segments: [[spelling, reading]], status: eligible.has(pairKey(spelling, reading)) ? "aligned" : "withheld" });
   const rawClaims = new Map();
   const rawWeak = new Map();
   function claim(character, reading, evidence) {
@@ -113,32 +113,32 @@ export function deriveSourceUnitAlignments(jmdict, kanjidic, align, {
   function collect(name, result) {
     passCounts[name] = { independentlyAllocated: result.witnesses.length, retained: 0 };
     for (const witness of result.witnesses) {
-      const key = pairKey(witness.written, witness.reading);
-      const segments = result.wordAlignments.get(witness.written)?.get(witness.reading);
+      const key = pairKey(witness.spelling, witness.reading);
+      const segments = result.wordAlignments.get(witness.spelling)?.get(witness.reading);
       const original = accepted.get(key);
       if (!eligible.has(key) || JSON.stringify(segments) !== JSON.stringify(original.segments)) { increment("acceptedSourceDisagrees"); continue; }
       const points = boundaries(segments);
-      const exactFact = reviewed.find(fact => fact.written === witness.written && fact.normalizedReading === normalizeKana(witness.reading));
+      const exactFact = reviewed.find(fact => fact.spelling === witness.spelling && fact.normalizedReading === normalizeKana(witness.reading));
       if (exactFact !== undefined && boundaries(exactFact.segments).some(point => !points.includes(point))) { increment("exactTargetVeto"); continue; }
       const allocation = segments.map(segment => {
         const character = segmentText(segment), reading = segmentReading(segment);
-        const supplied = (witness.sourcePaths?.flat() ?? witness.spans?.flatMap(span => span.characters) ?? witness.characters ?? []).filter(item => item.written === character && normalizeKana(item.reading) === normalizeKana(reading));
+        const supplied = (witness.sourcePaths?.flat() ?? witness.spans?.flatMap(span => span.characters) ?? witness.characters ?? []).filter(item => item.spelling === character && normalizeKana(item.reading) === normalizeKana(reading));
         const evidence = supplied.flatMap(item => item.evidence ?? item.derivations?.map(derivation => ({ ...derivation, sourceIdentity: kanjidicIdentity, rules: [item.rule] })) ?? []);
         const exact = rawClaims.get(pairKey(character, normalizeKana(reading))) ?? [];
         return { character, reading, evidence: evidence.length ? evidence : exact };
       });
       if (allocation.some(character => character.evidence.length === 0)) { increment("incompleteProvenance"); continue; }
       const transformed = allocation.some(character => character.evidence.every(evidence => evidence.rules?.length > 0));
-      const normalizedKey = pairKey(witness.written, normalizeKana(witness.reading));
+      const normalizedKey = pairKey(witness.spelling, normalizeKana(witness.reading));
       const existing = facts.get(normalizedKey);
       if (existing !== undefined && (existing.strength === "exact" || transformed)) continue;
       const urls = allocation.flatMap(character => character.evidence.flatMap(evidence => evidenceSources(character, evidence)));
       if (urls.length === 0) { increment("missingSourceAttribution"); continue; }
       facts.set(normalizedKey, {
-        id: `raw-unit-${digest(normalizedKey).slice(0, 16)}`, written: witness.written, reading: witness.reading, segments,
+        id: `raw-unit-${digest(normalizedKey).slice(0, 16)}`, spelling: witness.spelling, reading: witness.reading, segments,
         reason: "Complete allocation uniquely supported by the named source pass, independently replayed without source boundaries; retained only when identical to the accepted source word.",
         sources: urls, strength: transformed ? "transformed" : "exact", pass: name,
-        sourcePair: { id: witness.id, written: witness.written, reading: witness.reading }, allocation,
+        sourcePair: { id: witness.id, spelling: witness.spelling, reading: witness.reading }, allocation,
         rawWitness: witness
       });
       ++passCounts[name].retained;
@@ -155,21 +155,21 @@ export function deriveSourceUnitAlignments(jmdict, kanjidic, align, {
   const wordAlignments = new Map();
   const witnesses = [];
   for (const pair of enumeratePairs(jmdict)) {
-    const original = accepted.get(pairKey(pair.written, pair.reading));
+    const original = accepted.get(pairKey(pair.spelling, pair.reading));
     if (original.status !== "aligned" || !original.segments.some(segment => Array.isArray(segment) && splitGraphemes(segmentText(segment)).length > minUnitLength)) continue;
-    const targets = compiled.filter(fact => pair.written.includes(fact.written) && original.segments.some(segment => Array.isArray(segment) &&
-      splitGraphemes(segmentText(segment)).length > fact.writtenUnits.length && segmentText(segment).includes(fact.written)));
+    const targets = compiled.filter(fact => pair.spelling.includes(fact.spelling) && original.segments.some(segment => Array.isArray(segment) &&
+      splitGraphemes(segmentText(segment)).length > fact.spellingUnits.length && segmentText(segment).includes(fact.spelling)));
     if (!targets.length) continue;
-    const contexts = reviewed.filter(fact => pair.written.includes(fact.written));
+    const contexts = reviewed.filter(fact => pair.spelling.includes(fact.spelling));
     const result = refineWithLexicalEvidence(original, [...contexts, ...targets]);
     if (result === original) continue;
     const usedIds = new Set(result.evidence?.flatMap(item => item.facts ?? []) ?? []);
     const used = targets.filter(fact => usedIds.has(fact.id));
     if (!used.length) continue;
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, result.segments);
-    wordAlignments.set(pair.written, readings);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading, units: used });
+    wordAlignments.set(pair.spelling, readings);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, units: used });
   }
   return { wordAlignments, witnesses, units: compiled, passCounts, rejected };
 }

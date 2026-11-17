@@ -1,6 +1,6 @@
 [
   {
-    "written": "日本",
+    "spelling": "日本",
     "reading": "にほん",
     "segments": [
       [
@@ -15,7 +15,7 @@
     "category": "contracted reading"
   },
   {
-    "written": "日本",
+    "spelling": "日本",
     "reading": "にっぽん",
     "segments": [
       [
@@ -30,7 +30,7 @@
     "category": "gemination"
   },
   {
-    "written": "日本語",
+    "spelling": "日本語",
     "reading": "にほんご",
     "segments": [
       [
@@ -49,7 +49,7 @@
     "category": "compound"
   },
   {
-    "written": "日本人",
+    "spelling": "日本人",
     "reading": "にほんじん",
     "segments": [
       [
@@ -68,7 +68,7 @@
     "category": "compound"
   },
   {
-    "written": "学校",
+    "spelling": "学校",
     "reading": "がっこう",
     "segments": [
       [
@@ -83,7 +83,7 @@
     "category": "gemination"
   },
   {
-    "written": "作家",
+    "spelling": "作家",
     "reading": "さっか",
     "segments": [
       [
@@ -98,7 +98,7 @@
     "category": "gemination"
   },
   {
-    "written": "切手",
+    "spelling": "切手",
     "reading": "きって",
     "segments": [
       [
@@ -113,7 +113,7 @@
     "category": "gemination"
   },
   {
-    "written": "一杯",
+    "spelling": "一杯",
     "reading": "いっぱい",
     "segments": [
       [
@@ -128,7 +128,7 @@
     "category": "gemination"
   },
   {
-    "written": "六本",
+    "spelling": "六本",
     "reading": "ろっぽん",
     "segments": [
       [
@@ -143,7 +143,7 @@
     "category": "gemination"
   },
   {
-    "written": "新聞",
+    "spelling": "新聞",
     "reading": "しんぶん",
     "segments": [
       [
@@ -158,7 +158,7 @@
     "category": "voicing"
   },
   {
-    "written": "手紙",
+    "spelling": "手紙",
     "reading": "てがみ",
     "segments": [
       [
@@ -173,7 +173,7 @@
     "category": "voicing"
   },
   {
-    "written": "人々",
+    "spelling": "人々",
     "reading": "ひとびと",
     "segments": [
       [
@@ -188,7 +188,7 @@
     "category": "iteration"
   },
   {
-    "written": "時々",
+    "spelling": "時々",
     "reading": "ときどき",
     "segments": [
       [
@@ -203,7 +203,7 @@
     "category": "iteration"
   },
   {
-    "written": "山々",
+    "spelling": "山々",
     "reading": "やまやま",
     "segments": [
       [
@@ -218,7 +218,7 @@
     "category": "iteration"
   },
   {
-    "written": "今日",
+    "spelling": "今日",
     "reading": "きょう",
     "segments": [
       [
@@ -229,7 +229,7 @@
     "category": "irregular"
   },
   {
-    "written": "今日",
+    "spelling": "今日",
     "reading": "こんにち",
     "segments": [
       [
@@ -244,7 +244,7 @@
     "category": "regular alternative"
   },
   {
-    "written": "明日",
+    "spelling": "明日",
     "reading": "あした",
     "segments": [
       [
@@ -255,7 +255,7 @@
     "category": "irregular"
   },
   {
-    "written": "明日",
+    "spelling": "明日",
     "reading": "あす",
     "segments": [
       [
@@ -271,7 +271,7 @@
     "reason": "KANJIDIC2 supplies 明あ as an ordinary kun stem and 日す as an explicit nanori; together they support this complete phonetic allocation."
   },
   {
-    "written": "明日",
+    "spelling": "明日",
     "reading": "みょうにち",
     "segments": [
       [
@@ -286,7 +286,7 @@
     "category": "regular alternative"
   },
   {
-    "written": "昨日",
+    "spelling": "昨日",
     "reading": "きのう",
     "segments": [
       [
@@ -297,7 +297,7 @@
     "category": "irregular"
   },
   {
-    "written": "大人",
+    "spelling": "大人",
     "reading": "おとな",
     "segments": [
       [
@@ -308,7 +308,7 @@
     "category": "irregular"
   },
   {
-    "written": "一昨日",
+    "spelling": "一昨日",
     "reading": "おととい",
     "segments": [
       [
@@ -328,7 +328,7 @@
     ]
   },
   {
-    "written": "明後日",
+    "spelling": "明後日",
     "reading": "あさって",
     "segments": [
       [
@@ -339,7 +339,7 @@
     "category": "irregular"
   },
   {
-    "written": "素人",
+    "spelling": "素人",
     "reading": "しろうと",
     "segments": [
       [
@@ -359,7 +359,7 @@
     ]
   },
   {
-    "written": "玄人",
+    "spelling": "玄人",
     "reading": "くろうと",
     "segments": [
       [
@@ -379,7 +379,7 @@
     "reason": "Correct the current vowel ownership to 玄くろ / 人うと. Both Daijisen and Nikoku divide くろ‐うと, and pinned source ruby explicitly assigns each character. The shorter くろと reading is separately 玄くろ / 人と and does not establish where the extra う belongs."
   },
   {
-    "written": "海老",
+    "spelling": "海老",
     "reading": "えび",
     "segments": [
       [
@@ -395,7 +395,7 @@
     "reason": "KANJIDIC2 explicitly lists 海え and 老び as nanori. Complete individual sound support permits these cuts even outside names."
   },
   {
-    "written": "一向",
+    "spelling": "一向",
     "reading": "ひたすら",
     "segments": [
       [
@@ -406,7 +406,7 @@
     "category": "reported regression"
   },
   {
-    "written": "一向",
+    "spelling": "一向",
     "reading": "ひたぶる",
     "segments": [
       [
@@ -417,7 +417,7 @@
     "category": "reported regression"
   },
   {
-    "written": "抽斗",
+    "spelling": "抽斗",
     "reading": "ひきだし",
     "segments": [
       [
@@ -428,7 +428,7 @@
     "category": "reported regression"
   },
   {
-    "written": "欠片",
+    "spelling": "欠片",
     "reading": "かけら",
     "segments": [
       [
@@ -444,7 +444,7 @@
     "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
   },
   {
-    "written": "欠けら",
+    "spelling": "欠けら",
     "reading": "かけら",
     "segments": [
       [
@@ -456,7 +456,7 @@
     "category": "alternate spelling"
   },
   {
-    "written": "ひと欠片",
+    "spelling": "ひと欠片",
     "reading": "ひとかけら",
     "segments": [
       "ひと",
@@ -473,7 +473,7 @@
     "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
   },
   {
-    "written": "一欠片",
+    "spelling": "一欠片",
     "reading": "ひとかけら",
     "segments": [
       [
@@ -493,7 +493,7 @@
     "reason": "Root-approved exact word-local source evidence: Nikkoku gives the precise かけ/ら division, while the separately published bilingual dictionary individually marks 片 as nonstandard. The same JMdict family explicitly includes 欠けら and 一欠けら, corroborating 欠かけ. Together these support the exact local 片ら assignment rather than a universal character reading."
   },
   {
-    "written": "一突き",
+    "spelling": "一突き",
     "reading": "ひとつき",
     "segments": [
       [
@@ -509,7 +509,7 @@
     "category": "reported regression"
   },
   {
-    "written": "ひと突き",
+    "spelling": "ひと突き",
     "reading": "ひとつき",
     "segments": [
       "ひと",
@@ -522,7 +522,7 @@
     "category": "alternate spelling"
   },
   {
-    "written": "ヤブ蚊",
+    "spelling": "ヤブ蚊",
     "reading": "やぶっか",
     "segments": [
       [
@@ -537,7 +537,7 @@
     "category": "literal kana boundary"
   },
   {
-    "written": "ママ子",
+    "spelling": "ママ子",
     "reading": "ままっこ",
     "segments": [
       [
@@ -552,7 +552,7 @@
     "category": "literal kana boundary"
   },
   {
-    "written": "藪蚊",
+    "spelling": "藪蚊",
     "reading": "やぶっか",
     "segments": [
       [
@@ -567,7 +567,7 @@
     "category": "gemination"
   },
   {
-    "written": "取り扱う",
+    "spelling": "取り扱う",
     "reading": "とりあつかう",
     "segments": [
       [
@@ -584,7 +584,7 @@
     "category": "okurigana"
   },
   {
-    "written": "食べる",
+    "spelling": "食べる",
     "reading": "たべる",
     "segments": [
       [
@@ -596,7 +596,7 @@
     "category": "okurigana"
   },
   {
-    "written": "引っ越す",
+    "spelling": "引っ越す",
     "reading": "ひっこす",
     "segments": [
       [
@@ -613,7 +613,7 @@
     "category": "okurigana"
   },
   {
-    "written": "お祝い",
+    "spelling": "お祝い",
     "reading": "おいわい",
     "segments": [
       "お",
@@ -626,7 +626,7 @@
     "category": "prefix"
   },
   {
-    "written": "お母さん",
+    "spelling": "お母さん",
     "reading": "おかあさん",
     "segments": [
       "お",
@@ -639,7 +639,7 @@
     "category": "prefix"
   },
   {
-    "written": "申し込む",
+    "spelling": "申し込む",
     "reading": "もうしこむ",
     "segments": [
       [
@@ -656,7 +656,7 @@
     "category": "okurigana"
   },
   {
-    "written": "石鹼",
+    "spelling": "石鹼",
     "reading": "せっけん",
     "segments": [
       [
@@ -671,7 +671,7 @@
     "category": "search-only spelling"
   },
   {
-    "written": "蠟燭",
+    "spelling": "蠟燭",
     "reading": "ろうそく",
     "segments": [
       [
@@ -686,7 +686,7 @@
     "category": "search-only spelling"
   },
   {
-    "written": "囊胞",
+    "spelling": "囊胞",
     "reading": "のうほう",
     "segments": [
       [
@@ -701,7 +701,7 @@
     "category": "search-only spelling"
   },
   {
-    "written": "冒瀆的",
+    "spelling": "冒瀆的",
     "reading": "ぼうとくてき",
     "segments": [
       [
@@ -720,7 +720,7 @@
     "category": "search-only spelling"
   },
   {
-    "written": "繫がる",
+    "spelling": "繫がる",
     "reading": "つながる",
     "segments": [
       [
@@ -732,7 +732,7 @@
     "category": "search-only spelling"
   },
   {
-    "written": "カタカナ",
+    "spelling": "カタカナ",
     "reading": "カタカナ",
     "segments": [
       "カタカナ"
@@ -740,7 +740,7 @@
     "category": "literal"
   },
   {
-    "written": "ありがとう",
+    "spelling": "ありがとう",
     "reading": "ありがとう",
     "segments": [
       "ありがとう"
@@ -748,7 +748,7 @@
     "category": "literal"
   },
   {
-    "written": "生年月日",
+    "spelling": "生年月日",
     "reading": "せいねんがっぴ",
     "segments": [
       [
@@ -771,7 +771,7 @@
     "category": "compound"
   },
   {
-    "written": "誕生日",
+    "spelling": "誕生日",
     "reading": "たんじょうび",
     "segments": [
       [
@@ -790,7 +790,7 @@
     "category": "voicing"
   },
   {
-    "written": "雨傘",
+    "spelling": "雨傘",
     "reading": "あまがさ",
     "segments": [
       [
@@ -805,7 +805,7 @@
     "category": "voicing"
   },
   {
-    "written": "雨宿り",
+    "spelling": "雨宿り",
     "reading": "あまやどり",
     "segments": [
       [
@@ -821,7 +821,7 @@
     "category": "okurigana"
   },
   {
-    "written": "大人買い",
+    "spelling": "大人買い",
     "reading": "おとながい",
     "segments": [
       [
@@ -837,7 +837,7 @@
     "category": "irregular compound"
   },
   {
-    "written": "朔日",
+    "spelling": "朔日",
     "reading": "ついたち",
     "segments": [
       [
@@ -848,7 +848,7 @@
     "category": "contraction regression"
   },
   {
-    "written": "初朔日",
+    "spelling": "初朔日",
     "reading": "はつついたち",
     "segments": [
       [
@@ -863,7 +863,7 @@
     "category": "contraction regression"
   },
   {
-    "written": "花相撲",
+    "spelling": "花相撲",
     "reading": "はなずもう",
     "segments": [
       [
@@ -878,7 +878,7 @@
     "category": "compound voicing"
   },
   {
-    "written": "書換え",
+    "spelling": "書換え",
     "reading": "かきかえ",
     "segments": [
       [
@@ -894,7 +894,7 @@
     "category": "omitted okurigana"
   },
   {
-    "written": "積重ねる",
+    "spelling": "積重ねる",
     "reading": "つみかさねる",
     "segments": [
       [
@@ -910,7 +910,7 @@
     "category": "omitted okurigana"
   },
   {
-    "written": "巻戻す",
+    "spelling": "巻戻す",
     "reading": "まきもどす",
     "segments": [
       [
@@ -926,7 +926,7 @@
     "category": "omitted okurigana"
   },
   {
-    "written": "先輩",
+    "spelling": "先輩",
     "reading": "せんぱい",
     "segments": [
       [
@@ -941,7 +941,7 @@
     "category": "post-nasal plosive"
   },
   {
-    "written": "鉛筆",
+    "spelling": "鉛筆",
     "reading": "えんぴつ",
     "segments": [
       [
@@ -956,7 +956,7 @@
     "category": "post-nasal plosive"
   },
   {
-    "written": "俄景気",
+    "spelling": "俄景気",
     "reading": "にわかげいき",
     "segments": [
       [
@@ -975,7 +975,7 @@
     "category": "global learning regression"
   },
   {
-    "written": "愛想笑い",
+    "spelling": "愛想笑い",
     "reading": "あいそわらい",
     "segments": [
       [
@@ -995,7 +995,7 @@
     "category": "global learning regression"
   },
   {
-    "written": "河原鳩",
+    "spelling": "河原鳩",
     "reading": "かわらばと",
     "segments": [
       [
@@ -1015,7 +1015,7 @@
     "reason": "JMdict 1590760 gives 河原 and 川原 for かわら; 川かわ and KANJIDIC2 nanori 原ら establish the boundary. This does not accept the rejected global-reading split 河か/原わら."
   },
   {
-    "written": "赤海老",
+    "spelling": "赤海老",
     "reading": "あかえび",
     "segments": [
       [
@@ -1035,7 +1035,7 @@
     "reason": "Retain 赤あか and use the explicit KANJIDIC2 nanori 海え and 老び for the remaining complete phonetic allocation."
   },
   {
-    "written": "前肢",
+    "spelling": "前肢",
     "reading": "まえあし",
     "segments": [
       [
@@ -1050,7 +1050,7 @@
     "category": "residual regression"
   },
   {
-    "written": "鬼婆",
+    "spelling": "鬼婆",
     "reading": "おにばばあ",
     "segments": [
       [
@@ -1065,7 +1065,7 @@
     "category": "residual regression"
   },
   {
-    "written": "証し",
+    "spelling": "証し",
     "reading": "あかし",
     "segments": [
       [
@@ -1077,7 +1077,7 @@
     "category": "literal anchor"
   },
   {
-    "written": "美味しい",
+    "spelling": "美味しい",
     "reading": "おいしい",
     "segments": [
       [
@@ -1089,7 +1089,7 @@
     "category": "literal anchor"
   },
   {
-    "written": "メンド臭い",
+    "spelling": "メンド臭い",
     "reading": "めんどうくさい",
     "segments": [
       [
@@ -1109,7 +1109,7 @@
     "category": "kana mismatch"
   },
   {
-    "written": "体によい",
+    "spelling": "体によい",
     "reading": "からだにいい",
     "segments": [
       [
@@ -1126,7 +1126,7 @@
     "category": "kana mismatch"
   },
   {
-    "written": "植木鉢",
+    "spelling": "植木鉢",
     "reading": "うえきばち",
     "segments": [
       [
@@ -1145,7 +1145,7 @@
     "category": "corpus audit regression"
   },
   {
-    "written": "説き出す",
+    "spelling": "説き出す",
     "reading": "ときいだす",
     "segments": [
       [
@@ -1162,7 +1162,7 @@
     "category": "corpus audit regression"
   },
   {
-    "written": "染め出す",
+    "spelling": "染め出す",
     "reading": "そめいだす",
     "segments": [
       [
@@ -1179,7 +1179,7 @@
     "category": "corpus audit regression"
   },
   {
-    "written": "届け出伝染病",
+    "spelling": "届け出伝染病",
     "reading": "とどけいででんせんびょう",
     "segments": [
       [
@@ -1207,7 +1207,7 @@
     "category": "corpus audit regression"
   },
   {
-    "written": "時計",
+    "spelling": "時計",
     "reading": "とけい",
     "segments": [
       [
@@ -1222,7 +1222,7 @@
     "category": "contextual nanori"
   },
   {
-    "written": "腕時計",
+    "spelling": "腕時計",
     "reading": "うでどけい",
     "segments": [
       [
@@ -1241,7 +1241,7 @@
     "category": "voiced contextual nanori"
   },
   {
-    "written": "文字",
+    "spelling": "文字",
     "reading": "もじ",
     "segments": [
       [
@@ -1256,7 +1256,7 @@
     "category": "contextual nanori"
   },
   {
-    "written": "三井住友銀行",
+    "spelling": "三井住友銀行",
     "reading": "みついすみともぎんこう",
     "segments": [
       [
@@ -1287,7 +1287,7 @@
     "category": "complete kun reading"
   },
   {
-    "written": "鳴門",
+    "spelling": "鳴門",
     "reading": "なると",
     "segments": [
       [
@@ -1302,7 +1302,7 @@
     "category": "complete kun reading"
   },
   {
-    "written": "阿呆",
+    "spelling": "阿呆",
     "reading": "あほ",
     "segments": [
       [
@@ -1317,7 +1317,7 @@
     "category": "attested reading variation"
   },
   {
-    "written": "部屋",
+    "spelling": "部屋",
     "reading": "へや",
     "segments": [
       [
@@ -1332,7 +1332,7 @@
     "category": "attested unvoicing"
   },
   {
-    "written": "天皇",
+    "spelling": "天皇",
     "reading": "てんのう",
     "segments": [
       [
@@ -1347,7 +1347,7 @@
     "category": "renjo"
   },
   {
-    "written": "観音",
+    "spelling": "観音",
     "reading": "かんのん",
     "segments": [
       [
@@ -1362,7 +1362,7 @@
     "category": "renjo"
   },
   {
-    "written": "因縁",
+    "spelling": "因縁",
     "reading": "いんねん",
     "segments": [
       [
@@ -1377,7 +1377,7 @@
     "category": "renjo"
   },
   {
-    "written": "珈琲",
+    "spelling": "珈琲",
     "reading": "コーヒー",
     "segments": [
       [
@@ -1392,7 +1392,7 @@
     "category": "phonetic ateji"
   },
   {
-    "written": "珈琲牛乳",
+    "spelling": "珈琲牛乳",
     "reading": "コーヒーぎゅうにゅう",
     "segments": [
       [
@@ -1415,7 +1415,7 @@
     "category": "phonetic ateji within compounds"
   },
   {
-    "written": "亜細亜",
+    "spelling": "亜細亜",
     "reading": "アジア",
     "segments": [
       [
@@ -1434,7 +1434,7 @@
     "category": "phonetic ateji"
   },
   {
-    "written": "型録",
+    "spelling": "型録",
     "reading": "カタログ",
     "segments": [
       [
@@ -1449,7 +1449,7 @@
     "category": "phonetic ateji with an exact kun reading"
   },
   {
-    "written": "明白",
+    "spelling": "明白",
     "reading": "あからさま",
     "segments": [
       [
@@ -1460,7 +1460,7 @@
     "category": "ateji tag alone cannot justify a split"
   },
   {
-    "written": "１１月",
+    "spelling": "１１月",
     "reading": "じゅういちがつ",
     "segments": [
       [
@@ -1484,7 +1484,7 @@
     ]
   },
   {
-    "written": "１歩",
+    "spelling": "１歩",
     "reading": "いっぽ",
     "segments": [
       [
@@ -1499,7 +1499,7 @@
     "category": "equivalent numeral spelling"
   },
   {
-    "written": "八幡の不知藪",
+    "spelling": "八幡の不知藪",
     "reading": "やわたのやぶしらず",
     "segments": [
       [
@@ -1520,7 +1520,7 @@
     "reason": "The locality admits 八や plus KANJIDIC2 nanori 幡わた; the literal の survives the transposed reading of 不知藪."
   },
   {
-    "written": "呉の母",
+    "spelling": "呉の母",
     "reading": "くれのおも",
     "segments": [
       [
@@ -1536,7 +1536,7 @@
     "category": "internal literal anchor without vowel stealing"
   },
   {
-    "written": "細小小笹",
+    "spelling": "細小小笹",
     "reading": "いささおざさ",
     "segments": [
       [
@@ -1555,7 +1555,7 @@
     "category": "weaker evidence cannot move stronger boundaries"
   },
   {
-    "written": "八咫",
+    "spelling": "八咫",
     "reading": "やあた",
     "segments": [
       [
@@ -1570,7 +1570,7 @@
     "category": "reading variants cannot move stronger boundaries"
   },
   {
-    "written": "人聞き悪い",
+    "spelling": "人聞き悪い",
     "reading": "ひとぎきのわるい",
     "segments": [
       [
@@ -1590,7 +1590,7 @@
     "category": "local omitted particle uncertainty"
   },
   {
-    "written": "Ｗｅｂ版",
+    "spelling": "Ｗｅｂ版",
     "reading": "ウェブばん",
     "segments": [
       [
@@ -1605,7 +1605,7 @@
     "category": "Latin-written sibling evidence"
   },
   {
-    "written": "ヶ月",
+    "spelling": "ヶ月",
     "reading": "かげつ",
     "segments": [
       [
@@ -1620,7 +1620,7 @@
     "category": "counter symbol sibling evidence"
   },
   {
-    "written": "霞ヶ関",
+    "spelling": "霞ヶ関",
     "reading": "かすみがせき",
     "segments": [
       [
@@ -1639,7 +1639,7 @@
     "category": "name symbol sibling evidence"
   },
   {
-    "written": "暖簾",
+    "spelling": "暖簾",
     "reading": "のれん",
     "segments": [
       [
@@ -1654,7 +1654,7 @@
     "category": "contextual on-reading nasal loss"
   },
   {
-    "written": "絆創膏",
+    "spelling": "絆創膏",
     "reading": "ばんそうこう",
     "segments": [
       [
@@ -1673,7 +1673,7 @@
     "category": "contextual initial voicing"
   },
   {
-    "written": "上海",
+    "spelling": "上海",
     "reading": "シャンハイ",
     "segments": [
       [
@@ -1688,7 +1688,7 @@
     "category": "independently matched pinyin character sounds"
   },
   {
-    "written": "提灯",
+    "spelling": "提灯",
     "reading": "ちょうちん",
     "segments": [
       [
@@ -1703,7 +1703,7 @@
     "category": "supplemental exact Unihan readings"
   },
   {
-    "written": "高麗",
+    "spelling": "高麗",
     "reading": "こうらい",
     "segments": [
       [
@@ -1718,7 +1718,7 @@
     "category": "supplemental exact Unihan readings"
   },
   {
-    "written": "饅頭",
+    "spelling": "饅頭",
     "reading": "まんじゅう",
     "segments": [
       [
@@ -1733,7 +1733,7 @@
     "category": "supplemental on-reading voicing"
   },
   {
-    "written": "栗鼠",
+    "spelling": "栗鼠",
     "reading": "りす",
     "segments": [
       [
@@ -1748,7 +1748,7 @@
     "category": "listed character sound evidence"
   },
   {
-    "written": "商人",
+    "spelling": "商人",
     "reading": "あきんど",
     "segments": [
       [
@@ -1763,7 +1763,7 @@
     "category": "reviewed local contraction"
   },
   {
-    "written": "３Ｄ",
+    "spelling": "３Ｄ",
     "reading": "スリーディー",
     "segments": [
       [
@@ -1778,7 +1778,7 @@
     "category": "dictionary-defined foreign numeral"
   },
   {
-    "written": "Ｇ１０",
+    "spelling": "Ｇ１０",
     "reading": "ジーテン",
     "segments": [
       [
@@ -1793,7 +1793,7 @@
     "category": "spoken foreign cardinal stays whole"
   },
   {
-    "written": "寿府",
+    "spelling": "寿府",
     "reading": "ジュネーブ",
     "segments": [
       [
@@ -1804,7 +1804,7 @@
     "category": "unresolved sound ownership across alternate foreign readings"
   },
   {
-    "written": "寿府",
+    "spelling": "寿府",
     "reading": "ジュネーヴ",
     "segments": [
       [

@@ -53,7 +53,7 @@ export function kanaPronunciation(text) {
  * Preserve kana boundaries inside a shared pronunciation skeleton.
  * A caller must separately establish that any vowel-length change is licensed.
  */
-export function alignKanaPronunciations(written, reading) {
+export function alignKanaPronunciations(spelling, reading) {
   const blocks = text => {
     const result = [];
     let precedingVowels;
@@ -70,7 +70,7 @@ export function alignKanaPronunciations(written, reading) {
     }
     return result;
   };
-  const left = blocks(written);
+  const left = blocks(spelling);
   const right = blocks(reading);
   if (!left || !right || left.length !== right.length || left.some((block, index) => block.character !== right[index].character)) return undefined;
   const result = [];

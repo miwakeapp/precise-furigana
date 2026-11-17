@@ -39,8 +39,8 @@ function phoneticCost(candidate, reading) {
   return cost <= 4 ? cost : Infinity;
 }
 
-function splitPhonetic(written, reading, onReadings) {
-  const units = splitGraphemes(written);
+function splitPhonetic(spelling, reading, onReadings) {
+  const units = splitGraphemes(spelling);
   const readUnits = splitGraphemes(reading);
   if (units.length < 2 || !units.every(isIdeograph) || !isKana(reading)) return undefined;
   let paths = [{ end: 0, cost: 0, segments: [] }];
@@ -71,22 +71,22 @@ function splitPhonetic(written, reading, onReadings) {
 /** Experimental phonetic correspondence, restricted to explicitly tagged ateji pairs. */
 export function deriveAtejiAlignments(jmdict, characterReadings, align) {
   const onReadings = new Map();
-  for (const [written, readings] of characterReadings) {
+  for (const [spelling, readings] of characterReadings) {
     const candidates = readings.flatMap(reading => /^[\p{Script=Katakana}ー]+$/u.test(reading) ? alternatives(readingStem(reading)) : [{ exact: readingStem(reading) }]);
-    if (candidates.length) onReadings.set(written, candidates);
+    if (candidates.length) onReadings.set(spelling, candidates);
   }
   const wordAlignments = new Map();
   const witnesses = [];
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written" || !pair.writtenTags.includes("ateji") || pair.readingTags.includes("gikun")) continue;
-    const original = align(pair.written, pair.reading);
+    if (pair.kind !== "kanji" || !pair.spellingTags.includes("ateji") || pair.readingTags.includes("gikun")) continue;
+    const original = align(pair.spelling, pair.reading);
     const segments = original.segments.flatMap(segment => splitPhonetic(segmentText(segment), segmentReading(segment), onReadings) ?? [segment]);
     if (boundaries(segments).length <= boundaries(original.segments).length) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, segments);
-    wordAlignments.set(pair.written, readings);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading });
+    wordAlignments.set(pair.spelling, readings);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading });
   }
   return { wordAlignments, witnesses };
 }

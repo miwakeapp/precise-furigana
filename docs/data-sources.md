@@ -32,7 +32,7 @@ Each fact in `lexical-evidence.json` looks like this:
 ```json
 {
   "id": "clock-allocation",
-  "written": "時計",
+  "spelling": "時計",
   "reading": "とけい",
   "segments": [["時", "と"], ["計", "けい"]],
   "reason": "The pinned word table explicitly assigns と to 時 and けい to 計.",

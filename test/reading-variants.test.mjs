@@ -3,8 +3,8 @@ import test from "node:test";
 import { createAligner } from "../src/align.mjs";
 import { deriveReadingVariantAlignments } from "../src/reading-variants.mjs";
 
-function dictionary(written, readings) {
-  return { words: [{ id: "1000000", kanji: [{ text: written, tags: [] }], kana: readings.map(text => ({ text, tags: [], appliesToKanji: ["*"] })) }] };
+function dictionary(spelling, readings) {
+  return { words: [{ id: "1000000", kanji: [{ text: spelling, tags: [] }], kana: readings.map(text => ({ text, tags: [], appliesToKanji: ["*"] })) }] };
 }
 
 test("attested short and long readings can share independently supported character boundaries", () => {
@@ -47,7 +47,7 @@ test("target constraints are scoped to the exact pair and cannot become transfer
   assert.deepEqual(deriveReadingVariantAlignments(dictionary("玄人", ["くろと", "くろうと"]), align, { targetAlignments: unrelated }).wordAlignments.get("玄人").get("くろうと"), [["玄", "くろう"], ["人", "と"]]);
   const targetAlignments = new Map([["阿呆", new Map([["あほう", [["阿", "あ"], ["呆", "ほう"]]]])]]);
   assert.deepEqual(deriveReadingVariantAlignments(dictionary("阿呆", ["あほう", "あほ"]), align, { targetAlignments }).wordAlignments.get("阿呆").get("あほ"), [["阿", "あ"], ["呆", "ほ"]]);
-  const grouped = (written, reading) => ({ status: "aligned", segments: [[written, reading]] });
+  const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
   assert.equal(deriveReadingVariantAlignments(dictionary("阿呆", ["あほう", "あほ"]), grouped, { targetAlignments }).wordAlignments.size, 0);
 });
 

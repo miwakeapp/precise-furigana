@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { boundaries, combineAlignments, validateAlignment } from "../src/segments.mjs";
 
-test("segments preserve exact written text and reading, including script", () => {
+test("segments preserve the exact spelling and reading, including script", () => {
   validateAlignment("ヤブ蚊", "やぶっか", [["ヤブ", "やぶ"], ["蚊", "っか"]]);
   assert.throws(() => validateAlignment("ヤブ蚊", "やぶっか", ["ヤブ", ["蚊", "っか"]]));
   assert.throws(() => validateAlignment("蚊", "っか", [["", "っ"], ["蚊", "か"]]));

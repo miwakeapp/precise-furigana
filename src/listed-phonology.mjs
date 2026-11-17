@@ -93,14 +93,14 @@ export function deriveListedPhonologyAlignments(jmdict, primary, align, {
     // Check the actual complete word, including following old segment edges.
     // Applying this conservative check to every source avoids an unsafe typed
     // reading being admitted merely because another source duplicates it.
-    supplementalReadingFilter: ({ reading, followingWritten, followingReading }) => !normalizeKana(reading).endsWith("っ") || (
-      followingWritten !== undefined && isIdeograph(followingWritten) && /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(followingReading))
+    supplementalReadingFilter: ({ reading, followingSpelling, followingReading }) => !normalizeKana(reading).endsWith("っ") || (
+      followingSpelling !== undefined && isIdeograph(followingSpelling) && /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(followingReading))
     )
   });
   const output = {
     wordAlignments: result.wordAlignments,
     witnesses: result.witnesses.map(witness => ({
-      id: witness.id, written: witness.written, reading: witness.reading,
+      id: witness.id, spelling: witness.spelling, reading: witness.reading,
       interpretation: "Exact listed readings or finite contextual sound correspondences; not an etymological claim",
       characters: witness.characters.map(character => {
         const allocations = character.derivations ?? character.values.map(value => ({ value, rules: [] }));
@@ -110,7 +110,7 @@ export function deriveListedPhonologyAlignments(jmdict, primary, align, {
           return claims.map(claim => ({ ...claim, rules: [...allocation.rules] }));
         });
         return {
-          character: character.character, written: character.written, reading: character.reading,
+          character: character.character, spelling: character.spelling, reading: character.reading,
           codepoint: character.codepoint, evidence
         };
       })
@@ -135,8 +135,8 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
     }
   }
   if (weakWitnesses.some(witness => !["KANJIDIC2 nanori", "KANJIDIC2 complete kun reading", "JMdict single-kanji spelling"].includes(witness.source) ||
-    typeof witness.written !== "string" || splitGraphemes(witness.written).length !== 1 || typeof witness.reading !== "string" || !isKana(witness.reading) ||
-    witness.source === "JMdict single-kanji spelling" && (typeof witness.witness?.written !== "string" || typeof witness.witness?.reading !== "string"))) {
+    typeof witness.spelling !== "string" || splitGraphemes(witness.spelling).length !== 1 || typeof witness.reading !== "string" || !isKana(witness.reading) ||
+    witness.source === "JMdict single-kanji spelling" && (typeof witness.witness?.spelling !== "string" || typeof witness.witness?.reading !== "string"))) {
     throw new TypeError("Weak sounds require an identifiable character-reading witness");
   }
   const identity = (supplied, name, records) => supplied ?? {
@@ -170,7 +170,7 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
       }
     }
   }
-  for (const witness of weakWitnesses) add(witness.written, witness.reading, {
+  for (const witness of weakWitnesses) add(witness.spelling, witness.reading, {
     category: witness.source, source: witness.source,
     sourceIdentity: witness.source.startsWith("JMdict") ? jmdictIdentity : kanjidicIdentity,
     witness: structuredClone(witness)
@@ -179,12 +179,12 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
   if (reusable.length) {
     const knownIds = new Set(jmdict.words.map(word => word.id));
     for (const pair of enumeratePairs(jmdict)) {
-      const key = pairKey(pair.written, normalizeKana(pair.reading)), ids = familyByPair.get(key) ?? new Set();
+      const key = pairKey(pair.spelling, normalizeKana(pair.reading)), ids = familyByPair.get(key) ?? new Set();
       ids.add(pair.id); familyByPair.set(key, ids);
     }
     for (const fact of reusable) {
       // A sound cannot corroborate the entries it was derived from.
-      const sourceFamilyIds = new Set(familyByPair.get(pairKey(fact.written, normalizeKana(fact.reading))) ?? []);
+      const sourceFamilyIds = new Set(familyByPair.get(pairKey(fact.spelling, normalizeKana(fact.reading))) ?? []);
       for (const id of fact.jmdictEntries ?? []) if (knownIds.has(id)) sourceFamilyIds.add(id);
       // An opt-in asserts independently reusable exact Japanese sound evidence.
       // Context-bound or raw foreign-transcription-only claims remain local;
@@ -194,18 +194,18 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
         add(segmentText(segment), segmentReading(segment), {
           category: "Reviewed reusable sound", source: "Reviewed lexical evidence", factId: fact.id, segmentIndex,
           sourceIdentity: { factSHA256: createHash("sha256").update(JSON.stringify(fact)).digest("hex") },
-          witness: { written: fact.written, reading: fact.reading, segments: structuredClone(fact.segments) },
+          witness: { spelling: fact.spelling, reading: fact.reading, segments: structuredClone(fact.segments) },
           sourceFamilyIds: [...sourceFamilyIds].sort(), sources: structuredClone(fact.sources), reason: fact.reason
         });
       }
     }
   }
   const eligible = (claim, target) => claim.category === "Reviewed reusable sound" ? (
-    pairKey(claim.witness.written, normalizeKana(claim.witness.reading)) !== pairKey(target.written, normalizeKana(target.reading)) &&
-    !claim.sourceFamilyIds.some(id => familyByPair.get(pairKey(target.written, normalizeKana(target.reading)))?.has(id))
+    pairKey(claim.witness.spelling, normalizeKana(claim.witness.reading)) !== pairKey(target.spelling, normalizeKana(target.reading)) &&
+    !claim.sourceFamilyIds.some(id => familyByPair.get(pairKey(target.spelling, normalizeKana(target.reading)))?.has(id))
   ) : claim.category !== "JMdict single-kanji spelling" || (
-    splitGraphemes(target.written).filter(isIdeograph).length >= 2 &&
-    pairKey(claim.witness.witness.written, normalizeKana(claim.witness.witness.reading)) !== pairKey(target.written, normalizeKana(target.reading))
+    splitGraphemes(target.spelling).filter(isIdeograph).length >= 2 &&
+    pairKey(claim.witness.witness.spelling, normalizeKana(claim.witness.witness.reading)) !== pairKey(target.spelling, normalizeKana(target.reading))
   );
   // Keep source Hangul states, not just their equal kana strings: n/ng codas
   // can map to the same kana but license different following syllables.
@@ -221,7 +221,7 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
           edges.push({ start: state, end, claim: { category: part.literal ? "literal" : "unchanged opaque span" } }); next.add(end);
         }
       } else {
-        const claims = (pool.get(part.written)?.get(normalizeKana(part.reading)) ?? []).filter(claim => eligible(claim, target) && (foreignAllowed || !foreign(claim)));
+        const claims = (pool.get(part.spelling)?.get(normalizeKana(part.reading)) ?? []).filter(claim => eligible(claim, target) && (foreignAllowed || !foreign(claim)));
         for (const state of previous) for (const claim of claims) {
           if (claim.category !== "Korean transcription") {
             edges.push({ start: state, end: undefined, claim }); next.add(undefined); continue;
@@ -245,29 +245,29 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
   }
   const checkLexical = makeLexicalContextChecker(lexicalFacts), seen = new Set();
   for (const pair of enumeratePairs(jmdict)) {
-    const key = pairKey(pair.written, pair.reading);
+    const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
-    const earlier = align(pair.written, pair.reading);
-    const original = { ...earlier, segments: output.wordAlignments.get(pair.written)?.get(pair.reading) ?? earlier.segments };
+    const earlier = align(pair.spelling, pair.reading);
+    const original = { ...earlier, segments: output.wordAlignments.get(pair.spelling)?.get(pair.reading) ?? earlier.segments };
     if (original.status !== "aligned" || !original.segments.some(segment => Array.isArray(segment) && splitGraphemes(segment[0]).length > 1)) continue;
     const foreignAllowed = !pair.readingTags.some(tag => ["ik", "sk"].includes(tag)), readings = new Map();
-    for (const character of new Set(splitGraphemes(pair.written))) {
+    for (const character of new Set(splitGraphemes(pair.spelling))) {
       const values = [...(pool.get(character) ?? new Map())].filter(([, claims]) => claims.some(claim => eligible(claim, pair) && (foreignAllowed || !foreign(claim)))).map(([reading]) => reading);
       if (values.length) readings.set(character, values);
     }
     const parts = [], segments = [], changed = new Set();
     for (const segment of original.segments) {
-      const written = segmentText(segment), reading = segmentReading(segment), units = splitGraphemes(written);
-      let allocation = Array.isArray(segment) && units.length > 1 ? uniqueExactCharacterAlignment(written, reading, readings) : undefined;
+      const spelling = segmentText(segment), reading = segmentReading(segment), units = splitGraphemes(spelling);
+      let allocation = Array.isArray(segment) && units.length > 1 ? uniqueExactCharacterAlignment(spelling, reading, readings) : undefined;
       if (allocation?.allocations.some(part => !part.literal && badOnset(part.reading))) allocation = undefined;
       if (allocation && allocation.segments.length > 1) {
         for (const part of allocation.allocations) { changed.add(parts.length); parts.push(part); }
         segments.push(...allocation.segments);
       } else {
         segments.push(segment);
-        if (units.every(isKana) && written === reading) parts.push({ written, reading, literal: true });
-        else parts.push({ written, reading, opaque: units.length > 1 || !pool.get(written)?.has(normalizeKana(reading)) });
+        if (units.every(isKana) && spelling === reading) parts.push({ spelling, reading, literal: true });
+        else parts.push({ spelling, reading, opaque: units.length > 1 || !pool.get(spelling)?.has(normalizeKana(reading)) });
       }
     }
     if (!changed.size) continue;
@@ -277,13 +277,13 @@ function refineExactSounds(jmdict, kanjidic, align, output, listedSources, {
     if (lexical.veto) continue;
     const previous = new Set(boundaries(original.segments)), proposed = new Set(boundaries(segments));
     if (proposed.size <= previous.size || [...previous].some(point => !proposed.has(point))) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const values = output.wordAlignments.get(pair.written) ?? new Map();
-    values.set(pair.reading, segments); output.wordAlignments.set(pair.written, values);
-    output.witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading,
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const values = output.wordAlignments.get(pair.spelling) ?? new Map();
+    values.set(pair.reading, segments); output.wordAlignments.set(pair.spelling, values);
+    output.witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading,
       interpretation: "Unique exact allocation from independently listed sounds; not an etymological claim",
       reviewedContexts: lexical.contexts,
-      characters: parts.map((part, index) => ({ character: part.written, written: part.written, reading: part.reading,
+      characters: parts.map((part, index) => ({ character: part.spelling, spelling: part.spelling, reading: part.reading,
         newlyAllocated: changed.has(index), evidence: support[index] })) });
   }
 }

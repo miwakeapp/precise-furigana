@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveWeakReadings, refineAlignment } from "../src/weak-readings.mjs";
 
-function word(id, written, reading) {
-  return { id, kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] };
+function word(id, spelling, reading) {
+  return { id, kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] };
 }
 
 test("supplementary evidence keeps nanori and complete kun readings separate from primary readings", () => {

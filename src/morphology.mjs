@@ -34,30 +34,30 @@ export function deriveContinuativeReadings(jmdict) {
 
   for (const word of jmdict.words) {
     const pairs = [...enumeratePairs({ words: [word] })];
-    const compoundReadings = new Set(pairs.filter(pair => pair.kind === "written" && countIdeographs(pair.written) > 1).map(pair => pair.reading));
+    const compoundReadings = new Set(pairs.filter(pair => pair.kind === "kanji" && countIdeographs(pair.spelling) > 1).map(pair => pair.reading));
     for (const pair of pairs) {
       if (pair.readingTags.some(tag => tag === "ik" || tag === "sk") || !isKana(pair.reading)) continue;
-      const senses = word.sense.filter(sense => allows(sense.appliesToKanji, pair.written) && allows(sense.appliesToKana, pair.reading));
+      const senses = word.sense.filter(sense => allows(sense.appliesToKanji, pair.spelling) && allows(sense.appliesToKana, pair.reading));
       const partsOfSpeech = new Set(senses.flatMap(sense => sense.partOfSpeech));
       const classes = [...partsOfSpeech].filter(isVerbClass);
       const normalizedReading = normalizeKana(pair.reading);
       if (classes.length > 0) verbReadings.add(normalizedReading);
-      if (pair.kind !== "written" || classes.length !== 1 || !regularEndings.has(classes[0]) || partsOfSpeech.has("exp")) continue;
+      if (pair.kind !== "kanji" || classes.length !== 1 || !regularEndings.has(classes[0]) || partsOfSpeech.has("exp")) continue;
       if (compoundReadings.has(pair.reading)) continue;
 
-      const graphemes = splitGraphemes(pair.written);
+      const graphemes = splitGraphemes(pair.spelling);
       if (graphemes.length < 2 || !hanGraphemePattern.test(graphemes[0]) || !graphemes.slice(1).every(isKana)) continue;
       const okurigana = normalizeKana(graphemes.slice(1).join(""));
       if (!normalizedReading.endsWith(okurigana) || normalizedReading.length <= okurigana.length) continue;
       const [ending, replacement] = regularEndings.get(classes[0]);
       if (!okurigana.endsWith(ending) || !normalizedReading.endsWith(ending)) continue;
-      const normalizedWritten = graphemes[0] + okurigana;
+      const normalizedSpelling = graphemes[0] + okurigana;
       const stem = normalizedReading.slice(0, -ending.length) + replacement;
-      const writtenStem = normalizedWritten.slice(0, -ending.length) + replacement;
+      const spellingStem = normalizedSpelling.slice(0, -ending.length) + replacement;
       if (!stem) continue;
       candidates.push({
-        character: graphemes[0], normalizedWritten, normalizedReading, writtenStem,
-        id: pair.id, written: pair.written, reading: pair.reading, stem
+        character: graphemes[0], normalizedSpelling, normalizedReading, spellingStem,
+        id: pair.id, spelling: pair.spelling, reading: pair.reading, stem
       });
     }
   }
@@ -71,19 +71,19 @@ export function deriveContinuativeReadings(jmdict) {
   const readings = new Map();
   const witnesses = [];
   const witnessed = new Set();
-  candidates.sort((left, right) => compareText(left.character, right.character) || compareText(left.stem, right.stem) || compareText(left.id, right.id) || compareText(left.written, right.written));
+  candidates.sort((left, right) => compareText(left.character, right.character) || compareText(left.stem, right.stem) || compareText(left.id, right.id) || compareText(left.spelling, right.spelling));
   for (const candidate of candidates) {
     const compound = byCharacter.get(candidate.character).some(base => {
-      if (!candidate.normalizedWritten.startsWith(base.writtenStem) || !candidate.normalizedReading.startsWith(base.stem)) return false;
-      const writtenSuffix = candidate.normalizedWritten.slice(base.writtenStem.length);
+      if (!candidate.normalizedSpelling.startsWith(base.spellingStem) || !candidate.normalizedReading.startsWith(base.stem)) return false;
+      const spellingSuffix = candidate.normalizedSpelling.slice(base.spellingStem.length);
       const readingSuffix = candidate.normalizedReading.slice(base.stem.length);
-      return writtenSuffix !== "" && writtenSuffix === readingSuffix && verbReadings.has(readingSuffix);
+      return spellingSuffix !== "" && spellingSuffix === readingSuffix && verbReadings.has(readingSuffix);
     });
     if (compound) continue;
     const values = readings.get(candidate.character);
     if (values === undefined) readings.set(candidate.character, [candidate.stem]);
     else if (!values.includes(candidate.stem)) values.push(candidate.stem);
-    const witness = { id: candidate.id, written: candidate.written, reading: candidate.reading, stem: candidate.stem };
+    const witness = { id: candidate.id, spelling: candidate.spelling, reading: candidate.reading, stem: candidate.stem };
     const key = JSON.stringify(witness);
     if (!witnessed.has(key)) {
       witnessed.add(key);

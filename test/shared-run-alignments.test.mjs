@@ -12,15 +12,15 @@ function derive({ target = "甲乙丁", source = "甲乙丙", reading = "あい�
   sourceSegments = [["甲", "あ"], ["乙", "い"], ["丙", "う"]], targetSegments, sourceStatus = "aligned", targetStatus = "aligned", options = {} } = {}) {
   const jmdict = { words: [{ id: "1", kanji: [target, source].map(text => ({ text, tags: [] })),
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] }] };
-  const align = (written, sound) => written === target ? { status: targetStatus, segments: targetSegments ?? [[written, sound]] } : { status: sourceStatus, segments: sourceSegments };
+  const align = (spelling, sound) => spelling === target ? { status: targetStatus, segments: targetSegments ?? [[spelling, sound]] } : { status: sourceStatus, segments: sourceSegments };
   return deriveSharedRunAlignments(jmdict, dictionary(values), align, { ...options,  });
 }
 
 test("transfers only the shared run's interior and preserves changed residue", () => {
   const result = derive();
   assert.deepEqual([...result.wordAlignments.values()][0].values().next().value, [["甲", "あ"], ["乙丁", "いう"]]);
-  assert.equal(result.witnesses[0].units[0].fact.written, "甲乙");
-  assert.equal(result.witnesses[0].units[0].sourcePair.written, "甲乙丙");
+  assert.equal(result.witnesses[0].units[0].fact.spelling, "甲乙");
+  assert.equal(result.witnesses[0].units[0].sourcePair.spelling, "甲乙丙");
 });
 
 test("complete run endpoints must fit both target spelling and sound", () => {
@@ -58,7 +58,7 @@ test("withholds ambiguous and fallback targets", () => {
 });
 
 test("a reviewed larger context vetoes a conflicting unit endpoint", () => {
-  const reviewedFacts = compileLexicalEvidence([{ id: "reviewed", written: "甲乙丁", reading: "あいう", segments: [["甲乙", "あ"], ["丁", "いう"]],
+  const reviewedFacts = compileLexicalEvidence([{ id: "reviewed", spelling: "甲乙丁", reading: "あいう", segments: [["甲乙", "あ"], ["丁", "いう"]],
     reason: "Synthetic context", sources: [{ url: "https://example.test/source" }] }]);
   assert.equal(derive({ options: { reviewedFacts } }).wordAlignments.size, 0);
 });
@@ -92,8 +92,8 @@ test("rejects incomparable proposals from entries sharing a target pair", () => 
   const jmdict = { words: [[target, "甲乙丙"], [target, "戊乙丁"]].map((spellings, index) => ({ id: String(index + 1),
     kanji: spellings.map(text => ({ text, tags: [] })), kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] })) };
   const kanjidic = dictionary({ 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"], 戊: ["ア"], 丁: ["ウ"] });
-  const align = written => ({ status: "aligned", segments: written === target ? [[written, reading]] :
-    [...written].map((character, index) => [character, [...reading][index]]) });
+  const align = spelling => ({ status: "aligned", segments: spelling === target ? [[spelling, reading]] :
+    [...spelling].map((character, index) => [character, [...reading][index]]) });
   const result = deriveSharedRunAlignments(jmdict, kanjidic, align);
   assert.equal(result.counts.changed, 2);
   assert.equal(result.wordAlignments.size, 0);
@@ -104,7 +104,7 @@ test("retains both attested target witnesses when repeated entries agree", () =>
   const target = "甲乙丁", source = "甲乙丙", reading = "あいう";
   const jmdict = { words: ["1", "2"].map(id => ({ id, kanji: [target, source].map(text => ({ text, tags: [] })),
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }], sense: [] })) };
-  const align = written => ({ status: "aligned", segments: written === target ? [[written, reading]] : [["甲", "あ"], ["乙", "い"], ["丙", "う"]] });
+  const align = spelling => ({ status: "aligned", segments: spelling === target ? [[spelling, reading]] : [["甲", "あ"], ["乙", "い"], ["丙", "う"]] });
   const result = deriveSharedRunAlignments(jmdict, dictionary({ 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"] }), align);
   assert.deepEqual(result.wordAlignments.get(target)?.get(reading), [["甲", "あ"], ["乙丁", "いう"]]);
   assert.deepEqual(result.witnesses.map(witness => witness.targetAttestation.id), ["1", "2"]);
@@ -114,8 +114,8 @@ function corresponding({ source = "甲う乙", target = "甲ふ乙", reading = "
   sourceSegments = [["甲", "あ"], "う", ["乙", "い"]], targetSegments, options = {}, restricted = false, sourceStatus = "aligned" } = {}) {
   const jmdict = { words: [{ id: "1", kanji: [source, target].map(text => ({ text, tags: [] })),
     kana: [{ text: reading, tags: [], appliesToKanji: restricted ? [target] : ["*"] }], sense: [] }] };
-  const align = written => ({ written, reading, status: written === source ? sourceStatus : "aligned",
-    segments: written === source ? sourceSegments : targetSegments ?? [[target, reading]] });
+  const align = spelling => ({ spelling, reading, status: spelling === source ? sourceStatus : "aligned",
+    segments: spelling === source ? sourceSegments : targetSegments ?? [[target, reading]] });
   const result = deriveSharedRunAlignments(jmdict, dictionary(values), align, options);
   return { ...result, proposed: result.wordAlignments.get(target)?.get(reading) };
 }
@@ -165,7 +165,7 @@ test("aligned internal-anchor ownership and inferred donor outputs cannot justif
 test("kana projection respects exact reading restrictions, old cuts and lexical endpoints", () => {
   assert.equal(corresponding({ restricted: true }).proposed, undefined);
   assert.equal(corresponding({ targetSegments: [["甲ふ", "あ"], ["乙", "うい"]] }).proposed, undefined);
-  const reviewedFacts = compileLexicalEvidence([{ id: "local", written: "甲ふ乙", reading: "あうい", segments: [["甲ふ", "あ"], ["乙", "うい"]],
+  const reviewedFacts = compileLexicalEvidence([{ id: "local", spelling: "甲ふ乙", reading: "あうい", segments: [["甲ふ", "あ"], ["乙", "うい"]],
     reason: "Synthetic independently reviewed ownership", sources: [{ url: "https://example.test/local" }] }]);
   assert.equal(corresponding({ options: { reviewedFacts } }).proposed, undefined);
   const prior = corresponding({ targetSegments: [["甲ふ", "あう"], ["乙", "い"]] });
@@ -181,7 +181,7 @@ test("existing sound switches and original combining-mark coordinates remain eff
 });
 
 test("a shorter reviewed endpoint vetoes the whole-target projected fact", () => {
-  const reviewedFacts = compileLexicalEvidence([{ id: "prefix", written: "甲ふ", reading: "あ", segments: [["甲ふ", "あ"]],
+  const reviewedFacts = compileLexicalEvidence([{ id: "prefix", spelling: "甲ふ", reading: "あ", segments: [["甲ふ", "あ"]],
     reason: "Synthetic independently supported prefix endpoint", sources: [{ url: "https://example.test/source" }] }]);
   assert.equal(corresponding({ options: { reviewedFacts } }).proposed, undefined);
 });
@@ -204,7 +204,7 @@ test("kana projections preserve cuts supplied by another shared-run witness", ()
     ["手提げバッグ", [["手", "て"], ["提", "さ"], "げバッグ"]],
     ["手提バッグ", [["手", "て"], ["提", "さげ"], "バッグ"]]
   ]);
-  const align = (written, reading) => ({ status: "aligned", segments: accepted.get(written) ?? [[written, reading]] });
+  const align = (spelling, reading) => ({ status: "aligned", segments: accepted.get(spelling) ?? [[spelling, reading]] });
   const result = deriveSharedRunAlignments(jmdict, dictionary({ 手: ["て"], 提: ["さ"] }), align);
   assert.deepEqual(result.wordAlignments.get("手提バック")?.get("てさげバッグ"),
     [["手", "て"], ["提", "さげ"], "バッ", ["ク", "グ"]]);

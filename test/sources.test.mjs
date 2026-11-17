@@ -22,7 +22,7 @@ test("reading restrictions prevent an invalid Cartesian product", () => {
     kana: [kana("おとな", ["大人"], ["gikun"]), kana("せいじん", ["成人"]), kana("せいにん")]
   }];
   const pairs = [...enumeratePairs({ words })];
-  assert.deepEqual(pairs.map(pair => [pair.written, pair.reading]), [
+  assert.deepEqual(pairs.map(pair => [pair.spelling, pair.reading]), [
     ["大人", "おとな"], ["成人", "せいじん"], ["大人", "せいにん"], ["成人", "せいにん"]
   ]);
   assert.equal(pairs[0].id, "1234567");
@@ -37,8 +37,8 @@ test("no-kanji readings remain separate even inside an entry with written forms"
     { id: "1234568", kanji: [], kana: [kana("ありがとう")] }
   ];
   const pairs = [...enumeratePairs({ words })];
-  assert.deepEqual(pairs.map(pair => [pair.written, pair.reading, pair.kind]), [
-    ["珈琲", "コーヒー", "written"], ["カフェ", "カフェ", "kana"], ["ありがとう", "ありがとう", "kana"]
+  assert.deepEqual(pairs.map(pair => [pair.spelling, pair.reading, pair.kind]), [
+    ["珈琲", "コーヒー", "kanji"], ["カフェ", "カフェ", "kana"], ["ありがとう", "ありがとう", "kana"]
   ]);
   assert.equal(pairs[1].kanjiIndex, null);
   assert.equal(pairs[2].kanjiIndex, null);

@@ -99,8 +99,8 @@ function makeSoundEvidence(kanjidic, pinyinOnly = false) {
   return result;
 }
 
-function splitLoanSegment(written, reading, evidence) {
-  const characters = splitGraphemes(written);
+function splitLoanSegment(spelling, reading, evidence) {
+  const characters = splitGraphemes(spelling);
   const kana = splitGraphemes(reading);
   if (characters.length < 2 || !characters.every(character => /^\p{Unified_Ideograph}$/u.test(character)) || !isKana(reading)) return undefined;
   const memo = new Map();
@@ -143,12 +143,12 @@ export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana
   const wordAlignments = new Map();
   const witnesses = [];
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "written" || pair.readingTags.some(tag => tag === "ik" || tag === "sk")) continue;
-    const languageSources = words.get(pair.id).sense.filter(sense => applies(sense.appliesToKanji, pair.written) && applies(sense.appliesToKana, pair.reading))
+    if (pair.kind !== "kanji" || pair.readingTags.some(tag => tag === "ik" || tag === "sk")) continue;
+    const languageSources = words.get(pair.id).sense.filter(sense => applies(sense.appliesToKanji, pair.spelling) && applies(sense.appliesToKana, pair.reading))
       .flatMap(sense => sense.languageSource.filter(source => source.lang === "chi" && !source.wasei));
     const tagged = languageSources.length > 0;
-    if (!tagged && (!untaggedKatakana || !/^\p{Unified_Ideograph}{2,}$/u.test(pair.written) || !/^[\p{Script=Katakana}ー]+$/u.test(pair.reading.normalize("NFKC")))) continue;
-    const original = align(pair.written, pair.reading);
+    if (!tagged && (!untaggedKatakana || !/^\p{Unified_Ideograph}{2,}$/u.test(pair.spelling) || !/^[\p{Script=Katakana}ー]+$/u.test(pair.reading.normalize("NFKC")))) continue;
+    const original = align(pair.spelling, pair.reading);
     const characterEvidence = [];
     let segments;
     if (tagged) {
@@ -161,7 +161,7 @@ export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana
     } else {
       // Without language metadata, require an independent Mandarin match for
       // every character in the complete word, including already aligned parts.
-      const split = splitLoanSegment(pair.written, pair.reading, pinyinEvidence);
+      const split = splitLoanSegment(pair.spelling, pair.reading, pinyinEvidence);
       if (split === undefined || split.segments.length <= original.segments.length) continue;
       const proposedBoundaries = new Set(boundaries(split.segments));
       if (!boundaries(original.segments).every(boundary => proposedBoundaries.has(boundary))) continue;
@@ -169,11 +169,11 @@ export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana
       characterEvidence.push(...split.witnesses);
     }
     if (characterEvidence.length === 0) continue;
-    validateAlignment(pair.written, pair.reading, segments);
-    const readings = wordAlignments.get(pair.written) ?? new Map();
+    validateAlignment(pair.spelling, pair.reading, segments);
+    const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, segments);
-    wordAlignments.set(pair.written, readings);
-    witnesses.push({ id: pair.id, written: pair.written, reading: pair.reading, language: tagged ? "chi" : undefined, eligibility: tagged ? "source-language" : "pinyin-only-katakana", languageSources, characters: characterEvidence });
+    wordAlignments.set(pair.spelling, readings);
+    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, language: tagged ? "chi" : undefined, eligibility: tagged ? "source-language" : "pinyin-only-katakana", languageSources, characters: characterEvidence });
   }
   return { wordAlignments, witnesses };
 }

@@ -4,7 +4,7 @@ import {deriveSourceUnitAlignments} from '../src/source-units.mjs';
 import {pairKey} from '../src/segments.mjs';
 function fixture({target='前甲乙後', reading='ぜんかきあと', prior, sourceStatus='aligned', sourceReading='かき', sourceSegments=[['甲','か'],['乙','き']], extraWords=[], lexicalEvidence=[]}={}) {
   const entries=[['1','甲乙',sourceReading],['2',target,reading],...extraWords];
-  const jmdict={words:entries.map(([id,written,reading])=>({id,kanji:[{text:written,tags:[]}],kana:[{text:reading,tags:[],appliesToKanji:['*']}],sense:[]}))};
+  const jmdict={words:entries.map(([id,spelling,reading])=>({id,kanji:[{text:spelling,tags:[]}],kana:[{text:reading,tags:[],appliesToKanji:['*']}],sense:[]}))};
   const kanjidic={characters:['乙','前','後','丙'].map((literal,index)=>({literal,readingMeaning:{groups:[{readings:[{type:'ja_kun',value:[sourceReading==='かきく'?'きく':'き','ぜん','あと','く'][index]}]}]}}))};
   const bundle={schemaVersion:1,source:{name:'fixture',publisher:'Japanese Wiktionary',version:'fixture-1',sha256:'a'.repeat(64),url:'https://example.test/pinned-character-readings'},readings:[{character:'甲',reading:'カ',kind:'on',originalForm:'カ',tags:['on','transliteration']}]};
   const priorTarget=prior??{status:'aligned',segments:[[target,reading]]};
@@ -13,7 +13,7 @@ function fixture({target='前甲乙後', reading='ぜんかきあと', prior, so
   const run=(changes={})=>deriveSourceUnitAlignments(jmdict,kanjidic,(w,r)=>results.get(pairKey(w,r)),{characterReadingBundle:bundle,lexicalEvidence,nativeCompounds:false,koreanReadings:false,onReadingSpelling:false,...changes});
   return {run,priorTarget,results,kanjidic,bundle};
 }
-const get=(result,written,reading)=>result.wordAlignments.get(written)?.get(reading);
+const get=(result,spelling,reading)=>result.wordAlignments.get(spelling)?.get(reading);
 test('independently reallocated word contributes only its internal cut',()=>{
  const {run,priorTarget}=fixture();const result=run();assert.deepEqual(get(result,'前甲乙後','ぜんかきあと'),[['前甲','ぜんか'],['乙後','きあと']]);assert.deepEqual(priorTarget.segments,[['前甲乙後','ぜんかきあと']]);assert.equal(result.units.length,1);assert.equal(result.witnesses.length,1);assert.ok(result.witnesses[0].units[0].allocation.every(item=>item.evidence.length>0));assert.equal(result.witnesses[0].units[0].allocation[1].evidence[0].field,'ja_kun');
 });
@@ -39,11 +39,11 @@ test('repeated placements and a following dependent mora do not create cuts',()=
  for(const [target,reading] of [['前甲乙甲乙後','ぜんかきかきあと'],['甲乙丙','かきんく']])assert.equal(fixture({target,reading}).run().wordAlignments.size,0);
 });
 test('reviewed exact source evidence vetoes conflicting allocations',()=>{
- const fact={id:'reviewed',written:'甲乙',reading:'かきく',segments:[['甲','かき'],['乙','く']],reason:'Conflicting source allocation fixture',sources:[{url:'https://example.test/reviewed'}]};
+ const fact={id:'reviewed',spelling:'甲乙',reading:'かきく',segments:[['甲','かき'],['乙','く']],reason:'Conflicting source allocation fixture',sources:[{url:'https://example.test/reviewed'}]};
  assert.equal(fixture({sourceReading:'かきく',target:'前甲乙後',reading:'ぜんかきくあと',sourceSegments:[['甲','か'],['乙','きく']],lexicalEvidence:[fact]}).run().wordAlignments.size,0);
 });
 test('reuse remains an exact attested target lookup without recursive propagation',()=>{
- const {run}=fixture({target:'甲乙丙',reading:'かきのく',extraWords:[['3','甲乙丙後','かきのくあと']]});const result=run();assert.ok(result.units.every(unit=>unit.written==='甲乙'));assert.equal(get(result,'未甲乙後','みかきあと'),undefined);
+ const {run}=fixture({target:'甲乙丙',reading:'かきのく',extraWords:[['3','甲乙丙後','かきのくあと']]});const result=run();assert.ok(result.units.every(unit=>unit.spelling==='甲乙'));assert.equal(get(result,'未甲乙後','みかきあと'),undefined);
 });
 
 test('omitted source identity is explicitly bound to supplied raw characters',()=>{
@@ -60,14 +60,14 @@ test('disabling weak readings prevents nanori source-unit evidence',()=>{
 
 test('native contraction companions retain fingerprints without upstream metadata', () => {
   const pairs = [['甲乙', 'あいうえ'], ['甲乙丙', 'あいうえお']];
-  const jmdict = { words: pairs.map(([written, reading], index) => ({
-    id: String(index), kanji: [{ text: written, tags: [] }],
+  const jmdict = { words: pairs.map(([spelling, reading], index) => ({
+    id: String(index), kanji: [{ text: spelling, tags: [] }],
     kana: [{ text: reading, tags: [], appliesToKanji: ['*'] }], sense: []
   })) };
   const kanjidic = { characters: [['甲', 'あいか'], ['乙', 'うえ'], ['丙', 'お']].map(([literal, value]) => ({
     literal, readingMeaning: { groups: [{ readings: [{ type: 'ja_kun', value }] }] }
   })) };
-  const align = (written, reading) => ({ status: 'aligned', segments: written === '甲乙' ? [['甲', 'あい'], ['乙', 'うえ']] : [[written, reading]] });
+  const align = (spelling, reading) => ({ status: 'aligned', segments: spelling === '甲乙' ? [['甲', 'あい'], ['乙', 'うえ']] : [[spelling, reading]] });
   const result = deriveSourceUnitAlignments(jmdict, kanjidic, align, { listedPhonology: false, koreanReadings: false, onReadingSpelling: false });
   assert.deepEqual(get(result, '甲乙丙', 'あいうえお'), [['甲', 'あい'], ['乙丙', 'うえお']]);
   assert.ok(result.units[0].allocation.every(item => item.evidence.every(evidence => /^[\da-f]{64}$/u.test(evidence.sourceIdentity.charactersSHA256))));

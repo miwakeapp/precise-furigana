@@ -3,8 +3,8 @@ import test from "node:test";
 import { createAligner } from "../src/align.mjs";
 import { deriveAtejiAlignments } from "../src/ateji.mjs";
 
-function dictionary(written, reading, tags = ["ateji"]) {
-  return { words: [{ id: "1000000", kanji: [{ text: written, tags }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] }] };
+function dictionary(spelling, reading, tags = ["ateji"]) {
+  return { words: [{ id: "1000000", kanji: [{ text: spelling, tags }], kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }] }] };
 }
 
 test("phonetic ateji can vary vowels while preserving character consonants", () => {

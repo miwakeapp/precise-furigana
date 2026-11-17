@@ -4,9 +4,9 @@ import { deriveLoanAlignments, transliteratePinyin } from "../src/loan-readings.
 import { boundaries, validateAlignment } from "../src/segments.mjs";
 import { createAligner } from "../src/align.mjs";
 
-function entry(id, written, reading, options = {}) {
+function entry(id, spelling, reading, options = {}) {
   return {
-    id, kanji: [{ text: written, tags: [] }], kana: [{ text: reading, tags: options.tags ?? [], appliesToKanji: ["*"] }],
+    id, kanji: [{ text: spelling, tags: [] }], kana: [{ text: reading, tags: options.tags ?? [], appliesToKanji: ["*"] }],
     sense: [{ appliesToKanji: options.appliesToKanji ?? ["*"], appliesToKana: options.appliesToKana ?? ["*"], languageSource: options.languageSource ?? [{ lang: "chi", wasei: false, text: "independent source" }] }]
   };
 }
@@ -20,7 +20,7 @@ const source = characters({
   青: [["pinyin", "qing1"]], 山: [["pinyin", "shan1"], ["ja_on", "サン"]],
   門: [["pinyin", "men2"]], 前: [["ja_on", "ゼン"]], 清: [["pinyin", "qing1"]]
 });
-const grouped = (written, reading) => ({ segments: [[written, reading]], status: "aligned" });
+const grouped = (spelling, reading) => ({ segments: [[spelling, reading]], status: "aligned" });
 
 test("transcribes attested Mandarin syllable families without using neighboring residuals", () => {
   for (const [pinyin, kana] of [["xiao3", "しゃお"], ["long2", "ろん"], ["bao1", "ぱお"], ["bao1", "ぽう"], ["qing1", "ちん"], ["ma2", "まー"], ["zi5", "ず"], ["lü4", "りゅ"], ["lu:4", "りゅ"]]) {

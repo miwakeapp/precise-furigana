@@ -18,7 +18,7 @@ export function releaseDescriptor(manifest, lock) {
   return {
     tag,
     title: `Precise furigana · ${date}`,
-    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`written\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[written text, reading]\` ruby. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`
+    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`
   };
 }
 
@@ -37,7 +37,7 @@ export function verifyEvaluation(evaluation, goldText, current) {
   for (const [index, example] of gold.entries()) {
     const result = evaluation.results[index];
     for (const key of Object.keys(example)) assert.deepEqual(result[key], example[key]);
-    assert.ok(result.pass && isDeepStrictEqual(result.actual, example.segments), `Regression failed: ${example.written}/${example.reading}`);
+    assert.ok(result.pass && isDeepStrictEqual(result.actual, example.segments), `Regression failed: ${example.spelling}/${example.reading}`);
   }
   assert.equal(evaluation.summary.examples, gold.length);
   assert.equal(evaluation.summary.passed, gold.length, "All regression examples must pass before release");

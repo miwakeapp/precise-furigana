@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { displaySegments, validateDisplayAlignment } from "../src/display.mjs";
 
-function display(written, reading, segments) {
+function display(spelling, reading, segments) {
   const result = displaySegments(segments);
-  validateDisplayAlignment(written, reading, result);
+  validateDisplayAlignment(spelling, reading, result);
   return result;
 }
 

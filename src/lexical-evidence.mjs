@@ -9,7 +9,7 @@ export function compileLexicalEvidence(facts) {
       fact.sources.some(source => typeof source.url !== "string" || !/^https:\/\//u.test(source.url))) {
       throw new Error("Lexical evidence requires a rationale and source URLs");
     }
-    validateAlignment(fact.written, fact.reading, fact.segments);
+    validateAlignment(fact.spelling, fact.reading, fact.segments);
     if (fact.jmdictEntries !== undefined && (!Array.isArray(fact.jmdictEntries) ||
       fact.jmdictEntries.some(id => typeof id !== "string" || !/^\d+$/u.test(id)))) {
       throw new TypeError("jmdictEntries must list JMdict entry IDs");
@@ -19,22 +19,22 @@ export function compileLexicalEvidence(facts) {
         fact.reusableSegments.length > 0 && (typeof fact.id !== "string" || !fact.id.trim()) ||
         fact.reusableSegments.some(index => {
           if (!Number.isInteger(index) || index < 0 || index >= fact.segments.length) return true;
-          const segment = fact.segments[index], written = segmentText(segment), reading = normalizeKana(segmentReading(segment));
-          return !Array.isArray(segment) || splitGraphemes(written).length !== 1 || !isIdeograph(written) || written === "々" ||
+          const segment = fact.segments[index], spelling = segmentText(segment), reading = normalizeKana(segmentReading(segment));
+          return !Array.isArray(segment) || splitGraphemes(spelling).length !== 1 || !isIdeograph(spelling) || spelling === "々" ||
             !isKana(reading) || /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(reading);
         })) throw new TypeError("reusableSegments requires unique single-ideograph kana allocations with safe onsets and a fact ID");
     }
-    const key = pairKey(fact.written, normalizeKana(fact.reading));
+    const key = pairKey(fact.spelling, normalizeKana(fact.reading));
     if (seen.has(key)) throw new Error(`Duplicate lexical evidence: ${key}`);
     seen.add(key);
-    let writtenOffset = 0, readingOffset = 0;
+    let spellingOffset = 0, readingOffset = 0;
     const points = [[0, 0]];
     for (const segment of fact.segments) {
-      writtenOffset += splitGraphemes(segmentText(segment)).length;
+      spellingOffset += splitGraphemes(segmentText(segment)).length;
       readingOffset += normalizeKana(segmentReading(segment)).length;
-      points.push([writtenOffset, readingOffset]);
+      points.push([spellingOffset, readingOffset]);
     }
-    return { ...fact, writtenUnits: splitGraphemes(fact.written), normalizedReading: normalizeKana(fact.reading), points };
+    return { ...fact, spellingUnits: splitGraphemes(fact.spelling), normalizedReading: normalizeKana(fact.reading), points };
   });
 }
 
@@ -66,8 +66,8 @@ function hasContradictedEndpoint(proposal, context) {
 /** Named lexical facts refine opaque groups without creating character readings. */
 export function refineWithLexicalEvidence(original, facts) {
   if (!original.segments.some(segment => Array.isArray(segment) && splitGraphemes(segment[0]).length > 1)) return original;
-  const written = original.segments.map(segmentText).join(""), reading = original.segments.map(segmentReading).join("");
-  const writtenUnits = splitGraphemes(written), readingUnits = splitGraphemes(reading);
+  const spelling = original.segments.map(segmentText).join(""), reading = original.segments.map(segmentReading).join("");
+  const spellingUnits = splitGraphemes(spelling), readingUnits = splitGraphemes(reading);
   const originalPoints = [[0, 0]];
   for (const segment of original.segments) {
     const [x, y] = originalPoints.at(-1);
@@ -81,19 +81,19 @@ export function refineWithLexicalEvidence(original, facts) {
   }
   const placementsByFact = [];
   for (const fact of facts) {
-    for (const writtenStart of occurrences(writtenUnits, fact.writtenUnits)) {
+    for (const spellingStart of occurrences(spellingUnits, fact.spellingUnits)) {
       const placements = [];
-      const writtenEnd = writtenStart + fact.writtenUnits.length;
+      const spellingEnd = spellingStart + fact.spellingUnits.length;
       for (const readingStart of readingOffsets.keys()) {
         if (!normalizedReading.startsWith(fact.normalizedReading, readingStart)) continue;
         const readingEnd = readingStart + fact.normalizedReading.length;
-        if (!readingOffsets.has(readingEnd) || (writtenStart === 0) !== (readingStart === 0) ||
-          (writtenEnd === writtenUnits.length) !== (readingEnd === normalizedReading.length)) continue;
+        if (!readingOffsets.has(readingEnd) || (spellingStart === 0) !== (readingStart === 0) ||
+          (spellingEnd === spellingUnits.length) !== (readingEnd === normalizedReading.length)) continue;
         // A word occurrence cannot end inside the following kana mora or
         // claim the onset of an unrepresented nasal/long-vowel suffix.
-        const anchoredEnd = originalPoints.some(([x, y]) => x === writtenEnd && y === readingOffsets.get(readingEnd));
-        if (!anchoredEnd && writtenEnd < writtenUnits.length && /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizedReading.slice(readingEnd))) continue;
-        const points = fact.points.map(([x, y]) => [writtenStart + x, readingOffsets.get(readingStart + y)]);
+        const anchoredEnd = originalPoints.some(([x, y]) => x === spellingEnd && y === readingOffsets.get(readingEnd));
+        if (!anchoredEnd && spellingEnd < spellingUnits.length && /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizedReading.slice(readingEnd))) continue;
+        const points = fact.points.map(([x, y]) => [spellingStart + x, readingOffsets.get(readingStart + y)]);
         if (points.every(point => point[1] !== undefined && originalPoints.every(originalPoint => !contradictsPoint(point, originalPoint)))) placements.push(points);
       }
       if (placements.length === 1) placementsByFact.push({ fact, points: placements[0] });
@@ -103,7 +103,7 @@ export function refineWithLexicalEvidence(original, facts) {
   // A rejected occurrence cannot disprove a smaller occurrence in turn.
   // Equal-size contexts cannot dominate one another; their conflicts remain
   // subject to the complete-placement consistency check below.
-  for (const proposal of placementsByFact.sort((left, right) => right.fact.writtenUnits.length - left.fact.writtenUnits.length)) {
+  for (const proposal of placementsByFact.sort((left, right) => right.fact.spellingUnits.length - left.fact.spellingUnits.length)) {
     if (!proposals.some(context => hasContradictedEndpoint(proposal, context))) proposals.push(proposal);
   }
   const allPoints = [...new Set([...originalPoints, ...proposals.flatMap(proposal => proposal.points)].map(point => point.join(":")))]
@@ -120,30 +120,30 @@ export function refineWithLexicalEvidence(original, facts) {
     const localPoints = points.filter(([x]) => startX <= x && x <= endX);
     if (typeof segment === "string" || localPoints.length <= 2) {
       segments.push(segment);
-      evidence.push(original.evidence?.[index] ?? { written: segmentText(segment), reading: segmentReading(segment), type: typeof segment === "string" ? "literal" : "dictionary", rules: [] });
+      evidence.push(original.evidence?.[index] ?? { spelling: segmentText(segment), reading: segmentReading(segment), type: typeof segment === "string" ? "literal" : "dictionary", rules: [] });
       continue;
     }
     for (let pointIndex = 1; pointIndex < localPoints.length; ++pointIndex) {
       const [startX, startY] = localPoints[pointIndex - 1], [endX, endY] = localPoints[pointIndex];
-      const text = writtenUnits.slice(startX, endX).join(""), sound = readingUnits.slice(startY, endY).join("");
+      const text = spellingUnits.slice(startX, endX).join(""), sound = readingUnits.slice(startY, endY).join("");
       segments.push(text === sound ? text : [text, sound]);
-      evidence.push({ written: text, reading: sound, type: "dictionary", rules: ["reviewed-lexical-unit"], facts: proposals.map(proposal => proposal.fact.id) });
+      evidence.push({ spelling: text, reading: sound, type: "dictionary", rules: ["reviewed-lexical-unit"], facts: proposals.map(proposal => proposal.fact.id) });
     }
   }
   if (segments.length === original.segments.length) return original;
-  validateAlignment(written, reading, segments);
+  validateAlignment(spelling, reading, segments);
   return { ...original, segments, evidence };
 }
 
 /** Reject cuts contradicted by a uniquely placed reviewed fact, including its outer edges. */
 export function makeLexicalContextChecker(reviewedFacts) {
-  if (!Array.isArray(reviewedFacts) || reviewedFacts.some(fact => !Array.isArray(fact.writtenUnits) || !Array.isArray(fact.points) || typeof fact.normalizedReading !== "string")) {
+  if (!Array.isArray(reviewedFacts) || reviewedFacts.some(fact => !Array.isArray(fact.spellingUnits) || !Array.isArray(fact.points) || typeof fact.normalizedReading !== "string")) {
     throw new TypeError("reviewedFacts must contain compiled lexical evidence");
   }
   const byFirst = new Map();
-  for (const fact of reviewedFacts) { const facts = byFirst.get(fact.writtenUnits[0]) ?? []; facts.push(fact); byFirst.set(fact.writtenUnits[0], facts); }
+  for (const fact of reviewedFacts) { const facts = byFirst.get(fact.spellingUnits[0]) ?? []; facts.push(fact); byFirst.set(fact.spellingUnits[0], facts); }
   return (target, proposed) => {
-    const written = splitGraphemes(target.written), reading = splitGraphemes(target.reading), offsets = [0];
+    const spelling = splitGraphemes(target.spelling), reading = splitGraphemes(target.reading), offsets = [0];
     let normalized = "";
     for (const unit of reading) { normalized += normalizeKana(unit); offsets.push(normalized.length); }
     const byOffset = new Map(offsets.map((offset, index) => [offset, index]));
@@ -160,20 +160,20 @@ export function makeLexicalContextChecker(reviewedFacts) {
     const originalPoints = points(target.segments), proposedPoints = points(proposed);
     const compatible = (left, right) => left.every(([x, y]) => right.every(([otherX, otherY]) => x === otherX ? y === otherY : x < otherX ? y < otherY : y > otherY));
     const contexts = [];
-    for (const fact of new Set(written.flatMap(character => byFirst.get(character) ?? []))) {
+    for (const fact of new Set(spelling.flatMap(character => byFirst.get(character) ?? []))) {
       const placements = [];
-      for (let startX = 0; startX + fact.writtenUnits.length <= written.length; ++startX) {
-        if (!fact.writtenUnits.every((unit, index) => unit === written[startX + index])) continue;
+      for (let startX = 0; startX + fact.spellingUnits.length <= spelling.length; ++startX) {
+        if (!fact.spellingUnits.every((unit, index) => unit === spelling[startX + index])) continue;
         for (const startY of offsets) {
           if (!normalized.startsWith(fact.normalizedReading, startY)) continue;
-          const endX = startX + fact.writtenUnits.length, endY = startY + fact.normalizedReading.length;
-          if (!byOffset.has(endY) || (startX === 0) !== (startY === 0) || (endX === written.length) !== (endY === normalized.length)) continue;
+          const endX = startX + fact.spellingUnits.length, endY = startY + fact.normalizedReading.length;
+          if (!byOffset.has(endY) || (startX === 0) !== (startY === 0) || (endX === spelling.length) !== (endY === normalized.length)) continue;
           const placed = fact.points.map(([x, y]) => [startX + x, byOffset.get(startY + y)]);
           if (placed.every(([, y]) => y !== undefined) && compatible(placed, originalPoints)) placements.push(placed);
         }
       }
       if (placements.length !== 1) continue;
-      contexts.push({ id: fact.id, written: fact.written, reading: fact.reading, points: placements[0], sources: fact.sources });
+      contexts.push({ id: fact.id, spelling: fact.spelling, reading: fact.reading, points: placements[0], sources: fact.sources });
       if (!compatible(placements[0], proposedPoints)) return { veto: true, contexts };
     }
     return { veto: false, contexts };

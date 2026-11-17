@@ -49,11 +49,11 @@ const wordReadings = new Map([
 
 const align = createAligner({ characterReadings, wordReadings });
 
-function assertAlignment(written, reading, expected, expectedStatus = "aligned") {
-  const result = align(written, reading);
+function assertAlignment(spelling, reading, expected, expectedStatus = "aligned") {
+  const result = align(spelling, reading);
   assert.deepEqual(result.segments, expected);
   assert.equal(result.status, expectedStatus);
-  assert.equal(result.segments.map(segment => typeof segment === "string" ? segment : segment[0]).join(""), written);
+  assert.equal(result.segments.map(segment => typeof segment === "string" ? segment : segment[0]).join(""), spelling);
   assert.equal(result.segments.map(segment => typeof segment === "string" ? segment : segment[1]).join(""), reading);
   return result;
 }
@@ -223,10 +223,10 @@ test("dictionary kana trimming cannot assign a neighboring possible long vowel t
     ["あいそ笑い", "あいそうわらい"], ["あいそ笑", "あいそうわらい"],
     ["ちょうちょ結び", "ちょうちょうむすび"], ["日おい", "ひおおい"]
   ];
-  const localWords = new Map([...pairs.map(([written, reading]) => [written, [reading]]), ["笑", ["わらい"]]]);
+  const localWords = new Map([...pairs.map(([spelling, reading]) => [spelling, [reading]]), ["笑", ["わらい"]]]);
   const localAlign = createAligner({ characterReadings: localCharacters, wordReadings: localWords });
-  for (const [written, reading] of pairs) {
-    assert.deepEqual(localAlign(written, reading).segments, [[written, reading]]);
+  for (const [spelling, reading] of pairs) {
+    assert.deepEqual(localAlign(spelling, reading).segments, [[spelling, reading]]);
   }
   const withIndependentReading = createAligner({
     characterReadings: localCharacters,
@@ -512,7 +512,7 @@ test("unsupported spans preserve anchors without arbitrarily assigning readings"
   assertAlignment("甲の乙", "あののい", [["甲の乙", "あののい"]], "fallback");
 });
 
-test("normalization never changes the original written or reading projection", () => {
+test("normalization never changes the original spelling or reading projection", () => {
   assert.equal(normalizeKana("ｶﾞッコウ"), "がっこう");
   assertAlignment("学校", "ガッコウ", [["学", "ガッ"], ["校", "コウ"]]);
   assertAlignment("学校", "ｶﾞｯｺｳ", [["学", "ｶﾞｯ"], ["校", "ｺｳ"]]);

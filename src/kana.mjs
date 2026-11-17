@@ -7,8 +7,15 @@ const kanaVowels = new Map([
   ["おこごそぞとどのほぼぽもょよろをぉ", ["お", "う"]]
 ].flatMap(([characters, vowels]) => Array.from(characters, character => [character, vowels])));
 
+// Characters that can join a neighbor into one grapheme cluster: extending characters such as the
+// half-width dakuten in ｶﾞ, other combining and spacing marks (including Thai and Lao SARA AM), format
+// characters such as ZWJ, emoji modifiers, regional indicators, Hangul jamo, and CR. Text without them
+// splits into graphemes exactly at code points.
+const mayJoin = /[\p{Grapheme_Extend}\p{M}\p{Cf}\u0e33\u0eb3\u1100-\u11ff\ua960-\ua97f\ud7b0-\ud7ff\r\u{1f1e6}-\u{1f1ff}\u{1f3fb}-\u{1f3ff}]/u;
+
 /** Split text without separating a combining mark from its base character. */
 export function splitGraphemes(text) {
+  if (!mayJoin.test(text)) return Array.from(text);
   return Array.from(graphemeSegmenter.segment(text), part => part.segment);
 }
 

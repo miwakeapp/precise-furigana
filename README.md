@@ -112,26 +112,3 @@ Precise Furigana is fully open source, with MIT-licensed code and [CC BY-SA 4.0]
 | メーカ希望価格 | メーカ<ruby>希<rt>き</ruby><ruby>望<rt>ぼう</ruby><ruby>価<rt>か</ruby><ruby>格<rt>かく</ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</ruby> | <i>no entry</i> |
 | 道程 | <ruby>道<rt>みち</ruby><ruby>程<rt>のり</ruby> | <ruby>道<rt>みち</ruby><ruby><rt>の</ruby><ruby>程<rt>り</ruby> | <i>no entry</i> |
 | 前肢 | <ruby>前<rt>まえ</ruby><ruby>肢<rt>あし</ruby> | <ruby>前<rt>まえあ</ruby><ruby>肢<rt>し</ruby> | <i>no entry</i> |
-
-
-## Development
-
-The repository uses Node.js for development. There are no npm dependencies. Allow roughly 4 GiB of memory for the generator, plus runtime overhead; the scripts set the V8 heap limit accordingly.
-
-```sh
-npm ci
-npm run fetch
-npm test
-npm run build
-npm run validate
-```
-
-`fetch` downloads and verifies the pinned dictionaries. Subsequent builds work offline. `build` runs the full-generator regression fixtures and writes the database, its regression evaluation, and checksums to `dist/`. `validate` checks complete coverage and exact reconstruction throughout the corpus.
-
-Inspect a generated record:
-
-```sh
-npm run inspect -- 日本 にほん
-```
-
-To update JMdict and KANJIDIC2, run `npm run fetch -- --update`, then build and validate again. The weekly GitHub Actions workflow follows this process. See [maintenance](docs/maintenance.md) for source updates, corrections, comparisons between builds, and release preparation.

@@ -47,9 +47,3 @@ Same fields as a lexical fact, except that `id` is the JMdict ID and `sources` i
 ### Synthesized pairs
 
 Each entry has `id`, `spelling`, `reading`, `upstream`, and `note`. `upstream` records whether the reading is worth proposing to JMdict as a search-only reading (`"propose"`), already exists but is restricted to other spellings (`"restricted"`), or only reads a misspelling, kana variant, or historical spelling as written (`"none"`). [Maintenance](maintenance.md#synthesized-pairs) covers keeping it current.
-
-## Licensing
-
-Original software is MIT. The database, the reviewed evidence and annotations, and dictionary-derived test data are CC BY-SA 4.0; attribution for EDRDG, Wiktionary, and JmdictFurigana, and Unihan's license, are in [NOTICE](../NOTICE).
-
-Lorenzi's `furigana.txt` was used during development only to find cases worth investigating. It is not an input, and none of its data is distributed.

@@ -886,5 +886,103 @@
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
       "https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"
     ]
+  },
+  {
+    "id": "1838120",
+    "written": "立ち待ちの月",
+    "reading": "たちまちづき",
+    "segments": [
+      [
+        "立",
+        "た"
+      ],
+      "ち",
+      [
+        "待",
+        "ま"
+      ],
+      "ち",
+      [
+        "の月",
+        "づき"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 1838120 pairs the search-only spelling 立ち待ちの月, which writes の, with たちまちづき, the reading of 立待月, which has no の. The okurigana ち after 待 is pronounced and stays outside the ruby; the unpronounced の belongs with 月 under its rendaku reading づき.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2699770",
+    "written": "寝待ちの月",
+    "reading": "ねまちづき",
+    "segments": [
+      [
+        "寝",
+        "ね"
+      ],
+      [
+        "待",
+        "ま"
+      ],
+      "ち",
+      [
+        "の月",
+        "づき"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2699770 pairs the search-only spelling 寝待ちの月, which writes の, with ねまちづき, the reading of 寝待月, which has no の. The okurigana ち after 待 is pronounced and stays outside the ruby; the unpronounced の belongs with 月 under its rendaku reading づき.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2699810",
+    "written": "臥し待ちの月",
+    "reading": "ふしまちづき",
+    "segments": [
+      [
+        "臥",
+        "ふ"
+      ],
+      "し",
+      [
+        "待",
+        "ま"
+      ],
+      "ち",
+      [
+        "の月",
+        "づき"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2699810 pairs the search-only spelling 臥し待ちの月, which writes の, with ふしまちづき, the reading of 臥待月, which has no の. The okurigana ち after 待 is pronounced and stays outside the ruby; the unpronounced の belongs with 月 under its rendaku reading づき.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
+  },
+  {
+    "id": "2863429",
+    "written": "居待ちの月",
+    "reading": "いまちづき",
+    "segments": [
+      [
+        "居",
+        "い"
+      ],
+      [
+        "待",
+        "ま"
+      ],
+      "ち",
+      [
+        "の月",
+        "づき"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2863429 pairs the search-only spelling 居待ちの月, which writes の, with いまちづき, the reading of 居待月, which has no の. The okurigana ち after 待 is pronounced and stays outside the ruby; the unpronounced の belongs with 月 under its rendaku reading づき.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
+    ]
   }
 ]

@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { algorithmVersion, digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
-import { recordKey } from "../src/segments.mjs";
+import { pairKey, recordKey } from "../src/segments.mjs";
 import { displaySegments } from "../src/display.mjs";
 import { evaluateDataset } from "./lib/evaluation.mjs";
 import { parseGeneratorOptions } from "./lib/options.mjs";
@@ -27,7 +27,9 @@ for (const pair of dataset.pairs()) {
   if (seen.has(key)) continue;
   seen.add(key);
   const { segments } = dataset.alignPair(pair);
-  (entries[pair.id] ??= []).push({ written: pair.written, reading: pair.reading, segments: displaySegments(segments) });
+  (entries[pair.id] ??= []).push({ written: pair.written, reading: pair.reading, segments: displaySegments(segments, {
+    drops: dataset.omittedParticles?.drops.get(pairKey(pair.written, pair.reading))
+  }) });
   ++counts.pairs;
 }
 for (const key of dataset.annotations.keys()) {

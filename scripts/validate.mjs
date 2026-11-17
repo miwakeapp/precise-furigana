@@ -4,9 +4,10 @@ import { parseArgs } from "node:util";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { algorithmVersion, compileAnnotations, defaultConfiguration, digest, generatorDigest, schemaVersion } from "../src/dataset.mjs";
-import { recordKey } from "../src/segments.mjs";
+import { pairKey, recordKey } from "../src/segments.mjs";
+import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
-import { enumeratePairs, loadSources } from "../src/sources.mjs";
+import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
 const bytes = await readFile(join(values.directory, "precise-furigana.json"));
@@ -20,7 +21,8 @@ for (const [name, expected] of Object.entries(manifest.files)) {
   assert.equal(digest(contents), expected.sha256, `${name}: SHA256`);
 }
 // Validation needs the input population and provenance, not a rebuilt aligner.
-const { jmdict, lock } = await loadSources();
+const { jmdict, kanjidic, lock } = await loadSources();
+const { drops } = deriveOmittedParticles(jmdict, makeCharacterReadings(kanjidic));
 const annotationsText = await readFile(new URL("../data/annotations.json", import.meta.url), "utf8");
 const annotations = compileAnnotations(JSON.parse(annotationsText));
 assert.deepEqual(Object.keys(output), ["schemaVersion", "jmdictDate", "license", "attribution", "entries"]);
@@ -43,7 +45,7 @@ for (const [id, records] of Object.entries(output.entries)) {
     const key = recordKey(id, record.written, record.reading);
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
     assert.deepEqual(Object.keys(record), ["written", "reading", "segments"]);
-    validateDisplayAlignment(record.written, record.reading, record.segments);
+    validateDisplayAlignment(record.written, record.reading, record.segments, { drops: drops.get(pairKey(record.written, record.reading)) });
     ++count;
   }
 }

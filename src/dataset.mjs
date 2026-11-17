@@ -446,6 +446,7 @@ function compilePipeline(jmdict, kanjidic, options, {
     sourceUnitTransfers: sourceUnits.witnesses,
     separatorTransfers: separators.witnesses,
     sharedRunTransfers: sharedRuns.witnesses,
+    omittedParticles,
     align
   };
 }

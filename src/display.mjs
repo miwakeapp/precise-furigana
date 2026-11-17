@@ -54,7 +54,7 @@ function peelKana([written, reading]) {
  * punctuation at the edge of a ruby group becomes its own string, and kana
  * loses its ruby.
  */
-export function displaySegments(segments) {
+export function displaySegments(segments, { drops = [] } = {}) {
   const pun = isKanaPun(segments.map(segmentText).join(""), segments.map(segmentReading).join(""));
   const result = [];
   const push = segment => {
@@ -78,18 +78,33 @@ export function displaySegments(segments) {
     else push(core);
     if (end < units.length) push(units.slice(end).join(""));
   }
+  // An omitted particle that the reading keeps leaves the ruby beside it.
+  const offsets = [];
+  let writtenOffset = 0;
+  for (const segment of result) {
+    offsets.push(writtenOffset);
+    writtenOffset += splitGraphemes(segmentText(segment)).length;
+  }
+  for (const { offset, particle } of drops) {
+    const index = offsets.indexOf(offset), left = result[index - 1], right = result[index];
+    if (index <= 0) continue;
+    if (Array.isArray(left) && left[1].length > 1 && normalizeKana(left[1]).endsWith(particle)) left[1] = left[1].slice(0, -1);
+    else if (Array.isArray(right) && right[1].length > 1 && normalizeKana(right[1]).startsWith(particle)) right[1] = right[1].slice(1);
+  }
   return result;
 }
 
-// Whether the ruby readings occur in order in the reading, with plain kana standing for any reading.
-function rubyFollowsReading(segments, reading) {
+// Whether the ruby readings occur in order in the reading, with plain kana standing for any reading and
+// each dropped particle allowed between segments.
+function rubyFollowsReading(segments, reading, drops) {
+  const gap = drops.length ? `(?:${[...new Set(drops.map(drop => escape(drop.particle)))].join("|")})?` : "";
   const pattern = segments.map(segment => typeof segment !== "string" ? escape(pronounced(segment[1])) :
-    pronounced(segment) === "" ? "" : ".+?").join("");
+    pronounced(segment) === "" ? "" : ".+?").join(gap);
   return new RegExp(`^${pattern}$`, "u").test(pronounced(reading));
 }
 
 /** Check that release segments are canonical and account for the record. */
-export function validateDisplayAlignment(written, reading, segments) {
+export function validateDisplayAlignment(written, reading, segments, { drops = [] } = {}) {
   if (!Array.isArray(segments) || segments.length === 0) throw new Error(`Missing alignment: ${written}/${reading}`);
   const pun = isKanaPun(written, reading);
   for (const [index, segment] of segments.entries()) {
@@ -112,7 +127,7 @@ export function validateDisplayAlignment(written, reading, segments) {
   // Plain kana usually spell out their part of the reading, but where the reading differs from the written kana,
   // they are shown as written, so only the ruby is checked against the reading. The generator has already checked
   // that its segments reconstruct the reading exactly.
-  if (!rubyFollowsReading(segments, reading)) {
+  if (!rubyFollowsReading(segments, reading, drops)) {
     throw new Error(`Alignment does not account for ${reading}: ${JSON.stringify(segments)}`);
   }
 }

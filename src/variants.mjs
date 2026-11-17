@@ -95,9 +95,14 @@ function siblingDeletionMapping(source, target) {
  * two kanji. `pairs` maps each spelling/reading pair that pronounces the
  * particle to its written offsets, and `words` maps the spelling alone to its
  * offsets and particles, for occurrences inside longer words.
+ *
+ * A search-only spelling that omits を or が records the colloquial phrase
+ * without it, as in そっぽ向く beside そっぽを向く, but inherits the entry's
+ * reading with it. `drops` maps those pairs to the particle and its offset,
+ * wherever it sits, so that the ruby can leave the particle out.
  */
 export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
-  const pairs = new Map(), words = new Map();
+  const pairs = new Map(), words = new Map(), drops = new Map();
   for (const word of jmdict.words) {
     const spellings = [...new Set(word.kanji.map(kanji => kanji.text))];
     const readings = spelling => word.kana.filter(kana => kana.appliesToKanji.includes("*") || kana.appliesToKanji.includes(spelling)).map(kana => kana.text);
@@ -108,18 +113,29 @@ export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
         const mapping = siblingDeletionMapping(units, targetUnits);
         if (mapping === undefined) continue;
         const sourceReadings = new Set(readings(source));
+        const searchOnly = word.kanji.find(kanji => kanji.text === target).tags.includes("sK");
         for (let index = 1; index < units.length - 1; ++index) {
           // A substituted neighbor can own the sound itself, as 金 owns がね in 雁金 beside 雁が音.
-          if (mapping[index] !== -1 || !particles.has(normalizeKana(units[index])) || !isIdeograph(units[index - 1]) ||
-            !isIdeograph(units[index + 1]) || determiners.has(units[index - 1]) || mapping[index - 1] === -1 ||
-            mapping[index + 1] !== mapping[index - 1] + 1 || units[index - 1] !== targetUnits[mapping[index - 1]] ||
-            units[index + 1] !== targetUnits[mapping[index + 1]]) continue;
+          if (mapping[index] !== -1 || !particles.has(normalizeKana(units[index])) || determiners.has(units[index - 1]) ||
+            mapping[index - 1] === -1 || mapping[index + 1] !== mapping[index - 1] + 1 ||
+            units[index - 1] !== targetUnits[mapping[index - 1]] || units[index + 1] !== targetUnits[mapping[index + 1]]) continue;
           const offset = mapping[index + 1];
           // A reading can also skip the particle, as in おなかすく for お腹空く.
           const particle = normalizeKana(units[index]);
           if (startsOkurigana(characterReadings, units[index - 1], particle)) continue;
           const count = text => Array.from(normalizeKana(text)).filter(unit => unit === particle).length;
           const pronounced = readings(target).filter(value => sourceReadings.has(value) && count(value) > count(target));
+          // KANJIDIC does not list every verb okurigana, such as the が of 宛がう or 繋がる.
+          const verbEnding = particle === "が" && /^[うるりれらろ]$/u.test(units.slice(index + 1).join(""));
+          if (verbEnding) continue;
+          if (searchOnly && particle !== "の") {
+            for (const reading of pronounced) {
+              const key = pairKey(target, reading);
+              drops.set(key, [...(drops.get(key) ?? []), { offset, particle }]);
+            }
+            continue;
+          }
+          if (!isIdeograph(units[index - 1]) || !isIdeograph(units[index + 1])) continue;
           for (const reading of pronounced) {
             const key = pairKey(target, reading);
             pairs.set(key, [...new Set([...(pairs.get(key) ?? []), offset])]);
@@ -130,7 +146,7 @@ export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
       }
     }
   }
-  return { pairs, words };
+  return { pairs, words, drops };
 }
 
 /**

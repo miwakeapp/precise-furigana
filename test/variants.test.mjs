@@ -66,6 +66,17 @@ test("a sibling can also drop other kana and substitute kanji away from the part
   assert.deepEqual([...deriveOmittedParticles(jmdict).pairs], [[pairKey("身回品", "みのまわりひん"), [1]], [pairKey("枕草紙", "まくらのそうし"), [1]]]);
 });
 
+test("a search-only spelling that omits を or が drops it instead of grouping", () => {
+  const jmdict = { words: [
+    { id: "1000000", kanji: [{ text: "そっぽを向く", tags: [] }, { text: "そっぽ向く", tags: ["sK"] }], kana: [{ text: "そっぽをむく", tags: [], appliesToKanji: ["*"] }] },
+    { id: "1000001", kanji: [{ text: "水を差す", tags: [] }, { text: "水差す", tags: ["sK"] }], kana: [{ text: "みずをさす", tags: [], appliesToKanji: ["*"] }] },
+    { id: "1000002", kanji: [{ text: "宛がう", tags: [] }, { text: "宛う", tags: ["sK"] }], kana: [{ text: "あてがう", tags: [], appliesToKanji: ["*"] }] }
+  ] };
+  const { pairs, drops } = deriveOmittedParticles(jmdict);
+  assert.equal(pairs.size, 0);
+  assert.deepEqual([...drops], [[pairKey("そっぽ向く", "そっぽをむく"), [{ offset: 3, particle: "を" }]], [pairKey("水差す", "みずをさす"), [{ offset: 1, particle: "を" }]]]);
+});
+
 test("the の or が of a determiner or okurigana, a particle the reading skips, or a substituted neighbor is not an omitted particle", () => {
   const jmdict = { words: [
     entry("1000000", ["其の後", "其後"], "そのご"),

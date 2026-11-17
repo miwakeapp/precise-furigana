@@ -46,6 +46,18 @@ test("kana runs at the edge of a ruby group are plain where the reading repeats 
   assert.throws(() => validateDisplayAlignment("そっぽ向く", "そっぽをむく", ["そっ", ["ぽ向", "ぽをむ"], "く"]), /Ruby over kana/u);
 });
 
+test("a search-only spelling's ruby leaves out the particle it omits", () => {
+  const drops = [{ offset: 3, particle: "を" }];
+  const segments = displaySegments(["そっ", ["ぽ向", "ぽをむ"], "く"], { drops });
+  assert.deepEqual(segments, ["そっぽ", ["向", "む"], "く"]);
+  validateDisplayAlignment("そっぽ向く", "そっぽをむく", segments, { drops });
+  const waterDrops = [{ offset: 1, particle: "を" }];
+  const water = displaySegments([["水", "みずを"], ["差", "さ"], "す"], { drops: waterDrops });
+  assert.deepEqual(water, [["水", "みず"], ["差", "さ"], "す"]);
+  validateDisplayAlignment("水差す", "みずをさす", water, { drops: waterDrops });
+  assert.throws(() => validateDisplayAlignment("水差す", "みずをさす", water), /account/u);
+});
+
 test("counters and puns keep ruby over kana", () => {
   assert.deepEqual(display("何ヶ月", "なんかげつ", [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]), [["何", "なん"], ["ヶ", "か"], ["月", "げつ"]]);
   assert.deepEqual(display("二ケ所", "にかしょ", [["二", "に"], ["ケ", "か"], ["所", "しょ"]]), [["二", "に"], ["ケ", "か"], ["所", "しょ"]]);

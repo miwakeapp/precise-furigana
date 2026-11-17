@@ -210,7 +210,8 @@ function compilePipeline(jmdict, kanjidic, options, {
     continuativeReadings: alignerOptions.continuativeReadings
   }) : { wordAlignments: new Map(), transfers: [] };
   const supplementary = createAligner({ ...supplementaryOptions, wordAlignments: supplementaryVariants.wordAlignments });
-  const refined = (written, reading) => refineAlignment(strong(written, reading), supplementary(written, reading));
+  // Several evidence passes below query every JMdict pair through this fixed pipeline.
+  const refined = cacheAligner((written, reading) => refineAlignment(strong(written, reading), supplementary(written, reading)));
 
   const numeralReadings = configuration.foreignNumerals ? deriveNumeralReadings(jmdict, alignerOptions.wordReadings) : undefined;
   const foreignAlign = numeralReadings === undefined ? undefined : createAligner({

@@ -1,61 +1,46 @@
 # How alignment works
 
-The input is a spelling and its complete reading, not a sentence to tokenize. JMdict determines which pairs exist; the generator assigns consecutive portions of that reading to consecutive portions of the spelling. Every result must preserve both original strings exactly.
+The input is a spelling and its complete reading. The generator divides the reading among consecutive parts of the spelling, preserving both strings exactly.
 
-The policy is the finest supported assignment. Regular readings, nanori, and explicit word-local phonetic assignments can all justify a boundary. A label such as ateji or jukujikun, a native etymology, or whole-word ruby does not by itself prohibit a finer split. Conversely, knowing a word's pronunciation does not establish how its characters divide that sound.
+## Policy
 
-## Dictionary graph
+- Split as finely as evidence supports. Regular readings, nanori, and explicit word-local allocations all justify a boundary. Labels such as ateji or jukujikun, etymology, or whole-word ruby elsewhere do not forbid a finer split.
+- Knowing a word's pronunciation does not establish how its characters divide it. Without evidence, characters stay grouped.
+- Never assign a remainder by subtraction. When all characters but one have supported readings, giving the rest to the last one was wrong too often (<ruby>一<rt>つき</rt></ruby><ruby>日<rt>たち</rt></ruby>, <ruby>木<rt>ゆ</rt></ruby><ruby>綿<rt>う</rt></ruby>).
+- When equally good alignments disagree, keep only the boundaries they share.
+- Evidence stays as local as its source. A word-local allocation never becomes a character reading usable elsewhere unless a lexical fact explicitly marks it reusable.
 
-[src/align.mjs](../src/align.mjs) searches a weighted graph over positions in the spelling and reading. Its edges include literal kana, KANJIDIC2 readings, attested dictionary spans, and restricted pronunciation changes. The whole attested word is available as a grouped edge, so uncertainty does not prevent coverage.
+## Pipeline
 
-Lower-cost paths prefer stronger evidence and useful detail. Sound changes include voicing, gemination, selected contractions, and compound-level alternations. On and kun readings have different permissions; arbitrary truncation of every character reading would produce convincing but incorrect splits. Kana inside a word must keep their sound ownership.
+[src/align.mjs](../src/align.mjs) finds the cheapest path through a graph over positions in the spelling and reading. Edges are literal kana, character readings, attested whole words (so every pair has some path), and restricted sound changes such as voicing, gemination, and contraction. On and kun readings get different sound-change permissions; truncating arbitrary readings produces plausible wrong splits. Costs only rank alternatives within one word.
 
-When equally good paths disagree, the result retains only boundaries common to all of them. Scores rank alternatives within a word; they are not probabilities.
+[src/dataset.mjs](../src/dataset.mjs) layers further evidence passes over that aligner. Each pass may refine an unresolved group but must not erase a boundary a stronger stage established. Each has its own module and tests because each has different permissions:
 
-## Supplemental readings and spelling witnesses
+| Evidence | Modules |
+| --- | --- |
+| KANJIDIC2 nanori and full kun forms; single-kanji JMdict spellings | `sources`, `lexicon`, `weak-readings` |
+| Verb continuatives supplying omitted okurigana (<ruby>植<rt>うえ</rt></ruby> in 植木鉢) | `morphology` |
+| Sibling spellings and readings in the same entry | `variants`, `reading-variants` |
+| Numeric and fullwidth spellings | `numerals` |
+| Phonetic ateji and foreign readings | `ateji`, `loan-readings`, `korean-readings` |
+| Unihan and Wiktionary character readings | `unihan`, `character-readings`, `exact-character-allocation` |
+| Restricted transformations of listed readings (ケー for ケイ) | `unihan-phonology`, `listed-phonology`, `on-reading-spelling`, `native-compounds` |
+| Cuts inside longer words and alternate spellings | `source-units`, `separator-alignments`, `shared-run-alignments` |
+| Reviewed word-local facts | `lexical-evidence` |
 
-[src/dataset.mjs](../src/dataset.mjs) assembles the stages. Supplemental evidence is generally allowed to refine an opaque group while preserving stronger boundaries.
+Constraints that apply across passes:
 
-| Evidence | Purpose | Main modules |
-| --- | --- | --- |
-| KANJIDIC2 nanori, full kun forms, and single-kanji JMdict spellings | Recover exact sounds missing from the primary reading inventory | `sources`, `lexicon`, `weak-readings` |
-| Regular verb continuatives | Supply omitted okurigana in attested compounds, such as <ruby>植<rt>うえ</rt></ruby> in 植木鉢 | `morphology` |
-| Same-entry spelling and reading variants | Transfer supported ownership through omitted kana, spelling substitutions, and vowel-length variants | `variants`, `reading-variants` |
-| Decimal and fullwidth forms | Relate equivalent numeric spellings and dictionary-backed foreign number names | `numerals` |
-| Phonetic ateji and foreign readings | Test bounded correspondences against explicit source sounds | `ateji`, `loan-readings`, `korean-readings` |
-| Unihan and Wiktionary readings | Fill character-inventory gaps without inventing new readings | `unihan`, `character-readings`, `exact-character-allocation` |
-| Restricted transformations of listed readings | Recognize supported sound changes and long-vowel spelling, such as ケー for ケイ | `unihan-phonology`, `listed-phonology`, `on-reading-spelling`, `native-compounds` |
+- Transfers come only from restriction-valid source pairs. Conflicting or ambiguous witnesses are dropped, not resolved.
+- Omitted okurigana joins the preceding character: 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>.
+- An omitted particle belongs to neither neighbor. Where a sibling spelling writes の, を, or が between two kanji that the reading pronounces, a final pass groups the two kanji: <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs last because several earlier passes can independently cut beside the particle.
+- Silent middle dots join a neighboring segment and are shown without ruby; cuts transfer from the undotted spelling only when its character allocation is complete and unambiguous.
+- A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
+- Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.
+- Optional weak sound changes (dictionary nasal loss and initial voicing) can shift the evidence that spelling transfers rely on, so the pipeline also compiles a reduced copy of itself without them and keeps the boundaries that copy establishes. This roughly doubles the early stages' cost.
+- No pass feeds inferred readings back into the character inventories. The `learnReadings` experiment, which would, is off by default because its candidates were too permissive.
 
-Transfers require restriction-valid source pairs. Conflicting witnesses and ambiguous placements are withheld. Source-language restrictions apply to foreign transcriptions; Korean correspondences exclude unsupported liaison and assimilation contexts. An exact word-local result does not become a globally available character pronunciation.
+## After alignment
 
-Omitted okurigana joins the preceding character, so 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>. An omitted particle belongs to neither neighbor: where a sibling spelling writes の, を, or が between two kanji and the reading pronounces it, a final pass gives those two kanji one ruby, as in <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs after every other stage because several can cut beside the particle independently.
-
-KANJIDIC's okurigana notation separates a character's sound from its following kana. The English Wiktionary bundle likewise distinguishes complete readings from explicitly marked character prefixes. Unmarked kun forms are not guessed to be prefixes.
-
-## Local evidence and corrections
-
-`data/lexical-evidence.json` contains named units with explicit sound allocations, rationales, and source links. [src/lexical-evidence.mjs](../src/lexical-evidence.mjs) places these units within a word and contributes their internal cuts. Outer edges are not automatically transferred: an unwritten particle between words must not become a fabricated reading of a neighboring character.
-
-Facts remain local by default. A small selection of `reusableSegments` explicitly authorizes an independently supported complete character sound for reuse. Such a sound is never used for its own pair or for the JMdict entries in the fact's `jmdictEntries`, and no further pronunciations are derived from it.
-
-Late evidence runs both with and without lexical refinement. Compatible cuts are combined so a coarser local fact does not suppress an independently supported finer allocation. Contradictory exact target evidence can veto an earlier transfer before that transfer becomes protected. Because adding a grouped fact can affect nearby shorter units, every data change needs a complete corpus comparison.
-
-`data/annotations.json` is the final escape hatch. An annotation replaces the complete alignment for one JMdict ID, spelling, and reading. It requires a reason and source links, and a stale annotation absent from the input dictionary fails the build. Regression fixtures exercise the underlying generator without applying these exact overrides.
-
-## Boundaries inside longer words
-
-Supported source words and alternate spellings can expose further boundaries:
-
-- `source-units` independently checks each source unit against raw character evidence before reusing its internal cuts.
-- `separator-alignments` transfers cuts from the undotted spelling to one with silent middle dots. Each dot joins the preceding segment, or the following one when an earlier cut already put it there, and the release shows it without ruby. A generated undotted spelling is usable only with one complete raw-character allocation and independent aligner agreement.
-- `shared-run-alignments` transfers cuts inside a uniquely placed shared spelling span. Changed kana must have independently established sound ownership.
-
-These are bounded passes, not recursive learning. Inferred results do not feed back indefinitely into the evidence inventories.
-
-## Unsupported remainders
-
-When every character but one has a supported reading, the remainder could be assigned to that character by subtraction. The generator does not do this: such guesses were wrong too often, as in <ruby>一<rt>つき</rt></ruby><ruby>日<rt>たち</rt></ruby> or <ruby>木<rt>ゆ</rt></ruby><ruby>綿<rt>う</rt></ruby>. The word stays grouped until evidence supports a finer split.
-
-## Complexity and limits
-
-Each evidence type has its own module because each has different permissions; the supporting modules have direct tests for their linguistic constraints. The main risks are overconfident local evidence, interacting refinements, and source changes that invalidate assumptions. Improvements should come from an evidenced correction or a narrow rule whose complete effects can be reviewed.
+- [src/display.mjs](../src/display.mjs) converts generator segments, which reconstruct both strings exactly, into release segments: kana the reading repeats becomes plain text, and silent punctuation leaves ruby. A ruby group containing a kanji only loses kana when its whole leading or trailing kana run matches, because a partial match can be coincidental (in 近からずとも遠からず read ちかからずとおからず, peeling と would leave 遠 with お). A kana-only group sheds any matching edge kana.
+- [src/pairings.mjs](../src/pairings.mjs) decides which pairs contradict their spelling, flags the search-only ones as mismatched, and plans synthesized pairs.
+- `data/annotations.json` replaces the complete result for one exact ID, spelling, and reading. Regression fixtures test the generator without annotations, so an annotation never hides a generator regression.

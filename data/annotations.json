@@ -466,15 +466,14 @@
     "written": "そっぽ向く",
     "reading": "そっぽをむく",
     "segments": [
-      "そ",
-      "っ",
+      "そっぽ",
       [
-        "ぽ向",
-        "ぽをむ"
+        "向",
+        "をむ"
       ],
       "く"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "reason": "Pinned same-entry spellings そっぽを向く and 外方を向く write を between the noun そっぽ/外方 and 向む, and Nikkoku prints そっぽ を 向(む)く. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
       "https://kotobank.jp/word/そつぽを向く-2057339"
@@ -486,20 +485,16 @@
     "reading": "そっぽをむく",
     "segments": [
       [
-        "ソ",
-        "そ"
+        "ソッポ",
+        "そっぽ"
       ],
       [
-        "ッ",
-        "っ"
-      ],
-      [
-        "ポ向",
-        "ぽをむ"
+        "向",
+        "をむ"
       ],
       "く"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "reason": "Pinned same-entry spellings そっぽを向く and 外方を向く write を between the noun そっぽ/外方 and 向む, and Nikkoku prints そっぽ を 向(む)く. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
       "https://kotobank.jp/word/そつぽを向く-2057339"
@@ -511,12 +506,16 @@
     "reading": "そっぽをむく",
     "segments": [
       [
-        "外方向",
-        "そっぽをむ"
+        "外方",
+        "そっぽ"
+      ],
+      [
+        "向",
+        "をむ"
       ],
       "く"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings explicitly write を between the complete noun そっぽ/外方 and 向む; Nikkoku independently prints そっぽ を 向(む)く. In the particle-omitting spelling, neither 向をむ nor 外方そっぽを is a supported lexical reading. Group only the smallest written span crossing the omitted-particle site; keep preceding literal kana and following く.",
+    "reason": "Pinned same-entry spellings そっぽを向く and 外方を向く write を between the noun そっぽ/外方 and 向む, and Nikkoku prints そっぽ を 向(む)く. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550",
       "https://kotobank.jp/word/そつぽを向く-2057339"
@@ -547,16 +546,16 @@
     "reading": "けつをもつ",
     "segments": [
       [
-        "ケ",
-        "け"
+        "ケツ",
+        "けつ"
       ],
       [
-        "ツ持",
-        "つをも"
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -567,12 +566,16 @@
     "reading": "けつをもつ",
     "segments": [
       [
-        "尻持",
-        "けつをも"
+        "尻",
+        "けつ"
+      ],
+      [
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -583,12 +586,12 @@
     "reading": "けつをもつ",
     "segments": [
       [
-        "尻も",
-        "けつをも"
+        "尻",
+        "けつを"
       ],
-      "つ"
+      "もつ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -598,14 +601,14 @@
     "written": "けつ持つ",
     "reading": "けつをもつ",
     "segments": [
-      "け",
+      "けつ",
       [
-        "つ持",
-        "つをも"
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -615,14 +618,14 @@
     "written": "ケツ持つ",
     "reading": "ケツをもつ",
     "segments": [
-      "ケ",
+      "ケツ",
       [
-        "ツ持",
-        "ツをも"
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -633,12 +636,16 @@
     "reading": "ケツをもつ",
     "segments": [
       [
-        "尻持",
-        "ケツをも"
+        "尻",
+        "ケツ"
+      ],
+      [
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -649,12 +656,12 @@
     "reading": "ケツをもつ",
     "segments": [
       [
-        "尻も",
-        "ケツをも"
+        "尻",
+        "ケツを"
       ],
-      "つ"
+      "もつ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
@@ -665,16 +672,16 @@
     "reading": "ケツをもつ",
     "segments": [
       [
-        "け",
-        "ケ"
+        "けつ",
+        "ケツ"
       ],
       [
-        "つ持",
-        "ツをも"
+        "持",
+        "をも"
       ],
       "つ"
     ],
-    "reason": "Pinned restriction-valid same-entry spellings ケツを持つ/けつを持つ/尻を持つ/尻をもつ explicitly write を between the buttocks noun and 持も/も. In the particle-omitting spellings, that independently identified particle is not a reading of 持 or 尻. Group only the smallest crossing span; retain any preceding literal け/ケ and the final つ.",
+    "reason": "Pinned same-entry spellings ケツを持つ, けつを持つ, 尻を持つ, and 尻をもつ write を between the buttocks noun and 持も/も. The particle-omitting search-only spellings inherit the reading with を, so the を sits at that boundary, where the release leaves it out of the ruby.",
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]

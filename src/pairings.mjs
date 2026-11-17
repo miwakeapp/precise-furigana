@@ -45,12 +45,17 @@ export function fitsSpelling(written, reading) {
 
 /**
  * Whether a pair's reading contradicts its spelling: the spelling's kana do not
- * fit the reading, or a search-only spelling omits a particle that the reading
- * keeps, as そっぽ向く does with そっぽをむく. Every spelling needs at least one
- * pair that does not contradict it.
+ * fit the reading, a search-only spelling omits a particle that the reading
+ * keeps, as そっぽ向く does with そっぽをむく, or the segments put a reading over
+ * kana that it does not fit. The last catches readings that fit only if a kanji
+ * absorbs a sound that belongs to the kana, as けも耳 with けものみみ fits only
+ * with 耳 read のみみ, and is segmented け も[もの] 耳[みみ]. Every spelling needs
+ * at least one pair that does not contradict it.
  */
-export function contradictsSpelling(written, reading, drops) {
-  return !fitsSpelling(written, reading) || (drops?.length ?? 0) > 0;
+export function contradictsSpelling(written, reading, drops, segments = []) {
+  if (kanaPuns.has(pairKey(written, reading))) return false;
+  return !fitsSpelling(written, reading) || (drops?.length ?? 0) > 0 ||
+    segments.some(segment => typeof segment !== "string" && !fitsSpelling(segment[0], segment[1]));
 }
 
 /**
@@ -59,9 +64,9 @@ export function contradictsSpelling(written, reading, drops) {
  * combine forms that do not belong together. A visible pair such as 宣ふ with
  * のたまう contradicts its kana only by orthographic convention and is not flagged.
  */
-export function isMismatched(pair, drops) {
+export function isMismatched(pair, drops, segments) {
   return (pair.writtenTags.includes("sK") || pair.readingTags.includes("sk")) &&
-    contradictsSpelling(pair.written, pair.reading, drops);
+    contradictsSpelling(pair.written, pair.reading, drops, segments);
 }
 
 /**
@@ -158,7 +163,8 @@ export function planSynthesizedPairs(records, drops, reviewed, jmdictPairs) {
   const listed = new Map(reviewed.map(item => [`${item.id}\t${item.written}`, item]));
   const pairs = [], problems = [], missing = [], obsolete = [];
   for (const [key, spellingRecords] of bySpelling) {
-    const invalid = spellingRecords.filter(record => contradictsSpelling(record.written, record.reading, drops.get(pairKey(record.written, record.reading))));
+    const invalid = spellingRecords.filter(record =>
+      contradictsSpelling(record.written, record.reading, drops.get(pairKey(record.written, record.reading)), record.displaySegments ?? record.segments));
     if (invalid.length < spellingRecords.length) continue;
     const { id, written } = invalid[0];
     const implied = [...new Set(invalid.map(record => impliedReading(record.segments, drops.get(pairKey(record.written, record.reading))))

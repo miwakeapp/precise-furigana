@@ -7,7 +7,7 @@ import { algorithmVersion, compileAnnotations, defaultConfiguration, digest, gen
 import { pairKey, recordKey } from "../src/segments.mjs";
 import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
-import { contradictsSpelling, fitsSpelling, isMismatched } from "../src/pairings.mjs";
+import { contradictsSpelling, isMismatched } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
@@ -53,17 +53,17 @@ for (const [id, records] of Object.entries(output.entries)) {
     if (record.pairing === "synthesized") {
       assert.deepEqual(Object.keys(record), ["written", "reading", "segments", "pairing"]);
       assert.ok(synthesized.delete(key) && !expected.has(key), `Synthesized pair is not a reviewed, non-JMdict pair: ${key}`);
-      assert.ok(fitsSpelling(record.written, record.reading), `Synthesized pair does not fit its spelling: ${key}`);
+      assert.ok(!contradictsSpelling(record.written, record.reading, undefined, record.segments), `Synthesized pair does not fit its spelling: ${key}`);
       fitting.add(`${id}\t${record.written}`);
       ++synthesizedCount;
       continue;
     }
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
     const recordDrops = drops.get(pairKey(record.written, record.reading));
-    const mismatched = isMismatched(jmdictPairs.get(key), recordDrops);
+    const mismatched = isMismatched(jmdictPairs.get(key), recordDrops, record.segments);
     assert.deepEqual(Object.keys(record), mismatched ? ["written", "reading", "segments", "pairing"] : ["written", "reading", "segments"]);
     if (mismatched) assert.equal(record.pairing, "mismatched");
-    if (!contradictsSpelling(record.written, record.reading, recordDrops)) fitting.add(`${id}\t${record.written}`);
+    if (!contradictsSpelling(record.written, record.reading, recordDrops, record.segments)) fitting.add(`${id}\t${record.written}`);
     ++count;
   }
 }

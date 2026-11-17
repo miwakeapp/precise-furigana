@@ -32,9 +32,9 @@ for (const pair of dataset.pairs()) {
   if (seen.has(key)) continue;
   seen.add(key);
   const { segments } = dataset.alignPair(pair);
-  records.push({ id: pair.id, written: pair.written, reading: pair.reading, segments });
   const record = { written: pair.written, reading: pair.reading, segments: displaySegments(segments) };
-  if (isMismatched(pair, drops.get(pairKey(pair.written, pair.reading)))) record.pairing = "mismatched";
+  records.push({ id: pair.id, written: pair.written, reading: pair.reading, segments, displaySegments: record.segments });
+  if (isMismatched(pair, drops.get(pairKey(pair.written, pair.reading)), record.segments)) record.pairing = "mismatched";
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;
 }

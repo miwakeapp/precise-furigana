@@ -13,6 +13,12 @@ test("a reading fits a spelling when the spelling's kana appear in it in order",
   // A kanji can absorb an omitted particle, which the omitted-particle sites catch instead.
   assert.ok(fitsSpelling("そっぽ向く", "そっぽをむく"));
   assert.ok(contradictsSpelling("そっぽ向く", "そっぽをむく", [{ offset: 3, particle: "を" }]));
+  // A reading that fits only by letting a kanji absorb a sound of the kana contradicts the segments that place it.
+  assert.ok(fitsSpelling("けも耳", "けものみみ"));
+  assert.ok(contradictsSpelling("けも耳", "けものみみ", [], ["け", ["も", "もの"], ["耳", "みみ"]]));
+  assert.ok(!contradictsSpelling("けも耳", "けもみみ", [], ["けも", ["耳", "みみ"]]));
+  assert.ok(!contradictsSpelling("平将門の乱", "たいらのまさかどのらん", [], [["平将門の乱", "たいらのまさかどのらん"]]));
+  assert.ok(!contradictsSpelling("怪レい日本語", "あやしいにほんご", [], [["怪", "あや"], ["レ", "し"], "い", ["日", "に"], ["本", "ほん"], ["語", "ご"]]));
 });
 
 test("only pairs with a search-only form are flagged as mismatched", () => {

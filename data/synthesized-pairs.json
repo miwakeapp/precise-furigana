@@ -70,6 +70,13 @@
     "note": "Loanword kana variant: ウエ/ウイ/ウオ for ウェ/ウィ/ウォ (or the reverse), same word."
   },
   {
+    "id": "1132440",
+    "written": "メーカ希望価格",
+    "reading": "メーカきぼうかかく",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
     "id": "1147340",
     "written": "ロシヤ語",
     "reading": "ロシヤご",
@@ -714,6 +721,13 @@
     "note": "Kana garbled: ェイ appended after ワンウエー; the corrected reading is a kana variant of the existing ワンウェーびん[sk], not worth proposing."
   },
   {
+    "id": "1957470",
+    "written": "インサイダ取引",
+    "reading": "インサイダとりひき",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
     "id": "1961760",
     "written": "イディシュ語",
     "reading": "イディシュご",
@@ -740,6 +754,20 @@
     "reading": "クラッシックおんがく",
     "upstream": "none",
     "note": "Common nonstandard loanword variant (gemination); leaning none."
+  },
+  {
+    "id": "1963330",
+    "written": "クラスタ分析",
+    "reading": "クラスタぶんせき",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
+    "id": "1963530",
+    "written": "グラニュ糖",
+    "reading": "グラニュとう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "1965320",
@@ -775,6 +803,20 @@
     "reading": "ペルシアねこ",
     "upstream": "propose",
     "note": "Kana garbled: ャ of ペルシャ appended; the corrected reading is a loanword kana variant, not worth proposing."
+  },
+  {
+    "id": "1968980",
+    "written": "メーカ物",
+    "reading": "メーカもの",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
+    "id": "1970040",
+    "written": "レーザ治療",
+    "reading": "レーザちりょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "1987760",
@@ -1062,6 +1104,13 @@
     "reading": "グゥのねもでない",
     "upstream": "none",
     "note": "Kana variant: ー/ぅ for う, same sound as ぐう."
+  },
+  {
+    "id": "2127320",
+    "written": "プライバシ保護",
+    "reading": "プライバシほご",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "2131660",
@@ -2150,6 +2199,13 @@
   },
   {
     "id": "2817540",
+    "written": "ストーリ性",
+    "reading": "ストーリせい",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
+    "id": "2817540",
     "written": "ストリー性",
     "reading": "ストリーせい",
     "upstream": "propose",
@@ -2539,6 +2595,27 @@
     "reading": "うおジラミ",
     "upstream": "restricted",
     "note": "JMdict has ウオジラミ, but restricted to ; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2852394",
+    "written": "メーカ品",
+    "reading": "メーカひん",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
+    "id": "2853213",
+    "written": "メーカ希望小売価格",
+    "reading": "メーカきぼうこうりかかく",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
+    "id": "2853225",
+    "written": "メーカ保証",
+    "reading": "メーカほしょう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "2853638",
@@ -2961,6 +3038,13 @@
     "note": "Different name: glyoxalic (グリオキサル) is a real alternate name with a distinct pronunciation; unsure."
   },
   {
+    "id": "2865506",
+    "written": "グアラニ語",
+    "reading": "グアラニご",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
     "id": "2865906",
     "written": "トー横",
     "reading": "トーよこ",
@@ -3017,6 +3101,13 @@
     "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
   },
   {
+    "id": "2868425",
+    "written": "インイヤ型",
+    "reading": "インイヤがた",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
+  },
+  {
     "id": "2868487",
     "written": "移籍ウインドウ",
     "reading": "いせきウインドウ",
@@ -3057,6 +3148,13 @@
     "reading": "レヴィーしょうたい",
     "upstream": "none",
     "note": "Loanword kana variant: ヴ-row versus バ-row spelling of the same word."
+  },
+  {
+    "id": "2868827",
+    "written": "レーザ脱毛",
+    "reading": "レーザだつもう",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "2868903",
@@ -3288,6 +3386,13 @@
     "reading": "くもつく",
     "upstream": "propose",
     "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2871604",
+    "written": "ミステリ小説",
+    "reading": "ミステリしょうせつ",
+    "upstream": "none",
+    "note": "Loanword kana variant: the spelling drops a final ー, which is a spelling convention, not a distinct pronunciation."
   },
   {
     "id": "2871731",

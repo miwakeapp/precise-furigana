@@ -9,9 +9,9 @@ By itself, JMdict just supplies a list of [kanji forms](https://www.edrdg.org/jm
 - Kanji: お誕生日；御誕生日
 - Readings: おたんじょうび
 
-Below, we call the kanji forms **spellings**, since many of them aren't purely kanji (お誕生日, そっぽ向く, 無線ＬＡＮ). Words that JMdict writes only in kana, such as あおば, use the kana itself as the spelling.
+(We call the kanji forms **spellings**, since many of them aren't purely kanji, e.g., お誕生日, そっぽ向く, 無線ＬＡＮ. Words that JMdict writes only in kana, such as あおば, use the kana itself as the spelling.)
 
-So most software that just directly consumes JMdict (or otherwise has spelling/reading pairs it wants to display) renders these as お<ruby>誕生日<rt>たんじょうび</ruby> / <ruby>御誕生日<rt>おたんじょうび</ruby>. But this looks worse than the proper split of お<ruby>誕<rt>たん</ruby><ruby>生<rt>じょう</ruby><ruby>日<rt>び</ruby> / <ruby>御<rt>お</ruby><ruby>誕<rt>たん</ruby><ruby>生<rt>じょう</ruby><ruby>日<rt>び</ruby>. (And, I claim, the precisely-placed form is better for building a learner's kanji-reading mental muscles.)
+Most software that just directly consumes JMdict, or otherwise has spelling/reading pairs it wants to display, renders these as お<ruby>誕生日<rt>たんじょうび</ruby> / <ruby>御誕生日<rt>おたんじょうび</ruby>. But this looks worse than the proper split of お<ruby>誕<rt>たん</ruby><ruby>生<rt>じょう</ruby><ruby>日<rt>び</ruby> / <ruby>御<rt>お</ruby><ruby>誕<rt>たん</ruby><ruby>生<rt>じょう</ruby><ruby>日<rt>び</ruby>. And, I claim, the precisely-placed form is better for building a learner's kanji-reading mental muscles.
 
 With the Precise Furigana database, your software can display any word in JMdict—in fact, any allowed spelling/reading pair in JMdict—with this sort of nice-looking, good-for-learners, precisely-placed furigana!
 
@@ -19,10 +19,22 @@ With the Precise Furigana database, your software can display any word in JMdict
 
 The release artifacts are `precise-furigana.json` and its gzip-compressed equivalent, `precise-furigana.json.gz`. The corpus contains about 325,000 spelling/reading pairs; the compressed database is about 7 MB.
 
-```js
-const records = database.entries["1582710"];
-const nihon = records.find(record => record.reading === "にほん");
-// nihon.segments: [["日", "に"], ["本", "ほん"]]
+The top-level JSON object's `entries` property contains an object mapping JMdict IDs to lists of spelling/reading/segmentation records. For example, `database.entries["2852392"]` is the following:
+
+<!-- oxfmt-ignore -->
+```json
+[
+  {
+    "spelling": "お誕生日",
+    "reading": "おたんじょうび",
+    "segments": ["お", ["誕", "たん"], ["生", "じょう"], ["日", "び"]]
+  },
+  {
+    "spelling": "御誕生日",
+    "reading": "おたんじょうび",
+    "segments": [["御", "お"], ["誕", "たん"], ["生", "じょう"], ["日", "び"]]
+  }
+]
 ```
 
 Each record has:
@@ -32,20 +44,96 @@ Each record has:
 - `segments`: the precisely-placed furigana, as an array of either strings (shown without ruby) or `[base, ruby]` pairs.
 - `pairing`: an optional field, with a value of either `"synthesized"` or `"mismatched"`, for certain edge cases [explained below](#jmdict-limitations-mismatched-and-synthesized-pairs).
 
-So for example, to turn the `segments` into HTML:
+There is [a JSON schema](./schema.json) available.
+
+Below we give some examples of common tasks using this database, in JavaScript. Of course, you can use any language that can consume the JSON file.
+
+### Finding segmentation given a spelling and reading
+
+In some cases, your software might already have a specific reading in mind for a spelling. For example, if you are just trying to make existing furigana more precise, or if you are displaying all possible readings. An inefficient example of how to do this would be:
 
 ```js
-const html = segments.map(
-  (s) => typeof s === "string" ? s : `<ruby>${s[0]}<rt>${s[1]}</ruby>`,
-)
-  .join("");
+function findSegmentation(spelling, reading) {
+  for (const entry of Object.values(database.entries)) {
+    for (const record of entry) {
+      if (record.spelling === spelling && record.reading === reading) {
+        return record.segments;
+      }
+    }
+  }
+
+  throw new Error(`The combination "${spelling}" + "${reading}" was not present in JMdict.`);
+}
 ```
 
-See also the [data format](docs/data-format.md) and [JSON schema](schema.json) documentation.
+(Note that `findSegmentation()` picks the first encountered entry with the given spelling and reading, even though multiple might exist: e.g., both [entry 1198910](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1198910) and [entry 1546070](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1546070) contain the spelling 解ける and the reading とける. This is not a problem in practice, as the segmentation is always the same across the entries.)
 
-TODO: more use-case focused? For people with (spelling, reading) pairs, vs. people wanting to look up the "most common" readings?
+If you already have the JMdict ID, for example because your software has already located it in order to give a definition to the user, then you can use it directly:
 
-## Tricky cases
+```js
+function findSegmentationForKnownWord(jmdictId, spelling, reading) {
+  for (const record of database.entries[jmdictId]) {
+    if (record.spelling === spelling && record.reading === reading) {
+      return record.segments;
+    }
+  }
+
+  throw new Error(
+    `The combination "${spelling}" + "${reading}" was not present in JMdict entry "${jmdictId}".`,
+  );
+}
+```
+
+### Finding the reading and segmentation given only the spelling
+
+Trying to add precise furigana to a given spelling, without a reading supplied, is not trivial.
+
+First, you need to determine which JMdict entry is being indicated: is 辛い meant to be [entry 1365850](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365850) ("spicy") or [entry 1365860](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365860) ("painful")? This is out of scope of this project; I suggest using an LLM.
+
+Even once you have the JMdict ID in hand, you can still get several possibilities: should you transform 明日 into <ruby>明日<rt>あした</ruby> or <ruby>明<rt>あ</ruby><ruby>日<rt>す</ruby> or <ruby>明<rt>みょう</ruby><ruby>日<rt>にち</ruby>?
+
+The following algorithm attempts to pick the best record given the data on hand. But "best" can be subjective, and again, an LLM might do better, given the context in which the word is being used.
+
+```js
+// Lower is better. Ties keep JMdict order, which is most-common first.
+const preference = {
+  // The spelling's kana, read as written. Ranking this above an unmarked
+  // record is a matter of taste. See "JMdict limitations: mismatched and
+  // synthesized pairs" below.
+  synthesized: 0,
+  // An ordinary JMdict pair.
+  undefined: 1,
+  // A pair JMdict allows but whose reading contradicts the spelling. See
+  // "JMdict limitations: mismatched and synthesized pairs" below.
+  mismatched: 2,
+};
+
+function bestRecord(jmdictId, spelling) {
+  const records = database.entries[jmdictId] ?? [];
+  const record = records
+    .filter((r) => r.spelling === spelling)
+    .sort((a, b) => preference[a.pairing] - preference[b.pairing])[0];
+
+  if (record === undefined) {
+    throw new Error(`The spelling "${spelling}" was not present in JMdict entry "${jmdictId}"`);
+  }
+  return record;
+}
+```
+
+### Turning segments into HTML
+
+Leave string segments alone, and turn `[base, ruby]` pairs into the appropriate HTML [ruby markup](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-ruby-element):
+
+```js
+function segmentsToRuby(segments) {
+  return segments
+    .map((s) => (typeof s === "string" ? s : `<ruby>${s[0]}<rt>${s[1]}</ruby>`))
+    .join("");
+}
+```
+
+## Tricky cases and how we handle them
 
 ### Jukujikun
 
@@ -71,31 +159,33 @@ For example:
 
 - The [気持ちよい](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1222230) entry has the きもちよい reading restricted to the 気持ち良い spelling, and thus "disallowed" for the 気持ちよい spelling, even though it's obviously the correct reading. This is because 気持ちよい is marked as search-only, and thus gets second-class treatment.
 
-- The [そっぽを向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) entry has a そっぽ向く spelling, but no そっぽむく reading, implying that そっぽ向く is read as そっぽ<ruby>向<rt>をむ</ruby>く, even though this is nonsense. Even if we added the そっぽむく reading (which is allowed per policy), the second-class treatment means that そっぽをむく would still be "allowed" for そっぽ向く, since as a search-only form そっぽ向く cannot have any restrictions recorded.
+- The [そっぽを向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) entry has a そっぽ向く spelling, but no そっぽむく reading, implying that そっぽ向く is read as そっぽ<ruby>向<rt>をむ</ruby>く, even though this is nonsense. Even if JMdict added the そっぽむく reading (which is allowed per policy), the second-class treatment means that そっぽをむく would still be "allowed" for そっぽ向く, since as a search-only form そっぽ向く cannot have any restrictions recorded.
 
-The Precise Furigana database still includes every pair JMdict allows, and its segments always spell out the record's reading exactly. Where that reading contradicts the spelling, the record is marked `"pairing": "mismatched"`:
+The Precise Furigana database still includes every pair JMdict allows, and its segments always spell out the record's reading exactly. Where that reading contradicts the spelling and a search-only spelling or reading is involved, the record is marked `"pairing": "mismatched"`:
 
-| Spelling | Reading | Furigana | `pairing` |
-| --- | --- | --- | --- |
-| [息の長い](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2405960) | いきがながい | <ruby>息<rt>いき</ruby><ruby>の<rt>が</ruby><ruby>長<rt>なが</ruby>い | `"mismatched"` |
-| [気持ちよい](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1222230) | きもちいい | <ruby>気<rt>き</ruby><ruby>持<rt>も</ruby>ち<ruby>よ<rt>い</ruby>い | `"mismatched"` |
-| [そっぽ向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) | そっぽをむく | そっぽ<ruby>向<rt>をむ</ruby>く | `"mismatched"` |
-| [サイム油](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2867482) | タイムゆ | <ruby>サ<rt>タ</ruby>イム<ruby>油<rt>ゆ</ruby> | `"mismatched"` |
+| Spelling                                                                | Reading      | Furigana                                                              | `pairing`      |
+| ----------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------- | -------------- |
+| [息の長い](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2405960)   | いきがながい | <ruby>息<rt>いき</ruby><ruby>の<rt>が</ruby><ruby>長<rt>なが</ruby>い | `"mismatched"` |
+| [気持ちよい](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1222230) | きもちいい   | <ruby>気<rt>き</ruby><ruby>持<rt>も</ruby>ち<ruby>よ<rt>い</ruby>い   | `"mismatched"` |
+| [そっぽ向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) | そっぽをむく | そっぽ<ruby>向<rt>をむ</ruby>く                                       | `"mismatched"` |
+| [サイム油](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2867482)   | タイムゆ     | <ruby>サ<rt>タ</ruby>イム<ruby>油<rt>ゆ</ruby>                        | `"mismatched"` |
 
 Every spelling also has at least one record that shows its kana as written. When JMdict has no such pair, we add one, marked `"pairing": "synthesized"`, with the spelling's own reading:
 
-| Spelling | Reading | Furigana | `pairing` |
-| --- | --- | --- | --- |
+| Spelling                                                                | Reading    | Furigana                                         | `pairing`       |
+| ----------------------------------------------------------------------- | ---------- | ------------------------------------------------ | --------------- |
 | [気持ちよい](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1222230) | きもちよい | <ruby>気<rt>き</ruby><ruby>持<rt>も</ruby>ちよい | `"synthesized"` |
-| [そっぽ向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) | そっぽむく | そっぽ<ruby>向<rt>む</ruby>く | `"synthesized"` |
-| [サイム油](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2867482) | サイムゆ | サイム<ruby>油<rt>ゆ</ruby> | `"synthesized"` |
-| [宣ふ](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2055480) | のたまふ | <ruby>宣<rt>のたま</ruby>ふ | `"synthesized"` |
+| [そっぽ向く](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2207120) | そっぽむく | そっぽ<ruby>向<rt>む</ruby>く                    | `"synthesized"` |
+| [サイム油](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2867482)   | サイムゆ   | サイム<ruby>油<rt>ゆ</ruby>                      | `"synthesized"` |
+| [宣ふ](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=2055480)       | のたまふ   | <ruby>宣<rt>のたま</ruby>ふ                      | `"synthesized"` |
 
 Some synthesized readings are real pronunciations JMdict is missing, like そっぽむく, and I'm submitting those upstream. Others just read the spelling as written, like the misspelling サイム油 or the historical spelling 宣ふ, where JMdict's own reading is the right pronunciation (but might not be what you want to print in a book or web page).
 
-If you come with a (spelling, reading) pair, you get exactly that record, with the flag telling you how much to trust the pairing. For example, given 息の長い, いきのながい (avoiding the `"mismatched"` いきがながい) is the clean choice.
+If you come with a (spelling, reading) pair, you get exactly that record, with the flag telling you how much to trust the pairing.
 
-If you come with only a spelling and pick a reading yourself, prefer avoiding records with `"mismatched"` when possible. The choice between unmarked and `"synthesized"` is a matter of taste. For example, given 宣ふ, both <ruby>宣<rt>のたま</ruby><ruby>ふ<rt>う</ruby> (the modern pronunciation; no `"pairing"` value) and <ruby>宣<rt>のたま</ruby>ふ (as written; marked `"pairing": "synthesized"`) are reasonable.
+If you come with only a spelling and pick a reading yourself, prefer avoiding records with `"mismatched"` when possible. For example, given 息の長い, いきのながい (avoiding the `"mismatched"` いきがながい) is the clean choice.
+
+The choice between unmarked and `"synthesized"` is a matter of taste. For example, given 宣ふ, both <ruby>宣<rt>のたま</ruby><ruby>ふ<rt>う</ruby> (the modern pronunciation; no `"pairing"` value) and <ruby>宣<rt>のたま</ruby>ふ (as written; marked `"pairing": "synthesized"`) are reasonable.
 
 ## Comparison with other furigana databases
 
@@ -103,12 +193,12 @@ I am aware of two other projects in this space: [Doublevil/JmdictFurigana](https
 
 Precise Furigana is fully open source, with MIT-licensed code and [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) for the data. Additionally, it's updated weekly, following the active edits to JMdict. And, aided by the power of AI to crunch through tons of edge cases, we've managed to get more tricky cases right than the other projects.
 
-| Word | Precise Furigana | Lorenzi | JmdictFurigana |
-| --- | --- | --- | --- |
-| 日本 | <ruby>日<rt>に</ruby><ruby>本<rt>ほん</ruby> | <ruby>日<rt>に</ruby><ruby>本<rt>ほん</ruby> | <ruby>日本<rt>にほん</ruby> |
-| 無線ＬＡＮ | <ruby>無<rt>む</ruby><ruby>線<rt>せん</ruby><ruby>ＬＡＮ<rt>ラン</ruby> | <ruby>無<rt>む</ruby><ruby>線<rt>せん</ruby><ruby>ＬＡＮ<rt>ラン</ruby> | <ruby>無<rt>む</ruby><ruby>線<rt>せ</ruby><ruby>Ｌ<rt>ん</ruby><ruby>Ａ<rt>ラ</ruby><ruby>Ｎ<rt>ン</ruby> |
-| 達磨 | <ruby>達<rt>だる</ruby><ruby>磨<rt>ま</ruby> | <ruby>達<rt>だ</ruby><ruby>磨<rt>るま</ruby> | <ruby>達磨<rt>だるま</ruby> |
-| 御器噛り | <ruby>御<rt>ご</ruby><ruby>器<rt>っ</ruby><ruby>噛<rt>かぶ</ruby>り | <ruby>御器<rt>ごっ</ruby><ruby>噛<rt>かぶ</ruby>り | <ruby>御<rt>ごっ</ruby><ruby>器<rt>か</ruby><ruby>噛<rt>ぶ</ruby>り |
-| メーカ希望価格 | メーカ<ruby>希<rt>き</ruby><ruby>望<rt>ぼう</ruby><ruby>価<rt>か</ruby><ruby>格<rt>かく</ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</ruby> | <i>no entry</i> |
-| 道程 | <ruby>道<rt>みち</ruby><ruby>程<rt>のり</ruby> | <ruby>道<rt>みち</ruby><ruby><rt>の</ruby><ruby>程<rt>り</ruby> | <i>no entry</i> |
-| 前肢 | <ruby>前<rt>まえ</ruby><ruby>肢<rt>あし</ruby> | <ruby>前<rt>まえあ</ruby><ruby>肢<rt>し</ruby> | <i>no entry</i> |
+| Word           | Precise Furigana                                                                               | Lorenzi                                                                 | JmdictFurigana                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 日本           | <ruby>日<rt>に</ruby><ruby>本<rt>ほん</ruby>                                                   | <ruby>日<rt>に</ruby><ruby>本<rt>ほん</ruby>                            | <ruby>日本<rt>にほん</ruby>                                                                               |
+| 無線ＬＡＮ     | <ruby>無<rt>む</ruby><ruby>線<rt>せん</ruby><ruby>ＬＡＮ<rt>ラン</ruby>                        | <ruby>無<rt>む</ruby><ruby>線<rt>せん</ruby><ruby>ＬＡＮ<rt>ラン</ruby> | <ruby>無<rt>む</ruby><ruby>線<rt>せ</ruby><ruby>Ｌ<rt>ん</ruby><ruby>Ａ<rt>ラ</ruby><ruby>Ｎ<rt>ン</ruby> |
+| 達磨           | <ruby>達<rt>だる</ruby><ruby>磨<rt>ま</ruby>                                                   | <ruby>達<rt>だ</ruby><ruby>磨<rt>るま</ruby>                            | <ruby>達磨<rt>だるま</ruby>                                                                               |
+| 御器噛り       | <ruby>御<rt>ご</ruby><ruby>器<rt>っ</ruby><ruby>噛<rt>かぶ</ruby>り                            | <ruby>御器<rt>ごっ</ruby><ruby>噛<rt>かぶ</ruby>り                      | <ruby>御<rt>ごっ</ruby><ruby>器<rt>か</ruby><ruby>噛<rt>ぶ</ruby>り                                       |
+| メーカ希望価格 | メーカ<ruby>希<rt>き</ruby><ruby>望<rt>ぼう</ruby><ruby>価<rt>か</ruby><ruby>格<rt>かく</ruby> | メーカ<ruby>希望価格<rt>ーきぼうかかく</ruby>                           | <i>no entry</i>                                                                                           |
+| 道程           | <ruby>道<rt>みち</ruby><ruby>程<rt>のり</ruby>                                                 | <ruby>道<rt>みち</ruby><ruby><rt>の</ruby><ruby>程<rt>り</ruby>         | <i>no entry</i>                                                                                           |
+| 前肢           | <ruby>前<rt>まえ</ruby><ruby>肢<rt>あし</ruby>                                                 | <ruby>前<rt>まえあ</ruby><ruby>肢<rt>し</ruby>                          | <i>no entry</i>                                                                                           |

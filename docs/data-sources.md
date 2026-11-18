@@ -11,18 +11,19 @@ The build reads only what `npm run fetch` downloads and the files in `data/`. No
 
 ## Files in `data/`
 
-| File | What it is | Reach |
-| --- | --- | --- |
-| `character-readings.json` | On and kun readings from a pinned [Kaikki/wiktextract](https://kaikki.org/dictionary/rawdata.html) extraction of Japanese Wiktionary | The character, everywhere |
-| `english-character-readings.json` | On and kun readings, plus explicitly marked character prefixes, from pinned revisions of English Wiktionary character pages | The character, everywhere |
-| `lexical-evidence.json` | Reviewed word-level allocations | The word, wherever it occurs, including inside longer words |
-| `annotations.json` | Complete replacement alignments | One ID, spelling, and reading |
-| `synthesized-pairs.json` | Readings for spellings that JMdict pairs only with contradicting readings | One added record each |
+| File                              | What it is                                                                                                                           | Reach                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `character-readings.json`         | On and kun readings from a pinned [Kaikki/wiktextract](https://kaikki.org/dictionary/rawdata.html) extraction of Japanese Wiktionary | The character, everywhere                                   |
+| `english-character-readings.json` | On and kun readings, plus explicitly marked character prefixes, from pinned revisions of English Wiktionary character pages          | The character, everywhere                                   |
+| `lexical-evidence.json`           | Reviewed word-level allocations                                                                                                      | The word, wherever it occurs, including inside longer words |
+| `annotations.json`                | Complete replacement alignments                                                                                                      | One ID, spelling, and reading                               |
+| `synthesized-pairs.json`          | Readings for spellings that JMdict pairs only with contradicting readings                                                            | One added record each                                       |
 
 Both Wiktionary files keep only readings the source explicitly marks as on or kun; historical, nanori, and unmarked forms are excluded, and unmarked kun forms are never guessed to be prefixes. Each file's `source` header says where and when it was extracted. Refreshing them is a separate review, not part of the weekly update.
 
 ### Lexical facts
 
+<!-- oxfmt-ignore -->
 ```json
 {
   "id": "W0032",

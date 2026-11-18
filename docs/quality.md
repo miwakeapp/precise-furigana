@@ -6,18 +6,18 @@ Coverage, reconstruction, and the segment invariants are checked mechanically fo
 
 These show the intended behavior. A change that alters one of them needs a reason at least as good as the one given.
 
-| Word | Output | Why |
-| --- | --- | --- |
-| 日本 | <ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>, <ruby>日<rt>にっ</rt></ruby><ruby>本<rt>ぽん</rt></ruby> | Listed sounds plus restricted gemination; matches the [Wiktionary word table](https://en.wiktionary.org/w/index.php?oldid=93472794#Japanese). |
-| 時計 | <ruby>時<rt>と</rt></ruby><ruby>計<rt>けい</rt></ruby> | KANJIDIC2 lists と as a nanori of 時, and the [word table](https://en.wiktionary.org/w/index.php?oldid=92257101#Japanese) agrees. An ateji tag does not forbid the split. |
-| 蕎麦 | <ruby>蕎<rt>そ</rt></ruby><ruby>麦<rt>ば</rt></ruby> | [The allocation in 晦蕎麦](https://en.wiktionary.org/w/index.php?oldid=92161504#Japanese) supports these sounds; whole-word ruby elsewhere does not negate it. |
-| 海老 | <ruby>海<rt>え</rt></ruby><ruby>老<rt>び</rt></ruby> | Both sounds are KANJIDIC2 nanori. |
-| 尻尾 | <ruby>尻<rt>しっ</rt></ruby><ruby>尾<rt>ぽ</rt></ruby> | [The word table](https://en.wiktionary.org/w/index.php?oldid=92237397#Japanese) assigns the contracted sounds. |
-| 命の綱 | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby> | Complete character readings decide which の is the particle; greedy kana matching would put it inside 命. |
-| 達磨 | <ruby>達<rt>だる</rt></ruby><ruby>磨<rt>ま</rt></ruby> | [A lexical fact](https://en.wiktionary.org/w/index.php?oldid=92643544#Japanese) supplies the transliteration sound of 達. |
-| 端折る | <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る | [The source](https://en.wiktionary.org/w/index.php?oldid=86463303#Japanese) assigns the contracted ょ to 折 (from 端を折る). |
-| 御器噛り | <ruby>御<rt>ご</rt></ruby><ruby>器<rt>っ</rt></ruby><ruby>噛<rt>かぶ</rt></ruby>り | 御器 ごき plus 噛り かぶり, with き geminated. |
-| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | The entry's other spellings put the extra ー with カ, not on 希望価格. The pair is mismatched; the synthesized メーカきぼうかかく shows the kana as written. |
+| Word           | Output                                                                                                                                       | Why                                                                                                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 日本           | <ruby>日<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby>, <ruby>日<rt>にっ</rt></ruby><ruby>本<rt>ぽん</rt></ruby>                             | Listed sounds plus restricted gemination; matches the [Wiktionary word table](https://en.wiktionary.org/w/index.php?oldid=93472794#Japanese).                             |
+| 時計           | <ruby>時<rt>と</rt></ruby><ruby>計<rt>けい</rt></ruby>                                                                                       | KANJIDIC2 lists と as a nanori of 時, and the [word table](https://en.wiktionary.org/w/index.php?oldid=92257101#Japanese) agrees. An ateji tag does not forbid the split. |
+| 蕎麦           | <ruby>蕎<rt>そ</rt></ruby><ruby>麦<rt>ば</rt></ruby>                                                                                         | [The allocation in 晦蕎麦](https://en.wiktionary.org/w/index.php?oldid=92161504#Japanese) supports these sounds; whole-word ruby elsewhere does not negate it.            |
+| 海老           | <ruby>海<rt>え</rt></ruby><ruby>老<rt>び</rt></ruby>                                                                                         | Both sounds are KANJIDIC2 nanori.                                                                                                                                         |
+| 尻尾           | <ruby>尻<rt>しっ</rt></ruby><ruby>尾<rt>ぽ</rt></ruby>                                                                                       | [The word table](https://en.wiktionary.org/w/index.php?oldid=92237397#Japanese) assigns the contracted sounds.                                                            |
+| 命の綱         | <ruby>命<rt>いのち</rt></ruby>の<ruby>綱<rt>つな</rt></ruby>                                                                                 | Complete character readings decide which の is the particle; greedy kana matching would put it inside 命.                                                                 |
+| 達磨           | <ruby>達<rt>だる</rt></ruby><ruby>磨<rt>ま</rt></ruby>                                                                                       | [A lexical fact](https://en.wiktionary.org/w/index.php?oldid=92643544#Japanese) supplies the transliteration sound of 達.                                                 |
+| 端折る         | <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る                                                                                     | [The source](https://en.wiktionary.org/w/index.php?oldid=86463303#Japanese) assigns the contracted ょ to 折 (from 端を折る).                                              |
+| 御器噛り       | <ruby>御<rt>ご</rt></ruby><ruby>器<rt>っ</rt></ruby><ruby>噛<rt>かぶ</rt></ruby>り                                                           | 御器 ごき plus 噛り かぶり, with き geminated.                                                                                                                            |
+| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | The entry's other spellings put the extra ー with カ, not on 希望価格. The pair is mismatched; the synthesized メーカきぼうかかく shows the kana as written.              |
 
 ## Deliberately unresolved
 

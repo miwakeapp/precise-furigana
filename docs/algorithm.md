@@ -16,17 +16,17 @@ The input is a spelling and its complete reading. The generator divides the read
 
 [src/dataset.mjs](../src/dataset.mjs) layers further evidence passes over that aligner. Each pass may refine an unresolved group but must not erase a boundary a stronger stage established. Each has its own module and tests because each has different permissions:
 
-| Evidence | Modules |
-| --- | --- |
-| KANJIDIC2 nanori and full kun forms; single-kanji JMdict spellings | `sources`, `lexicon`, `weak-readings` |
-| Verb continuatives supplying omitted okurigana (<ruby>植<rt>うえ</rt></ruby> in 植木鉢) | `morphology` |
-| Sibling spellings and readings in the same entry | `variants`, `reading-variants` |
-| Numeric and fullwidth spellings | `numerals` |
-| Phonetic ateji and foreign readings | `ateji`, `loan-readings`, `korean-readings` |
-| Unihan and Wiktionary character readings | `unihan`, `character-readings`, `exact-character-allocation` |
-| Restricted transformations of listed readings (ケー for ケイ) | `unihan-phonology`, `listed-phonology`, `on-reading-spelling`, `native-compounds` |
-| Cuts inside longer words and alternate spellings | `source-units`, `separator-alignments`, `shared-run-alignments` |
-| Reviewed word-local facts | `lexical-evidence` |
+| Evidence                                                                                | Modules                                                                           |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| KANJIDIC2 nanori and full kun forms; single-kanji JMdict spellings                      | `sources`, `lexicon`, `weak-readings`                                             |
+| Verb continuatives supplying omitted okurigana (<ruby>植<rt>うえ</rt></ruby> in 植木鉢) | `morphology`                                                                      |
+| Sibling spellings and readings in the same entry                                        | `variants`, `reading-variants`                                                    |
+| Numeric and fullwidth spellings                                                         | `numerals`                                                                        |
+| Phonetic ateji and foreign readings                                                     | `ateji`, `loan-readings`, `korean-readings`                                       |
+| Unihan and Wiktionary character readings                                                | `unihan`, `character-readings`, `exact-character-allocation`                      |
+| Restricted transformations of listed readings (ケー for ケイ)                           | `unihan-phonology`, `listed-phonology`, `on-reading-spelling`, `native-compounds` |
+| Cuts inside longer words and alternate spellings                                        | `source-units`, `separator-alignments`, `shared-run-alignments`                   |
+| Reviewed word-local facts                                                               | `lexical-evidence`                                                                |
 
 Constraints that apply across passes:
 

@@ -2,6 +2,7 @@
 
 [schema.json](../schema.json) is the authoritative structure. The database is UTF-8 JSON; the `.gz` file holds the same bytes.
 
+<!-- oxfmt-ignore -->
 ```json
 {
   "schemaVersion": 2,

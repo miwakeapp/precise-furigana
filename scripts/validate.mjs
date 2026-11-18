@@ -43,6 +43,8 @@ const expected = new Set(jmdictPairs.keys());
 for (const key of annotations.keys()) assert.ok(expected.has(key) || synthesized.has(key), `Stale annotation absent from source dictionary: ${key}`);
 let count = 0, synthesizedCount = 0;
 const fitting = new Set(), spellings = new Set(), keys = new Set();
+// The position of each spelling's latest record: its JMdict reading index, or Infinity once synthesized.
+const lastPosition = new Map();
 for (const [id, records] of Object.entries(output.entries)) {
   assert.ok(/^\d+$/u.test(id));
   assert.ok(records.length > 0);
@@ -52,6 +54,9 @@ for (const [id, records] of Object.entries(output.entries)) {
     keys.add(key);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
     spellings.add(`${id}\t${record.spelling}`);
+    const position = record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;
+    assert.ok(!(position < lastPosition.get(`${id}\t${record.spelling}`)), `Records for a spelling are out of JMdict reading order: ${key}`);
+    lastPosition.set(`${id}\t${record.spelling}`, position);
     if (record.pairing === "synthesized") {
       assert.deepEqual(Object.keys(record), ["spelling", "reading", "segments", "pairing"]);
       assert.ok(synthesized.delete(key) && !expected.has(key), `Synthesized pair is not a reviewed, non-JMdict pair: ${key}`);

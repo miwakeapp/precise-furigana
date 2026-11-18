@@ -18,7 +18,7 @@
 
 `entries` maps each JMdict ID to its records: one per permitted spelling/reading pair, plus any synthesized pairs. No two records in an entry share both spelling and reading. Kana-only words, and kana forms JMdict marks `[nokanji]`, get a record whose spelling is the kana and whose only segment is that kana.
 
-Record and entry order follows upstream enumeration and can change between releases. Look records up by ID, spelling, and reading.
+Within an entry, the records for one spelling are in JMdict's reading order, followed by any synthesized record. JMdict lists more common readings first and search-only readings last, so a consumer choosing a reading for a spelling can take the first record, after setting aside `"mismatched"` ones. Order is otherwise unspecified: look records up by ID, spelling, and reading, not by position.
 
 ## Segments
 

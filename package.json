@@ -16,5 +16,8 @@
     "inspect": "node --max-old-space-size=4096 scripts/inspect.mjs",
     "compare": "node scripts/compare.mjs",
     "validate": "node scripts/validate.mjs"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.79.0"
   }
 }

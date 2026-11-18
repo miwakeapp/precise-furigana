@@ -22,7 +22,7 @@ npm run fetch -- --update    # or --update --release <jmdict-simplified tag>
 npm test && npm run build && npm run validate
 ```
 
-This moves only the jmdict-simplified pin. If the update introduces a spelling that needs a synthesized pair, the build fails until you [review it](#synthesized-pairs).
+This moves only the jmdict-simplified pin. If the update introduces a spelling that needs a synthesized pair, the build fails until you [review it](#synthesized-pairs). The [weekly update](#weekly-update) automates all of this.
 
 To review what changed:
 
@@ -68,10 +68,41 @@ npm run build -- --update-synthesized-pairs
 
 This drops obsolete entries and adds new ones, with the reading the spelling's kana imply, marked `"unreviewed"`. Check each new reading; the implied reading is only a starting point and can misplace kana where the generator grouped kana with kanji. Then set `upstream` and a short `note` as described in [data sources](data-sources.md#synthesized-pairs), and rebuild.
 
+## Weekly update
+
+`.github/workflows/update.yml` runs every Tuesday at 03:17 UTC, and on manual dispatch. It drives `scripts/update.mjs`, which also runs locally:
+
+```sh
+node scripts/update.mjs baseline   # build the database as it stands
+node scripts/update.mjs update     # move the pin, repair synthesized pairs, rebuild, report
+node scripts/update.mjs recheck    # rebuild and report again after editing data
+```
+
+The report compares the database before and after, and is written with a commit message and a status file to `.cache/update/`. The workflow commits the changed data to the `update-dictionaries` branch and opens a pull request with the report as its description. If a pull request is already open, the run continues on its branch, so review work there is kept.
+
+An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has, and makes no existing segmentation coarser or incompatible. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
+
+### Review a dictionary update
+
+These are the instructions for whoever resolves an update that needs review, in CI or locally. Read `.cache/update/report.md` first. Edit only files in `data/` and `test/fixtures/`. Do not use git or contact GitHub; the workflow commits your changes.
+
+- New synthesized pairs marked `"unreviewed"` in `data/synthesized-pairs.json`: check each reading against the entry's spellings and readings, correct it if the implied reading misplaced kana, and set `upstream` and `note` as [data sources](data-sources.md#synthesized-pairs) describes. Lean toward `"none"` unless the reading is clearly a distinct real pronunciation.
+- A stale annotation, whose pair has left JMdict: remove it from `data/annotations.json`, or move it to the pair's new ID or spelling if the entry was only renumbered or respelled.
+- A segmentation that became coarser or incompatible: use `npm run inspect -- <spelling> <reading> --explain` to find out why. If the new result is wrong, fix it with a lexical fact or an annotation as in [Correct an alignment](#correct-an-alignment). If it is right, or you cannot tell, say so in the notes and change nothing.
+- A regression fixture that fails: investigate, but do not edit the fixture unless JMdict removed its pair.
+
+Afterwards run `npm run build` and `npm run validate` until both pass, then write `.cache/update/review.md`: what you changed and why, and anything you were unsure of, for the person who will merge. Keep it short.
+
+### One-time setup
+
+- `UPDATE_TOKEN` secret: a fine-grained personal access token for this repository with read and write access to contents and pull requests. Pull requests opened with it trigger CI, which GitHub's built-in token does not.
+- `CLAUDE_CODE_OAUTH_TOKEN` secret: from `claude setup-token`, so the review step runs on a Claude subscription.
+- Repository settings: allow auto-merge, and protect the default branch with the CI `test` check required. Without a required check, GitHub will not enable auto-merge.
+
 ## Releases
 
-`.github/workflows/release.yml` runs every Tuesday at 03:17 UTC, and on manual dispatch. It moves the dictionary pin in its own checkout (it never commits it), builds, validates, and publishes the two database files.
+`.github/workflows/release.yml` runs on every push to the default branch, and on manual dispatch. It builds from that commit's pinned inputs, validates, and publishes the two database files. Every release therefore corresponds to exactly one commit, lockfile included.
 
-The tag is `data-<JMdict date>-v<algorithm version>-<database hash>`, so a generator or data change can publish a second release for the same dictionary date. Rerunning a release verifies the existing files against GitHub's recorded digests instead of overwriting them. `--publish` needs `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`.
+The tag is `data-<JMdict date>-v<algorithm version>-<database hash>`, so a push that leaves the database unchanged publishes nothing, and a generator or data change publishes a new release for the same dictionary date. Rerunning a release verifies the existing files against GitHub's recorded digests instead of overwriting them. `--publish` needs `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`.
 
-To reproduce a release, check out its tag, run `npm run fetch -- --update --release <tag>` with the jmdict-simplified tag from its notes, and build.
+To reproduce a release, check out its tag, then run `npm run fetch` and `npm run build`.

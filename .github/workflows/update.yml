@@ -1,0 +1,100 @@
+name: Update dictionaries
+
+on:
+  schedule:
+    - cron: "17 3 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-dictionaries
+  cancel-in-progress: false
+
+env:
+  BRANCH: update-dictionaries
+
+jobs:
+  update:
+    # Scheduled runs use the default branch; dispatches must do so too.
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      # Credentials are not left in the checkout, so later steps cannot read them from it.
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - run: npm ci
+
+      - name: Build the database as it stands
+        run: node scripts/update.mjs baseline
+
+      # An open pull request can hold review work, so this run continues on its branch.
+      - name: Continue an open update, or start a new one
+        env:
+          GH_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            git fetch "$remote" "$BRANCH"
+            git checkout -B "$BRANCH" FETCH_HEAD
+            git merge --no-edit "$GITHUB_SHA"
+          else
+            git checkout -B "$BRANCH"
+          fi
+
+      - name: Move the dictionary pin
+        id: update
+        run: node scripts/update.mjs update
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      # Claude edits files in the checkout only. It has no credentials for GitHub, and its
+      # changes always leave the pull request waiting for a person.
+      - name: Ask Claude to resolve what needs review
+        if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ github.token }}
+          prompt: |
+            A dictionary update needs review. Follow "Review a dictionary update" in
+            docs/maintenance.md. The report is in .cache/update/report.md.
+          claude_args: |
+            --max-turns 100
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npx oxfmt:*)"
+
+      - name: Rebuild after the review
+        if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
+        run: node scripts/update.mjs recheck
+
+      - name: Open or update the pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+        run: |
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          title="$(head -n 1 .cache/update/commit-message.txt)"
+          git add data test/fixtures
+          # Hooks are disabled because this step holds a token and the checkout was edited above.
+          git -c core.hooksPath=/dev/null commit --file .cache/update/commit-message.txt
+          git push --force "$remote" "$BRANCH"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr edit "$BRANCH" --title "$title" --body-file .cache/update/report.md
+          else
+            gh pr create --head "$BRANCH" --title "$title" --body-file .cache/update/report.md
+          fi
+          if [ "$(jq .clean .cache/update/status.json)" = "true" ]; then
+            gh pr merge "$BRANCH" --auto --squash --delete-branch \
+              --subject "$title" --body "$(tail -n +3 .cache/update/commit-message.txt)"
+          else
+            gh pr merge "$BRANCH" --disable-auto || true
+          fi

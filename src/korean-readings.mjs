@@ -7,30 +7,78 @@ import { boundaries, pairKey, validateAlignment } from "./segments.mjs";
 // description at https://www.tufs.ac.jp/ts/personal/choes/Jnotice.html.
 // Use ordinary-size coda kana for attested Japanese loan spellings. Omit
 // tense onsets, compound glides/codas, length changes, and inferred gemination.
-const vowels = new Map([[0, "a"], [1, "e"], [2, "ya"], [4, "o"], [5, "e"], [6, "yo"], [8, "o"], [12, "yo"], [13, "u"], [17, "yu"], [18, "u"], [20, "i"]]);
-const rows = Object.fromEntries(Object.entries({
-  "": ["あ", "え", "や", "お", "よ", "う", "ゆ", "い"],
-  k: ["か", "け", "きゃ", "こ", "きょ", "く", "きゅ", "き"],
-  g: ["が", "げ", "ぎゃ", "ご", "ぎょ", "ぐ", "ぎゅ", "ぎ"],
-  n: ["な", "ね", "にゃ", "の", "にょ", "ぬ", "にゅ", "に"],
-  t: ["た", "て", undefined, "と", undefined, "とぅ", undefined, "てぃ"],
-  d: ["だ", "で", undefined, "ど", undefined, "どぅ", undefined, "でぃ"],
-  r: ["ら", "れ", "りゃ", "ろ", "りょ", "る", "りゅ", "り"],
-  m: ["ま", "め", "みゃ", "も", "みょ", "む", "みゅ", "み"],
-  p: ["ぱ", "ぺ", "ぴゃ", "ぽ", "ぴょ", "ぷ", "ぴゅ", "ぴ"],
-  b: ["ば", "べ", "びゃ", "ぼ", "びょ", "ぶ", "びゅ", "び"],
-  s: ["さ", "せ", "しゃ", "そ", "しょ", "す", "しゅ", "し"],
-  ch: ["ちゃ", "ちぇ", "ちゃ", "ちょ", "ちょ", "ちゅ", "ちゅ", "ち"],
-  j: ["じゃ", "じぇ", "じゃ", "じょ", "じょ", "じゅ", "じゅ", "じ"],
-  h: ["は", "へ", "ひゃ", "ほ", "ひょ", "ふ", "ひゅ", "ひ"]
-}).map(([key, values]) => [key, Object.fromEntries(["a", "e", "ya", "o", "yo", "u", "yu", "i"].map((vowel, index) => [vowel, values[index]]))]));
-const onsetRows = new Map([[0, ["k", "g"]], [2, ["n"]], [3, ["t", "d"]], [5, ["r"]], [6, ["m"]], [7, ["p", "b"]], [9, ["s"]], [11, [""]], [12, ["ch", "j"]], [14, ["ch"]], [15, ["k"]], [16, ["t"]], [17, ["p"]], [18, ["h"]]]);
-const codas = new Map([[0, ""], [1, "く"], [4, "ん"], [8, "る"], [16, "む"], [17, "ぷ"], [21, "ん"]]);
+const vowels = new Map([
+  [0, "a"],
+  [1, "e"],
+  [2, "ya"],
+  [4, "o"],
+  [5, "e"],
+  [6, "yo"],
+  [8, "o"],
+  [12, "yo"],
+  [13, "u"],
+  [17, "yu"],
+  [18, "u"],
+  [20, "i"],
+]);
+const rows = Object.fromEntries(
+  Object.entries({
+    "": ["あ", "え", "や", "お", "よ", "う", "ゆ", "い"],
+    k: ["か", "け", "きゃ", "こ", "きょ", "く", "きゅ", "き"],
+    g: ["が", "げ", "ぎゃ", "ご", "ぎょ", "ぐ", "ぎゅ", "ぎ"],
+    n: ["な", "ね", "にゃ", "の", "にょ", "ぬ", "にゅ", "に"],
+    t: ["た", "て", undefined, "と", undefined, "とぅ", undefined, "てぃ"],
+    d: ["だ", "で", undefined, "ど", undefined, "どぅ", undefined, "でぃ"],
+    r: ["ら", "れ", "りゃ", "ろ", "りょ", "る", "りゅ", "り"],
+    m: ["ま", "め", "みゃ", "も", "みょ", "む", "みゅ", "み"],
+    p: ["ぱ", "ぺ", "ぴゃ", "ぽ", "ぴょ", "ぷ", "ぴゅ", "ぴ"],
+    b: ["ば", "べ", "びゃ", "ぼ", "びょ", "ぶ", "びゅ", "び"],
+    s: ["さ", "せ", "しゃ", "そ", "しょ", "す", "しゅ", "し"],
+    ch: ["ちゃ", "ちぇ", "ちゃ", "ちょ", "ちょ", "ちゅ", "ちゅ", "ち"],
+    j: ["じゃ", "じぇ", "じゃ", "じょ", "じょ", "じゅ", "じゅ", "じ"],
+    h: ["は", "へ", "ひゃ", "ほ", "ひょ", "ふ", "ひゅ", "ひ"],
+  }).map(([key, values]) => [
+    key,
+    Object.fromEntries(
+      ["a", "e", "ya", "o", "yo", "u", "yu", "i"].map((vowel, index) => [vowel, values[index]]),
+    ),
+  ]),
+);
+const onsetRows = new Map([
+  [0, ["k", "g"]],
+  [2, ["n"]],
+  [3, ["t", "d"]],
+  [5, ["r"]],
+  [6, ["m"]],
+  [7, ["p", "b"]],
+  [9, ["s"]],
+  [11, [""]],
+  [12, ["ch", "j"]],
+  [14, ["ch"]],
+  [15, ["k"]],
+  [16, ["t"]],
+  [17, ["p"]],
+  [18, ["h"]],
+]);
+const codas = new Map([
+  [0, ""],
+  [1, "く"],
+  [4, "ん"],
+  [8, "る"],
+  [16, "む"],
+  [17, "ぷ"],
+  [21, "ん"],
+]);
 
 export function decodeHangul(value) {
   if (typeof value !== "string" || !/^[가-힣]$/u.test(value)) return undefined;
   const code = value.codePointAt(0) - 0xac00;
-  return { value, onset: Math.floor(code / 588), vowel: Math.floor(code / 28) % 21, coda: code % 28 };
+  return {
+    value,
+    onset: Math.floor(code / 588),
+    vowel: Math.floor(code / 28) % 21,
+    coda: code % 28,
+  };
 }
 
 function compatibleContext(previous, current) {
@@ -48,24 +96,32 @@ function compatibleContext(previous, current) {
 export function transcribeHangul(value, previous) {
   const syllable = decodeHangul(value);
   if (syllable === undefined || !compatibleContext(previous, syllable)) return undefined;
-  const onset = onsetRows.get(syllable.onset), vowel = vowels.get(syllable.vowel), coda = codas.get(syllable.coda);
+  const onset = onsetRows.get(syllable.onset),
+    vowel = vowels.get(syllable.vowel),
+    coda = codas.get(syllable.coda);
   if (onset === undefined || vowel === undefined || coda === undefined) return undefined;
   const voiced = previous !== undefined && [0, 4, 8, 16, 21].includes(previous.coda);
   const row = voiced && onset.length === 2 ? onset[1] : onset[0];
   const head = rows[row][vowel];
   if (head === undefined) return undefined;
   const rules = ["listed-korean-syllable", "korean-vowel-kana-approximation"];
-  if (onset.length === 2) rules.push(voiced ? "korean-medial-plain-voicing" : "korean-plain-devoicing");
+  if (onset.length === 2)
+    rules.push(voiced ? "korean-medial-plain-voicing" : "korean-plain-devoicing");
   if (coda) rules.push("korean-coda-kana-approximation");
   return {
-    ...syllable, reading: head + coda, rules,
+    ...syllable,
+    reading: head + coda,
+    rules,
     transcription: {
       onset: String.fromCodePoint(0x1100 + syllable.onset),
       vowel: String.fromCodePoint(0x1161 + syllable.vowel),
       coda: syllable.coda === 0 ? "" : String.fromCodePoint(0x11a7 + syllable.coda),
-      onsetRow: row, vowelClass: vowel, syllableKana: head, codaKana: coda,
-      previousSyllable: previous?.value
-    }
+      onsetRow: row,
+      vowelClass: vowel,
+      syllableKana: head,
+      codaKana: coda,
+      previousSyllable: previous?.value,
+    },
   };
 }
 
@@ -87,7 +143,9 @@ function makeKoreanInventory(kanjidic) {
 }
 
 function allocateKorean(spelling, reading, inventory) {
-  const characters = [...spelling], normalized = normalizeKana(reading), original = [...reading];
+  const characters = [...spelling],
+    normalized = normalizeKana(reading),
+    original = [...reading];
   // Matching must preserve the original reading's code-point positions.
   if ([...normalized].length !== original.length) return undefined;
   const solutions = new Map();
@@ -95,7 +153,8 @@ function allocateKorean(spelling, reading, inventory) {
     if (solutions.size > 1) return;
     if (index === characters.length) {
       if (offset === normalized.length) {
-        const key = JSON.stringify(segments), existing = solutions.get(key);
+        const key = JSON.stringify(segments),
+          existing = solutions.get(key);
         if (existing === undefined) solutions.set(key, { segments, paths: [witnesses] });
         else existing.paths.push(witnesses);
       }
@@ -105,9 +164,23 @@ function allocateKorean(spelling, reading, inventory) {
       const mapped = transcribeHangul(value, previous);
       if (mapped === undefined || !normalized.startsWith(mapped.reading, offset)) continue;
       const part = original.slice(offset, offset + mapped.reading.length).join("");
-      visit(index + 1, offset + mapped.reading.length, mapped,
+      visit(
+        index + 1,
+        offset + mapped.reading.length,
+        mapped,
         [...segments, [characters[index], part]],
-        [...witnesses, { character: characters[index], reading: part, value, claims, rules: mapped.rules, transcription: mapped.transcription }]);
+        [
+          ...witnesses,
+          {
+            character: characters[index],
+            reading: part,
+            value,
+            claims,
+            rules: mapped.rules,
+            transcription: mapped.transcription,
+          },
+        ],
+      );
     }
   }
   visit(0, 0, undefined, [], []);
@@ -119,30 +192,65 @@ function applies(restrictions, value) {
 }
 
 /** Whole-attested-word sound compatibility, with no reusable Japanese readings. */
-export function deriveKoreanAlignments(jmdict, kanjidic, align, {
-  untaggedKatakana = true, kanjidicSource
-} = {}) {
-  if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters)) throw new TypeError("JMdict and KANJIDIC arrays are required");
-  if (typeof align !== "function" || typeof untaggedKatakana !== "boolean") throw new TypeError("An aligner and boolean Korean eligibility option are required");
-  if (kanjidicSource !== undefined && (kanjidicSource === null || typeof kanjidicSource !== "object" ||
-    typeof kanjidicSource.version !== "string" || !kanjidicSource.version.trim() ||
-    !/^[\da-f]{64}$/u.test(kanjidicSource.jsonSHA256 ?? ""))) {
+export function deriveKoreanAlignments(
+  jmdict,
+  kanjidic,
+  align,
+  { untaggedKatakana = true, kanjidicSource } = {},
+) {
+  if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
+    throw new TypeError("JMdict and KANJIDIC arrays are required");
+  if (typeof align !== "function" || typeof untaggedKatakana !== "boolean")
+    throw new TypeError("An aligner and boolean Korean eligibility option are required");
+  if (
+    kanjidicSource !== undefined &&
+    (kanjidicSource === null ||
+      typeof kanjidicSource !== "object" ||
+      typeof kanjidicSource.version !== "string" ||
+      !kanjidicSource.version.trim() ||
+      !/^[\da-f]{64}$/u.test(kanjidicSource.jsonSHA256 ?? ""))
+  ) {
     throw new TypeError("KANJIDIC source identity requires a version and JSON SHA256");
   }
   const inventory = makeKoreanInventory(kanjidic);
-  const sourceIdentity = kanjidicSource === undefined ? {
-    name: "Supplied KANJIDIC Korean reading records",
-    readingsSHA256: createHash("sha256").update(JSON.stringify([...inventory].map(([character, forms]) => [character, [...forms]]))).digest("hex")
-  } : structuredClone(kanjidicSource);
-  const words = new Map(jmdict.words.map(word => [word.id, word]));
-  const wordAlignments = new Map(), witnesses = [], seen = new Set();
+  const sourceIdentity =
+    kanjidicSource === undefined
+      ? {
+          name: "Supplied KANJIDIC Korean reading records",
+          readingsSHA256: createHash("sha256")
+            .update(
+              JSON.stringify([...inventory].map(([character, forms]) => [character, [...forms]])),
+            )
+            .digest("hex"),
+        }
+      : structuredClone(kanjidicSource);
+  const words = new Map(jmdict.words.map((word) => [word.id, word]));
+  const wordAlignments = new Map(),
+    witnesses = [],
+    seen = new Set();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "kanji" || pair.readingTags.some(tag => ["ik", "sk"].includes(tag)) || !/^\p{Unified_Ideograph}{2,}$/u.test(pair.spelling)) continue;
-    const languageSources = words.get(pair.id).sense
-      .filter(sense => applies(sense.appliesToKanji, pair.spelling) && applies(sense.appliesToKana, pair.reading))
-      .flatMap(sense => sense.languageSource.filter(source => source.lang === "kor" && !source.wasei));
+    if (
+      pair.kind !== "kanji" ||
+      pair.readingTags.some((tag) => ["ik", "sk"].includes(tag)) ||
+      !/^\p{Unified_Ideograph}{2,}$/u.test(pair.spelling)
+    )
+      continue;
+    const languageSources = words
+      .get(pair.id)
+      .sense.filter(
+        (sense) =>
+          applies(sense.appliesToKanji, pair.spelling) &&
+          applies(sense.appliesToKana, pair.reading),
+      )
+      .flatMap((sense) =>
+        sense.languageSource.filter((source) => source.lang === "kor" && !source.wasei),
+      );
     const tagged = languageSources.length > 0;
-    if (!tagged && (!untaggedKatakana || !/^[\p{Script=Katakana}ー]+$/u.test(pair.reading.normalize("NFKC")))) continue;
+    if (
+      !tagged &&
+      (!untaggedKatakana || !/^[\p{Script=Katakana}ー]+$/u.test(pair.reading.normalize("NFKC")))
+    )
+      continue;
     const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
     seen.add(key);
@@ -150,26 +258,38 @@ export function deriveKoreanAlignments(jmdict, kanjidic, align, {
     if (original.status !== "aligned") continue;
     const split = allocateKorean(pair.spelling, pair.reading, inventory);
     if (split === undefined) continue;
-    const oldPoints = new Set(boundaries(original.segments)), newPoints = new Set(boundaries(split.segments));
-    if (newPoints.size <= oldPoints.size || [...oldPoints].some(point => !newPoints.has(point))) continue;
+    const oldPoints = new Set(boundaries(original.segments)),
+      newPoints = new Set(boundaries(split.segments));
+    if (newPoints.size <= oldPoints.size || [...oldPoints].some((point) => !newPoints.has(point)))
+      continue;
     validateAlignment(pair.spelling, pair.reading, split.segments);
     const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, split.segments);
     wordAlignments.set(pair.spelling, readings);
     witnesses.push({
-      id: pair.id, spelling: pair.spelling, reading: pair.reading,
+      id: pair.id,
+      spelling: pair.spelling,
+      reading: pair.reading,
       interpretation: "Listed Korean sound compatibility; not an etymological claim",
       eligibility: tagged ? "source-language-kor" : "korean-only-katakana",
       languageSources: structuredClone(languageSources),
-      sourcePaths: split.paths.map(path => path.map(character => ({
-        character: character.character, spelling: character.character, reading: character.reading,
-        codepoint: `U+${character.character.codePointAt(0).toString(16).toUpperCase()}`,
-        evidence: character.claims.map(claim => ({
-          source: "KANJIDIC2", field: "korean_h", sourceIdentity,
-          value: character.value, ...claim,
-          rules: [...character.rules], transcription: { ...character.transcription }
-        }))
-      })))
+      sourcePaths: split.paths.map((path) =>
+        path.map((character) => ({
+          character: character.character,
+          spelling: character.character,
+          reading: character.reading,
+          codepoint: `U+${character.character.codePointAt(0).toString(16).toUpperCase()}`,
+          evidence: character.claims.map((claim) => ({
+            source: "KANJIDIC2",
+            field: "korean_h",
+            sourceIdentity,
+            value: character.value,
+            ...claim,
+            rules: [...character.rules],
+            transcription: { ...character.transcription },
+          })),
+        })),
+      ),
     });
   }
   return { wordAlignments, witnesses };

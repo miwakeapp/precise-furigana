@@ -13,13 +13,21 @@ export function validateAlignment(spelling, reading, segments) {
   for (const segment of segments) {
     if (typeof segment === "string") {
       if (segment.length === 0) throw new Error("Empty literal segment");
-    } else if (!Array.isArray(segment) || segment.length !== 2 ||
-      segment.some(value => typeof value !== "string" || value.length === 0)) {
+    } else if (
+      !Array.isArray(segment) ||
+      segment.length !== 2 ||
+      segment.some((value) => typeof value !== "string" || value.length === 0)
+    ) {
       throw new Error(`Invalid ruby segment: ${JSON.stringify(segment)}`);
     }
   }
-  if (segments.map(segmentText).join("") !== spelling || segments.map(segmentReading).join("") !== reading) {
-    throw new Error(`Alignment does not reconstruct ${spelling}/${reading}: ${JSON.stringify(segments)}`);
+  if (
+    segments.map(segmentText).join("") !== spelling ||
+    segments.map(segmentReading).join("") !== reading
+  ) {
+    throw new Error(
+      `Alignment does not reconstruct ${spelling}/${reading}: ${JSON.stringify(segments)}`,
+    );
   }
 }
 
@@ -27,7 +35,7 @@ export function validateAlignment(spelling, reading, segments) {
 export function boundaries(segments) {
   let spellingOffset = 0;
   let readingOffset = 0;
-  return segments.slice(0, -1).map(segment => {
+  return segments.slice(0, -1).map((segment) => {
     spellingOffset += [...segmentText(segment)].length;
     readingOffset += [...segmentReading(segment)].length;
     return `${spellingOffset}:${readingOffset}`;
@@ -42,10 +50,13 @@ export function combineAlignments(previous, candidate) {
   validateAlignment(spelling, reading, candidate);
   const priorPoints = new Set(boundaries(previous));
   const candidatePoints = new Set(boundaries(candidate));
-  if ([...candidatePoints].every(point => priorPoints.has(point))) return previous;
-  if ([...priorPoints].every(point => candidatePoints.has(point))) return candidate;
-  const spellingUnits = [...spelling], readingUnits = [...reading];
-  const points = [...new Set([...priorPoints, ...candidatePoints])].map(point => point.split(":").map(Number));
+  if ([...candidatePoints].every((point) => priorPoints.has(point))) return previous;
+  if ([...priorPoints].every((point) => candidatePoints.has(point))) return candidate;
+  const spellingUnits = [...spelling],
+    readingUnits = [...reading];
+  const points = [...new Set([...priorPoints, ...candidatePoints])].map((point) =>
+    point.split(":").map(Number),
+  );
   points.push([0, 0], [spellingUnits.length, readingUnits.length]);
   points.sort(([leftX, leftY], [rightX, rightY]) => leftX - rightX || leftY - rightY);
   const segments = [];

@@ -44,13 +44,26 @@ const switches = {
 };
 
 export function parseGeneratorOptions(defaultOutput, args = process.argv.slice(2)) {
-  const { values } = parseArgs({ args, options: {
-    output: { type: "string", default: defaultOutput },
-    "update-synthesized-pairs": { type: "boolean", default: false },
-    ...Object.fromEntries(Object.keys(switches).map(name => [name, { type: "boolean", default: false }]))
-  } });
-  const configuration = Object.fromEntries(Object.entries(switches).map(([flag, name]) =>
-    [name, flag === "learn-readings" ? values[flag] : !values[flag]]));
+  const { values } = parseArgs({
+    args,
+    options: {
+      output: { type: "string", default: defaultOutput },
+      "update-synthesized-pairs": { type: "boolean", default: false },
+      ...Object.fromEntries(
+        Object.keys(switches).map((name) => [name, { type: "boolean", default: false }]),
+      ),
+    },
+  });
+  const configuration = Object.fromEntries(
+    Object.entries(switches).map(([flag, name]) => [
+      name,
+      flag === "learn-readings" ? values[flag] : !values[flag],
+    ]),
+  );
   configuration.compoundVoicing &&= configuration.phonologicalAlternations;
-  return { output: values.output, configuration, updateSynthesizedPairs: values["update-synthesized-pairs"] };
+  return {
+    output: values.output,
+    configuration,
+    updateSynthesizedPairs: values["update-synthesized-pairs"],
+  };
 }

@@ -5,9 +5,40 @@ import { boundaries, segmentReading, segmentText, validateAlignment } from "./se
 const digits = "〇一二三四五六七八九";
 const largeUnits = ["", "万", "億", "兆", "京"];
 const numberNames = new Map([
-  ...["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"].map((name, index) => [name, String(index)]),
-  ["thirty", "30"], ["forty", "40"], ["fifty", "50"], ["sixty", "60"], ["seventy", "70"], ["eighty", "80"], ["ninety", "90"],
-  ["hundred", "100"], ["thousand", "1000"], ["million", "1000000"], ["billion", "1000000000"]
+  ...[
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+    "twenty",
+  ].map((name, index) => [name, String(index)]),
+  ["thirty", "30"],
+  ["forty", "40"],
+  ["fifty", "50"],
+  ["sixty", "60"],
+  ["seventy", "70"],
+  ["eighty", "80"],
+  ["ninety", "90"],
+  ["hundred", "100"],
+  ["thousand", "1000"],
+  ["million", "1000000"],
+  ["billion", "1000000000"],
 ]);
 
 /** Derive numeral sounds from exact dictionary definitions of number words. */
@@ -20,19 +51,30 @@ export function deriveNumeralReadings(jmdict, wordReadings) {
     // counters, names, abbreviations, or specialized kanji senses.
     if (word.kanji.length !== 0) continue;
     for (const sense of word.sense) {
-      const definitions = sense.gloss?.filter(gloss => gloss.lang === "eng" && numberNames.has(gloss.text)) ?? [];
+      const definitions =
+        sense.gloss?.filter((gloss) => gloss.lang === "eng" && numberNames.has(gloss.text)) ?? [];
       for (const definition of definitions) {
         const spelling = numberNames.get(definition.text);
-        const fullwidth = spelling.replace(/[0-9]/gu, digit => String.fromCodePoint(digit.codePointAt(0) + 0xFEE0));
+        const fullwidth = spelling.replace(/[0-9]/gu, (digit) =>
+          String.fromCodePoint(digit.codePointAt(0) + 0xfee0),
+        );
         for (const kana of word.kana) {
-          if (!/^[ァ-ヶー]+$/u.test(kana.text) ||
-            !sense.appliesToKana?.some(form => form === "*" || form === kana.text)) continue;
+          if (
+            !/^[ァ-ヶー]+$/u.test(kana.text) ||
+            !sense.appliesToKana?.some((form) => form === "*" || form === kana.text)
+          )
+            continue;
           for (const form of [spelling, fullwidth]) {
             const values = readings.get(form) ?? [];
             if (!values.includes(kana.text)) values.push(kana.text);
             readings.set(form, values);
           }
-          witnesses.push({ id: word.id, spelling, reading: kana.text, definition: definition.text });
+          witnesses.push({
+            id: word.id,
+            spelling,
+            reading: kana.text,
+            definition: definition.text,
+          });
         }
       }
     }
@@ -70,10 +112,17 @@ function transform(spelling, style) {
     if (/^[0-9０-９]$/u.test(units[index])) {
       while (end < units.length && /^[0-9０-９]$/u.test(units[end])) ++end;
       const decimal = units.slice(index, end).join("").normalize("NFKC");
-      replacement = style === "width" ? decimal : style === "cardinal" ? cardinalSpelling(decimal) : Array.from(decimal, digit => digits[Number(digit)]).join("");
+      replacement =
+        style === "width"
+          ? decimal
+          : style === "cardinal"
+            ? cardinalSpelling(decimal)
+            : Array.from(decimal, (digit) => digits[Number(digit)]).join("");
       if (replacement === undefined) return undefined;
     } else {
-      replacement = /^[\uFF01-\uFF60]$/u.test(units[index]) ? units[index].normalize("NFKC") : units[index];
+      replacement = /^[\uFF01-\uFF60]$/u.test(units[index])
+        ? units[index].normalize("NFKC")
+        : units[index];
     }
     parts.push(replacement);
     sourceOffset += splitGraphemes(replacement).length;
@@ -119,20 +168,31 @@ export function deriveNumeralAlignments(jmdict, align, { foreignAlign } = {}) {
     for (const style of ["width", "cardinal", "digits"]) {
       const transformation = transform(pair.spelling, style);
       if (transformation === undefined || transformation.spelling === pair.spelling) continue;
-      const segments = transfer(transformation, pair.reading, align(transformation.spelling, pair.reading));
+      const segments = transfer(
+        transformation,
+        pair.reading,
+        align(transformation.spelling, pair.reading),
+      );
       if (segments === undefined) continue;
       alternatives.push({ segments, from: transformation.spelling });
     }
     // Choose a refinement only if it preserves every boundary from every
     // supported interpretation; differing allocations remain unresolved.
-    let candidate = alternatives.find(option => {
+    let candidate = alternatives.find((option) => {
       const available = new Set(boundaries(option.segments));
-      return alternatives.every(other => boundaries(other.segments).every(boundary => available.has(boundary)));
+      return alternatives.every((other) =>
+        boundaries(other.segments).every((boundary) => available.has(boundary)),
+      );
     });
     if (foreignAlign !== undefined && /[0-9０-９]/u.test(pair.spelling)) {
       const result = foreignAlign(pair.spelling, pair.reading);
       const available = new Set(boundaries(result.segments));
-      if (result.status === "aligned" && alternatives.every(other => boundaries(other.segments).every(boundary => available.has(boundary)))) {
+      if (
+        result.status === "aligned" &&
+        alternatives.every((other) =>
+          boundaries(other.segments).every((boundary) => available.has(boundary)),
+        )
+      ) {
         candidate = { segments: result.segments, from: "JMdict number-word definitions" };
       }
     }
@@ -140,7 +200,12 @@ export function deriveNumeralAlignments(jmdict, align, { foreignAlign } = {}) {
     const readings = wordAlignments.get(pair.spelling) ?? new Map();
     readings.set(pair.reading, candidate.segments);
     wordAlignments.set(pair.spelling, readings);
-    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, from: candidate.from });
+    witnesses.push({
+      id: pair.id,
+      spelling: pair.spelling,
+      reading: pair.reading,
+      from: candidate.from,
+    });
   }
   return { wordAlignments, witnesses };
 }

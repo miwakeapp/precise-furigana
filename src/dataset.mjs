@@ -1,10 +1,29 @@
 import { readFile, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createAligner } from "./align.mjs";
-import { loadSources, enumeratePairs, makeCharacterReadings, makeWordReadings, makeIrregularWordReadings } from "./sources.mjs";
-import { boundaries, combineAlignments, pairKey, recordKey, segmentReading, segmentText, validateAlignment } from "./segments.mjs";
+import {
+  loadSources,
+  enumeratePairs,
+  makeCharacterReadings,
+  makeWordReadings,
+  makeIrregularWordReadings,
+} from "./sources.mjs";
+import {
+  boundaries,
+  combineAlignments,
+  pairKey,
+  recordKey,
+  segmentReading,
+  segmentText,
+  validateAlignment,
+} from "./segments.mjs";
 import { deriveCharacterReadings } from "./lexicon.mjs";
-import { deriveOmittedParticles, deriveVariantAlignments, joinOmittedParticles, omittedParticleSites } from "./variants.mjs";
+import {
+  deriveOmittedParticles,
+  deriveVariantAlignments,
+  joinOmittedParticles,
+  omittedParticleSites,
+} from "./variants.mjs";
 import { deriveContinuativeReadings } from "./morphology.mjs";
 import { deriveWeakReadings, refineAlignment } from "./weak-readings.mjs";
 import { deriveNumeralAlignments, deriveNumeralReadings } from "./numerals.mjs";
@@ -25,18 +44,45 @@ import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 export const schemaVersion = 2;
 export const algorithmVersion = "0.1.0";
 export const defaultConfiguration = {
-  terminalContraction: true, phonologicalAlternations: true, compoundVoicing: true,
-  variantTransfers: true, learnReadings: false, continuativeStems: true,
-  weakReadings: true, kanaSubstitutions: true, numeralTransfers: true, readingVariants: true,
-  hanSubstitutions: true, kanaRunCorrespondence: true, internalKanaAnchors: true,
-  dictionaryUnvoicing: true, phoneticAteji: true, dictionaryRenjo: true, counterSymbols: true,
-  latinSubstitutions: true, loanReadings: true, untaggedKatakanaLoans: true,
-  dictionaryNasalLoss: true, dictionaryInitialVoicing: true, unihanReadings: true,
-  foreignNumerals: true, unihanVoicing: true, unihanYoon: true,
-  listedCharacterReadings: true, reviewedLexicalEvidence: true,
-  unihanOnLengthening: true, nativeCompounds: true, englishCharacterReadings: true,
-  listedPhonology: true, koreanReadings: true, untaggedKatakanaKorean: true,
-  onReadingSpelling: true, sourceUnitTransfers: true, separatorTransfers: true, virtualSeparatorSources: true, sharedRunTransfers: true
+  terminalContraction: true,
+  phonologicalAlternations: true,
+  compoundVoicing: true,
+  variantTransfers: true,
+  learnReadings: false,
+  continuativeStems: true,
+  weakReadings: true,
+  kanaSubstitutions: true,
+  numeralTransfers: true,
+  readingVariants: true,
+  hanSubstitutions: true,
+  kanaRunCorrespondence: true,
+  internalKanaAnchors: true,
+  dictionaryUnvoicing: true,
+  phoneticAteji: true,
+  dictionaryRenjo: true,
+  counterSymbols: true,
+  latinSubstitutions: true,
+  loanReadings: true,
+  untaggedKatakanaLoans: true,
+  dictionaryNasalLoss: true,
+  dictionaryInitialVoicing: true,
+  unihanReadings: true,
+  foreignNumerals: true,
+  unihanVoicing: true,
+  unihanYoon: true,
+  listedCharacterReadings: true,
+  reviewedLexicalEvidence: true,
+  unihanOnLengthening: true,
+  nativeCompounds: true,
+  englishCharacterReadings: true,
+  listedPhonology: true,
+  koreanReadings: true,
+  untaggedKatakanaKorean: true,
+  onReadingSpelling: true,
+  sourceUnitTransfers: true,
+  separatorTransfers: true,
+  virtualSeparatorSources: true,
+  sharedRunTransfers: true,
 };
 
 export function digest(contents) {
@@ -44,15 +90,30 @@ export function digest(contents) {
 }
 
 export async function generatorDigest() {
-  const names = (await readdir(new URL("./", import.meta.url))).filter(name => name.endsWith(".mjs")).sort();
+  const names = (await readdir(new URL("./", import.meta.url)))
+    .filter((name) => name.endsWith(".mjs"))
+    .sort();
   const inputs = [];
-  for (const name of names) inputs.push(name, "\0", await readFile(new URL(name, import.meta.url)), "\0");
+  for (const name of names)
+    inputs.push(name, "\0", await readFile(new URL(name, import.meta.url)), "\0");
   for (const name of ["build.mjs", "lib/options.mjs", "lib/evaluation.mjs"]) {
-    inputs.push(`scripts/${name}`, "\0", await readFile(new URL(`../scripts/${name}`, import.meta.url)));
+    inputs.push(
+      `scripts/${name}`,
+      "\0",
+      await readFile(new URL(`../scripts/${name}`, import.meta.url)),
+    );
   }
-  inputs.push("data/lexical-evidence.json", "\0", await readFile(new URL("../data/lexical-evidence.json", import.meta.url)));
+  inputs.push(
+    "data/lexical-evidence.json",
+    "\0",
+    await readFile(new URL("../data/lexical-evidence.json", import.meta.url)),
+  );
   const synthesizedPairs = new URL("../data/synthesized-pairs.json", import.meta.url);
-  inputs.push("data/synthesized-pairs.json", "\0", await readFile(synthesizedPairs).catch(() => ""));
+  inputs.push(
+    "data/synthesized-pairs.json",
+    "\0",
+    await readFile(synthesizedPairs).catch(() => ""),
+  );
   const hash = createHash("sha256");
   for (const input of inputs) hash.update(input);
   return hash.digest("hex");
@@ -61,10 +122,15 @@ export async function generatorDigest() {
 export function compileAnnotations(annotations) {
   const result = new Map();
   for (const annotation of annotations) {
-    if (typeof annotation.id !== "string" || !/^\d+$/u.test(annotation.id) ||
-      typeof annotation.reason !== "string" || !annotation.reason.trim() ||
-      !Array.isArray(annotation.sources) || !annotation.sources.length ||
-      annotation.sources.some(source => typeof source !== "string" || !source.trim())) {
+    if (
+      typeof annotation.id !== "string" ||
+      !/^\d+$/u.test(annotation.id) ||
+      typeof annotation.reason !== "string" ||
+      !annotation.reason.trim() ||
+      !Array.isArray(annotation.sources) ||
+      !annotation.sources.length ||
+      annotation.sources.some((source) => typeof source !== "string" || !source.trim())
+    ) {
       throw new Error("Annotations require a string JMdict ID, rationale, and evidence sources");
     }
     validateAlignment(annotation.spelling, annotation.reading, annotation.segments);
@@ -92,10 +158,12 @@ function mergeLateAlignments(independent, integrated) {
   if (independent === integrated) return integrated;
   const independentPoints = new Set(boundaries(independent.segments));
   const integratedPoints = new Set(boundaries(integrated.segments));
-  const shared = new Set([...integratedPoints].filter(point => independentPoints.has(point)));
+  const shared = new Set([...integratedPoints].filter((point) => independentPoints.has(point)));
   function regions(parts) {
     const result = [];
-    let spellingOffset = 0, readingOffset = 0, start = 0;
+    let spellingOffset = 0,
+      readingOffset = 0,
+      start = 0;
     for (const [index, segment] of parts.entries()) {
       spellingOffset += [...segmentText(segment)].length;
       readingOffset += [...segmentReading(segment)].length;
@@ -113,38 +181,90 @@ function mergeLateAlignments(independent, integrated) {
   const segments = regions(integrated.segments).flatMap((region, index) => {
     const candidate = independentRegions[index];
     const merged = combineAlignments(region, candidate);
-    regionContexts.push(merged === region ? ["with-lexical-refinement"] :
-      merged === candidate ? ["without-lexical-refinement"] : ["with-lexical-refinement", "without-lexical-refinement"]);
+    regionContexts.push(
+      merged === region
+        ? ["with-lexical-refinement"]
+        : merged === candidate
+          ? ["without-lexical-refinement"]
+          : ["with-lexical-refinement", "without-lexical-refinement"],
+    );
     return merged;
   });
   const points = boundaries(segments);
-  if (points.length === integratedPoints.size && points.every(point => integratedPoints.has(point))) return integrated;
-  if (points.length === independentPoints.size && points.every(point => independentPoints.has(point))) return independent;
+  if (
+    points.length === integratedPoints.size &&
+    points.every((point) => integratedPoints.has(point))
+  )
+    return integrated;
+  if (
+    points.length === independentPoints.size &&
+    points.every((point) => independentPoints.has(point))
+  )
+    return independent;
 
   const supportingSpans = [];
-  for (const [context, result] of [["without-lexical-refinement", independent], ["with-lexical-refinement", integrated]]) {
-    let spellingOffset = 0, readingOffset = 0, regionIndex = 0;
+  for (const [context, result] of [
+    ["without-lexical-refinement", independent],
+    ["with-lexical-refinement", integrated],
+  ]) {
+    let spellingOffset = 0,
+      readingOffset = 0,
+      regionIndex = 0;
     for (const [index, segment] of result.segments.entries()) {
-      const spelling = segmentText(segment), reading = segmentReading(segment);
+      const spelling = segmentText(segment),
+        reading = segmentReading(segment);
       const span = { spellingStart: spellingOffset, readingStart: readingOffset };
       spellingOffset += [...spelling].length;
       readingOffset += [...reading].length;
-      if (regionContexts[regionIndex].includes(context)) supportingSpans.push({ ...span, spellingEnd: spellingOffset, readingEnd: readingOffset,
-        evidence: { context, ...(result.evidence?.[index] ?? { spelling, reading, type: typeof segment === "string" ? "literal" : "dictionary", rules: [] }) } });
-      if (shared.has(`${spellingOffset}:${readingOffset}`) || index === result.segments.length - 1) ++regionIndex;
+      if (regionContexts[regionIndex].includes(context))
+        supportingSpans.push({
+          ...span,
+          spellingEnd: spellingOffset,
+          readingEnd: readingOffset,
+          evidence: {
+            context,
+            ...(result.evidence?.[index] ?? {
+              spelling,
+              reading,
+              type: typeof segment === "string" ? "literal" : "dictionary",
+              rules: [],
+            }),
+          },
+        });
+      if (shared.has(`${spellingOffset}:${readingOffset}`) || index === result.segments.length - 1)
+        ++regionIndex;
     }
   }
-  let spellingOffset = 0, readingOffset = 0;
-  const evidence = segments.map(segment => {
-    const spelling = segmentText(segment), reading = segmentReading(segment);
-    const spellingEnd = spellingOffset + [...spelling].length, readingEnd = readingOffset + [...reading].length;
-    const supporting = supportingSpans.filter(span => span.spellingStart <= spellingOffset && spellingEnd <= span.spellingEnd &&
-      span.readingStart <= readingOffset && readingEnd <= span.readingEnd).map(span => span.evidence);
+  let spellingOffset = 0,
+    readingOffset = 0;
+  const evidence = segments.map((segment) => {
+    const spelling = segmentText(segment),
+      reading = segmentReading(segment);
+    const spellingEnd = spellingOffset + [...spelling].length,
+      readingEnd = readingOffset + [...reading].length;
+    const supporting = supportingSpans
+      .filter(
+        (span) =>
+          span.spellingStart <= spellingOffset &&
+          spellingEnd <= span.spellingEnd &&
+          span.readingStart <= readingOffset &&
+          readingEnd <= span.readingEnd,
+      )
+      .map((span) => span.evidence);
     spellingOffset = spellingEnd;
     readingOffset = readingEnd;
-    return { spelling, reading, type: typeof segment === "string" ? "literal" : "dictionary",
-      rules: [...new Set([...supporting.flatMap(span => span.rules ?? []), "independent-late-evidence-union"])],
-      supportingSpans: supporting };
+    return {
+      spelling,
+      reading,
+      type: typeof segment === "string" ? "literal" : "dictionary",
+      rules: [
+        ...new Set([
+          ...supporting.flatMap((span) => span.rules ?? []),
+          "independent-late-evidence-union",
+        ]),
+      ],
+      supportingSpans: supporting,
+    };
   });
   return { ...integrated, segments, evidence };
 }
@@ -152,7 +272,10 @@ function mergeLateAlignments(independent, integrated) {
 function mergeLateWitnesses(independent, integrated) {
   if (independent === integrated) return independent;
   const witnesses = new Map();
-  for (const [context, records] of [["without-lexical-refinement", independent], ["with-lexical-refinement", integrated]]) {
+  for (const [context, records] of [
+    ["without-lexical-refinement", independent],
+    ["with-lexical-refinement", integrated],
+  ]) {
     for (const witness of records) {
       const key = JSON.stringify(witness);
       const record = witnesses.get(key) ?? { ...witness, lexicalContexts: [] };
@@ -163,73 +286,149 @@ function mergeLateWitnesses(independent, integrated) {
   return [...witnesses.values()];
 }
 
-function compilePipeline(jmdict, kanjidic, options, {
-  unihanReadings = new Map(), unihanSource, characterReadingBundle, englishCharacterReadingBundle, lexicalEvidence = [], kanjidicSource, jmdictSource
-}, inheritedVariantTargets) {
+function compilePipeline(
+  jmdict,
+  kanjidic,
+  options,
+  {
+    unihanReadings = new Map(),
+    unihanSource,
+    characterReadingBundle,
+    englishCharacterReadingBundle,
+    lexicalEvidence = [],
+    kanjidicSource,
+    jmdictSource,
+  },
+  inheritedVariantTargets,
+) {
   const configuration = { ...defaultConfiguration };
   for (const [name, value] of Object.entries(options)) {
     if (value !== undefined) configuration[name] = value;
   }
-  const facts = configuration.reviewedLexicalEvidence ? compileLexicalEvidence(lexicalEvidence) : [];
+  const facts = configuration.reviewedLexicalEvidence
+    ? compileLexicalEvidence(lexicalEvidence)
+    : [];
   const variantTargets = inheritedVariantTargets ?? new Map();
-  if (inheritedVariantTargets === undefined) for (const fact of facts) {
-    const readings = variantTargets.get(fact.spelling) ?? new Map();
-    readings.set(fact.reading, fact.segments);
-    variantTargets.set(fact.spelling, readings);
-  }
+  if (inheritedVariantTargets === undefined)
+    for (const fact of facts) {
+      const readings = variantTargets.get(fact.spelling) ?? new Map();
+      readings.set(fact.reading, fact.segments);
+      variantTargets.set(fact.spelling, readings);
+    }
   // The protected pipeline omits late lexical refinement, but must reject
   // the same contradicted transfers before its boundaries become protected.
-  const protectedPipeline = configuration.dictionaryNasalLoss || configuration.dictionaryInitialVoicing ?
-    compilePipeline(jmdict, kanjidic, {
-      ...configuration, dictionaryNasalLoss: false, dictionaryInitialVoicing: false,
-      listedCharacterReadings: false, reviewedLexicalEvidence: false,
-      unihanOnLengthening: false, nativeCompounds: false, englishCharacterReadings: false,
-      listedPhonology: false, koreanReadings: false, onReadingSpelling: false, sourceUnitTransfers: false, separatorTransfers: false, virtualSeparatorSources: false, sharedRunTransfers: false
-    }, { unihanReadings }, variantTargets) : undefined;
+  const protectedPipeline =
+    configuration.dictionaryNasalLoss || configuration.dictionaryInitialVoicing
+      ? compilePipeline(
+          jmdict,
+          kanjidic,
+          {
+            ...configuration,
+            dictionaryNasalLoss: false,
+            dictionaryInitialVoicing: false,
+            listedCharacterReadings: false,
+            reviewedLexicalEvidence: false,
+            unihanOnLengthening: false,
+            nativeCompounds: false,
+            englishCharacterReadings: false,
+            listedPhonology: false,
+            koreanReadings: false,
+            onReadingSpelling: false,
+            sourceUnitTransfers: false,
+            separatorTransfers: false,
+            virtualSeparatorSources: false,
+            sharedRunTransfers: false,
+          },
+          { unihanReadings },
+          variantTargets,
+        )
+      : undefined;
   const baseReadings = makeCharacterReadings(kanjidic);
-  const { characterReadings, additions } = configuration.learnReadings ? deriveCharacterReadings(jmdict, baseReadings) : { characterReadings: baseReadings, additions: [] };
+  const { characterReadings, additions } = configuration.learnReadings
+    ? deriveCharacterReadings(jmdict, baseReadings)
+    : { characterReadings: baseReadings, additions: [] };
   const alignerOptions = {
     characterReadings,
     wordReadings: makeWordReadings(jmdict),
     irregularWordReadings: makeIrregularWordReadings(jmdict),
-    continuativeReadings: configuration.continuativeStems ? deriveContinuativeReadings(jmdict).readings : new Map(),
-    ...configuration
+    continuativeReadings: configuration.continuativeStems
+      ? deriveContinuativeReadings(jmdict).readings
+      : new Map(),
+    ...configuration,
   };
   const baseline = createAligner(alignerOptions);
-  const { wordAlignments, transfers } = configuration.variantTransfers ? deriveVariantAlignments(jmdict, baseline) : { wordAlignments: new Map(), transfers: [] };
+  const { wordAlignments, transfers } = configuration.variantTransfers
+    ? deriveVariantAlignments(jmdict, baseline)
+    : { wordAlignments: new Map(), transfers: [] };
   const strong = createAligner({ ...alignerOptions, wordAlignments });
-  const weak = configuration.weakReadings ? deriveWeakReadings(jmdict, kanjidic, characterReadings) : { readings: new Map(), witnesses: [] };
+  const weak = configuration.weakReadings
+    ? deriveWeakReadings(jmdict, kanjidic, characterReadings)
+    : { readings: new Map(), witnesses: [] };
   const supplementaryOptions = { ...alignerOptions, weakCharacterReadings: weak.readings };
   const supplementaryBase = createAligner({ ...supplementaryOptions, wordAlignments });
-  const supplementaryVariants = configuration.variantTransfers ? deriveVariantAlignments(jmdict, supplementaryBase, {
-    kanaSubstitutions: configuration.kanaSubstitutions,
-    hanSubstitutions: configuration.hanSubstitutions,
-    counterSymbols: configuration.counterSymbols,
-    latinSubstitutions: configuration.latinSubstitutions,
-    characterReadings,
-    continuativeReadings: alignerOptions.continuativeReadings
-  }) : { wordAlignments: new Map(), transfers: [] };
-  const supplementary = createAligner({ ...supplementaryOptions, wordAlignments: supplementaryVariants.wordAlignments });
-  // Several evidence passes below query every JMdict pair through this fixed pipeline.
-  const refined = cacheAligner((spelling, reading) => refineAlignment(strong(spelling, reading), supplementary(spelling, reading)));
-
-  const numeralReadings = configuration.foreignNumerals ? deriveNumeralReadings(jmdict, alignerOptions.wordReadings) : undefined;
-  const foreignAlign = numeralReadings === undefined ? undefined : createAligner({
-    ...supplementaryOptions, wordReadings: numeralReadings.readings, wordAlignments: supplementaryVariants.wordAlignments
+  const supplementaryVariants = configuration.variantTransfers
+    ? deriveVariantAlignments(jmdict, supplementaryBase, {
+        kanaSubstitutions: configuration.kanaSubstitutions,
+        hanSubstitutions: configuration.hanSubstitutions,
+        counterSymbols: configuration.counterSymbols,
+        latinSubstitutions: configuration.latinSubstitutions,
+        characterReadings,
+        continuativeReadings: alignerOptions.continuativeReadings,
+      })
+    : { wordAlignments: new Map(), transfers: [] };
+  const supplementary = createAligner({
+    ...supplementaryOptions,
+    wordAlignments: supplementaryVariants.wordAlignments,
   });
-  const numerals = configuration.numeralTransfers ? deriveNumeralAlignments(jmdict, refined, { foreignAlign }) : { wordAlignments: new Map(), witnesses: [] };
-  const readingVariants = configuration.readingVariants ? deriveReadingVariantAlignments(jmdict, refined, { targetAlignments: variantTargets }) : { wordAlignments: new Map(), witnesses: [] };
-  const ateji = configuration.phoneticAteji ? deriveAtejiAlignments(jmdict, characterReadings, refined) : { wordAlignments: new Map(), witnesses: [] };
-  const loans = configuration.loanReadings ? deriveLoanAlignments(jmdict, kanjidic, refined, { untaggedKatakana: configuration.untaggedKatakanaLoans }) : { wordAlignments: new Map(), witnesses: [] };
-  const unihan = configuration.unihanReadings ? deriveUnihanAlignments(jmdict, characterReadings, unihanReadings, refined, {
-    weakCharacterReadings: weak.readings,
-    supplementalVoicing: configuration.unihanVoicing,
-    yoonSimplification: configuration.unihanYoon
-  }) : { wordAlignments: new Map(), witnesses: [] };
+  // Several evidence passes below query every JMdict pair through this fixed pipeline.
+  const refined = cacheAligner((spelling, reading) =>
+    refineAlignment(strong(spelling, reading), supplementary(spelling, reading)),
+  );
+
+  const numeralReadings = configuration.foreignNumerals
+    ? deriveNumeralReadings(jmdict, alignerOptions.wordReadings)
+    : undefined;
+  const foreignAlign =
+    numeralReadings === undefined
+      ? undefined
+      : createAligner({
+          ...supplementaryOptions,
+          wordReadings: numeralReadings.readings,
+          wordAlignments: supplementaryVariants.wordAlignments,
+        });
+  const numerals = configuration.numeralTransfers
+    ? deriveNumeralAlignments(jmdict, refined, { foreignAlign })
+    : { wordAlignments: new Map(), witnesses: [] };
+  const readingVariants = configuration.readingVariants
+    ? deriveReadingVariantAlignments(jmdict, refined, { targetAlignments: variantTargets })
+    : { wordAlignments: new Map(), witnesses: [] };
+  const ateji = configuration.phoneticAteji
+    ? deriveAtejiAlignments(jmdict, characterReadings, refined)
+    : { wordAlignments: new Map(), witnesses: [] };
+  const loans = configuration.loanReadings
+    ? deriveLoanAlignments(jmdict, kanjidic, refined, {
+        untaggedKatakana: configuration.untaggedKatakanaLoans,
+      })
+    : { wordAlignments: new Map(), witnesses: [] };
+  const unihan = configuration.unihanReadings
+    ? deriveUnihanAlignments(jmdict, characterReadings, unihanReadings, refined, {
+        weakCharacterReadings: weak.readings,
+        supplementalVoicing: configuration.unihanVoicing,
+        yoonSimplification: configuration.unihanYoon,
+      })
+    : { wordAlignments: new Map(), witnesses: [] };
   function withTransfers(initial) {
-    const merged = new Map([...initial].map(([spelling, readings]) => [spelling, new Map(readings)]));
+    const merged = new Map(
+      [...initial].map(([spelling, readings]) => [spelling, new Map(readings)]),
+    );
     const wordAlignmentRules = new Map();
-    for (const [source, rule] of [[numerals.wordAlignments, "numeric-or-width-spelling"], [readingVariants.wordAlignments, "attested-reading-variant"], [ateji.wordAlignments, "phonetic-ateji"], [loans.wordAlignments, "attested-loan-sounds"], [unihan.wordAlignments, "unihan-character-evidence"]]) {
+    for (const [source, rule] of [
+      [numerals.wordAlignments, "numeric-or-width-spelling"],
+      [readingVariants.wordAlignments, "attested-reading-variant"],
+      [ateji.wordAlignments, "phonetic-ateji"],
+      [loans.wordAlignments, "attested-loan-sounds"],
+      [unihan.wordAlignments, "unihan-character-evidence"],
+    ]) {
       for (const [spelling, readings] of source) {
         const existing = merged.get(spelling) ?? new Map();
         for (const [reading, segments] of readings) {
@@ -238,7 +437,12 @@ function compilePipeline(jmdict, kanjidic, options, {
           existing.set(reading, chosen);
           if (chosen !== previous) {
             const rules = wordAlignmentRules.get(spelling) ?? new Map();
-            rules.set(reading, chosen === segments ? [rule] : [...new Set([...(rules.get(reading) ?? ["alternate-spelling"]), rule])]);
+            rules.set(
+              reading,
+              chosen === segments
+                ? [rule]
+                : [...new Set([...(rules.get(reading) ?? ["alternate-spelling"]), rule])],
+            );
             wordAlignmentRules.set(spelling, rules);
           }
         }
@@ -248,7 +452,10 @@ function compilePipeline(jmdict, kanjidic, options, {
     return { wordAlignments: merged, wordAlignmentRules };
   }
   const finalStrong = createAligner({ ...alignerOptions, ...withTransfers(wordAlignments) });
-  const finalSupplementary = createAligner({ ...supplementaryOptions, ...withTransfers(supplementaryVariants.wordAlignments) });
+  const finalSupplementary = createAligner({
+    ...supplementaryOptions,
+    ...withTransfers(supplementaryVariants.wordAlignments),
+  });
   // Later evidence passes repeatedly query this fixed pipeline. Cache only
   // raw spelling/reading pairs so script-sensitive projections stay distinct.
   const baseCache = new Map();
@@ -256,57 +463,102 @@ function compilePipeline(jmdict, kanjidic, options, {
     const key = pairKey(spelling, reading);
     if (baseCache.has(key)) return baseCache.get(key);
     const previous = refined(spelling, reading);
-    const candidate = refineAlignment(finalStrong(spelling, reading), finalSupplementary(spelling, reading));
+    const candidate = refineAlignment(
+      finalStrong(spelling, reading),
+      finalSupplementary(spelling, reading),
+    );
     // A transferred subword can compete with different character readings in
     // a longer input. Preserve the boundaries accepted before those transfers.
     const result = refineAlignment(previous, candidate);
     // Optional weak sound changes can alter the evidence used by spelling
     // transfers. Compare complete pipelines to preserve those earlier bounds.
-    const protectedResult = protectedPipeline === undefined ? result : refineAlignment(protectedPipeline.align(spelling, reading), result);
+    const protectedResult =
+      protectedPipeline === undefined
+        ? result
+        : refineAlignment(protectedPipeline.align(spelling, reading), result);
     baseCache.set(key, protectedResult);
     return protectedResult;
   };
-  const listed = configuration.listedCharacterReadings && characterReadingBundle !== undefined ?
-    deriveCharacterBundleAlignments(jmdict, characterReadings, characterReadingBundle, alignBase, {
-      weakCharacterReadings: weak.readings, unihanReadings: configuration.unihanReadings ? unihanReadings : new Map()
-    }) :
-    { wordAlignments: new Map(), witnesses: [] };
+  const listed =
+    configuration.listedCharacterReadings && characterReadingBundle !== undefined
+      ? deriveCharacterBundleAlignments(
+          jmdict,
+          characterReadings,
+          characterReadingBundle,
+          alignBase,
+          {
+            weakCharacterReadings: weak.readings,
+            unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
+          },
+        )
+      : { wordAlignments: new Map(), witnesses: [] };
   function applyRefinement(result, segments, rule) {
     if (segments === undefined) return result;
     const previous = new Map();
-    let spellingOffset = 0, readingOffset = 0;
+    let spellingOffset = 0,
+      readingOffset = 0;
     for (const [index, segment] of result.segments.entries()) {
-      const spelling = segmentText(segment), reading = segmentReading(segment);
+      const spelling = segmentText(segment),
+        reading = segmentReading(segment);
       const start = `${spellingOffset}:${readingOffset}`;
       spellingOffset += [...spelling].length;
       readingOffset += [...reading].length;
-      previous.set(`${start}:${spellingOffset}:${readingOffset}`, result.evidence?.[index] ?? {
-        spelling, reading, type: typeof segment === "string" ? "literal" : "dictionary", rules: []
-      });
+      previous.set(
+        `${start}:${spellingOffset}:${readingOffset}`,
+        result.evidence?.[index] ?? {
+          spelling,
+          reading,
+          type: typeof segment === "string" ? "literal" : "dictionary",
+          rules: [],
+        },
+      );
     }
     spellingOffset = 0;
     readingOffset = 0;
     return refineAlignment(result, {
-      ...result, segments,
-      evidence: segments.map(segment => {
-        const spelling = segmentText(segment), reading = segmentReading(segment);
+      ...result,
+      segments,
+      evidence: segments.map((segment) => {
+        const spelling = segmentText(segment),
+          reading = segmentReading(segment);
         const start = `${spellingOffset}:${readingOffset}`;
         spellingOffset += [...spelling].length;
         readingOffset += [...reading].length;
-        return previous.get(`${start}:${spellingOffset}:${readingOffset}`) ?? {
-          spelling, reading, type: typeof segment === "string" ? "literal" : "dictionary", rules: [rule]
-        };
-      })
+        return (
+          previous.get(`${start}:${spellingOffset}:${readingOffset}`) ?? {
+            spelling,
+            reading,
+            type: typeof segment === "string" ? "literal" : "dictionary",
+            rules: [rule],
+          }
+        );
+      }),
     });
   }
-  const alignListedCharacters = listed.wordAlignments.size === 0 ? alignBase : cacheAligner((spelling, reading) => applyRefinement(
-    alignBase(spelling, reading), listed.wordAlignments.get(spelling)?.get(reading), "listed-character-evidence"
-  ));
-  const alignReviewed = facts.length === 0 ? alignListedCharacters : cacheAligner((spelling, reading) =>
-    refineWithLexicalEvidence(alignListedCharacters(spelling, reading), facts)
+  const alignListedCharacters =
+    listed.wordAlignments.size === 0
+      ? alignBase
+      : cacheAligner((spelling, reading) =>
+          applyRefinement(
+            alignBase(spelling, reading),
+            listed.wordAlignments.get(spelling)?.get(reading),
+            "listed-character-evidence",
+          ),
+        );
+  const alignReviewed =
+    facts.length === 0
+      ? alignListedCharacters
+      : cacheAligner((spelling, reading) =>
+          refineWithLexicalEvidence(alignListedCharacters(spelling, reading), facts),
+        );
+  const englishCompanions = new Map(
+    [...(configuration.unihanReadings ? unihanReadings : new Map())].map(
+      ([character, readings]) => [character, [...readings]],
+    ),
   );
-  const englishCompanions = new Map([...(configuration.unihanReadings ? unihanReadings : new Map())].map(([character, readings]) => [character, [...readings]]));
-  for (const { character, reading } of configuration.listedCharacterReadings ? characterReadingBundle?.readings ?? [] : []) {
+  for (const { character, reading } of configuration.listedCharacterReadings
+    ? (characterReadingBundle?.readings ?? [])
+    : []) {
     const readings = englishCompanions.get(character) ?? [];
     if (!readings.includes(reading)) readings.push(reading);
     englishCompanions.set(character, readings);
@@ -314,60 +566,113 @@ function compilePipeline(jmdict, kanjidic, options, {
   function compileLateSequence(initialAlign) {
     // These refinements use the complete earlier pipeline and remain local to
     // exact dictionary pairs. Their inferred sounds cannot enter subword transfers.
-    const lengthened = configuration.unihanReadings && configuration.unihanOnLengthening ?
-      deriveUnihanAlignments(jmdict, characterReadings, unihanReadings, initialAlign, {
-        weakCharacterReadings: weak.readings,
-        supplementalVoicing: configuration.unihanVoicing,
-        yoonSimplification: configuration.unihanYoon,
-        onLengthening: true
-      }) : { wordAlignments: new Map(), witnesses: [] };
-    const alignLengthened = (spelling, reading) => applyRefinement(
-      initialAlign(spelling, reading), lengthened.wordAlignments.get(spelling)?.get(reading), "unihan-final-character-evidence"
-    );
-    const native = configuration.nativeCompounds ? deriveNativeCompoundAlignments(jmdict, characterReadings, alignLengthened, {
-      weakCharacterReadings: weak.readings,
-      unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
-      characterReadingBundle: configuration.listedCharacterReadings ? characterReadingBundle : undefined
-    }) : { wordAlignments: new Map(), witnesses: [] };
-    const alignNative = (spelling, reading) => applyRefinement(
-      alignLengthened(spelling, reading), native.wordAlignments.get(spelling)?.get(reading), "attested-native-final-mora-contraction"
-    );
-    const english = configuration.englishCharacterReadings && englishCharacterReadingBundle !== undefined ?
-      deriveCharacterBundleAlignments(jmdict, characterReadings, englishCharacterReadingBundle, alignNative, {
-        weakCharacterReadings: weak.readings, unihanReadings: englishCompanions
-      }) : { wordAlignments: new Map(), witnesses: [] };
-    const alignEnglish = (spelling, reading) => applyRefinement(
-      alignNative(spelling, reading), english.wordAlignments.get(spelling)?.get(reading), "english-listed-character-evidence"
-    );
-    const listedPhonology = configuration.listedPhonology ? deriveListedPhonologyAlignments(jmdict, characterReadings, alignEnglish, {
-      weakCharacterReadings: weak.readings,
-      kanjidic, kanjidicSource, jmdictSource, weakWitnesses: weak.witnesses, lexicalFacts: facts,
-      loanReadings: configuration.loanReadings, koreanReadings: configuration.koreanReadings,
-      unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
-      unihanSource: configuration.unihanReadings ? unihanSource : undefined,
-      characterReadingBundle: configuration.listedCharacterReadings ? characterReadingBundle : undefined,
-      englishCharacterReadingBundle: configuration.englishCharacterReadings ? englishCharacterReadingBundle : undefined,
-      supplementalVoicing: configuration.unihanVoicing,
-      yoonSimplification: configuration.unihanYoon,
-      onLengthening: configuration.unihanOnLengthening
-    }) : { wordAlignments: new Map(), witnesses: [] };
-    const alignListed = (spelling, reading) => applyRefinement(
-      alignEnglish(spelling, reading), listedPhonology.wordAlignments.get(spelling)?.get(reading), "listed-reading-sound-correspondence"
-    );
-    const korean = configuration.koreanReadings ? deriveKoreanAlignments(jmdict, kanjidic, alignListed, {
-      untaggedKatakana: configuration.untaggedKatakanaKorean, kanjidicSource
-    }) : { wordAlignments: new Map(), witnesses: [] };
-    const alignKorean = (spelling, reading) => applyRefinement(
-      alignListed(spelling, reading), korean.wordAlignments.get(spelling)?.get(reading), "listed-korean-sound-compatibility"
-    );
-    const onSpelling = configuration.onReadingSpelling ? deriveOnReadingSpellingAlignments(jmdict, kanjidic, alignKorean, {
-      characterReadingBundle: configuration.listedCharacterReadings ? characterReadingBundle : undefined,
-      englishCharacterReadingBundle: configuration.englishCharacterReadings ? englishCharacterReadingBundle : undefined,
-      kanjidicSource
-    }) : { wordAlignments: new Map(), witnesses: [] };
-    const align = (spelling, reading) => applyRefinement(
-      alignKorean(spelling, reading), onSpelling.wordAlignments.get(spelling)?.get(reading), "on-long-vowel-notation-equivalence"
-    );
+    const lengthened =
+      configuration.unihanReadings && configuration.unihanOnLengthening
+        ? deriveUnihanAlignments(jmdict, characterReadings, unihanReadings, initialAlign, {
+            weakCharacterReadings: weak.readings,
+            supplementalVoicing: configuration.unihanVoicing,
+            yoonSimplification: configuration.unihanYoon,
+            onLengthening: true,
+          })
+        : { wordAlignments: new Map(), witnesses: [] };
+    const alignLengthened = (spelling, reading) =>
+      applyRefinement(
+        initialAlign(spelling, reading),
+        lengthened.wordAlignments.get(spelling)?.get(reading),
+        "unihan-final-character-evidence",
+      );
+    const native = configuration.nativeCompounds
+      ? deriveNativeCompoundAlignments(jmdict, characterReadings, alignLengthened, {
+          weakCharacterReadings: weak.readings,
+          unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
+          characterReadingBundle: configuration.listedCharacterReadings
+            ? characterReadingBundle
+            : undefined,
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+    const alignNative = (spelling, reading) =>
+      applyRefinement(
+        alignLengthened(spelling, reading),
+        native.wordAlignments.get(spelling)?.get(reading),
+        "attested-native-final-mora-contraction",
+      );
+    const english =
+      configuration.englishCharacterReadings && englishCharacterReadingBundle !== undefined
+        ? deriveCharacterBundleAlignments(
+            jmdict,
+            characterReadings,
+            englishCharacterReadingBundle,
+            alignNative,
+            {
+              weakCharacterReadings: weak.readings,
+              unihanReadings: englishCompanions,
+            },
+          )
+        : { wordAlignments: new Map(), witnesses: [] };
+    const alignEnglish = (spelling, reading) =>
+      applyRefinement(
+        alignNative(spelling, reading),
+        english.wordAlignments.get(spelling)?.get(reading),
+        "english-listed-character-evidence",
+      );
+    const listedPhonology = configuration.listedPhonology
+      ? deriveListedPhonologyAlignments(jmdict, characterReadings, alignEnglish, {
+          weakCharacterReadings: weak.readings,
+          kanjidic,
+          kanjidicSource,
+          jmdictSource,
+          weakWitnesses: weak.witnesses,
+          lexicalFacts: facts,
+          loanReadings: configuration.loanReadings,
+          koreanReadings: configuration.koreanReadings,
+          unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
+          unihanSource: configuration.unihanReadings ? unihanSource : undefined,
+          characterReadingBundle: configuration.listedCharacterReadings
+            ? characterReadingBundle
+            : undefined,
+          englishCharacterReadingBundle: configuration.englishCharacterReadings
+            ? englishCharacterReadingBundle
+            : undefined,
+          supplementalVoicing: configuration.unihanVoicing,
+          yoonSimplification: configuration.unihanYoon,
+          onLengthening: configuration.unihanOnLengthening,
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+    const alignListed = (spelling, reading) =>
+      applyRefinement(
+        alignEnglish(spelling, reading),
+        listedPhonology.wordAlignments.get(spelling)?.get(reading),
+        "listed-reading-sound-correspondence",
+      );
+    const korean = configuration.koreanReadings
+      ? deriveKoreanAlignments(jmdict, kanjidic, alignListed, {
+          untaggedKatakana: configuration.untaggedKatakanaKorean,
+          kanjidicSource,
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+    const alignKorean = (spelling, reading) =>
+      applyRefinement(
+        alignListed(spelling, reading),
+        korean.wordAlignments.get(spelling)?.get(reading),
+        "listed-korean-sound-compatibility",
+      );
+    const onSpelling = configuration.onReadingSpelling
+      ? deriveOnReadingSpellingAlignments(jmdict, kanjidic, alignKorean, {
+          characterReadingBundle: configuration.listedCharacterReadings
+            ? characterReadingBundle
+            : undefined,
+          englishCharacterReadingBundle: configuration.englishCharacterReadings
+            ? englishCharacterReadingBundle
+            : undefined,
+          kanjidicSource,
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+    const align = (spelling, reading) =>
+      applyRefinement(
+        alignKorean(spelling, reading),
+        onSpelling.wordAlignments.get(spelling)?.get(reading),
+        "on-long-vowel-notation-equivalence",
+      );
     return { lengthened, native, english, listedPhonology, korean, onSpelling, align };
   }
   // Both paths share the expensive base, source inventories and the same
@@ -375,57 +680,109 @@ function compilePipeline(jmdict, kanjidic, options, {
   // the witness that allowed another late pass to establish finer boundaries.
   const independentLate = compileLateSequence(alignListedCharacters);
   const integratedLate = facts.length === 0 ? independentLate : compileLateSequence(alignReviewed);
-  const alignLate = facts.length === 0 ? independentLate.align : (spelling, reading) => mergeLateAlignments(
-    independentLate.align(spelling, reading), integratedLate.align(spelling, reading)
-  );
-  const sourceUnits = configuration.sourceUnitTransfers ? deriveSourceUnitAlignments(jmdict, kanjidic, alignLate, {
-    unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
-    unihanSource: configuration.unihanReadings ? unihanSource : undefined,
-    characterReadingBundle: configuration.listedCharacterReadings ? characterReadingBundle : undefined,
-    englishCharacterReadingBundle: configuration.englishCharacterReadings ? englishCharacterReadingBundle : undefined,
-    kanjidicSource, lexicalEvidence: facts, weakReadings: configuration.weakReadings,
-    listedPhonology: configuration.listedPhonology, nativeCompounds: configuration.nativeCompounds,
-    koreanReadings: configuration.koreanReadings, untaggedKatakanaKorean: configuration.untaggedKatakanaKorean,
-    onReadingSpelling: configuration.onReadingSpelling, supplementalVoicing: configuration.unihanVoicing,
-    yoonSimplification: configuration.unihanYoon, onLengthening: configuration.unihanOnLengthening
-  }) : { wordAlignments: new Map(), witnesses: [] };
-  const alignUnits = sourceUnits.wordAlignments.size === 0 ? alignLate : (spelling, reading) => applyRefinement(
-    alignLate(spelling, reading), sourceUnits.wordAlignments.get(spelling)?.get(reading), "independently-supported-word-unit"
-  );
-  const separators = configuration.separatorTransfers ? deriveSeparatorAlignments(jmdict, kanjidic, alignUnits, {
-    jmdictSource, kanjidicSource, allowVirtualSources: configuration.virtualSeparatorSources,
-    // Optional dictionary sound inferences stay disabled in this independent
-    // raw source aligner, matching the reviewed separator-transfer experiment.
-    rawAlignerOptions: {
-      phonologicalAlternations: configuration.phonologicalAlternations,
-      terminalContraction: configuration.terminalContraction,
-      compoundVoicing: configuration.compoundVoicing,
-      kanaRunCorrespondence: configuration.kanaRunCorrespondence,
-      internalKanaAnchors: configuration.internalKanaAnchors
-    }
-  }) : { wordAlignments: new Map(), witnesses: [] };
-  const alignSeparators = separators.wordAlignments.size === 0 ? alignUnits : (spelling, reading) => applyRefinement(
-    alignUnits(spelling, reading), separators.wordAlignments.get(spelling)?.get(reading), "separator-spelling-evidence"
-  );
-  const sharedRuns = configuration.variantTransfers && configuration.sharedRunTransfers ? deriveSharedRunAlignments(jmdict, kanjidic, alignSeparators, {
-    reviewedFacts: facts, jmdictSource, kanjidicSource,
-    rawAlignerOptions: {
-      phonologicalAlternations: configuration.phonologicalAlternations,
-      terminalContraction: configuration.terminalContraction,
-      compoundVoicing: configuration.compoundVoicing,
-      kanaRunCorrespondence: configuration.kanaRunCorrespondence,
-      internalKanaAnchors: configuration.internalKanaAnchors
-    }
-  }) : { wordAlignments: new Map(), witnesses: [] };
-  const alignSharedRuns = sharedRuns.wordAlignments.size === 0 ? alignSeparators : (spelling, reading) => applyRefinement(
-    alignSeparators(spelling, reading), sharedRuns.wordAlignments.get(spelling)?.get(reading), "same-entry-shared-run"
-  );
+  const alignLate =
+    facts.length === 0
+      ? independentLate.align
+      : (spelling, reading) =>
+          mergeLateAlignments(
+            independentLate.align(spelling, reading),
+            integratedLate.align(spelling, reading),
+          );
+  const sourceUnits = configuration.sourceUnitTransfers
+    ? deriveSourceUnitAlignments(jmdict, kanjidic, alignLate, {
+        unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
+        unihanSource: configuration.unihanReadings ? unihanSource : undefined,
+        characterReadingBundle: configuration.listedCharacterReadings
+          ? characterReadingBundle
+          : undefined,
+        englishCharacterReadingBundle: configuration.englishCharacterReadings
+          ? englishCharacterReadingBundle
+          : undefined,
+        kanjidicSource,
+        lexicalEvidence: facts,
+        weakReadings: configuration.weakReadings,
+        listedPhonology: configuration.listedPhonology,
+        nativeCompounds: configuration.nativeCompounds,
+        koreanReadings: configuration.koreanReadings,
+        untaggedKatakanaKorean: configuration.untaggedKatakanaKorean,
+        onReadingSpelling: configuration.onReadingSpelling,
+        supplementalVoicing: configuration.unihanVoicing,
+        yoonSimplification: configuration.unihanYoon,
+        onLengthening: configuration.unihanOnLengthening,
+      })
+    : { wordAlignments: new Map(), witnesses: [] };
+  const alignUnits =
+    sourceUnits.wordAlignments.size === 0
+      ? alignLate
+      : (spelling, reading) =>
+          applyRefinement(
+            alignLate(spelling, reading),
+            sourceUnits.wordAlignments.get(spelling)?.get(reading),
+            "independently-supported-word-unit",
+          );
+  const separators = configuration.separatorTransfers
+    ? deriveSeparatorAlignments(jmdict, kanjidic, alignUnits, {
+        jmdictSource,
+        kanjidicSource,
+        allowVirtualSources: configuration.virtualSeparatorSources,
+        // Optional dictionary sound inferences stay disabled in this independent
+        // raw source aligner, matching the reviewed separator-transfer experiment.
+        rawAlignerOptions: {
+          phonologicalAlternations: configuration.phonologicalAlternations,
+          terminalContraction: configuration.terminalContraction,
+          compoundVoicing: configuration.compoundVoicing,
+          kanaRunCorrespondence: configuration.kanaRunCorrespondence,
+          internalKanaAnchors: configuration.internalKanaAnchors,
+        },
+      })
+    : { wordAlignments: new Map(), witnesses: [] };
+  const alignSeparators =
+    separators.wordAlignments.size === 0
+      ? alignUnits
+      : (spelling, reading) =>
+          applyRefinement(
+            alignUnits(spelling, reading),
+            separators.wordAlignments.get(spelling)?.get(reading),
+            "separator-spelling-evidence",
+          );
+  const sharedRuns =
+    configuration.variantTransfers && configuration.sharedRunTransfers
+      ? deriveSharedRunAlignments(jmdict, kanjidic, alignSeparators, {
+          reviewedFacts: facts,
+          jmdictSource,
+          kanjidicSource,
+          rawAlignerOptions: {
+            phonologicalAlternations: configuration.phonologicalAlternations,
+            terminalContraction: configuration.terminalContraction,
+            compoundVoicing: configuration.compoundVoicing,
+            kanaRunCorrespondence: configuration.kanaRunCorrespondence,
+            internalKanaAnchors: configuration.internalKanaAnchors,
+          },
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+  const alignSharedRuns =
+    sharedRuns.wordAlignments.size === 0
+      ? alignSeparators
+      : (spelling, reading) =>
+          applyRefinement(
+            alignSeparators(spelling, reading),
+            sharedRuns.wordAlignments.get(spelling)?.get(reading),
+            "same-entry-shared-run",
+          );
   // Any stage can cut beside an omitted particle, so the grouping is applied last.
-  const omittedParticles = configuration.variantTransfers ? deriveOmittedParticles(jmdict, baseReadings) : undefined;
-  const align = omittedParticles === undefined ? alignSharedRuns : (spelling, reading) => joinOmittedParticles(
-    alignSharedRuns(spelling, reading), omittedParticleSites(omittedParticles, spelling, reading)
-  );
-  const lateWitnesses = name => mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
+  const omittedParticles = configuration.variantTransfers
+    ? deriveOmittedParticles(jmdict, baseReadings)
+    : undefined;
+  const align =
+    omittedParticles === undefined
+      ? alignSharedRuns
+      : (spelling, reading) =>
+          joinOmittedParticles(
+            alignSharedRuns(spelling, reading),
+            omittedParticleSites(omittedParticles, spelling, reading),
+          );
+  const lateWitnesses = (name) =>
+    mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {
     configuration,
     learnedReadings: additions,
@@ -450,21 +807,36 @@ function compilePipeline(jmdict, kanjidic, options, {
     separatorTransfers: separators.witnesses,
     sharedRunTransfers: sharedRuns.witnesses,
     omittedParticles,
-    align
+    align,
   };
 }
 
 export async function loadDataset(options = {}) {
-  const { jmdict, kanjidic, unihanText, characterReadingBundle, englishCharacterReadingBundle, lock } = await loadSources();
-  const annotationsText = await readFile(new URL("../data/annotations.json", import.meta.url), "utf8");
+  const {
+    jmdict,
+    kanjidic,
+    unihanText,
+    characterReadingBundle,
+    englishCharacterReadingBundle,
+    lock,
+  } = await loadSources();
+  const annotationsText = await readFile(
+    new URL("../data/annotations.json", import.meta.url),
+    "utf8",
+  );
   const annotations = compileAnnotations(JSON.parse(annotationsText));
-  const lexicalBundle = JSON.parse(await readFile(new URL("../data/lexical-evidence.json", import.meta.url), "utf8"));
+  const lexicalBundle = JSON.parse(
+    await readFile(new URL("../data/lexical-evidence.json", import.meta.url), "utf8"),
+  );
   if (lexicalBundle.schemaVersion !== 2) throw new Error("Unsupported lexical evidence schema");
   const pipeline = compileAlignmentPipeline(jmdict, kanjidic, options, {
     unihanReadings: unihanText === undefined ? new Map() : parseUnihanReadings(unihanText),
     unihanSource: lock.lexicalSources?.unihan,
-    characterReadingBundle, englishCharacterReadingBundle, lexicalEvidence: lexicalBundle.facts,
-    kanjidicSource: lock.sources.kanjidic, jmdictSource: lock.sources.jmdict
+    characterReadingBundle,
+    englishCharacterReadingBundle,
+    lexicalEvidence: lexicalBundle.facts,
+    kanjidicSource: lock.sources.kanjidic,
+    jmdictSource: lock.sources.jmdict,
   });
   return {
     ...pipeline,
@@ -475,10 +847,12 @@ export async function loadDataset(options = {}) {
     pairs: () => enumeratePairs(jmdict),
     alignPair(pair) {
       const annotation = annotations.get(recordKey(pair.id, pair.spelling, pair.reading));
-      const result = annotation ? { segments: annotation.segments, status: "reviewed" } : pipeline.align(pair.spelling, pair.reading);
+      const result = annotation
+        ? { segments: annotation.segments, status: "reviewed" }
+        : pipeline.align(pair.spelling, pair.reading);
       validateAlignment(pair.spelling, pair.reading, result.segments);
       return result;
-    }
+    },
   };
 }
 
@@ -489,6 +863,6 @@ export async function evaluationProvenance(dataset, goldText) {
     sourcesSHA256: digest(JSON.stringify(dataset.lock)),
     annotationsSHA256: dataset.annotationsSHA256,
     configuration: dataset.configuration,
-    goldSHA256: digest(goldText)
+    goldSHA256: digest(goldText),
   };
 }

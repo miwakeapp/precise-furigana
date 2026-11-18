@@ -10,24 +10,39 @@ function compareText(left, right) {
 
 /** Derive candidates from a single written kanji and exact surrounding kana, keeping source witnesses. */
 export function deriveCharacterReadings(jmdict, baseMap = new Map()) {
-  const characterReadings = new Map([...baseMap].map(([character, readings]) => [character, [...readings]]));
-  const baseReadings = new Map([...baseMap].map(([character, readings]) => [character, new Set(readings.map(readingStem))]));
+  const characterReadings = new Map(
+    [...baseMap].map(([character, readings]) => [character, [...readings]]),
+  );
+  const baseReadings = new Map(
+    [...baseMap].map(([character, readings]) => [character, new Set(readings.map(readingStem))]),
+  );
   const candidates = new Map();
 
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind !== "kanji" || pair.readingTags.some(tag => excludedReadingTags.has(tag)) || !isKana(pair.reading)) {
+    if (
+      pair.kind !== "kanji" ||
+      pair.readingTags.some((tag) => excludedReadingTags.has(tag)) ||
+      !isKana(pair.reading)
+    ) {
       continue;
     }
     const graphemes = splitGraphemes(pair.spelling);
-    const characterIndex = graphemes.findIndex(grapheme => hanGraphemePattern.test(grapheme));
-    if (characterIndex === -1 || graphemes.some((grapheme, index) => index !== characterIndex && !isKana(grapheme))) {
+    const characterIndex = graphemes.findIndex((grapheme) => hanGraphemePattern.test(grapheme));
+    if (
+      characterIndex === -1 ||
+      graphemes.some((grapheme, index) => index !== characterIndex && !isKana(grapheme))
+    ) {
       continue;
     }
     const character = graphemes[characterIndex];
     const prefix = normalizeKana(graphemes.slice(0, characterIndex).join(""));
     const suffix = normalizeKana(graphemes.slice(characterIndex + 1).join(""));
     const wholeReading = normalizeKana(pair.reading);
-    if (!wholeReading.startsWith(prefix) || !wholeReading.endsWith(suffix) || prefix.length + suffix.length >= wholeReading.length) {
+    if (
+      !wholeReading.startsWith(prefix) ||
+      !wholeReading.endsWith(suffix) ||
+      prefix.length + suffix.length >= wholeReading.length
+    ) {
       continue;
     }
     const reading = wholeReading.slice(prefix.length, wholeReading.length - suffix.length);
@@ -41,12 +56,22 @@ export function deriveCharacterReadings(jmdict, baseMap = new Map()) {
       candidate = { character, reading, witnesses: [] };
       candidates.set(candidateKey, candidate);
     }
-    if (!candidate.witnesses.some(witness => witness.id === pair.id && witness.spelling === pair.spelling && witness.reading === pair.reading)) {
+    if (
+      !candidate.witnesses.some(
+        (witness) =>
+          witness.id === pair.id &&
+          witness.spelling === pair.spelling &&
+          witness.reading === pair.reading,
+      )
+    ) {
       candidate.witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading });
     }
   }
 
-  const additions = [...candidates.values()].sort((left, right) => compareText(left.character, right.character) || compareText(left.reading, right.reading));
+  const additions = [...candidates.values()].sort(
+    (left, right) =>
+      compareText(left.character, right.character) || compareText(left.reading, right.reading),
+  );
   for (const addition of additions) {
     const readings = characterReadings.get(addition.character);
     if (readings === undefined) {

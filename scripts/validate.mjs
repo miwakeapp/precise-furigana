@@ -3,7 +3,14 @@ import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { algorithmVersion, compileAnnotations, defaultConfiguration, digest, generatorDigest, schemaVersion } from "../src/dataset.mjs";
+import {
+  algorithmVersion,
+  compileAnnotations,
+  defaultConfiguration,
+  digest,
+  generatorDigest,
+  schemaVersion,
+} from "../src/dataset.mjs";
 import { pairKey, recordKey } from "../src/segments.mjs";
 import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
@@ -14,7 +21,10 @@ const { values } = parseArgs({ options: { directory: { type: "string", default: 
 const bytes = await readFile(join(values.directory, "precise-furigana.json"));
 const output = JSON.parse(bytes);
 assert.equal(output.schemaVersion, schemaVersion);
-assert.deepEqual(gunzipSync(await readFile(join(values.directory, "precise-furigana.json.gz"))), bytes);
+assert.deepEqual(
+  gunzipSync(await readFile(join(values.directory, "precise-furigana.json.gz"))),
+  bytes,
+);
 const manifest = JSON.parse(await readFile(join(values.directory, "manifest.json"), "utf8"));
 for (const [name, expected] of Object.entries(manifest.files)) {
   const contents = await readFile(join(values.directory, name));
@@ -24,25 +34,66 @@ for (const [name, expected] of Object.entries(manifest.files)) {
 // Validation needs the input population and provenance, not a rebuilt aligner.
 const { jmdict, kanjidic, lock } = await loadSources();
 const { drops } = deriveOmittedParticles(jmdict, makeCharacterReadings(kanjidic));
-const annotationsText = await readFile(new URL("../data/annotations.json", import.meta.url), "utf8");
-const synthesized = new Map(JSON.parse(await readFile(new URL("../data/synthesized-pairs.json", import.meta.url), "utf8"))
-  .map(item => [recordKey(item.id, item.spelling, item.reading), item]));
+const annotationsText = await readFile(
+  new URL("../data/annotations.json", import.meta.url),
+  "utf8",
+);
+const synthesized = new Map(
+  JSON.parse(
+    await readFile(new URL("../data/synthesized-pairs.json", import.meta.url), "utf8"),
+  ).map((item) => [recordKey(item.id, item.spelling, item.reading), item]),
+);
 const annotations = compileAnnotations(JSON.parse(annotationsText));
-assert.deepEqual(Object.keys(output), ["schemaVersion", "jmdictDate", "license", "attribution", "entries"]);
-assert.equal(output.jmdictDate, lock.sources.jmdict.dictDate, "Output uses the locked input release");
+assert.deepEqual(Object.keys(output), [
+  "schemaVersion",
+  "jmdictDate",
+  "license",
+  "attribution",
+  "entries",
+]);
+assert.equal(
+  output.jmdictDate,
+  lock.sources.jmdict.dictDate,
+  "Output uses the locked input release",
+);
 // The manifest binds the evaluation to this database; its provenance records the build inputs.
-const { provenance } = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
+const { provenance } = JSON.parse(
+  await readFile(join(values.directory, "evaluation.json"), "utf8"),
+);
 assert.ok(manifest.files["evaluation.json"], "The manifest covers the evaluation");
 assert.equal(provenance.algorithmVersion, algorithmVersion);
-assert.equal(provenance.generatorSHA256, await generatorDigest(), "Output uses the current generator code");
-assert.deepEqual(provenance.configuration, { ...defaultConfiguration, ...provenance.configuration });
-assert.equal(provenance.sourcesSHA256, digest(JSON.stringify(lock)), "Output uses the locked input release");
+assert.equal(
+  provenance.generatorSHA256,
+  await generatorDigest(),
+  "Output uses the current generator code",
+);
+assert.deepEqual(provenance.configuration, {
+  ...defaultConfiguration,
+  ...provenance.configuration,
+});
+assert.equal(
+  provenance.sourcesSHA256,
+  digest(JSON.stringify(lock)),
+  "Output uses the locked input release",
+);
 assert.equal(provenance.annotationsSHA256, digest(annotationsText));
-const jmdictPairs = new Map([...enumeratePairs(jmdict)].map(pair => [recordKey(pair.id, pair.spelling, pair.reading), pair]));
+const jmdictPairs = new Map(
+  [...enumeratePairs(jmdict)].map((pair) => [
+    recordKey(pair.id, pair.spelling, pair.reading),
+    pair,
+  ]),
+);
 const expected = new Set(jmdictPairs.keys());
-for (const key of annotations.keys()) assert.ok(expected.has(key) || synthesized.has(key), `Stale annotation absent from source dictionary: ${key}`);
-let count = 0, synthesizedCount = 0;
-const fitting = new Set(), spellings = new Set(), keys = new Set();
+for (const key of annotations.keys())
+  assert.ok(
+    expected.has(key) || synthesized.has(key),
+    `Stale annotation absent from source dictionary: ${key}`,
+  );
+let count = 0,
+  synthesizedCount = 0;
+const fitting = new Set(),
+  spellings = new Set(),
+  keys = new Set();
 // The position of each spelling's latest record: its JMdict reading index, or Infinity once synthesized.
 const lastPosition = new Map();
 for (const [id, records] of Object.entries(output.entries)) {
@@ -54,13 +105,23 @@ for (const [id, records] of Object.entries(output.entries)) {
     keys.add(key);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
     spellings.add(`${id}\t${record.spelling}`);
-    const position = record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;
-    assert.ok(!(position < lastPosition.get(`${id}\t${record.spelling}`)), `Records for a spelling are out of JMdict reading order: ${key}`);
+    const position =
+      record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;
+    assert.ok(
+      !(position < lastPosition.get(`${id}\t${record.spelling}`)),
+      `Records for a spelling are out of JMdict reading order: ${key}`,
+    );
     lastPosition.set(`${id}\t${record.spelling}`, position);
     if (record.pairing === "synthesized") {
       assert.deepEqual(Object.keys(record), ["spelling", "reading", "segments", "pairing"]);
-      assert.ok(synthesized.delete(key) && !expected.has(key), `Synthesized pair is not a reviewed, non-JMdict pair: ${key}`);
-      assert.ok(!contradictsSpelling(record.spelling, record.reading, undefined, record.segments), `Synthesized pair does not fit its spelling: ${key}`);
+      assert.ok(
+        synthesized.delete(key) && !expected.has(key),
+        `Synthesized pair is not a reviewed, non-JMdict pair: ${key}`,
+      );
+      assert.ok(
+        !contradictsSpelling(record.spelling, record.reading, undefined, record.segments),
+        `Synthesized pair does not fit its spelling: ${key}`,
+      );
       fitting.add(`${id}\t${record.spelling}`);
       ++synthesizedCount;
       continue;
@@ -68,16 +129,29 @@ for (const [id, records] of Object.entries(output.entries)) {
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
     const recordDrops = drops.get(pairKey(record.spelling, record.reading));
     const mismatched = isMismatched(jmdictPairs.get(key), recordDrops, record.segments);
-    assert.deepEqual(Object.keys(record), mismatched ? ["spelling", "reading", "segments", "pairing"] : ["spelling", "reading", "segments"]);
+    assert.deepEqual(
+      Object.keys(record),
+      mismatched
+        ? ["spelling", "reading", "segments", "pairing"]
+        : ["spelling", "reading", "segments"],
+    );
     if (mismatched) assert.equal(record.pairing, "mismatched");
-    if (!contradictsSpelling(record.spelling, record.reading, recordDrops, record.segments)) fitting.add(`${id}\t${record.spelling}`);
+    if (!contradictsSpelling(record.spelling, record.reading, recordDrops, record.segments))
+      fitting.add(`${id}\t${record.spelling}`);
     ++count;
   }
 }
 assert.equal(expected.size, 0, "Every permitted JMdict spelling/reading pair is present");
-assert.equal(synthesized.size, 0, `Every reviewed synthesized pair is present: ${[...synthesized.keys()].join(", ")}`);
-for (const spelling of spellings) assert.ok(fitting.has(spelling), `No pair fits the spelling: ${spelling}`);
+assert.equal(
+  synthesized.size,
+  0,
+  `Every reviewed synthesized pair is present: ${[...synthesized.keys()].join(", ")}`,
+);
+for (const spelling of spellings)
+  assert.ok(fitting.has(spelling), `No pair fits the spelling: ${spelling}`);
 assert.equal(count, manifest.counts.pairs);
 assert.equal(synthesizedCount, manifest.counts.synthesized);
 assert.equal(Object.keys(output.entries).length, manifest.counts.entries);
-console.log(`Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, gzip, and artifact checksums.`);
+console.log(
+  `Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, gzip, and artifact checksums.`,
+);

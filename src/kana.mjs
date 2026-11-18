@@ -1,22 +1,25 @@
 const graphemeSegmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
-const kanaVowels = new Map([
-  ["あかがさざただなはばぱまゃやらゎわぁ", ["あ"]],
-  ["いきぎしじちぢにひびぴみりゐぃ", ["い"]],
-  ["うくぐすずつづぬふぶぷむゅゆるぅゔ", ["う"]],
-  ["えけげせぜてでねへべぺめれゑぇ", ["え", "い"]],
-  ["おこごそぞとどのほぼぽもょよろをぉ", ["お", "う"]]
-].flatMap(([characters, vowels]) => Array.from(characters, character => [character, vowels])));
+const kanaVowels = new Map(
+  [
+    ["あかがさざただなはばぱまゃやらゎわぁ", ["あ"]],
+    ["いきぎしじちぢにひびぴみりゐぃ", ["い"]],
+    ["うくぐすずつづぬふぶぷむゅゆるぅゔ", ["う"]],
+    ["えけげせぜてでねへべぺめれゑぇ", ["え", "い"]],
+    ["おこごそぞとどのほぼぽもょよろをぉ", ["お", "う"]],
+  ].flatMap(([characters, vowels]) => Array.from(characters, (character) => [character, vowels])),
+);
 
 // Characters that can join a neighbor into one grapheme cluster: extending characters such as the
 // half-width dakuten in ｶﾞ, other combining and spacing marks (including Thai and Lao SARA AM), format
 // characters such as ZWJ, emoji modifiers, regional indicators, Hangul jamo, and CR. Text without them
 // splits into graphemes exactly at code points.
-const mayJoin = /[\p{Grapheme_Extend}\p{M}\p{Cf}\u0e33\u0eb3\u1100-\u11ff\ua960-\ua97f\ud7b0-\ud7ff\r\u{1f1e6}-\u{1f1ff}\u{1f3fb}-\u{1f3ff}]/u;
+const mayJoin =
+  /[\p{Grapheme_Extend}\p{M}\p{Cf}\u0e33\u0eb3\u1100-\u11ff\ua960-\ua97f\ud7b0-\ud7ff\r\u{1f1e6}-\u{1f1ff}\u{1f3fb}-\u{1f3ff}]/u;
 
 /** Split text without separating a combining mark from its base character. */
 export function splitGraphemes(text) {
   if (!mayJoin.test(text)) return Array.from(text);
-  return Array.from(graphemeSegmenter.segment(text), part => part.segment);
+  return Array.from(graphemeSegmenter.segment(text), (part) => part.segment);
 }
 
 // Hiragana, the long-vowel mark, 々, and unified ideographs are unchanged by normalization.
@@ -25,9 +28,12 @@ const alreadyNormal = /^[\u3041-\u3096\u30fc\u3005\u3400-\u4dbf\u4e00-\u9fff]*$/
 /** Normalize only for comparison; callers retain the original text for output. */
 export function normalizeKana(text) {
   if (alreadyNormal.test(text)) return text;
-  return text.normalize("NFKC").replace(/[\u30a1-\u30f6]/gu, character =>
-    String.fromCodePoint(character.codePointAt(0) - 0x60)
-  ).normalize("NFC");
+  return text
+    .normalize("NFKC")
+    .replace(/[\u30a1-\u30f6]/gu, (character) =>
+      String.fromCodePoint(character.codePointAt(0) - 0x60),
+    )
+    .normalize("NFC");
 }
 
 export function getKanaVowels(text) {
@@ -54,7 +60,7 @@ export function kanaPronunciation(text) {
  * A caller must separately establish that any vowel-length change is licensed.
  */
 export function alignKanaPronunciations(spelling, reading) {
-  const blocks = text => {
+  const blocks = (text) => {
     const result = [];
     let precedingVowels;
     for (const unit of splitGraphemes(text)) {
@@ -72,17 +78,29 @@ export function alignKanaPronunciations(spelling, reading) {
   };
   const left = blocks(spelling);
   const right = blocks(reading);
-  if (!left || !right || left.length !== right.length || left.some((block, index) => block.character !== right[index].character)) return undefined;
+  if (
+    !left ||
+    !right ||
+    left.length !== right.length ||
+    left.some((block, index) => block.character !== right[index].character)
+  )
+    return undefined;
   const result = [];
   for (let index = 0; index < left.length; ++index) {
     const source = left[index];
     const target = right[index];
     if (source.long.length === target.long.length) {
       result.push([source.unit, target.unit]);
-      for (let longIndex = 0; longIndex < source.long.length; ++longIndex) result.push([source.long[longIndex], target.long[longIndex]]);
+      for (let longIndex = 0; longIndex < source.long.length; ++longIndex)
+        result.push([source.long[longIndex], target.long[longIndex]]);
     } else {
       const pair = [source.unit + source.long.join(""), target.unit + target.long.join("")];
-      if (/^[ゃゅょぁぃぅぇぉゎ]$/u.test(source.character) && index > 0 && left[index - 1].long.length === 0 && right[index - 1].long.length === 0) {
+      if (
+        /^[ゃゅょぁぃぅぇぉゎ]$/u.test(source.character) &&
+        index > 0 &&
+        left[index - 1].long.length === 0 &&
+        right[index - 1].long.length === 0
+      ) {
         const previous = result.pop();
         pair[0] = previous[0] + pair[0];
         pair[1] = previous[1] + pair[1];

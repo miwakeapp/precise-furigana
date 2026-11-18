@@ -3,7 +3,12 @@ import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 import { gunzipSync } from "node:zlib";
-import { defaultCacheDirectory, defaultLockPath, loadBundledSource, sha256 } from "../src/sources.mjs";
+import {
+  defaultCacheDirectory,
+  defaultLockPath,
+  loadBundledSource,
+  sha256,
+} from "../src/sources.mjs";
 import { extractZIPMember } from "./lib/zip.mjs";
 
 const repositoryURL = "https://github.com/scriptin/jmdict-simplified";
@@ -11,7 +16,10 @@ const releasesAPIURL = "https://api.github.com/repos/scriptin/jmdict-simplified/
 const sourcePrefixes = { jmdict: "jmdict-all-", kanjidic: "kanjidic2-all-" };
 
 async function fetchBytes(url, { api = false } = {}) {
-  const headers = { "User-Agent": "precise-furigana", Accept: api ? "application/vnd.github+json" : "application/octet-stream" };
+  const headers = {
+    "User-Agent": "precise-furigana",
+    Accept: api ? "application/vnd.github+json" : "application/octet-stream",
+  };
   if (api && process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   }
@@ -43,7 +51,7 @@ export function extractJSONFromTGZ(bytes) {
   let offset = 0;
   while (offset + 512 <= archive.length) {
     const header = archive.subarray(offset, offset + 512);
-    if (header.every(byte => byte === 0)) {
+    if (header.every((byte) => byte === 0)) {
       break;
     }
     const expectedChecksum = Number.parseInt(readTarText(header, 148, 156).trim(), 8);
@@ -81,20 +89,27 @@ export function extractJSONFromTGZ(bytes) {
 }
 
 async function resolveLock(tag) {
-  const url = tag === undefined ? `${releasesAPIURL}/latest` : `${releasesAPIURL}/tags/${encodeURIComponent(tag)}`;
+  const url =
+    tag === undefined
+      ? `${releasesAPIURL}/latest`
+      : `${releasesAPIURL}/tags/${encodeURIComponent(tag)}`;
   const release = JSON.parse((await fetchBytes(url, { api: true })).toString("utf8"));
   const sources = {};
   for (const [name, prefix] of Object.entries(sourcePrefixes)) {
-    const asset = release.assets.find(candidate => candidate.name.startsWith(prefix) && candidate.name.endsWith(".json.tgz"));
+    const asset = release.assets.find(
+      (candidate) => candidate.name.startsWith(prefix) && candidate.name.endsWith(".json.tgz"),
+    );
     if (!asset || !/^sha256:[a-f0-9]{64}$/u.test(asset.digest ?? "")) {
-      throw new Error(`Release ${release.tag_name} has no ${name} archive with a published SHA-256 digest`);
+      throw new Error(
+        `Release ${release.tag_name} has no ${name} archive with a published SHA-256 digest`,
+      );
     }
     sources[name] = {
       asset: asset.name,
       url: asset.browser_download_url,
       sha256: asset.digest.slice("sha256:".length),
       bytes: asset.size,
-      file: asset.name.slice(0, -".tgz".length)
+      file: asset.name.slice(0, -".tgz".length),
     };
   }
   return {
@@ -105,13 +120,19 @@ async function resolveLock(tag) {
       id: "CC-BY-SA-4.0",
       url: "https://creativecommons.org/licenses/by-sa/4.0/",
       statementURL: "https://www.edrdg.org/edrdg/licence.html",
-      attribution: "JMdict and KANJIDIC2 are copyright James William Breen and the Electronic Dictionary Research and Development Group. JSON conversion by scriptin/jmdict-simplified."
+      attribution:
+        "JMdict and KANJIDIC2 are copyright James William Breen and the Electronic Dictionary Research and Development Group. JSON conversion by scriptin/jmdict-simplified.",
     },
-    sources
+    sources,
   };
 }
 
-export async function fetchSources({ update = false, release, cacheDirectory = defaultCacheDirectory, lockPath = defaultLockPath } = {}) {
+export async function fetchSources({
+  update = false,
+  release,
+  cacheDirectory = defaultCacheDirectory,
+  lockPath = defaultLockPath,
+} = {}) {
   let lock;
   if (update) {
     lock = await resolveLock(release);
@@ -127,7 +148,10 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
       lock = JSON.parse(await readFile(lockPath, "utf8"));
     } catch (error) {
       if (error.code === "ENOENT") {
-        throw new Error("No source lock exists. Run npm run fetch -- --update to choose the latest upstream release.", { cause: error });
+        throw new Error(
+          "No source lock exists. Run npm run fetch -- --update to choose the latest upstream release.",
+          { cause: error },
+        );
       }
       throw error;
     }
@@ -152,7 +176,9 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
       bytes = await fetchBytes(source.url);
     }
     if (sha256(bytes) !== source.sha256 || bytes.length !== source.bytes) {
-      throw new Error(`Checksum or size mismatch for ${source.asset}; remove the cached archive and retry.`);
+      throw new Error(
+        `Checksum or size mismatch for ${source.asset}; remove the cached archive and retry.`,
+      );
     }
     await atomicWrite(archivePath, bytes);
     const jsonBytes = extractJSONFromTGZ(bytes);
@@ -170,7 +196,9 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
     source.dictDate = dictionary.dictDate;
     source.entryCount = entries.length;
     await atomicWrite(join(cacheDirectory, source.file), jsonBytes);
-    console.log(`${name}: ${entries.length.toLocaleString("en-US")} entries, dictionary date ${source.dictDate}`);
+    console.log(
+      `${name}: ${entries.length.toLocaleString("en-US")} entries, dictionary date ${source.dictDate}`,
+    );
   }
   for (const [name, source] of Object.entries(lock.lexicalSources ?? {})) {
     if (source.format === "bundled-json") {
@@ -178,7 +206,11 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
       console.log(`${name}: verified bundled source ${source.file}`);
       continue;
     }
-    if (source.format !== "zip-text" || !/^[\w.+-]+\.zip$/u.test(source.asset) || !/^[\w.+-]+\.txt$/u.test(source.file)) {
+    if (
+      source.format !== "zip-text" ||
+      !/^[\w.+-]+\.zip$/u.test(source.asset) ||
+      !/^[\w.+-]+\.txt$/u.test(source.file)
+    ) {
       throw new Error(`Invalid lexical source format for ${name}`);
     }
     const archivePath = join(cacheDirectory, source.asset);
@@ -190,9 +222,11 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
       console.log(`Downloading ${source.asset}`);
       bytes = await fetchBytes(source.url);
     }
-    if (bytes.length !== source.bytes || sha256(bytes) !== source.sha256) throw new Error(`Checksum or size mismatch for ${source.asset}`);
+    if (bytes.length !== source.bytes || sha256(bytes) !== source.sha256)
+      throw new Error(`Checksum or size mismatch for ${source.asset}`);
     const text = extractZIPMember(bytes, source.member);
-    if (sha256(text) !== source.textSHA256) throw new Error(`Extracted text checksum mismatch for ${name}`);
+    if (sha256(text) !== source.textSHA256)
+      throw new Error(`Extracted text checksum mismatch for ${name}`);
     await atomicWrite(archivePath, bytes);
     await atomicWrite(join(cacheDirectory, source.file), text);
     console.log(`${name}: locked version ${source.version}`);
@@ -207,15 +241,20 @@ export async function fetchSources({ update = false, release, cacheDirectory = d
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    const { values } = parseArgs({ options: {
-      update: { type: "boolean", default: false },
-      release: { type: "string" },
-      help: { type: "boolean", default: false }
-    } });
+    const { values } = parseArgs({
+      options: {
+        update: { type: "boolean", default: false },
+        release: { type: "string" },
+        help: { type: "boolean", default: false },
+      },
+    });
     if (values.help) {
-      console.log("Usage: node scripts/fetch-sources.mjs [--update [--release <tag>]]\n\nWithout --update, download and verify the exact sources in data/sources.lock.json.\nWith --update, resolve the latest upstream release, or the jmdict-simplified release tagged <tag>, and replace the lock after verification.");
+      console.log(
+        "Usage: node scripts/fetch-sources.mjs [--update [--release <tag>]]\n\nWithout --update, download and verify the exact sources in data/sources.lock.json.\nWith --update, resolve the latest upstream release, or the jmdict-simplified release tagged <tag>, and replace the lock after verification.",
+      );
     } else {
-      if (values.release !== undefined && !values.update) throw new Error("--release requires --update");
+      if (values.release !== undefined && !values.update)
+        throw new Error("--release requires --update");
       await fetchSources({ update: values.update, release: values.release });
     }
   } catch (error) {

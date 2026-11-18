@@ -7,7 +7,7 @@ import { recordKey, segmentText } from "../src/segments.mjs";
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
-  options: { output: { type: "string", default: "dist/changes.jsonl" } }
+  options: { output: { type: "string", default: "dist/changes.jsonl" } },
 });
 if (positionals.length !== 2) {
   throw new Error("Usage: npm run compare -- before.json after.json [--output changes.jsonl]");
@@ -16,17 +16,28 @@ if (positionals.length !== 2) {
 // spelling positions identify a boundary.
 function boundaries(segments) {
   let offset = 0;
-  return segments.slice(0, -1).map(segment => offset += [...segmentText(segment)].length);
+  return segments.slice(0, -1).map((segment) => (offset += [...segmentText(segment)].length));
 }
 function records(database) {
-  return new Map(Object.entries(database.entries).flatMap(([id, pairs]) =>
-    pairs.map(pair => [recordKey(id, pair.spelling, pair.reading), { id, ...pair }])));
+  return new Map(
+    Object.entries(database.entries).flatMap(([id, pairs]) =>
+      pairs.map((pair) => [recordKey(id, pair.spelling, pair.reading), { id, ...pair }]),
+    ),
+  );
 }
 const before = records(JSON.parse(await readFile(positionals[0], "utf8")));
 const after = records(JSON.parse(await readFile(positionals[1], "utf8")));
 await mkdir(dirname(values.output), { recursive: true });
 const output = createWriteStream(values.output);
-const counts = { unchanged: 0, added: 0, removed: 0, finer: 0, coarser: 0, incompatible: 0, ruby: 0 };
+const counts = {
+  unchanged: 0,
+  added: 0,
+  removed: 0,
+  finer: 0,
+  coarser: 0,
+  incompatible: 0,
+  ruby: 0,
+};
 async function write(value) {
   if (!output.write(JSON.stringify(value) + "\n")) await once(output, "drain");
 }
@@ -41,10 +52,16 @@ for (const [key, record] of after) {
   } else {
     const oldBoundaries = new Set(boundaries(previous.segments));
     const newBoundaries = new Set(boundaries(record.segments));
-    const kept = [...oldBoundaries].every(boundary => newBoundaries.has(boundary));
+    const kept = [...oldBoundaries].every((boundary) => newBoundaries.has(boundary));
     // Same cuts with different segments: ruby was added, removed or moved.
-    const change = kept && oldBoundaries.size === newBoundaries.size ? "ruby" : kept ? "finer" :
-      [...newBoundaries].every(boundary => oldBoundaries.has(boundary)) ? "coarser" : "incompatible";
+    const change =
+      kept && oldBoundaries.size === newBoundaries.size
+        ? "ruby"
+        : kept
+          ? "finer"
+          : [...newBoundaries].every((boundary) => oldBoundaries.has(boundary))
+            ? "coarser"
+            : "incompatible";
     ++counts[change];
     await write({ change, before: previous, after: record });
   }

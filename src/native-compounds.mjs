@@ -5,13 +5,26 @@ import { pairKey, segmentReading, segmentText, validateAlignment } from "./segme
 function validateReadings(map, name, annotated = false) {
   if (!(map instanceof Map)) throw new TypeError(`${name} must be a Map`);
   for (const [character, values] of map) {
-    if (typeof character !== "string" || splitGraphemes(character).length !== 1 || !Array.isArray(values) || values.some(value =>
-      typeof value !== "string" || !isKana(annotated ? value.replace(/[.-]/gu, "") : value)
-    )) throw new TypeError(`${name} must contain character readings`);
+    if (
+      typeof character !== "string" ||
+      splitGraphemes(character).length !== 1 ||
+      !Array.isArray(values) ||
+      values.some(
+        (value) =>
+          typeof value !== "string" || !isKana(annotated ? value.replace(/[.-]/gu, "") : value),
+      )
+    )
+      throw new TypeError(`${name} must contain character readings`);
   }
 }
 
-function compileReadings(characterReadings, weakCharacterReadings, unihanReadings, characterReadingBundle, jmdict) {
+function compileReadings(
+  characterReadings,
+  weakCharacterReadings,
+  unihanReadings,
+  characterReadingBundle,
+  jmdict,
+) {
   validateReadings(characterReadings, "characterReadings", true);
   validateReadings(weakCharacterReadings, "weakCharacterReadings");
   validateReadings(unihanReadings, "unihanReadings");
@@ -64,9 +77,18 @@ function compileReadings(characterReadings, weakCharacterReadings, unihanReading
     exact.set(character, candidates);
   }
   if (characterReadingBundle !== undefined) {
-    if (characterReadingBundle?.schemaVersion !== 1 || !Array.isArray(characterReadingBundle.readings)) throw new TypeError("Invalid character-reading bundle");
+    if (
+      characterReadingBundle?.schemaVersion !== 1 ||
+      !Array.isArray(characterReadingBundle.readings)
+    )
+      throw new TypeError("Invalid character-reading bundle");
     for (const record of characterReadingBundle.readings) {
-      if (typeof record.character !== "string" || !isIdeograph(record.character) || typeof record.reading !== "string" || !isKana(record.reading)) {
+      if (
+        typeof record.character !== "string" ||
+        !isIdeograph(record.character) ||
+        typeof record.reading !== "string" ||
+        !isKana(record.reading)
+      ) {
         throw new TypeError("Character-reading bundle must contain exact character sounds");
       }
       rememberWhole(record.character, record.reading);
@@ -87,7 +109,10 @@ function findIrregularRanges(spelling, reading, irregularWords) {
       if (candidates === undefined) continue;
       for (let readStart = 0; readStart < reading.length; ++readStart) {
         for (const candidate of candidates) {
-          if (normalizeKana(reading.slice(readStart, readStart + candidate.length).join("")) === candidate.join("")) {
+          if (
+            normalizeKana(reading.slice(readStart, readStart + candidate.length).join("")) ===
+            candidate.join("")
+          ) {
             result.push({ start, end, readStart, readEnd: readStart + candidate.length });
           }
         }
@@ -98,12 +123,16 @@ function findIrregularRanges(spelling, reading, irregularWords) {
 }
 
 function refineSpan(spelling, reading, readings, ranges, spellingOffset, readingOffset) {
-  const characters = splitGraphemes(spelling), kana = splitGraphemes(reading);
+  const characters = splitGraphemes(spelling),
+    kana = splitGraphemes(reading);
   if (characters.length < 2 || !characters.every(isIdeograph) || !isKana(reading)) return undefined;
   const normalizedSpan = normalizeKana(reading);
   const memo = new Map();
   function visit(index, offset, inferred) {
-    if (index === characters.length) return offset === kana.length ? [{ segments: [], characters: [], companions: [], inferred, weakCompanion: false }] : [];
+    if (index === characters.length)
+      return offset === kana.length
+        ? [{ segments: [], characters: [], companions: [], inferred, weakCompanion: false }]
+        : [];
     const key = `${index}:${offset}:${inferred}`;
     if (memo.has(key)) return memo.get(key);
     const character = characters[index] === "々" ? characters[index - 1] : characters[index];
@@ -117,31 +146,66 @@ function refineSpan(spelling, reading, readings, ranges, spellingOffset, reading
       const target = normalizeKana(piece);
       if (/^[ぁぃぅぇぉゃゅょゎっんー]/u.test(target)) continue;
       const direct = exact.get(target);
-      const irregular = ranges.some(range => range.start <= spellingOffset + index && spellingOffset + index < range.end &&
-        range.readStart <= readingOffset + offset && readingOffset + end <= range.readEnd);
+      const irregular = ranges.some(
+        (range) =>
+          range.start <= spellingOffset + index &&
+          spellingOffset + index < range.end &&
+          range.readStart <= readingOffset + offset &&
+          readingOffset + end <= range.readEnd,
+      );
       if (direct !== undefined && !direct.primary && irregular) continue;
       // A full known reading that crosses the proposed cut can explain the
       // apparent contraction as a redundant spelling, even inside a longer word.
-      const shadow = whole.has(normalizedSpan) || [...whole].some(value => value.length > target.length && remainder.startsWith(value));
-      const derivations = direct !== undefined || inferred || irregular || shadow ? [] : native.filter(value => value.reading === target);
+      const shadow =
+        whole.has(normalizedSpan) ||
+        [...whole].some((value) => value.length > target.length && remainder.startsWith(value));
+      const derivations =
+        direct !== undefined || inferred || irregular || shadow
+          ? []
+          : native.filter((value) => value.reading === target);
       if (direct === undefined && derivations.length === 0) continue;
-      const evidence = derivations.length === 0 ? [] : [{
-        character,
-        spelling: characters[index],
-        reading: piece,
-        codepoint: `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`,
-        rule: "attested-native-final-mora-contraction",
-        derivations: derivations.map(({ value, omittedMora }) => ({ source: "KANJIDIC2", field: "ja_kun", value, omittedMora })),
-        span: { spelling, reading, spellingStart: spellingOffset, readingStart: readingOffset }
-      }];
-      const companions = direct?.primary ? [{ character, spelling: characters[index], reading: piece, source: "KANJIDIC2", values: direct.values }] : [];
+      const evidence =
+        derivations.length === 0
+          ? []
+          : [
+              {
+                character,
+                spelling: characters[index],
+                reading: piece,
+                codepoint: `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`,
+                rule: "attested-native-final-mora-contraction",
+                derivations: derivations.map(({ value, omittedMora }) => ({
+                  source: "KANJIDIC2",
+                  field: "ja_kun",
+                  value,
+                  omittedMora,
+                })),
+                span: {
+                  spelling,
+                  reading,
+                  spellingStart: spellingOffset,
+                  readingStart: readingOffset,
+                },
+              },
+            ];
+      const companions = direct?.primary
+        ? [
+            {
+              character,
+              spelling: characters[index],
+              reading: piece,
+              source: "KANJIDIC2",
+              values: direct.values,
+            },
+          ]
+        : [];
       for (const suffix of visit(index + 1, end, inferred || derivations.length > 0)) {
         solutions.push({
           segments: [[characters[index], piece], ...suffix.segments],
           characters: [...evidence, ...suffix.characters],
           companions: [...companions, ...suffix.companions],
           inferred: suffix.inferred,
-          weakCompanion: Boolean(direct && !direct.primary) || suffix.weakCompanion
+          weakCompanion: Boolean(direct && !direct.primary) || suffix.weakCompanion,
         });
         if (solutions.length === 2) break;
       }
@@ -157,13 +221,25 @@ function refineSpan(spelling, reading, readings, ranges, spellingOffset, reading
 }
 
 /** Refine exact attested compounds without adding unrestricted character readings. */
-export function deriveNativeCompoundAlignments(jmdict, characterReadings, align, {
-  weakCharacterReadings = new Map(),
-  unihanReadings = new Map(),
-  characterReadingBundle
-} = {}) {
-  const readings = compileReadings(characterReadings, weakCharacterReadings, unihanReadings, characterReadingBundle, jmdict);
-  const irregularWords = new Map([...makeIrregularWordReadings(jmdict)].map(([spelling, values]) => [spelling, values.map(value => splitGraphemes(normalizeKana(value)))]));
+export function deriveNativeCompoundAlignments(
+  jmdict,
+  characterReadings,
+  align,
+  { weakCharacterReadings = new Map(), unihanReadings = new Map(), characterReadingBundle } = {},
+) {
+  const readings = compileReadings(
+    characterReadings,
+    weakCharacterReadings,
+    unihanReadings,
+    characterReadingBundle,
+    jmdict,
+  );
+  const irregularWords = new Map(
+    [...makeIrregularWordReadings(jmdict)].map(([spelling, values]) => [
+      spelling,
+      values.map((value) => splitGraphemes(normalizeKana(value))),
+    ]),
+  );
   const wordAlignments = new Map();
   const witnesses = [];
   const seen = new Set();
@@ -174,17 +250,26 @@ export function deriveNativeCompoundAlignments(jmdict, characterReadings, align,
     seen.add(key);
     const original = align(pair.spelling, pair.reading);
     if (original.status !== "aligned") continue;
-    if (!original.segments.some(segment => {
-      if (typeof segment === "string") return false;
-      const units = splitGraphemes(segment[0]);
-      return units.length > 1 && units.every(isIdeograph);
-    })) continue;
-    const ranges = findIrregularRanges(splitGraphemes(pair.spelling), splitGraphemes(pair.reading), irregularWords);
+    if (
+      !original.segments.some((segment) => {
+        if (typeof segment === "string") return false;
+        const units = splitGraphemes(segment[0]);
+        return units.length > 1 && units.every(isIdeograph);
+      })
+    )
+      continue;
+    const ranges = findIrregularRanges(
+      splitGraphemes(pair.spelling),
+      splitGraphemes(pair.reading),
+      irregularWords,
+    );
     const characters = [];
     const companions = [];
-    let spellingOffset = 0, readingOffset = 0;
-    const segments = original.segments.flatMap(segment => {
-      const spelling = segmentText(segment), reading = segmentReading(segment);
+    let spellingOffset = 0,
+      readingOffset = 0;
+    const segments = original.segments.flatMap((segment) => {
+      const spelling = segmentText(segment),
+        reading = segmentReading(segment);
       const result = refineSpan(spelling, reading, readings, ranges, spellingOffset, readingOffset);
       spellingOffset += splitGraphemes(spelling).length;
       readingOffset += splitGraphemes(reading).length;
@@ -198,7 +283,13 @@ export function deriveNativeCompoundAlignments(jmdict, characterReadings, align,
     const variants = wordAlignments.get(pair.spelling) ?? new Map();
     variants.set(pair.reading, segments);
     wordAlignments.set(pair.spelling, variants);
-    witnesses.push({ id: pair.id, spelling: pair.spelling, reading: pair.reading, characters, companions });
+    witnesses.push({
+      id: pair.id,
+      spelling: pair.spelling,
+      reading: pair.reading,
+      characters,
+      companions,
+    });
   }
   return { wordAlignments, witnesses };
 }

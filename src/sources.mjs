@@ -12,13 +12,18 @@ export function sha256(bytes) {
 }
 
 export async function loadBundledSource(source, lockPath = defaultLockPath) {
-  if (source.format !== "bundled-json" || !/^[\w.+-]+\.json$/u.test(source.file ?? "")) throw new Error("Invalid bundled source file name or format");
+  if (source.format !== "bundled-json" || !/^[\w.+-]+\.json$/u.test(source.file ?? ""))
+    throw new Error("Invalid bundled source file name or format");
   const bytes = await readFile(join(dirname(lockPath), source.file));
-  if (bytes.length !== source.bytes || sha256(bytes) !== source.sha256) throw new Error(`Checksum or size mismatch for bundled ${source.file}`);
+  if (bytes.length !== source.bytes || sha256(bytes) !== source.sha256)
+    throw new Error(`Checksum or size mismatch for bundled ${source.file}`);
   return JSON.parse(bytes.toString("utf8"));
 }
 
-export async function loadSources({ cacheDirectory = defaultCacheDirectory, lockPath = defaultLockPath } = {}) {
+export async function loadSources({
+  cacheDirectory = defaultCacheDirectory,
+  lockPath = defaultLockPath,
+} = {}) {
   const lock = JSON.parse(await readFile(lockPath, "utf8"));
   if (lock.schemaVersion !== 1) {
     throw new Error(`Unsupported source lock schema: ${lock.schemaVersion}`);
@@ -46,22 +51,43 @@ export async function loadSources({ cacheDirectory = defaultCacheDirectory, lock
 
   const jmdict = await loadSource("jmdict");
   const kanjidic = await loadSource("kanjidic");
-  if (!Array.isArray(jmdict.words) || jmdict.commonOnly !== false || !Array.isArray(kanjidic.characters)) {
+  if (
+    !Array.isArray(jmdict.words) ||
+    jmdict.commonOnly !== false ||
+    !Array.isArray(kanjidic.characters)
+  ) {
     throw new Error("Expected complete jmdict-simplified JMdict and KANJIDIC2 dictionaries.");
   }
   let unihanText;
   const unihan = lock.lexicalSources?.unihan;
   if (unihan !== undefined) {
-    if (!/^[\w.+-]+\.txt$/u.test(unihan.file ?? "")) throw new Error("Invalid cached Unihan file name");
+    if (!/^[\w.+-]+\.txt$/u.test(unihan.file ?? ""))
+      throw new Error("Invalid cached Unihan file name");
     const bytes = await readFile(join(cacheDirectory, unihan.file));
-    if (sha256(bytes) !== unihan.textSHA256) throw new Error("Checksum mismatch for cached Unihan readings; run npm run fetch to restore them.");
+    if (sha256(bytes) !== unihan.textSHA256)
+      throw new Error(
+        "Checksum mismatch for cached Unihan readings; run npm run fetch to restore them.",
+      );
     unihanText = bytes.toString("utf8");
   }
   const japaneseWiktionary = lock.lexicalSources?.japaneseWiktionary;
-  const characterReadingBundle = japaneseWiktionary === undefined ? undefined : await loadBundledSource(japaneseWiktionary, lockPath);
+  const characterReadingBundle =
+    japaneseWiktionary === undefined
+      ? undefined
+      : await loadBundledSource(japaneseWiktionary, lockPath);
   const englishWiktionary = lock.lexicalSources?.englishWiktionary;
-  const englishCharacterReadingBundle = englishWiktionary === undefined ? undefined : await loadBundledSource(englishWiktionary, lockPath);
-  return { jmdict, kanjidic, unihanText, characterReadingBundle, englishCharacterReadingBundle, lock };
+  const englishCharacterReadingBundle =
+    englishWiktionary === undefined
+      ? undefined
+      : await loadBundledSource(englishWiktionary, lockPath);
+  return {
+    jmdict,
+    kanjidic,
+    unihanText,
+    characterReadingBundle,
+    englishCharacterReadingBundle,
+    lock,
+  };
 }
 
 // Reading restrictions apply to the spelling/reading pair, independently of sense restrictions.
@@ -70,7 +96,7 @@ export function* enumeratePairs(jmdict) {
     if (typeof word.id !== "string" || !/^\d+$/u.test(word.id)) {
       throw new Error(`Invalid JMdict entry ID: ${word.id}`);
     }
-    const spellings = new Set(word.kanji.map(kanji => kanji.text));
+    const spellings = new Set(word.kanji.map((kanji) => kanji.text));
     for (const [readingIndex, kana] of word.kana.entries()) {
       if (!Array.isArray(kana.appliesToKanji)) {
         throw new Error(`Missing reading restrictions in JMdict entry ${word.id}`);
@@ -89,7 +115,7 @@ export function* enumeratePairs(jmdict) {
           readingIndex,
           kind: "kana",
           spellingTags: [],
-          readingTags: kana.tags
+          readingTags: kana.tags,
         };
         continue;
       }
@@ -105,7 +131,7 @@ export function* enumeratePairs(jmdict) {
           readingIndex,
           kind: "kanji",
           spellingTags: kanji.tags,
-          readingTags: kana.tags
+          readingTags: kana.tags,
         };
       }
     }
@@ -162,7 +188,11 @@ export function makeWordReadings(jmdict) {
 export function makeIrregularWordReadings(jmdict) {
   const result = new Map();
   for (const pair of enumeratePairs(jmdict)) {
-    if (pair.kind === "kanji" && pair.readingTags.includes("gikun") && !pair.spellingTags.includes("ateji")) {
+    if (
+      pair.kind === "kanji" &&
+      pair.readingTags.includes("gikun") &&
+      !pair.spellingTags.includes("ateji")
+    ) {
       addReading(result, pair.spelling, pair.reading);
     }
   }

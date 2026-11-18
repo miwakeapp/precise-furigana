@@ -42,12 +42,14 @@ const jmdictPairs = new Map([...enumeratePairs(jmdict)].map(pair => [recordKey(p
 const expected = new Set(jmdictPairs.keys());
 for (const key of annotations.keys()) assert.ok(expected.has(key) || synthesized.has(key), `Stale annotation absent from source dictionary: ${key}`);
 let count = 0, synthesizedCount = 0;
-const fitting = new Set(), spellings = new Set();
+const fitting = new Set(), spellings = new Set(), keys = new Set();
 for (const [id, records] of Object.entries(output.entries)) {
   assert.ok(/^\d+$/u.test(id));
   assert.ok(records.length > 0);
   for (const record of records) {
     const key = recordKey(id, record.spelling, record.reading);
+    assert.ok(!keys.has(key), `Two records share an ID, spelling, and reading: ${key}`);
+    keys.add(key);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
     spellings.add(`${id}\t${record.spelling}`);
     if (record.pairing === "synthesized") {

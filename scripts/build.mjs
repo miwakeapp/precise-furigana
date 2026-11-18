@@ -57,7 +57,9 @@ if (updateSynthesizedPairs) {
 for (const item of plan.pairs) {
   const { segments } = dataset.alignPair(item);
   validateAlignment(item.spelling, item.reading, segments);
-  seen.add(recordKey(item.id, item.spelling, item.reading));
+  const key = recordKey(item.id, item.spelling, item.reading);
+  if (seen.has(key)) throw new Error(`Synthesized pair duplicates an existing record: ${key}`);
+  seen.add(key);
   (entries[item.id] ??= []).push({ spelling: item.spelling, reading: item.reading, segments: displaySegments(segments), pairing: "synthesized" });
   ++counts.synthesized;
 }

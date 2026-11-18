@@ -96,6 +96,8 @@ const fitting = new Set(),
   keys = new Set();
 // The position of each spelling's latest record: its JMdict reading index, or Infinity once synthesized.
 const lastPosition = new Map();
+// A pair that several entries share has the same segments in each, so consumers can look one up without an ID.
+const pairSegments = new Map();
 for (const [id, records] of Object.entries(output.entries)) {
   assert.ok(/^\d+$/u.test(id));
   assert.ok(records.length > 0);
@@ -103,6 +105,14 @@ for (const [id, records] of Object.entries(output.entries)) {
     const key = recordKey(id, record.spelling, record.reading);
     assert.ok(!keys.has(key), `Two records share an ID, spelling, and reading: ${key}`);
     keys.add(key);
+    const pair = pairKey(record.spelling, record.reading);
+    const segments = JSON.stringify(record.segments);
+    assert.equal(
+      pairSegments.get(pair) ?? segments,
+      segments,
+      `Entries disagree on the segments of one spelling and reading: ${key}`,
+    );
+    pairSegments.set(pair, segments);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
     spellings.add(`${id}\t${record.spelling}`);
     const position =

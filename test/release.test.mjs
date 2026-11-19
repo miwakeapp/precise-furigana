@@ -95,7 +95,7 @@ test("release tags follow the database content and retain source date", () => {
     sources: { jmdict: { dictDate: "2026-10-05" } },
   };
   const manifest = (sha256, evaluation = "evaluation") => ({
-    schemaVersion: 2,
+    schemaVersion: 1,
     algorithmVersion: "0.1.0",
     counts: { entries: 1, pairs: 1 },
     files: { "precise-furigana.json": { sha256 }, "evaluation.json": { sha256: evaluation } },

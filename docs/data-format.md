@@ -5,7 +5,7 @@
 <!-- oxfmt-ignore -->
 ```json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "jmdictDate": "2026-10-05",
   "license": "CC-BY-SA-4.0",
   "attribution": "Based on JMdict and KANJIDIC2, copyright EDRDG, …",

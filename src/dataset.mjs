@@ -41,7 +41,7 @@ import { deriveSourceUnitAlignments } from "./source-units.mjs";
 import { deriveSeparatorAlignments } from "./separator-alignments.mjs";
 import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 
-export const schemaVersion = 2;
+export const schemaVersion = 1;
 export const algorithmVersion = "0.1.0";
 export const defaultConfiguration = {
   terminalContraction: true,

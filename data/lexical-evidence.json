@@ -22821,8 +22821,8 @@
       "id": "SR-096",
       "spelling": "埴生",
       "reading": "はにゅう",
-      "segments": [["埴","はに"],["生","ゅう"]],
-      "reason": "Daijisen writes はにゅう〔はにふ〕【×埴▽生】 and Nihon Kokugo Daijiten explains 生 as ふ, a place where something grows; はに is the kun reading of 埴, and ふ became う and fused with the preceding に as にゅう.",
+      "segments": [["埴","はにゅ"],["生","う"]],
+      "reason": "Daijisen writes はにゅう〔はにふ〕【×埴▽生】 and Nihon Kokugo Daijiten explains 生 as ふ, a place where something grows; はに is the kun reading of 埴, and ふ became う. The に before it became にゅ without losing a kana, so 埴 keeps it, as 狩 does in 狩[かりゅ] 人[うど] from かりうど.",
       "sources": [
         {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/埴生"},
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}

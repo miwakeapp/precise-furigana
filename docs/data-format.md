@@ -8,8 +8,6 @@
   "version": "1.20261116.0",
   "schemaVersion": 1,
   "jmdictDate": "2026-11-16",
-  "license": "CC-BY-SA-4.0",
-  "attribution": "Based on JMdict and KANJIDIC2, copyright EDRDG, …",
   "entries": {
     "1582710": [
       { "spelling": "日本", "reading": "にほん", "segments": [["日", "に"], ["本", "ほん"]] }

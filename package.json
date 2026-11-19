@@ -15,6 +15,10 @@
     "validate": "node scripts/validate.mjs",
     "format": "oxfmt"
   },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
   "devDependencies": {
     "oxfmt": "^0.79.0"
   },

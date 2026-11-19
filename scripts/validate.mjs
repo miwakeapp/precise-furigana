@@ -1,3 +1,5 @@
+import Ajv from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
@@ -21,6 +23,13 @@ import { parseDatabaseVersion } from "./lib/database-files.mjs";
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
 const bytes = await readFile(join(values.directory, "precise-furigana.json"));
 const output = JSON.parse(bytes);
+const matchesSchema = addFormats(new Ajv()).compile(
+  JSON.parse(await readFile(new URL("../schema.json", import.meta.url), "utf8")),
+);
+assert.ok(
+  matchesSchema(output),
+  `Output does not match schema.json: ${JSON.stringify(matchesSchema.errors?.slice(0, 3))}`,
+);
 assert.equal(output.schemaVersion, schemaVersion);
 assert.deepEqual(
   gunzipSync(await readFile(join(values.directory, "precise-furigana.json.gz"))),
@@ -45,14 +54,7 @@ const synthesized = new Map(
   ).map((item) => [recordKey(item.id, item.spelling, item.reading), item]),
 );
 const annotations = compileAnnotations(JSON.parse(annotationsText));
-assert.deepEqual(Object.keys(output), [
-  "version",
-  "schemaVersion",
-  "jmdictDate",
-  "license",
-  "attribution",
-  "entries",
-]);
+assert.deepEqual(Object.keys(output), ["version", "schemaVersion", "jmdictDate", "entries"]);
 assert.equal(
   output.jmdictDate,
   lock.sources.jmdict.dictDate,

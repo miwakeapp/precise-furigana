@@ -140,9 +140,6 @@ const files = await writeDatabase(outputDirectory, {
   version,
   schemaVersion,
   jmdictDate,
-  license: "CC-BY-SA-4.0",
-  attribution:
-    "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE.md in the source repository.",
   entries,
 });
 const evaluationBytes = Buffer.from(JSON.stringify(evaluation, undefined, 2) + "\n");

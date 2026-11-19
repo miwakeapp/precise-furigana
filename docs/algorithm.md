@@ -42,5 +42,5 @@ Constraints that apply across passes:
 ## After alignment
 
 - [src/display.mjs](../src/display.mjs) converts generator segments, which reconstruct both strings exactly, into release segments: kana the reading repeats becomes plain text, and silent punctuation leaves ruby. A ruby group containing a kanji only loses kana when its whole leading or trailing kana run matches, because a partial match can be coincidental (in 近からずとも遠からず read ちかからずとおからず, peeling と would leave 遠 with お). A kana-only group sheds any matching edge kana.
-- [src/pairings.mjs](../src/pairings.mjs) decides which pairs contradict their spelling, flags the search-only ones as mismatched, and plans synthesized pairs.
+- [src/pairings.mjs](../src/pairings.mjs) decides which pairs contradict their spelling, and so are mismatched, and plans synthesized pairs.
 - `data/annotations.json` replaces the complete result for one exact ID, spelling, and reading. Regression fixtures test the generator without annotations, so an annotation never hides a generator regression.

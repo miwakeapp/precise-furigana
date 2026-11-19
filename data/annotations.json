@@ -1008,5 +1008,28 @@
     "sources": [
       "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"
     ]
+  },
+  {
+    "id": "2034870",
+    "spelling": "宛行扶持",
+    "reading": "あてがいぶち",
+    "segments": [
+      [
+        "宛行",
+        "あてがい"
+      ],
+      [
+        "扶",
+        "ぶ"
+      ],
+      [
+        "持",
+        "ち"
+      ]
+    ],
+    "reason": "Pinned JMdict entry 2034870 also spells this 宛てがい扶持, so 宛 owns only あて and the い is the verb's inflection. The generator instead gave 宛 the stem あてが and matched that い to 行's reading い. 行 has no reading がい, so 宛行 stays grouped, as it is in 宛行 read あてがい.",
+    "sources": [
+      "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"
+    ]
   }
 ]

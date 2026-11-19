@@ -7,7 +7,6 @@ const switches = {
   "no-variants": "variantTransfers",
   "no-compound-voicing": "compoundVoicing",
   "no-continuatives": "continuativeStems",
-  "learn-readings": "learnReadings",
   "no-weak-readings": "weakReadings",
   "no-kana-substitutions": "kanaSubstitutions",
   "no-numerals": "numeralTransfers",
@@ -55,10 +54,7 @@ export function parseGeneratorOptions(defaultOutput, args = process.argv.slice(2
     },
   });
   const configuration = Object.fromEntries(
-    Object.entries(switches).map(([flag, name]) => [
-      name,
-      flag === "learn-readings" ? values[flag] : !values[flag],
-    ]),
+    Object.entries(switches).map(([flag, name]) => [name, !values[flag]]),
   );
   configuration.compoundVoicing &&= configuration.phonologicalAlternations;
   return {

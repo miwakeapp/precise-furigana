@@ -37,7 +37,7 @@ Constraints that apply across passes:
 - A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
 - Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.
 - Optional weak sound changes (dictionary nasal loss and initial voicing) can shift the evidence that spelling transfers rely on, so the pipeline also compiles a reduced copy of itself without them and keeps the boundaries that copy establishes. This roughly doubles the early stages' cost.
-- No pass feeds inferred readings back into the character inventories. The `learnReadings` experiment, which would, is off by default because its candidates were too permissive.
+- No pass feeds inferred readings back into the character inventories.
 
 ## After alignment
 

@@ -61,7 +61,7 @@ test("release evaluation is bound to source, generator, configuration, and gold 
   assert.throws(() =>
     verifyEvaluation(evaluation, goldText, { ...current, generatorSHA256: "new-generator" }),
   );
-  evaluation.provenance.configuration.learnReadings = true;
+  evaluation.provenance.configuration.variantTransfers = false;
   assert.throws(() => verifyEvaluation(evaluation, goldText, current));
 });
 

@@ -17,7 +17,6 @@ import {
   segmentText,
   validateAlignment,
 } from "./segments.mjs";
-import { deriveCharacterReadings } from "./lexicon.mjs";
 import {
   deriveOmittedParticles,
   deriveVariantAlignments,
@@ -47,7 +46,6 @@ export const defaultConfiguration = {
   phonologicalAlternations: true,
   compoundVoicing: true,
   variantTransfers: true,
-  learnReadings: false,
   continuativeStems: true,
   weakReadings: true,
   kanaSubstitutions: true,
@@ -342,10 +340,7 @@ function compilePipeline(
           variantTargets,
         )
       : undefined;
-  const baseReadings = makeCharacterReadings(kanjidic);
-  const { characterReadings, additions } = configuration.learnReadings
-    ? deriveCharacterReadings(jmdict, baseReadings)
-    : { characterReadings: baseReadings, additions: [] };
+  const characterReadings = makeCharacterReadings(kanjidic);
   const alignerOptions = {
     characterReadings,
     wordReadings: makeWordReadings(jmdict),
@@ -770,7 +765,7 @@ function compilePipeline(
           );
   // Any stage can cut beside an omitted particle, so the grouping is applied last.
   const omittedParticles = configuration.variantTransfers
-    ? deriveOmittedParticles(jmdict, baseReadings)
+    ? deriveOmittedParticles(jmdict, characterReadings)
     : undefined;
   const align =
     omittedParticles === undefined
@@ -784,7 +779,6 @@ function compilePipeline(
     mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {
     configuration,
-    learnedReadings: additions,
     variantTransfers: transfers,
     supplementaryVariants: supplementaryVariants.transfers,
     weakReadings: weak.witnesses,

@@ -102,10 +102,8 @@ export function summarizeChanges(changes: Change[]): ChangeSummary {
   const listed: ListedChanges = { finer: [], coarser: [], incompatible: [], ruby: [] };
   for (const item of changes) {
     ++counts[item.change];
-    // Only the kinds that `listed` names have a list; those are the segmentation changes.
-    (listed as Partial<Record<Change["change"], SegmentationChange[]>>)[item.change]?.push(
-      item as SegmentationChange,
-    );
+    // Added and removed records are only counted; the segmentation changes are listed too.
+    if (item.change !== "added" && item.change !== "removed") listed[item.change].push(item);
   }
   return { counts, listed };
 }

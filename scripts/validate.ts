@@ -32,8 +32,7 @@ import { extractZIPMember } from "./lib/zip.ts";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
 const bytes = await readFile(join(values.directory, databaseFile));
-// `JSON.parse()` converts the bytes to a string itself; its declaration only admits a string.
-const output: Database = JSON.parse(bytes as unknown as string);
+const output: Database = JSON.parse(bytes.toString("utf8"));
 // Node gives a CommonJS module's `module.exports` as its default import. For these two packages
 // that is the class and the function themselves, but their declarations only describe `default`.
 const matchesSchema = (addFormats as unknown as typeof addFormats.default)(
@@ -170,10 +169,11 @@ for (const [id, records] of Object.entries(output.entries)) {
     spellings.add(`${id}\t${record.spelling}`);
     const position =
       record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;
+    const previousPosition = lastPosition.get(`${id}\t${record.spelling}`);
     assert.ok(
       // A record that JMdict lacks has no position, and a spelling's first record has none before
-      // it. Either way the comparison is false.
-      !(position! < lastPosition.get(`${id}\t${record.spelling}`)!),
+      // it. Either way there is nothing to compare.
+      position === undefined || previousPosition === undefined || position >= previousPosition,
       `Records for a spelling are out of JMdict reading order: ${key}`,
     );
     lastPosition.set(`${id}\t${record.spelling}`, position);

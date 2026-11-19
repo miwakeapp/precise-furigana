@@ -203,20 +203,9 @@ test("target constraints are scoped to the exact pair and cannot become transfer
   );
 });
 
-test("target constraints reject invalid projections and malformed maps", () => {
+test("target constraints reject segments that do not reconstruct their pair", () => {
   const jmdict = dictionary("甲乙", ["あい", "ああい"]),
     align = createAligner({ characterReadings: new Map() });
-  assert.throws(
-    // @ts-expect-error Target alignments that are not a Map must be rejected.
-    () => deriveReadingVariantAlignments(jmdict, align, { targetAlignments: null }),
-    TypeError,
-  );
-  assert.throws(
-    () =>
-      // @ts-expect-error A spelling whose readings are not a Map must be rejected.
-      deriveReadingVariantAlignments(jmdict, align, { targetAlignments: new Map([["甲乙", []]]) }),
-    TypeError,
-  );
   assert.throws(
     () =>
       deriveReadingVariantAlignments(jmdict, align, {

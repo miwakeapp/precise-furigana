@@ -186,15 +186,10 @@ interface PathEdge {
 }
 
 function validateReadingMap(map: ReadingMap, name: string, annotated = false): void {
-  if (!(map instanceof Map)) throw new TypeError(`${name} must be a Map`);
   for (const [character, values] of map) {
     if (
-      typeof character !== "string" ||
       splitGraphemes(character).length !== 1 ||
-      !Array.isArray(values) ||
-      values.some(
-        (value) => typeof value !== "string" || !isKana(annotated ? readingStem(value) : value),
-      )
+      values.some((value) => !isKana(annotated ? readingStem(value) : value))
     ) {
       throw new TypeError(`${name} must map single characters to kana readings`);
     }
@@ -236,23 +231,12 @@ export function deriveListedPhonologyAlignments(
     onLengthening = true,
   }: ListedPhonologyOptions = {},
 ): PassResult<ListedPhonologyWitness> {
-  if (!Array.isArray(jmdict?.words)) throw new TypeError("JMdict must contain a words array");
-  if (typeof align !== "function") throw new TypeError("align must be a function");
   validateReadingMap(primary, "primary", true);
   validateReadingMap(weakCharacterReadings, "weakCharacterReadings");
   validateReadingMap(unihanReadings, "unihanReadings");
   if (
-    [supplementalVoicing, yoonSimplification, onLengthening, loanReadings, koreanReadings].some(
-      (value) => typeof value !== "boolean",
-    )
-  ) {
-    throw new TypeError("Listed phonology options must be booleans");
-  }
-  if (
     unihanSource !== undefined &&
-    (unihanSource === null ||
-      typeof unihanSource !== "object" ||
-      typeof unihanSource.version !== "string" ||
+    (typeof unihanSource.version !== "string" ||
       !unihanSource.version.trim() ||
       !/^[\da-f]{64}$/u.test(unihanSource.sha256 ?? "") ||
       (unihanSource.textSHA256 !== undefined && !/^[\da-f]{64}$/u.test(unihanSource.textSHA256)))
@@ -371,14 +355,10 @@ function refineExactSounds(
     koreanReadings,
   }: PooledSoundOptions,
 ): void {
-  if (!Array.isArray(kanjidic?.characters) || !Array.isArray(weakWitnesses))
-    throw new TypeError("KANJIDIC characters and weak witnesses must be arrays");
   for (const supplied of [kanjidicSource, jmdictSource]) {
     if (
       supplied !== undefined &&
-      (supplied === null ||
-        typeof supplied !== "object" ||
-        typeof supplied.version !== "string" ||
+      (typeof supplied.version !== "string" ||
         !supplied.version.trim() ||
         !/^[\da-f]{64}$/u.test(supplied.jsonSHA256 ?? ""))
     ) {
@@ -387,19 +367,7 @@ function refineExactSounds(
   }
   if (
     weakWitnesses.some(
-      (witness) =>
-        ![
-          "KANJIDIC2 nanori",
-          "KANJIDIC2 complete kun reading",
-          "JMdict single-kanji spelling",
-        ].includes(witness.source) ||
-        typeof witness.spelling !== "string" ||
-        splitGraphemes(witness.spelling).length !== 1 ||
-        typeof witness.reading !== "string" ||
-        !isKana(witness.reading) ||
-        (witness.source === "JMdict single-kanji spelling" &&
-          (typeof witness.witness?.spelling !== "string" ||
-            typeof witness.witness?.reading !== "string")),
+      (witness) => splitGraphemes(witness.spelling).length !== 1 || !isKana(witness.reading),
     )
   ) {
     throw new TypeError("Weak sounds require an identifiable character-reading witness");

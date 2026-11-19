@@ -107,8 +107,7 @@ test("a version is the schema version, the dictionary date, and a revision", asy
   }
   // The package is private; its major only restates the schema version.
   const { version } = JSON.parse(
-    // `JSON.parse()` converts the bytes to a string itself; its declaration only admits a string.
-    (await readFile(new URL("../package.json", import.meta.url))) as unknown as string,
+    await readFile(new URL("../package.json", import.meta.url), "utf8"),
   );
   assert.equal(Number(version.split(".")[0]), schemaVersion);
 });
@@ -143,11 +142,9 @@ test("stamping a version rewrites the database, its published files, and the man
     assert.equal(manifest.version, "1.20261116.4");
     assert.deepEqual(manifest.files["evaluation.json"], {});
     const json = await readFile(join(directory, "precise-furigana.json"));
-    assert.deepEqual(JSON.parse(json as unknown as string), {
-      ...database,
-      version: "1.20261116.4",
-    });
-    assert.deepEqual(Object.keys(JSON.parse(json as unknown as string)), Object.keys(database));
+    const stamped: Database = JSON.parse(json.toString("utf8"));
+    assert.deepEqual(stamped, { ...database, version: "1.20261116.4" });
+    assert.deepEqual(Object.keys(stamped), Object.keys(database));
     const archive = await readFile(join(directory, "precise-furigana.zip"));
     assert.deepEqual(extractZIPMember(archive, "precise-furigana.json"), json);
     for (const name of ["schema.json", "NOTICE.md", "LICENSE.md"]) {

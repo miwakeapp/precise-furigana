@@ -4,7 +4,6 @@ import { boundaries, segmentReading, segmentText, validateAlignment } from "./se
 import type {
   Aligner,
   JMdict,
-  JMdictSense,
   Kanjidic2,
   Kanjidic2Reading,
   JMdictLanguageSource,

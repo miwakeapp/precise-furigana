@@ -332,14 +332,9 @@ export function deriveOnReadingSpellingAlignments(
     kanjidicSource,
   }: OnReadingSpellingOptions = {},
 ): PassResult<OnReadingSpellingWitness> {
-  if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
-    throw new TypeError("JMdict and KANJIDIC arrays are required");
-  if (typeof align !== "function") throw new TypeError("An aligner is required");
   if (
     kanjidicSource !== undefined &&
-    (kanjidicSource === null ||
-      typeof kanjidicSource !== "object" ||
-      typeof kanjidicSource.version !== "string" ||
+    (typeof kanjidicSource.version !== "string" ||
       !kanjidicSource.version.trim() ||
       !/^[\da-f]{64}$/u.test(kanjidicSource.jsonSHA256 ?? ""))
   ) {

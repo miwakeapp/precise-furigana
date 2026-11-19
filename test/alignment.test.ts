@@ -1231,34 +1231,7 @@ test("long expressions retain repeated supported boundaries", () => {
   assert.equal(result.segments.map((segment) => segment[1]).join(""), "にほんご".repeat(30));
 });
 
-test("invalid API inputs fail explicitly", () => {
-  assert.throws(() => createAligner(), TypeError);
-  // @ts-expect-error A plain object is not a Map.
-  assert.throws(() => createAligner({ characterReadings: {} }), TypeError);
-  // @ts-expect-error Readings must be arrays.
-  assert.throws(() => createAligner({ characterReadings: new Map([["山", "やま"]]) }), TypeError);
-  // @ts-expect-error A plain object is not a Map.
-  assert.throws(() => createAligner({ characterReadings, wordAlignments: {} }), TypeError);
-  // @ts-expect-error A plain object is not a Map.
-  assert.throws(() => createAligner({ characterReadings, wordAlignmentRules: {} }), TypeError);
-  assert.throws(
-    () =>
-      createAligner({
-        characterReadings,
-        // @ts-expect-error Rules must be arrays.
-        wordAlignmentRules: new Map([["山", new Map([["やま", "source"]])]]),
-      }),
-    TypeError,
-  );
-  // @ts-expect-error A plain object is not a Map.
-  assert.throws(() => createAligner({ characterReadings, continuativeReadings: {} }), TypeError);
-  // @ts-expect-error A plain object is not a Map.
-  assert.throws(() => createAligner({ characterReadings, weakCharacterReadings: {} }), TypeError);
-  assert.throws(
-    // @ts-expect-error A spelling must map to a Map of readings.
-    () => createAligner({ characterReadings, wordAlignments: new Map([["山", ["やま"]]]) }),
-    TypeError,
-  );
+test("a supplied word alignment must reconstruct its spelling and reading", () => {
   assert.throws(
     () =>
       createAligner({
@@ -1267,8 +1240,6 @@ test("invalid API inputs fail explicitly", () => {
       }),
     /projections/u,
   );
-  // @ts-expect-error The reading must be a string.
-  assert.throws(() => align("山", undefined), TypeError);
 });
 
 test("an unsupported remainder keeps its attested word group", () => {

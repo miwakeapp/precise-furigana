@@ -347,34 +347,23 @@ test("ambiguous paths and irregular ranges cannot be resolved by listed phonolog
   assert.equal(result.wordAlignments.size, 0);
 });
 
-test("arguments reject malformed maps, bundles, identities and null defaults", () => {
+test("malformed reading maps, bundles and source identities are rejected", () => {
   const jmdict = fixture.jmdict({ words: [] }),
     primary = new Map();
-  for (const options of [
-    { weakCharacterReadings: null },
+  const malformed: ListedPhonologyOptions[] = [
     { unihanReadings: new Map([["甲乙", ["カ"]]]) },
     { unihanReadings: new Map([["甲", ["か.り"]]]) },
-    { supplementalVoicing: null },
-    { characterReadingBundle: null },
     { characterReadingBundle: bundle([form("甲", "カ", "kun")]) },
     { unihanSource: { version: "18.0.0", sha256: "unverified" } },
-  ])
+  ];
+  for (const options of malformed)
     assert.throws(
-      // @ts-expect-error: every one of these options is malformed.
       () => deriveListedPhonologyAlignments(jmdict, primary, grouped, options),
       TypeError,
     );
-  // @ts-expect-error: a missing dictionary must be rejected.
-  assert.throws(() => deriveListedPhonologyAlignments(undefined, primary, grouped), TypeError);
-  // @ts-expect-error: a missing aligner must be rejected.
-  assert.throws(() => deriveListedPhonologyAlignments(jmdict, primary, undefined), TypeError);
   assert.throws(
     () => deriveListedPhonologyAlignments(jmdict, new Map([["甲", ["invalid"]]]), grouped),
     TypeError,
-  );
-  assert.deepEqual(
-    deriveListedPhonologyAlignments(jmdict, primary, grouped, { supplementalVoicing: undefined }),
-    { wordAlignments: new Map(), witnesses: [] },
   );
 });
 

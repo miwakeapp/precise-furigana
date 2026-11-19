@@ -632,7 +632,7 @@ export function deriveVariantAlignments(
   const candidates = new Map<string, VariantCandidate>();
   const boundaryReadings: ReadingMap = new Map();
   if (kanaSubstitutions || latinSubstitutions) {
-    if (!(characterReadings instanceof Map) || !(continuativeReadings instanceof Map)) {
+    if (characterReadings === undefined || continuativeReadings === undefined) {
       throw new TypeError(
         "Kana substitution transfers require characterReadings and continuativeReadings Maps for boundary guards",
       );

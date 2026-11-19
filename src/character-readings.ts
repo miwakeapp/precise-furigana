@@ -129,15 +129,9 @@ function companionReadings(
     ["weakCharacterReadings", weakCharacterReadings],
     ["unihanReadings", unihanReadings],
   ] as const) {
-    if (!(map instanceof Map)) throw new TypeError(`${name} must be a Map`);
     for (const [character, readings] of map) {
-      if (
-        typeof character !== "string" ||
-        !Array.isArray(readings) ||
-        readings.some((reading) => typeof reading !== "string" || !isKana(reading))
-      ) {
+      if (readings.some((reading) => !isKana(reading)))
         throw new TypeError(`${name} must contain exact kana readings`);
-      }
       combined.set(character, [...new Set([...(combined.get(character) ?? []), ...readings])]);
     }
   }

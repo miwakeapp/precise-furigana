@@ -101,8 +101,10 @@ export function verifyEvaluation(
   assert.equal(provenance.sourcesSHA256, current.sourcesSHA256);
   assert.equal(provenance.annotationsSHA256, current.annotationsSHA256);
   assert.equal(provenance.goldSHA256, digest(goldText));
-  // `JSON.parse()` converts bytes to a string itself; its declaration only admits a string.
-  const gold: GoldExample[] = JSON.parse(goldText as string);
+  // The checksum above is of the fixture's bytes as given; only parsing needs them decoded.
+  const gold: GoldExample[] = JSON.parse(
+    typeof goldText === "string" ? goldText : goldText.toString("utf8"),
+  );
   assert.ok(gold.length > 0);
   assert.equal(evaluation.results.length, gold.length);
   for (const [index, example] of gold.entries()) {

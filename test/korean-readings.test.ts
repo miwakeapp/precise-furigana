@@ -353,7 +353,7 @@ test("liaison, assimilation, aspiration and omitted syllable classes fail closed
     assert.equal(run(spelling, reading, forms).wordAlignments.size, 0, spelling);
 });
 
-test("source fingerprints distinguish standalone inventories and malformed options are rejected", () => {
+test("source fingerprints distinguish standalone inventories and malformed source identities are rejected", () => {
   const words = fixture.jmdict({ words: [entry("1", "主体", "チュチェ")] });
   const fingerprint = (inventory: Inventory) =>
     deriveKoreanAlignments(words, inventory, grouped).witnesses[0].sourcePaths[0][0].evidence[0]
@@ -362,19 +362,12 @@ test("source fingerprints distinguish standalone inventories and malformed optio
   changed.characters[0].readingMeaning.groups[0].readings[0].marker = "different raw record";
   assert.notEqual(fingerprint(juche), fingerprint(changed));
   for (const options of [
-    { untaggedKatakana: null },
     { kanjidicSource: null },
     { kanjidicSource: { version: "1", jsonSHA256: "bad" } },
   ]) {
-    // @ts-expect-error: each of these holds a malformed option
+    // @ts-expect-error: a source identity cannot be null, as the first of these is
     assert.throws(() => deriveKoreanAlignments(words, juche, grouped, options), TypeError);
   }
-  // @ts-expect-error: the dictionary is missing
-  assert.throws(() => deriveKoreanAlignments(undefined, juche, grouped), TypeError);
-  // @ts-expect-error: the character dictionary has no characters
-  assert.throws(() => deriveKoreanAlignments(words, {}, grouped), TypeError);
-  // @ts-expect-error: the aligner is missing
-  assert.throws(() => deriveKoreanAlignments(words, juche, undefined), TypeError);
   assert.equal(
     deriveKoreanAlignments(words, juche, grouped, { untaggedKatakana: undefined }).wordAlignments
       .size,

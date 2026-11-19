@@ -5,7 +5,6 @@ import { boundaries, pairKey, validateAlignment } from "./segments.ts";
 import type {
   Aligner,
   JMdict,
-  JMdictSense,
   Kanjidic2,
   Kanjidic2Reading,
   JMdictLanguageSource,
@@ -310,10 +309,6 @@ export function deriveKoreanAlignments(
   align: Aligner,
   { untaggedKatakana = true, kanjidicSource }: KoreanAlignmentOptions = {},
 ): PassResult<KoreanWitness> {
-  if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
-    throw new TypeError("JMdict and KANJIDIC arrays are required");
-  if (typeof align !== "function" || typeof untaggedKatakana !== "boolean")
-    throw new TypeError("An aligner and boolean Korean eligibility option are required");
   if (
     kanjidicSource !== undefined &&
     (kanjidicSource === null ||

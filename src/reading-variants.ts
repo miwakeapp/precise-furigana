@@ -146,14 +146,9 @@ export function deriveReadingVariantAlignments(
   align: Aligner,
   { targetAlignments = new Map(), nearVariants = false }: ReadingVariantOptions = {},
 ): PassResult<ReadingVariantWitness> {
-  if (!(targetAlignments instanceof Map)) throw new TypeError("targetAlignments must be a Map");
   const constraints = new Map<string, Set<string>>();
   for (const [spelling, readings] of targetAlignments) {
-    if (typeof spelling !== "string" || !(readings instanceof Map))
-      throw new TypeError("Target alignments require spelling and reading maps");
     for (const [reading, segments] of readings) {
-      if (typeof reading !== "string")
-        throw new TypeError("Target alignment readings must be strings");
       validateAlignment(spelling, reading, segments);
       const key = pairKey(spelling, normalizeKana(reading));
       constraints.set(

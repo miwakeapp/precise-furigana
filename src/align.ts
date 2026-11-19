@@ -111,21 +111,6 @@ const geminateInitials = /^[かきくけこさしすせそたちつてとぱぴ�
 const removableFinals = /[ちつ]$/u;
 const sokuonFinals = /[くきちつう]$/u;
 
-function assertReadingMap(map: unknown, name: string): void {
-  if (!(map instanceof Map)) {
-    throw new TypeError(`${name} must be a Map`);
-  }
-  for (const [spelling, readings] of map) {
-    if (
-      typeof spelling !== "string" ||
-      !Array.isArray(readings) ||
-      readings.some((reading) => typeof reading !== "string")
-    ) {
-      throw new TypeError(`${name} must map strings to arrays of strings`);
-    }
-  }
-}
-
 function compareScore(left: Score, right: Score): number {
   return left.unknownCharacters - right.unknownCharacters || left.cost - right.cost;
 }
@@ -138,34 +123,15 @@ function compileWordAlignments(
   wordAlignments: WordAlignments,
   wordAlignmentRules: Map<string, Map<string, string[]>>,
 ): Map<string, CompiledVariant[]> {
-  if (!(wordAlignments instanceof Map)) throw new TypeError("wordAlignments must be a Map");
-  if (!(wordAlignmentRules instanceof Map)) throw new TypeError("wordAlignmentRules must be a Map");
-  for (const [spelling, readings] of wordAlignmentRules) {
-    if (typeof spelling !== "string")
-      throw new TypeError("wordAlignmentRules keys must be strings");
-    assertReadingMap(readings, "wordAlignmentRules reading rules");
-  }
   const compiled = new Map<string, CompiledVariant[]>();
   for (const [spelling, readings] of wordAlignments) {
-    if (typeof spelling !== "string" || !(readings instanceof Map)) {
-      throw new TypeError("wordAlignments must map strings to reading Maps");
-    }
     const variants: CompiledVariant[] = [];
     for (const [reading, segments] of readings) {
-      if (typeof reading !== "string" || !Array.isArray(segments)) {
-        throw new TypeError("wordAlignments reading Maps must map strings to segment arrays");
-      }
-      const parts = segments.map((segment) => {
-        if (typeof segment === "string") return { spelling: segment, reading: segment };
-        if (
-          Array.isArray(segment) &&
-          segment.length === 2 &&
-          segment.every((value) => typeof value === "string")
-        ) {
-          return { spelling: segment[0], reading: segment[1] };
-        }
-        throw new TypeError("wordAlignments segments must be strings or [spelling, reading] pairs");
-      });
+      const parts = segments.map((segment) =>
+        typeof segment === "string"
+          ? { spelling: segment, reading: segment }
+          : { spelling: segment[0], reading: segment[1] },
+      );
       if (
         parts.map((part) => part.spelling).join("") !== spelling ||
         parts.map((part) => part.reading).join("") !== reading
@@ -263,31 +229,24 @@ function mergeOutput(parts: Evidence[]): { segments: Segment[]; evidence: Eviden
  * `aligned` describes support from this model, not a certification of correctness.
  * Equal-cost paths retain only boundaries shared by every best alignment.
  */
-export function createAligner(
-  {
-    characterReadings,
-    wordReadings = new Map(),
-    wordAlignments = new Map(),
-    wordAlignmentRules = new Map(),
-    continuativeReadings = new Map(),
-    weakCharacterReadings = new Map(),
-    irregularWordReadings = new Map(),
-    phonologicalAlternations = true,
-    terminalContraction = true,
-    compoundVoicing = true,
-    kanaRunCorrespondence = true,
-    internalKanaAnchors = true,
-    dictionaryUnvoicing = false,
-    dictionaryRenjo = false,
-    dictionaryNasalLoss = false,
-    dictionaryInitialVoicing = false,
-  }: AlignerOptions = {} as AlignerOptions,
-): (spelling: string, reading: string) => DetailedAlignment {
-  assertReadingMap(characterReadings, "characterReadings");
-  assertReadingMap(wordReadings, "wordReadings");
-  assertReadingMap(continuativeReadings, "continuativeReadings");
-  assertReadingMap(weakCharacterReadings, "weakCharacterReadings");
-  assertReadingMap(irregularWordReadings, "irregularWordReadings");
+export function createAligner({
+  characterReadings,
+  wordReadings = new Map(),
+  wordAlignments = new Map(),
+  wordAlignmentRules = new Map(),
+  continuativeReadings = new Map(),
+  weakCharacterReadings = new Map(),
+  irregularWordReadings = new Map(),
+  phonologicalAlternations = true,
+  terminalContraction = true,
+  compoundVoicing = true,
+  kanaRunCorrespondence = true,
+  internalKanaAnchors = true,
+  dictionaryUnvoicing = false,
+  dictionaryRenjo = false,
+  dictionaryNasalLoss = false,
+  dictionaryInitialVoicing = false,
+}: AlignerOptions): (spelling: string, reading: string) => DetailedAlignment {
   const alignedWords = compileWordAlignments(wordAlignments, wordAlignmentRules);
   const continuatives = new Map<string, string[]>(
     [...continuativeReadings].map(([spelling, readings]) => [
@@ -381,9 +340,6 @@ export function createAligner(
   };
 
   return function align(spelling: string, reading: string): DetailedAlignment {
-    if (typeof spelling !== "string" || typeof reading !== "string") {
-      throw new TypeError("spelling and reading must be strings");
-    }
     if (spelling === reading) {
       return {
         segments: spelling ? [spelling] : [],

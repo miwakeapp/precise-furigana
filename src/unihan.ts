@@ -103,7 +103,6 @@ interface SpanSolution {
 
 /** Parse exact `kJapanese` values without guessing okurigana or inflections. */
 export function parseUnihanReadings(text: string): ReadingMap {
-  if (typeof text !== "string") throw new TypeError("Unihan readings must be supplied as text");
   const result: ReadingMap = new Map();
   for (const line of text.split(/\r?\n/u)) {
     if (!line || line.startsWith("#")) continue;
@@ -121,19 +120,6 @@ export function parseUnihanReadings(text: string): ReadingMap {
     result.set(character, [...new Set([...(result.get(character) ?? []), ...readings])]);
   }
   return result;
-}
-
-function validateReadingMap(map: ReadingMap, name: string): void {
-  if (!(map instanceof Map)) throw new TypeError(`${name} must be a Map`);
-  for (const [character, readings] of map) {
-    if (
-      typeof character !== "string" ||
-      !Array.isArray(readings) ||
-      readings.some((reading) => typeof reading !== "string")
-    ) {
-      throw new TypeError(`${name} must map strings to reading arrays`);
-    }
-  }
 }
 
 function readingCoordinates(reading: string): ReadingCoordinates {
@@ -330,18 +316,6 @@ export function deriveUnihanAlignments(
     supplementalReadingFilter,
   }: UnihanAlignmentOptions = {},
 ): PassResult<UnihanWitness> {
-  validateReadingMap(characterReadings, "characterReadings");
-  validateReadingMap(unihanReadings, "unihanReadings");
-  validateReadingMap(irregularWordReadings, "irregularWordReadings");
-  validateReadingMap(weakCharacterReadings, "weakCharacterReadings");
-  if (
-    [supplementalVoicing, yoonSimplification, onLengthening].some(
-      (option) => typeof option !== "boolean",
-    )
-  )
-    throw new TypeError("Unihan phonology options must be booleans");
-  if (supplementalReadingFilter !== undefined && typeof supplementalReadingFilter !== "function")
-    throw new TypeError("supplementalReadingFilter must be a function");
   const readings: ReadingInventory = new Map();
   for (const [character, values] of characterReadings) {
     readings.set(

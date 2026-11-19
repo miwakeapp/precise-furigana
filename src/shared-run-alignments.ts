@@ -150,14 +150,13 @@ function sourceIdentity(
 }
 
 function validateRawOptions(options: RawAlignerOptions): RawAlignerOptions {
-  if (options === null || typeof options !== "object" || Array.isArray(options))
-    throw new TypeError("Raw aligner options must be an object");
+  // An object with more fields than `RawAlignerOptions` names still type-checks, and whatever is
+  // returned here reaches the aligner, so the names are checked.
+  const entries: [name: string, value: boolean | undefined][] = Object.entries(options);
   const result: RawAlignerOptions = {};
-  for (const [name, value] of Object.entries(options)) {
+  for (const [name, value] of entries) {
     if (!rawOptionNames.has(name)) throw new TypeError(`Unsupported raw aligner option: ${name}`);
     if (value === undefined) continue;
-    if (typeof value !== "boolean")
-      throw new TypeError(`Raw aligner option ${name} must be a boolean`);
     result[name as keyof RawAlignerOptions] = value;
   }
   return result;
@@ -348,9 +347,6 @@ export function deriveSharedRunAlignments(
     rawAlignerOptions = {},
   }: SharedRunOptions = {},
 ): SharedRunResult {
-  if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
-    throw new TypeError("JMdict and KANJIDIC arrays are required");
-  if (typeof align !== "function") throw new TypeError("An earlier alignment function is required");
   const soundOptions = validateRawOptions(rawAlignerOptions);
   const checkReviewed = makeLexicalContextChecker(reviewedFacts);
   const identities = {

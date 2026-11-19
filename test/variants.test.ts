@@ -449,8 +449,7 @@ test("kana-written components expose local readings in sibling kanji spellings",
 test("optional kana substitution requires evidence maps for its boundary guards", () => {
   assert.throws(
     () =>
-      // @ts-expect-error The aligner is never reached, so a stub that returns nothing stands in.
-      deriveVariantAlignments(fixtures.jmdict({ words: [] }), () => {}, {
+      deriveVariantAlignments(fixtures.jmdict({ words: [] }), fixtureAligner(new Map()), {
         kanaSubstitutions: true,
       }),
     /require characterReadings and continuativeReadings Maps/u,

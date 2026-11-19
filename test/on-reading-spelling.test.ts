@@ -342,31 +342,13 @@ test("Unicode normalization is used only for matching", () => {
   ]);
 });
 
-test("invalid arguments and source identities fail instead of triggering defaults", () => {
+test("incomplete source identities are rejected", () => {
   const jmdict = fixture.jmdict({ words: [] }),
     kanjidic = fixture.kanjidic(source(police));
-  // @ts-expect-error: a dictionary without its array must be rejected.
-  assert.throws(() => deriveOnReadingSpellingAlignments({}, kanjidic, grouped), TypeError);
-  // @ts-expect-error: a dictionary without its array must be rejected.
-  assert.throws(() => deriveOnReadingSpellingAlignments(jmdict, {}, grouped), TypeError);
-  // @ts-expect-error: a missing aligner must be rejected.
-  assert.throws(() => deriveOnReadingSpellingAlignments(jmdict, kanjidic, null), TypeError);
-  for (const kanjidicSource of [null, {}, { version: "1", jsonSHA256: "bad" }]) {
+  for (const kanjidicSource of [{}, { version: "1", jsonSHA256: "bad" }]) {
     assert.throws(
-      // @ts-expect-error: null and incomplete source identities must be rejected.
       () => deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped, { kanjidicSource }),
       TypeError,
     );
   }
-  assert.throws(
-    () =>
-      deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped, {
-        // @ts-expect-error: a null option must be rejected, not treated as the default.
-        characterReadingBundle: null,
-      }),
-    TypeError,
-  );
-  assert.doesNotThrow(() =>
-    deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped, undefined),
-  );
 });

@@ -313,17 +313,6 @@ export function refineWithLexicalEvidence(
 export function makeLexicalContextChecker(
   reviewedFacts: CompiledLexicalFact[],
 ): LexicalContextChecker {
-  if (
-    !Array.isArray(reviewedFacts) ||
-    reviewedFacts.some(
-      (fact) =>
-        !Array.isArray(fact.spellingUnits) ||
-        !Array.isArray(fact.points) ||
-        typeof fact.normalizedReading !== "string",
-    )
-  ) {
-    throw new TypeError("reviewedFacts must contain compiled lexical evidence");
-  }
   const byFirst = new Map<string, CompiledLexicalFact[]>();
   for (const fact of reviewedFacts) {
     const facts = byFirst.get(fact.spellingUnits[0]) ?? [];

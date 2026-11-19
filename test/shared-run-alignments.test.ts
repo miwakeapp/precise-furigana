@@ -208,14 +208,13 @@ test("forwards the reviewed raw sound switches without accepting inferred dictio
       .wordAlignments.size,
     0,
   );
+  // Only an object literal is checked for fields its type does not name, so each of these compiles.
   for (const rawAlignerOptions of [
-    { dictionaryUnvoicing: true },
-    { dictionaryRenjo: true },
-    { wordAlignments: new Map() },
-    { internalKanaAnchors: null },
+    { phonologicalAlternations: true, dictionaryUnvoicing: true },
+    { phonologicalAlternations: true, dictionaryRenjo: true },
+    { phonologicalAlternations: true, wordAlignments: new Map() },
   ]) {
-    // @ts-expect-error: each of these holds an unsupported or malformed option
-    assert.throws(() => derive({ options: { rawAlignerOptions } }), TypeError);
+    assert.throws(() => derive({ options: { rawAlignerOptions } }), /Unsupported raw aligner/u);
   }
 });
 

@@ -88,8 +88,9 @@ export function deriveNumeralReadings(jmdict: JMdict, wordReadings: ReadingMap):
     // counters, names, abbreviations, or specialized kanji senses.
     if (word.kanji.length !== 0) continue;
     for (const sense of word.sense) {
-      const definitions =
-        sense.gloss?.filter((gloss) => gloss.lang === "eng" && numberNames.has(gloss.text)) ?? [];
+      const definitions = sense.gloss.filter(
+        (gloss) => gloss.lang === "eng" && numberNames.has(gloss.text),
+      );
       for (const definition of definitions) {
         const spelling = numberNames.get(definition.text)!;
         const fullwidth = spelling.replace(/[0-9]/gu, (digit) =>
@@ -98,7 +99,7 @@ export function deriveNumeralReadings(jmdict: JMdict, wordReadings: ReadingMap):
         for (const kana of word.kana) {
           if (
             !/^[ァ-ヶー]+$/u.test(kana.text) ||
-            !sense.appliesToKana?.some((form) => form === "*" || form === kana.text)
+            !sense.appliesToKana.some((form) => form === "*" || form === kana.text)
           )
             continue;
           for (const form of [spelling, fullwidth]) {

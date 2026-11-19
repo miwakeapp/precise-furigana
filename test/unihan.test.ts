@@ -331,12 +331,6 @@ test("voicing cannot alter native or long katakana readings, existing weak readi
     weakCharacterReadings,
   });
   assert.equal(result.wordAlignments.size, 0);
-  assert.throws(
-    () =>
-      // @ts-expect-error: a null option must be rejected, not treated as the default.
-      deriveUnihanAlignments(jmdict, primary, supplemental, grouped, { supplementalVoicing: null }),
-    /booleans/u,
-  );
 });
 
 test("gemination needs a following obstruent and retains each source derivation separately", () => {
@@ -525,11 +519,6 @@ test("one-mora on lengthening is opt-in, source-backed, and keeps the original k
   assert.deepEqual(result.witnesses[0].characters[0].derivations, [
     { value: "ク", rules: ["single-mora-vowel-extension"] },
   ]);
-  assert.throws(
-    // @ts-expect-error: a null option must be rejected, not treated as the default.
-    () => deriveUnihanAlignments(jmdict, primary, supplemental, grouped, { onLengthening: null }),
-    /booleans/u,
-  );
 });
 
 test("lengthening preserves allocations from the exact and yoon stages when a new path competes", () => {

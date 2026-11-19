@@ -143,6 +143,23 @@ test("a kana-only ruby group shows the kana its reading repeats at the edges as 
   );
 });
 
+test("a symbol that is read aloud stays in its ruby, and a silent double hyphen leaves it", () => {
+  assert.deepEqual(display("１００％", "ひゃくパーセント", [["１００％", "ひゃくパーセント"]]), [
+    ["１００％", "ひゃくパーセント"],
+  ]);
+  assert.deepEqual(display("Ａ＆", "エーアンド", [["Ａ＆", "エーアンド"]]), [
+    ["Ａ＆", "エーアンド"],
+  ]);
+  assert.deepEqual(
+    display("サピア＝ウォーフの仮説", "サピアウォーフのかせつ", [
+      "サピア",
+      ["＝ウォーフの仮", "ウォーフのか"],
+      ["説", "せつ"],
+    ]),
+    ["サピア＝ウォーフの", ["仮", "か"], ["説", "せつ"]],
+  );
+});
+
 test("validation requires canonical segments that spell out the reading", () => {
   assert.throws(
     () =>

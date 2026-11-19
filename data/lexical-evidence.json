@@ -16182,6 +16182,16 @@
       ]
     },
     {
+      "id": "percent-100",
+      "spelling": "１００％",
+      "reading": "ひゃくパーセント",
+      "segments": [["１００","ひゃく"],["％","パーセント"]],
+      "reason": "Same-entry １００パーセント and 百パーセント identify ひゃく as the number and パーセント as the sound of the percent symbol, as in １２０％ and ５１％攻撃.",
+      "sources": [
+        {"url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"}
+      ]
+    },
+    {
       "id": "PC200-115",
       "spelling": "パック１十進表記法",
       "reading": "パックじっしんひょうきほう",

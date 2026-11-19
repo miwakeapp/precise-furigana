@@ -8,12 +8,12 @@ import {
   summarizeChanges,
 } from "../scripts/lib/update-report.mjs";
 
-const pair = (spelling, reading, upstream = "none") => ({
+const pair = (spelling, reading, unreviewed = false) => ({
   id: "1",
   spelling,
   reading,
-  upstream,
   note: "",
+  ...(unreviewed ? { unreviewed } : {}),
 });
 const record = (segments) => ({ id: "1", spelling: "山川", reading: "やまかわ", segments });
 const passed = { passed: true, output: "" };
@@ -47,7 +47,7 @@ test("an update that only drops synthesized pairs and adds or refines records is
         ]),
       },
     ]),
-    synthesized: diffSynthesizedPairs([pair("そっぽ向く", "そっぽむく", "propose")], []),
+    synthesized: diffSynthesizedPairs([pair("そっぽ向く", "そっぽむく")], []),
   });
   assert.deepEqual(reviewReasons(clean), []);
   const report = renderReport(clean);
@@ -82,8 +82,8 @@ test("anything a person should look at makes an update need review", () => {
     "`annotations.json` changed.",
   ]);
   // A new pair needs a person whether it is still unreviewed or was reviewed automatically.
-  for (const upstream of ["unreviewed", "propose"]) {
-    const synthesized = diffSynthesizedPairs([], [pair("気持ちよい", "きもちよい", upstream)]);
+  for (const unreviewed of [true, false]) {
+    const synthesized = diffSynthesizedPairs([], [pair("気持ちよい", "きもちよい", unreviewed)]);
     assert.equal(reviewReasons(update({ synthesized })).length, 1);
   }
 });

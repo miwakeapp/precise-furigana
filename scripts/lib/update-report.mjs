@@ -21,7 +21,7 @@ export function diffSynthesizedPairs(before, after) {
   return {
     removed: before.filter((item) => !current.has(pairKey(item))),
     added: after.filter((item) => !old.has(pairKey(item))),
-    unreviewed: after.filter((item) => item.upstream === "unreviewed"),
+    unreviewed: after.filter((item) => item.unreviewed),
   };
 }
 
@@ -50,7 +50,7 @@ export function reviewReasons({ build, validate, synthesized, otherDataChanges, 
       `${plural(synthesized.unreviewed.length, "synthesized pair")} still ${synthesized.unreviewed.length === 1 ? "needs" : "need"} review.`,
     );
   }
-  const reviewed = synthesized.added.filter((item) => item.upstream !== "unreviewed");
+  const reviewed = synthesized.added.filter((item) => !item.unreviewed);
   if (reviewed.length > 0) {
     reasons.push(
       `${plural(reviewed.length, "new synthesized pair")} ${reviewed.length === 1 ? "was" : "were"} reviewed automatically; check ${reviewed.length === 1 ? "it" : "them"}.`,
@@ -83,7 +83,7 @@ function synthesizedList(title, items) {
     .slice(0, listLimit)
     .map(
       (item) =>
-        `- ${escapeHTML(item.spelling)} read ${escapeHTML(item.reading)} (entry ${item.id}): \`${item.upstream}\`${item.note ? `. ${escapeHTML(item.note)}` : ""}`,
+        `- ${escapeHTML(item.spelling)} read ${escapeHTML(item.reading)} (entry ${item.id})${item.unreviewed ? ", unreviewed" : ""}${item.note ? `. ${escapeHTML(item.note)}` : ""}`,
     );
   if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
   return [`### ${title} (${items.length})`, "", ...rows, ""];

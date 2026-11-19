@@ -55,4 +55,4 @@ Same fields as a lexical fact, except that `id` is the JMdict ID and `sources` i
 
 ### Synthesized pairs
 
-Each entry has `id`, `spelling`, `reading`, `upstream`, and `note`. `upstream` records whether the reading is worth proposing to JMdict as a search-only reading (`"propose"`), already exists but is restricted to other spellings (`"restricted"`), or only reads a misspelling, kana variant, or historical spelling as written (`"none"`). [Maintenance](maintenance.md#synthesized-pairs) covers keeping it current.
+Each entry has `id`, `spelling`, `reading`, and `note`. The note says what kind of reading it is: a spoken form JMdict lacks, a reading JMdict has but restricts to other spellings, or a misspelling, kana variant, or historical spelling read as written. A new entry also has `"unreviewed": true`, which stops the build until someone checks the reading and removes the flag. [Maintenance](maintenance.md#synthesized-pairs) covers keeping it current.

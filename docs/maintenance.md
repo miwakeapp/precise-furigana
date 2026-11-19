@@ -60,13 +60,13 @@ Non-default configurations cannot be released.
 
 ## Synthesized pairs
 
-The build fails when a spelling has no fitting record and no entry in `data/synthesized-pairs.json`, when an entry's reading no longer fits its spelling or is still `"unreviewed"`, when JMdict now has the pair, or when a listed spelling no longer needs one. To fix:
+The build fails when a spelling has no fitting record and no entry in `data/synthesized-pairs.json`, when an entry's reading no longer fits its spelling or is still flagged `"unreviewed"`, when JMdict now has the pair, or when a listed spelling no longer needs one. To fix:
 
 ```sh
 npm run build -- --update-synthesized-pairs
 ```
 
-This drops obsolete entries and adds new ones, with the reading the spelling's kana imply, marked `"unreviewed"`. Check each new reading; the implied reading is only a starting point and can misplace kana where the generator grouped kana with kanji. Then set `upstream` and a short `note` as described in [data sources](data-sources.md#synthesized-pairs), and rebuild.
+This drops obsolete entries and adds new ones, with the reading the spelling's kana imply, flagged `"unreviewed": true`. Check each new reading; the implied reading is only a starting point and can misplace kana where the generator grouped kana with kanji. Then write a short `note` as described in [data sources](data-sources.md#synthesized-pairs), remove the flag, and rebuild.
 
 ## Weekly update
 
@@ -86,7 +86,7 @@ An update is clean when it builds and validates, changes only the pin and remove
 
 These are the instructions for whoever resolves an update that needs review, in CI or locally. Read `.cache/update/report.md` first. Edit only files in `data/` and `test/fixtures/`. Do not use git or contact GitHub; the workflow commits your changes.
 
-- New synthesized pairs marked `"unreviewed"` in `data/synthesized-pairs.json`: check each reading against the entry's spellings and readings, correct it if the implied reading misplaced kana, and set `upstream` and `note` as [data sources](data-sources.md#synthesized-pairs) describes. Lean toward `"none"` unless the reading is clearly a distinct real pronunciation.
+- New synthesized pairs flagged `"unreviewed"` in `data/synthesized-pairs.json`: check each reading against the entry's spellings and readings, correct it if the implied reading misplaced kana, write a `note` as [data sources](data-sources.md#synthesized-pairs) describes, and remove the flag.
 - A stale annotation, whose pair has left JMdict: remove it from `data/annotations.json`, or move it to the pair's new ID or spelling if the entry was only renumbered or respelled.
 - A segmentation that became coarser or incompatible: use `npm run inspect -- <spelling> <reading> --explain` to find out why. If the new result is wrong, fix it with a lexical fact or an annotation as in [Correct an alignment](#correct-an-alignment). If it is right, or you cannot tell, say so in the notes and change nothing.
 - A regression fixture that fails: investigate, but do not edit the fixture unless JMdict removed its pair.

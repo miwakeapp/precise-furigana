@@ -181,7 +181,6 @@ test("only spellings without a fitting pair need a synthesized one, and the revi
     id: "1",
     spelling: "気持ちよい",
     reading: "きもちよい",
-    upstream: "none",
     note: "",
   };
   const planned = planSynthesizedPairs(records, new Map(), [item], jmdictPairs);
@@ -209,7 +208,7 @@ test("only spellings without a fitting pair need a synthesized one, and the revi
       .problems.length > 0,
   );
   assert.ok(
-    planSynthesizedPairs(records, new Map(), [{ ...item, upstream: "unreviewed" }], jmdictPairs)
-      .problems.length > 0,
+    planSynthesizedPairs(records, new Map(), [{ ...item, unreviewed: true }], jmdictPairs).problems
+      .length > 0,
   );
 });

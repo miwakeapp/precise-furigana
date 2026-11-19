@@ -344,14 +344,13 @@ export function planSynthesizedPairs(records, drops, reviewed, jmdictPairs) {
               id,
               spelling,
               reading: implied[0] ?? "",
-              upstream: "unreviewed",
               note: implied.length === 1 ? "" : "Choose the reading this spelling implies.",
+              unreviewed: true,
             }
           : {
               id,
               spelling,
               reading: unpunctuated,
-              upstream: "none",
               note: "Punctuation: the entry's reading has punctuation that the spelling does not write.",
             },
       );
@@ -359,7 +358,7 @@ export function planSynthesizedPairs(records, drops, reviewed, jmdictPairs) {
     }
     if (!fitsSpelling(spelling, item.reading))
       problems.push(`Synthesized reading ${item.reading} does not fit ${spelling} (${id})`);
-    else if (item.upstream === "unreviewed")
+    else if (item.unreviewed)
       problems.push(`Review the synthesized reading ${item.reading} for ${spelling} (${id})`);
     else if (jmdictPairs.has(`${id}\t${spelling}\t${item.reading}`)) {
       problems.push(

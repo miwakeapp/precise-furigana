@@ -49,6 +49,6 @@ Visible (non-search-only) pairs whose kana differ only by convention, such as hi
 
 ## Releases
 
-A release publishes only `precise-furigana.json` and `precise-furigana.json.gz`. Its tag is `v` followed by the database's `version`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE](../NOTICE) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
+A release publishes only `precise-furigana.json` and `precise-furigana.json.gz`. Its tag is `v` followed by the database's `version`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE.md](../NOTICE.md) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
 
 `npm run inspect -- <spelling> <reading> --explain` shows how any record was derived; derivations are not part of the release.

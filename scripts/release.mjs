@@ -19,7 +19,7 @@ export function releaseDescriptor(manifest, lock) {
   return {
     tag: `v${version}`,
     title: `Precise Furigana ${version}`,
-    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs.\n\n\`precise-furigana.json\` SHA-256: \`${manifest.files[databaseFiles[0]].sha256}\`\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`,
+    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs.\n\n\`precise-furigana.json\` SHA-256: \`${manifest.files[databaseFiles[0]].sha256}\`\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. \`NOTICE.md\` in the tagged source has full attribution.\n`,
   };
 }
 

@@ -21485,6 +21485,96 @@
         {"name":"Pinned JMdict 2026-10-05","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261005200550"},
         {"name":"Pinned KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
       ]
+    },
+    {
+      "id": "WH-01",
+      "spelling": "景色",
+      "reading": "けしき",
+      "segments": [["景","け"],["色","しき"]],
+      "reason": "The page's reading table gives け for 景, shortened from けい, and しき for 色.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=92235036#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-02",
+      "spelling": "華奢",
+      "reading": "きゃしゃ",
+      "segments": [["華","きゃ"],["奢","しゃ"]],
+      "reason": "The page's reading table gives きゃ for 華, in place of か, and しゃ for 奢, and marks both as phonetic.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=92255711#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-03",
+      "spelling": "竜胆",
+      "reading": "りんどう",
+      "segments": [["竜","りん"],["胆","どう"]],
+      "reason": "The page's reading table gives りん for 竜 and どう for 胆 as irregular readings, from the borrowed りうたん by metathesis and voicing.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=90106041#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-04",
+      "spelling": "十姉妹",
+      "reading": "じゅうしまつ",
+      "segments": [["十","じゅう"],["姉","し"],["妹","まつ"]],
+      "reason": "The page's reading table gives じゅう, し, and まつ, the last an irregular reading of 妹 in place of まい.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=90340442#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-05",
+      "spelling": "素人",
+      "reading": "しらびと",
+      "segments": [["素","しら"],["人","びと"]],
+      "reason": "The page's reading table for this reading gives しら for 素, in place of しろ, and voiced びと for 人.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=93529727#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-06",
+      "spelling": "羯磨",
+      "reading": "こんま",
+      "segments": [["羯","こん"],["磨","ま"]],
+      "reason": "The page's reading table for this reading gives こん for 羯 and ま for 磨.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=92235781#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-07",
+      "spelling": "錯和",
+      "reading": "ちょんぼ",
+      "segments": [["錯","ちょん"],["和","ぼ"]],
+      "reason": "The page's reading table gives チョン for 錯 and ボ for 和 as irregular readings.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=87791959#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-08",
+      "spelling": "野鵐",
+      "reading": "のじこ",
+      "segments": [["野","の"],["鵐","じこ"]],
+      "reason": "The page's reading table gives の for 野 and じこ for 鵐.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=82391506#Japanese"}
+      ]
+    },
+    {
+      "id": "WH-09",
+      "spelling": "朱鳥",
+      "reading": "あかみとり",
+      "segments": [["朱","あかみ"],["鳥","とり"]],
+      "reason": "The page's reading table for this reading gives あかみ for 朱 and とり for 鳥.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=87945681#Japanese"}
+      ]
     }
   ]
 }

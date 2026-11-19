@@ -33,6 +33,7 @@ Constraints that apply across passes:
 - Transfers come only from restriction-valid source pairs. Conflicting or ambiguous witnesses are dropped, not resolved.
 - Omitted okurigana joins the preceding character: 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>.
 - An omitted particle belongs to neither neighbor. Where a sibling spelling writes の, を, or が between two kanji that the reading pronounces, a final pass groups the two kanji: <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs last because several earlier passes can independently cut beside the particle.
+- Punctuation that a reading has and its spelling lacks, as in エス・エフ for ＳＦ, is set aside while aligning, so the spelling divides as it does for エスエフ. Each mark then returns to the ruby segment that ends where it stands.
 - Silent middle dots join a neighboring segment and are shown without ruby; cuts transfer from the undotted spelling only when its character allocation is complete and unambiguous.
 - A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
 - Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.

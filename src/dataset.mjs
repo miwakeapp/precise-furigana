@@ -17,6 +17,7 @@ import {
   segmentText,
   validateAlignment,
 } from "./segments.mjs";
+import { splitGraphemes } from "./kana.mjs";
 import {
   deriveOmittedParticles,
   deriveVariantAlignments,
@@ -140,6 +141,75 @@ export function compileAnnotations(annotations) {
 
 export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources = {}) {
   return compilePipeline(jmdict, kanjidic, options, sources);
+}
+
+/**
+ * A reading can contain punctuation that its spelling does not write, such as the dots in
+ * エス・エフ for ＳＦ. It is not pronounced, so the reading is aligned without it, which lets ＳＦ
+ * divide as it does when read エスエフ. Each mark then goes back into the ruby segment that ends
+ * where it stands, or failing that the one that starts there. If a mark falls between two
+ * stretches of plain kana, which cannot hold it, the direct alignment stands.
+ */
+export function alignPastReadingPunctuation(align) {
+  return (spelling, reading) => {
+    const direct = align(spelling, reading);
+    const isMark = (unit) => /^[\p{P}\p{S}]$/u.test(unit) && !spelling.includes(unit);
+    const units = splitGraphemes(reading);
+    if (!units.some(isMark)) return direct;
+    // The marks that stand before each position of the reading without them.
+    const marks = new Map();
+    let position = 0;
+    for (const unit of units) {
+      if (isMark(unit)) marks.set(position, (marks.get(position) ?? "") + unit);
+      else ++position;
+    }
+    if (position === 0) return direct;
+    const result = align(spelling, units.filter((unit) => !isMark(unit)).join(""));
+    if (result.status !== "aligned" || result.segments.length <= direct.segments.length) {
+      return direct;
+    }
+    const segments = [];
+    let offset = 0;
+    for (const [index, segment] of result.segments.entries()) {
+      const sounds = splitGraphemes(segmentReading(segment));
+      const start = offset;
+      offset += sounds.length;
+      const last = index === result.segments.length - 1;
+      let rebuilt = "";
+      for (const [inner, sound] of sounds.entries()) {
+        // Marks at a segment's start belong to the segment before it when that one is ruby.
+        const before = marks.get(start + inner);
+        if (
+          before !== undefined &&
+          (inner > 0 || typeof segments.at(-1) === "string" || index === 0)
+        ) {
+          rebuilt += before;
+          marks.delete(start + inner);
+        }
+        rebuilt += sound;
+      }
+      if (marks.has(offset) && (typeof segment !== "string" || last)) {
+        rebuilt += marks.get(offset);
+        marks.delete(offset);
+      }
+      if (typeof segment === "string" && rebuilt !== segment) return direct;
+      segments.push(typeof segment === "string" ? segment : [segment[0], rebuilt]);
+    }
+    if (marks.size > 0) return direct;
+    try {
+      validateAlignment(spelling, reading, segments);
+    } catch {
+      return direct;
+    }
+    return {
+      ...result,
+      segments,
+      evidence: result.evidence?.map((item, index) => ({
+        ...item,
+        reading: segmentReading(segments[index]),
+      })),
+    };
+  };
 }
 
 function cacheAligner(align) {
@@ -767,7 +837,7 @@ function compilePipeline(
   const omittedParticles = configuration.variantTransfers
     ? deriveOmittedParticles(jmdict, characterReadings)
     : undefined;
-  const align =
+  const alignParticles =
     omittedParticles === undefined
       ? alignSharedRuns
       : (spelling, reading) =>
@@ -775,6 +845,7 @@ function compilePipeline(
             alignSharedRuns(spelling, reading),
             omittedParticleSites(omittedParticles, spelling, reading),
           );
+  const align = alignPastReadingPunctuation(alignParticles);
   const lateWitnesses = (name) =>
     mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {

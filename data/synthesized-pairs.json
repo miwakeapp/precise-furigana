@@ -182,6 +182,27 @@
     "note": "JMdict has こすれあう, but restricted to 擦れ合う; search-only spellings take no restrictions."
   },
   {
+    "id": "1310650",
+    "spelling": "やむ得ず",
+    "reading": "やむえず",
+    "upstream": "propose",
+    "note": "Particle drop: the spelling omits the を of やむを得ず, as ようすみる does for 様子を見る."
+  },
+  {
+    "id": "1310650",
+    "spelling": "已む得ず",
+    "reading": "やむえず",
+    "upstream": "propose",
+    "note": "Particle drop: the spelling omits the を of やむを得ず, as ようすみる does for 様子を見る."
+  },
+  {
+    "id": "1310650",
+    "spelling": "止む得ず",
+    "reading": "やむえず",
+    "upstream": "propose",
+    "note": "Particle drop: the spelling omits the を of やむを得ず, as ようすみる does for 様子を見る."
+  },
+  {
     "id": "1310950",
     "spelling": "ﾀﾋ亡",
     "reading": "ﾀﾋぼう",
@@ -530,6 +551,20 @@
     "reading": "はんぱもん",
     "upstream": "propose",
     "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "1682580",
+    "spelling": "金たらい",
+    "reading": "かなたらい",
+    "upstream": "restricted",
+    "note": "JMdict has かなたらい, but restricted to 金盥; search-only spellings take no restrictions."
+  },
+  {
+    "id": "1682580",
+    "spelling": "金タライ",
+    "reading": "かなタライ",
+    "upstream": "restricted",
+    "note": "JMdict has かなたらい, but restricted to 金盥; search-only spellings take no restrictions."
   },
   {
     "id": "1690820",
@@ -978,6 +1013,20 @@
     "reading": "かぎかかる",
     "upstream": "propose",
     "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2101500",
+    "spelling": "ない袖は振れぬ",
+    "reading": "ないそではふれぬ",
+    "upstream": "propose",
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
+  },
+  {
+    "id": "2101500",
+    "spelling": "無い袖は振れぬ",
+    "reading": "ないそではふれぬ",
+    "upstream": "propose",
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "2102540",
@@ -2338,6 +2387,13 @@
     "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
   },
   {
+    "id": "2829904",
+    "spelling": "個人プレイ",
+    "reading": "こじんプレイ",
+    "upstream": "none",
+    "note": "Loanword kana variant: プレイ for プレー is a spelling, not a distinct pronunciation."
+  },
+  {
     "id": "2831887",
     "spelling": "カノーラ油",
     "reading": "カノーラゆ",
@@ -3444,11 +3500,25 @@
     "note": "Kana doubled: け repeated; the corrected reading is a real classical ending worth proposing."
   },
   {
+    "id": "2872436",
+    "spelling": "引くに引けん",
+    "reading": "ひくにひけん",
+    "upstream": "propose",
+    "note": "Ending: the contracted negative ん for ない, a real spoken form."
+  },
+  {
     "id": "2872981",
     "spelling": "身の程知れ",
     "reading": "みのほどしれ",
     "upstream": "propose",
     "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
+  },
+  {
+    "id": "2873106",
+    "spelling": "先が見る",
+    "reading": "さきがみる",
+    "upstream": "none",
+    "note": "Particle variant: the spelling writes が where the entry has を. It reads as written, but 先が見る looks like an error for 先を見る, so it is not proposed."
   },
   {
     "id": "5741603",

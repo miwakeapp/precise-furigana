@@ -1,10 +1,5 @@
-import { isKana, normalizeKana, splitGraphemes } from "./kana.mjs";
+import { isKana, isSilentPunctuation, normalizeKana, splitGraphemes } from "./kana.mjs";
 import { segmentReading, segmentText } from "./segments.mjs";
-
-// Punctuation that separates words, and the double hyphen that joins names, is not read. A symbol
-// that is read aloud is never silent: ％ is パーセント, ＆ is アンド, and a wave dash can be から.
-const isSilentPunctuation = (unit) =>
-  /^(\p{P}|[＝=])$/u.test(unit) && !/^[〜～％%＆&＠@＃#＊*]$/u.test(unit);
 
 const pronounced = (text) => normalizeKana(text).replace(/[^\p{Script=Hiragana}ー]/gu, "");
 

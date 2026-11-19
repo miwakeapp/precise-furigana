@@ -911,9 +911,16 @@ test("separator transfers use restricted same-entry sources and an independent r
       ...options,
       sharedRunTransfers: false,
     });
-    assert.deepEqual(disabled.align("甲乙・丙", "かがな").segments, [["甲乙・丙", "かがな"]]);
     assert.equal(disabled.separatorTransfers.length, 0);
   }
+  // Without the sound change that reads 乙 as が, nothing divides the word.
+  assert.deepEqual(
+    compileAlignmentPipeline(jmdict, kanjidic, {
+      phonologicalAlternations: false,
+      sharedRunTransfers: false,
+    }).align("甲乙・丙", "かがな").segments,
+    [["甲乙・丙", "かがな"]],
+  );
 });
 
 test("virtual separator sources require exact independent allocation and preserve provenance", () => {
@@ -951,7 +958,6 @@ test("virtual separator sources require exact independent allocation and preserv
   assert.equal(witness.completeExactAllocation.length, 3);
   for (const options of [{ separatorTransfers: false }, { virtualSeparatorSources: false }]) {
     const disabled = compileAlignmentPipeline(jmdict, kanjidic, options);
-    assert.deepEqual(disabled.align("甲乙・丙", "あいう").segments, [["甲乙・丙", "あいう"]]);
     assert.equal(disabled.separatorTransfers.length, 0);
   }
 });

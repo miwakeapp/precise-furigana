@@ -15,6 +15,7 @@ import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
 import { contradictsSpelling, isMismatched } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
+import { isSilentPunctuation, splitGraphemes } from "../src/kana.mjs";
 import { parseDatabaseVersion } from "./lib/database-files.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
@@ -120,6 +121,15 @@ for (const [id, records] of Object.entries(output.entries)) {
     );
     pairSegments.set(pair, segments);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
+    // Punctuation is never read, so outside a mismatched pair no ruby text holds any.
+    if (record.pairing !== "mismatched") {
+      for (const segment of record.segments) {
+        assert.ok(
+          typeof segment === "string" || !splitGraphemes(segment[1]).some(isSilentPunctuation),
+          `Punctuation in ruby text: ${key}`,
+        );
+      }
+    }
     spellings.add(`${id}\t${record.spelling}`);
     const position =
       record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;

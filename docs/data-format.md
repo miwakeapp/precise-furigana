@@ -35,6 +35,7 @@ Invariants, all checked by `npm run validate`:
 - Kana the reading repeats is never under ruby, including at the edges of a ruby group: <ruby>君<rt>きみ</rt></ruby>の<ruby>名<rt>な</rt></ruby>は。, not <ruby>君の<rt>きみの</rt></ruby>.
 - Kana the reading contradicts is under ruby carrying the reading's kana: 宣ふ read のたまう is <ruby>宣<rt>のたま</rt></ruby><ruby>ふ<rt>う</rt></ruby>.
 - Adjacent strings are merged.
+- Punctuation is not grouped with characters. A mark the spelling writes is plain text: Ｓ・Ｍ read エス・エム is <ruby>Ｓ<rt>エス</rt></ruby>・<ruby>Ｍ<rt>エム</rt></ruby>. Outside a mismatched pair, ruby text holds no punctuation. A ruby base holds a mark only when the mark is itself read, as the dot of ２．５ is in にてんご, or when the group cannot be divided at it, as in <ruby>Ｗｉ-Ｆｉ<rt>ワイファイ</rt></ruby>. Symbols that are read aloud, such as ％ and ＆, are characters, not punctuation: <ruby>１００<rt>ひゃく</rt></ruby><ruby>％<rt>パーセント</rt></ruby>.
 
 A multi-character ruby group means the characters' individual sounds are unresolved, or an unwritten particle sits between them (<ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>). Explicit evidence can give a small kana to its own character, as in <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る.
 
@@ -42,7 +43,7 @@ A multi-character ruby group means the characters' individual sounds are unresol
 
 `pairing` is absent for an ordinary JMdict pair.
 
-- `"mismatched"`: a JMdict pair involving a search-only (`sK` or `sk`) form whose reading contradicts the spelling's kana, as in 気持ちよい read きもちいい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い). JMdict cannot restrict which readings go with search-only forms, so it permits such pairs. A reading also contradicts the spelling when it fits only by giving a kanji a sound that belongs to the kana: けも耳 read けものみみ would need 耳 read のみみ, and is segmented け<ruby>も<rt>もの</rt></ruby><ruby>耳<rt>みみ</rt></ruby>.
+- `"mismatched"`: a JMdict pair involving a search-only (`sK` or `sk`) form whose reading contradicts the spelling's kana, as in 気持ちよい read きもちいい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い). JMdict cannot restrict which readings go with search-only forms, so it permits such pairs. A reading also contradicts the spelling when it fits only by giving a kanji a sound that belongs to the kana: けも耳 read けものみみ would need 耳 read のみみ, and is segmented け<ruby>も<rt>もの</rt></ruby><ruby>耳<rt>みみ</rt></ruby>. A pair is also mismatched, whatever its tags, when its reading has punctuation the spelling does not write: ＳＦ read エス・エフ is <ruby>Ｓ<rt>エス・</rt></ruby><ruby>Ｆ<rt>エフ</rt></ruby>, and the reading to use is エスエフ.
 - `"synthesized"`: not a JMdict pair. Every spelling has at least one record whose reading fits its kana; where JMdict has none, the spelling's own reading is added from [data/synthesized-pairs.json](../data/synthesized-pairs.json), as in 気持ちよい read きもちよい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちよい).
 
 Visible (non-search-only) pairs whose kana differ only by convention, such as historical 宣ふ read のたまう, are not flagged. A consumer choosing a reading for a spelling should avoid `"mismatched"` records when another exists.

@@ -16,6 +16,15 @@ const kanaVowels = new Map(
 const mayJoin =
   /[\p{Grapheme_Extend}\p{M}\p{Cf}\u0e33\u0eb3\u1100-\u11ff\ua960-\ua97f\ud7b0-\ud7ff\r\u{1f1e6}-\u{1f1ff}\u{1f3fb}-\u{1f3ff}]/u;
 
+/**
+ * Punctuation that separates words, and the double hyphen that joins names, is not read. A
+ * symbol that is read aloud is never silent: ％ is パーセント, ＆ is アンド, and a wave dash can
+ * be から.
+ */
+export function isSilentPunctuation(unit) {
+  return /^(\p{P}|[＝=])$/u.test(unit) && !/^[〜～％%＆&＠@＃#＊*]$/u.test(unit);
+}
+
 /** Split text without separating a combining mark from its base character. */
 export function splitGraphemes(text) {
   if (!mayJoin.test(text)) return Array.from(text);

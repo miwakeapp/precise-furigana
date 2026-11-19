@@ -1,4 +1,4 @@
-import { isKana, normalizeKana, splitGraphemes } from "./kana.mjs";
+import { isKana, isSilentPunctuation, normalizeKana, splitGraphemes } from "./kana.mjs";
 import { pairKey, segmentReading, segmentText } from "./segments.mjs";
 
 // Counter symbols and kana iteration marks stand for a sound the way a kanji does. ケ is a counter only
@@ -41,12 +41,33 @@ const pronounced = (text) => normalizeKana(text).replace(/[^\p{Script=Hiragana}�
 const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 
 /**
+ * Whether a reading has punctuation that its spelling does not write, as エス・エフ does for
+ * ＳＦ. JMdict punctuates some readings for legibility; the marks are not part of how the
+ * spelling is read.
+ */
+export function hasUnwrittenPunctuation(spelling, reading) {
+  const count = (text, mark) => splitGraphemes(text).filter((unit) => unit === mark).length;
+  return [...new Set(splitGraphemes(reading).filter(isSilentPunctuation))].some(
+    (mark) => count(reading, mark) > count(spelling, mark),
+  );
+}
+
+/** A reading without the punctuation its spelling does not write. */
+export function withoutUnwrittenPunctuation(spelling, reading) {
+  return splitGraphemes(reading)
+    .filter((unit) => !(isSilentPunctuation(unit) && !spelling.includes(unit)))
+    .join("");
+}
+
+/**
  * Whether the spelling's kana appear, in order and exactly, in the reading,
- * with kanji and other characters standing for any reading. 気持ちよい does not
- * fit きもちいい, and 元どうり does not fit もとどおり.
+ * with kanji and other characters standing for any reading, and the reading
+ * has no punctuation the spelling lacks. 気持ちよい does not fit きもちいい,
+ * 元どうり does not fit もとどおり, and ＳＦ does not fit エス・エフ.
  */
 export function fitsSpelling(spelling, reading) {
   if (spelling === reading || kanaPuns.has(pairKey(spelling, reading))) return true;
+  if (hasUnwrittenPunctuation(spelling, reading)) return false;
   const pattern = units(spelling)
     .map(({ kind, text }) =>
       kind === "kana" ? kanaPattern(text) : kind === "symbol" ? ".*?" : ".+?",
@@ -77,12 +98,18 @@ export function contradictsSpelling(spelling, reading, drops, segments = []) {
  * A contradicting pair is flagged as mismatched when it involves a search-only
  * spelling or reading: JMdict does not restrict search-only forms, so such pairs
  * combine forms that do not belong together. A visible pair such as 宣ふ with
- * のたまう contradicts its kana only by orthographic convention and is not flagged.
+ * のたまう contradicts its kana only by orthographic convention, and showing ふ
+ * read う is a legitimate display, so it is not flagged.
+ *
+ * A reading with punctuation the spelling lacks is flagged whatever its forms'
+ * tags: no display of ＳＦ should carry the dot of エス・エフ, and the reading
+ * without it, which JMdict or a synthesized pair supplies, is the one to use.
  */
 export function isMismatched(pair, drops, segments) {
   return (
-    (pair.spellingTags.includes("sK") || pair.readingTags.includes("sk")) &&
-    contradictsSpelling(pair.spelling, pair.reading, drops, segments)
+    hasUnwrittenPunctuation(pair.spelling, pair.reading) ||
+    ((pair.spellingTags.includes("sK") || pair.readingTags.includes("sk")) &&
+      contradictsSpelling(pair.spelling, pair.reading, drops, segments))
   );
 }
 
@@ -222,19 +249,35 @@ export function planSynthesizedPairs(records, drops, reviewed, jmdictPairs) {
           .map((record) =>
             impliedReading(record.segments, drops.get(pairKey(record.spelling, record.reading))),
           )
-          .filter((value) => value !== undefined && fitsSpelling(spelling, value)),
+          .filter((value) => value !== undefined)
+          .map((value) => withoutUnwrittenPunctuation(spelling, value))
+          .filter((value) => fitsSpelling(spelling, value)),
       ),
     ];
+    // A reading that only needs its unwritten punctuation removed needs no judgment.
+    const unpunctuated = invalid
+      .map((record) => withoutUnwrittenPunctuation(spelling, record.reading))
+      .find((value) => fitsSpelling(spelling, value));
     const item = listed.get(key);
     listed.delete(key);
     if (item === undefined) {
-      missing.push({
-        id,
-        spelling,
-        reading: implied[0] ?? "",
-        upstream: "unreviewed",
-        note: implied.length === 1 ? "" : "Choose the reading this spelling implies.",
-      });
+      missing.push(
+        unpunctuated === undefined
+          ? {
+              id,
+              spelling,
+              reading: implied[0] ?? "",
+              upstream: "unreviewed",
+              note: implied.length === 1 ? "" : "Choose the reading this spelling implies.",
+            }
+          : {
+              id,
+              spelling,
+              reading: unpunctuated,
+              upstream: "none",
+              note: "Punctuation: the entry's reading has punctuation that the spelling does not write.",
+            },
+      );
       continue;
     }
     if (!fitsSpelling(spelling, item.reading))

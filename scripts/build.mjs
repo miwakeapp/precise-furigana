@@ -4,7 +4,11 @@ import { join } from "node:path";
 import { digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
 import { pairKey, recordKey, validateAlignment } from "../src/segments.mjs";
 import { displaySegments } from "../src/display.mjs";
-import { isMismatched, planSynthesizedPairs } from "../src/pairings.mjs";
+import {
+  isMismatched,
+  planSynthesizedPairs,
+  withoutUnwrittenPunctuation,
+} from "../src/pairings.mjs";
 import { databaseFiles, databaseVersion, writeDatabase } from "./lib/database-files.mjs";
 import { evaluateDataset } from "./lib/evaluation.mjs";
 import { parseGeneratorOptions } from "./lib/options.mjs";
@@ -81,8 +85,27 @@ if (updateSynthesizedPairs) {
   );
   process.exitCode = 1;
 }
+// A synthesized reading that is a JMdict reading without its unwritten punctuation divides as
+// that reading does. Aligning it afresh would lose evidence that belongs to the attested pair.
+function unpunctuatedSegments(item) {
+  for (const record of records) {
+    if (record.id !== item.id || record.spelling !== item.spelling) continue;
+    if (withoutUnwrittenPunctuation(item.spelling, record.reading) !== item.reading) continue;
+    const segments = record.segments.map((segment) =>
+      typeof segment === "string"
+        ? segment
+        : [segment[0], withoutUnwrittenPunctuation(item.spelling, segment[1])],
+    );
+    if (segments.every((segment) => typeof segment === "string" || segment[1] !== "")) {
+      return segments.map((segment) =>
+        typeof segment !== "string" && segment[0] === segment[1] ? segment[0] : segment,
+      );
+    }
+  }
+  return undefined;
+}
 for (const item of plan.pairs) {
-  const { segments } = dataset.alignPair(item);
+  const segments = unpunctuatedSegments(item) ?? dataset.alignPair(item).segments;
   validateAlignment(item.spelling, item.reading, segments);
   const key = recordKey(item.id, item.spelling, item.reading);
   if (seen.has(key)) throw new Error(`Synthesized pair duplicates an existing record: ${key}`);

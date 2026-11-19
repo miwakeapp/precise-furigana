@@ -17,7 +17,7 @@ import {
   segmentText,
   validateAlignment,
 } from "./segments.mjs";
-import { splitGraphemes } from "./kana.mjs";
+import { isSilentPunctuation, splitGraphemes } from "./kana.mjs";
 import {
   deriveOmittedParticles,
   deriveVariantAlignments,
@@ -140,74 +140,215 @@ export function compileAnnotations(annotations) {
 }
 
 export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources = {}) {
-  return compilePipeline(jmdict, kanjidic, options, sources);
+  const pipeline = compilePipeline(jmdict, kanjidic, options, sources);
+  // This applies to the finished pipeline only: the reduced copy that a pipeline compiles of
+  // itself must not see its boundaries.
+  return { ...pipeline, align: alignPastPunctuation(pipeline.align) };
 }
 
 /**
- * A reading can contain punctuation that its spelling does not write, such as the dots in
- * エス・エフ for ＳＦ. It is not pronounced, so the reading is aligned without it, which lets ＳＦ
- * divide as it does when read エスエフ. Each mark then goes back into the ruby segment that ends
- * where it stands, or failing that the one that starts there. If a mark falls between two
- * stretches of plain kana, which cannot hold it, the direct alignment stands.
+ * Silent punctuation is not part of how a word divides, so the spelling and reading are also
+ * aligned without it, and any boundaries that adds are kept. That lets Ｓ・Ｍ read エス・エム
+ * divide as ＳＭ read エスエム does. The marks are put back afterwards: one that both sides have
+ * at the same place becomes its own segment, a spelling's mark joins the segment before it,
+ * which the release shows as plain text, and a reading's mark joins a neighboring ruby segment,
+ * which makes the pair mismatched.
+ *
+ * A mark can also be read aloud, as the dot of Ｗｅｂ２．０ is ポイント, so each side's marks are
+ * set aside separately as well as together.
  */
-export function alignPastReadingPunctuation(align) {
-  return (spelling, reading) => {
-    const direct = align(spelling, reading);
-    const isMark = (unit) => /^[\p{P}\p{S}]$/u.test(unit) && !spelling.includes(unit);
-    const units = splitGraphemes(reading);
-    if (!units.some(isMark)) return direct;
-    // The marks that stand before each position of the reading without them.
-    const marks = new Map();
-    let position = 0;
-    for (const unit of units) {
-      if (isMark(unit)) marks.set(position, (marks.get(position) ?? "") + unit);
-      else ++position;
+export function alignPastPunctuation(align) {
+  // The text without its marks, and the marks that stood before each of its positions.
+  function strip(text, enabled) {
+    const kept = [],
+      marks = new Map();
+    for (const unit of splitGraphemes(text)) {
+      if (enabled && isSilentPunctuation(unit)) {
+        marks.set(kept.length, (marks.get(kept.length) ?? "") + unit);
+      } else kept.push(unit);
     }
-    if (position === 0) return direct;
-    const result = align(spelling, units.filter((unit) => !isMark(unit)).join(""));
-    if (result.status !== "aligned" || result.segments.length <= direct.segments.length) {
-      return direct;
+    return { kept, marks };
+  }
+  function withoutMarks(spelling, reading, stripSpelling, stripReading) {
+    const base = strip(spelling, stripSpelling),
+      ruby = strip(reading, stripReading);
+    if (base.marks.size + ruby.marks.size === 0 || !base.kept.length || !ruby.kept.length) {
+      return undefined;
     }
-    const segments = [];
-    let offset = 0;
-    for (const [index, segment] of result.segments.entries()) {
-      const sounds = splitGraphemes(segmentReading(segment));
-      const start = offset;
-      offset += sounds.length;
-      const last = index === result.segments.length - 1;
-      let rebuilt = "";
-      for (const [inner, sound] of sounds.entries()) {
-        // Marks at a segment's start belong to the segment before it when that one is ruby.
-        const before = marks.get(start + inner);
-        if (
-          before !== undefined &&
-          (inner > 0 || typeof segments.at(-1) === "string" || index === 0)
-        ) {
-          rebuilt += before;
-          marks.delete(start + inner);
-        }
-        rebuilt += sound;
+    const result = align(base.kept.join(""), ruby.kept.join(""));
+    if (result.status !== "aligned") return undefined;
+    const take = (side, offset) => {
+      const marks = side.marks.get(offset) ?? "";
+      side.marks.delete(offset);
+      return marks;
+    };
+    // Every segment is a pair here; a pair whose sides are equal becomes plain text at the end.
+    const pairs = [];
+    const isRuby = (segment) => segment !== undefined && typeof segment !== "string";
+    let baseOffset = 0,
+      rubyOffset = 0,
+      basePrefix = "",
+      rubyPrefix = "";
+    // Place the marks that stand between the previous segment and the next one.
+    const boundary = (next) => {
+      const baseMarks = take(base, baseOffset),
+        rubyMarks = take(ruby, rubyOffset);
+      const previous = pairs.at(-1);
+      if (baseMarks !== "" && baseMarks === rubyMarks) pairs.push([baseMarks, rubyMarks]);
+      else {
+        if (previous === undefined) basePrefix += baseMarks;
+        else previous[0] += baseMarks;
+        // A reading's mark prefers a ruby segment to plain kana.
+        const previousIsRuby = previous !== undefined && previous[0] !== previous[1];
+        if (previous !== undefined && (previousIsRuby || !isRuby(next))) previous[1] += rubyMarks;
+        else rubyPrefix += rubyMarks;
       }
-      if (marks.has(offset) && (typeof segment !== "string" || last)) {
-        rebuilt += marks.get(offset);
-        marks.delete(offset);
-      }
-      if (typeof segment === "string" && rebuilt !== segment) return direct;
-      segments.push(typeof segment === "string" ? segment : [segment[0], rebuilt]);
+    };
+    for (const segment of result.segments) {
+      boundary(segment);
+      const rebuild = (side, offset, text) =>
+        splitGraphemes(text)
+          .map((unit, inner) => (inner > 0 ? take(side, offset + inner) : "") + unit)
+          .join("");
+      pairs.push([
+        basePrefix + rebuild(base, baseOffset, segmentText(segment)),
+        rubyPrefix + rebuild(ruby, rubyOffset, segmentReading(segment)),
+      ]);
+      basePrefix = rubyPrefix = "";
+      baseOffset += splitGraphemes(segmentText(segment)).length;
+      rubyOffset += splitGraphemes(segmentReading(segment)).length;
     }
-    if (marks.size > 0) return direct;
+    boundary(undefined);
+    const segments = pairs.map(([text, sound]) => (text === sound ? text : [text, sound]));
     try {
       validateAlignment(spelling, reading, segments);
     } catch {
-      return direct;
+      return undefined;
     }
+    return segments;
+  }
+  // A reading's marks usually fall where a sibling spelling writes them, as 鱧も一期、海老も一期
+  // does for 鱧も一期海老も一期. Writing them into the spelling at the boundaries where the
+  // reading has them finds that sibling, whose alignment can rest on evidence for the exact
+  // pair; its boundaries carry over once the added marks are taken out again.
+  function throughPunctuatedSpelling(spelling, reading, segments) {
+    const unwritten = (unit) => isSilentPunctuation(unit) && !spelling.includes(unit);
+    const added = new Set();
+    let punctuated = "";
+    for (const segment of segments) {
+      const sounds = splitGraphemes(segmentReading(segment));
+      let leading = 0,
+        trailing = 0;
+      while (leading < sounds.length && unwritten(sounds[leading])) ++leading;
+      while (trailing < sounds.length - leading && unwritten(sounds.at(-1 - trailing))) ++trailing;
+      const text = splitGraphemes(segmentText(segment));
+      for (const [units, mark] of [
+        [sounds.slice(0, leading), true],
+        [text, false],
+        [sounds.slice(sounds.length - trailing), true],
+      ]) {
+        for (const unit of units) {
+          if (mark) added.add(splitGraphemes(punctuated).length);
+          punctuated += unit;
+        }
+      }
+    }
+    if (added.size === 0) return undefined;
+    const result = align(punctuated, reading);
+    if (result.status !== "aligned") return undefined;
+    // Cut each segment into its added marks and the text between them.
+    const pieces = [];
+    let offset = 0;
+    for (const segment of result.segments) {
+      const units = splitGraphemes(segmentText(segment));
+      const plain = typeof segment === "string";
+      let text = "";
+      const flush = () => {
+        if (text !== "") pieces.push({ text, sound: plain ? text : undefined });
+        text = "";
+      };
+      for (const [index, unit] of units.entries()) {
+        if (!added.has(offset + index)) text += unit;
+        else if (plain) {
+          flush();
+          pieces.push({ text: "", sound: unit });
+        }
+      }
+      offset += units.length;
+      if (!plain) pieces.push({ text, sound: segmentReading(segment) });
+      else flush();
+    }
+    // An added mark has only a sound, which goes to a ruby segment beside it if there is one.
+    const pairs = [];
+    let prefix = "";
+    for (const [index, piece] of pieces.entries()) {
+      const isRuby = (other) =>
+        other !== undefined && other.text !== "" && other.text !== other.sound;
+      if (piece.text !== "") {
+        pairs.push([piece.text, prefix + piece.sound]);
+        prefix = "";
+      } else if (pairs.length > 0 && (isRuby(pieces[index - 1]) || !isRuby(pieces[index + 1]))) {
+        pairs.at(-1)[1] += piece.sound;
+      } else prefix += piece.sound;
+    }
+    if (prefix !== "" && pairs.length > 0) pairs.at(-1)[1] += prefix;
+    const projected = pairs.map(([text, sound]) => (text === sound ? text : [text, sound]));
+    try {
+      validateAlignment(spelling, reading, projected);
+    } catch {
+      return undefined;
+    }
+    return projected;
+  }
+  return (spelling, reading) => {
+    const direct = align(spelling, reading);
+    // Marks that both sides share place themselves, so that alignment is the one to build on:
+    // a direct alignment can misplace them, and then nothing else can be combined with it.
+    const shared = withoutMarks(spelling, reading, true, true);
+    // When both sides have the same marks, a boundary must leave the same marks on each side
+    // of it. One that does not has matched a spelling's mark to nothing and put the reading's
+    // into a neighbor's ruby.
+    const marksOf = (text) => splitGraphemes(text).filter(isSilentPunctuation).join("");
+    const marksAgree = marksOf(spelling) !== "" && marksOf(spelling) === marksOf(reading);
+    const keepsMarksTogether = (candidate) => {
+      if (!marksAgree) return true;
+      let text = "",
+        sound = "";
+      return candidate.every((segment) => {
+        text += segmentText(segment);
+        sound += segmentReading(segment);
+        return marksOf(text) === marksOf(sound);
+      });
+    };
+    let segments = shared ?? direct.segments;
+    const candidates = [
+      direct.segments,
+      withoutMarks(spelling, reading, false, true),
+      withoutMarks(spelling, reading, true, false),
+    ];
+    for (const candidate of candidates) {
+      if (candidate !== undefined && keepsMarksTogether(candidate)) {
+        segments = combineAlignments(segments, candidate);
+      }
+    }
+    const sibling = throughPunctuatedSpelling(spelling, reading, segments);
+    if (sibling !== undefined) segments = combineAlignments(segments, sibling);
+    if (JSON.stringify(segments) === JSON.stringify(direct.segments)) return direct;
+    const known = new Map(
+      direct.segments.map((segment, index) => [JSON.stringify(segment), direct.evidence?.[index]]),
+    );
     return {
-      ...result,
+      ...direct,
       segments,
-      evidence: result.evidence?.map((item, index) => ({
-        ...item,
-        reading: segmentReading(segments[index]),
-      })),
+      evidence: segments.map(
+        (segment) =>
+          known.get(JSON.stringify(segment)) ?? {
+            spelling: segmentText(segment),
+            reading: segmentReading(segment),
+            type: typeof segment === "string" ? "literal" : "dictionary",
+            rules: ["punctuation-set-aside"],
+          },
+      ),
     };
   };
 }
@@ -837,7 +978,7 @@ function compilePipeline(
   const omittedParticles = configuration.variantTransfers
     ? deriveOmittedParticles(jmdict, characterReadings)
     : undefined;
-  const alignParticles =
+  const align =
     omittedParticles === undefined
       ? alignSharedRuns
       : (spelling, reading) =>
@@ -845,7 +986,6 @@ function compilePipeline(
             alignSharedRuns(spelling, reading),
             omittedParticleSites(omittedParticles, spelling, reading),
           );
-  const align = alignPastReadingPunctuation(alignParticles);
   const lateWitnesses = (name) =>
     mergeLateWitnesses(independentLate[name].witnesses, integratedLate[name].witnesses);
   return {

@@ -91,6 +91,13 @@
     "note": "JMdict has よしぶえ, but restricted to 葦笛、蘆笛、芦笛; search-only spellings take no restrictions."
   },
   {
+    "id": "1160300",
+    "spelling": "井の中の蛙大海を知らず",
+    "reading": "いのなかのかわずたいかいをしらず",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "1162380",
     "spelling": "一口商ひ",
     "reading": "ひとくちあきなひ",
@@ -1183,6 +1190,13 @@
     "note": "Misspelling: スモック for スモッグ."
   },
   {
+    "id": "2152790",
+    "spelling": "楽は苦の種苦は楽の種",
+    "reading": "らくはくのたねくはらくのたね",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2152910",
     "spelling": "焼けた石に水",
     "reading": "やけたいしにみず",
@@ -1237,6 +1251,13 @@
     "reading": "ハンティングぼう",
     "upstream": "none",
     "note": "Loanword kana variant: ハンティング for the established ハンチング."
+  },
+  {
+    "id": "2183450",
+    "spelling": "ブルータスお前もか",
+    "reading": "ブルータスおまえもか",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2185570",
@@ -1722,11 +1743,39 @@
     "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
   },
   {
+    "id": "2417290",
+    "spelling": "後門の虎前門の狼",
+    "reading": "こうもんのとらぜんもんのおおかみ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2417520",
+    "spelling": "才子才に倒れる",
+    "reading": "さいしさいにたおれる",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2417780",
     "spelling": "捨てる神ありゃ拾う神あり",
     "reading": "すてるかみありゃひろうかみあり",
     "upstream": "propose",
     "note": "Contraction: ありゃ for あれば, a real colloquial form."
+  },
+  {
+    "id": "2417950",
+    "spelling": "勝てば官軍負ければ賊軍",
+    "reading": "かてばかんぐんまければぞくぐん",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2418000",
+    "spelling": "少年よ大志を抱け",
+    "reading": "しょうねんよたいしをいだけ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2418480",
@@ -1736,11 +1785,67 @@
     "note": "Particle insertion: を added, a real distinct form of the proverb."
   },
   {
+    "id": "2418570",
+    "spelling": "生めよ殖えよ地に満てよ",
+    "reading": "うめよふえよちにみてよ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2418650",
+    "spelling": "昔は昔今は今",
+    "reading": "むかしはむかしいまはいま",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2418870",
+    "spelling": "大きにお世話お茶でも上がれ",
+    "reading": "おおきにおせわおちゃでもあがれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2418870",
+    "spelling": "大きに御世話御茶でもあがれ",
+    "reading": "おおきにおせわおちゃでもあがれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2418870",
+    "spelling": "大きに御世話御茶でも上がれ",
+    "reading": "おおきにおせわおちゃでもあがれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2419680",
     "spelling": "くそもみそもも一緒",
     "reading": "くそもみそももいっしょ",
     "upstream": "none",
     "note": "Misspelling: a doubled も, probably a typo in JMdict for くそもみそも一緒."
+  },
+  {
+    "id": "2419720",
+    "spelling": "聞くは一時の恥聞かぬは末代の恥",
+    "reading": "きくはいっときのはじきかぬはまつだいのはじ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2419910",
+    "spelling": "問うは一旦の恥問わぬは末代の恥",
+    "reading": "とうはいったんのはじとわぬはまつだいのはじ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2419950",
+    "spelling": "雄弁は銀沈黙は金",
+    "reading": "ゆうべんはぎんちんもくはきん",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2421220",
@@ -1757,6 +1862,13 @@
     "note": "Unwritten dakuten: the rendaku is left out in writing but the word is still said voiced."
   },
   {
+    "id": "2424520",
+    "spelling": "去る者は追わず来たる者は拒まず",
+    "reading": "さるものはおわずきたるものはこばまず",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2426970",
     "spelling": "ゲーム機エミュレーター",
     "reading": "ゲームきエミュレーター",
@@ -1769,6 +1881,13 @@
     "reading": "てきをしりおのれをしらばひゃくせんあやうからず",
     "upstream": "propose",
     "note": "Different inflection: classical conditional 知らば instead of 知れば, a real variant of the saying."
+  },
+  {
+    "id": "2429140",
+    "spelling": "彼を知り己を知れば百戦殆からず",
+    "reading": "かれをしりおのれをしればひゃくせんあやうからず",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2436550",
@@ -1874,6 +1993,13 @@
     "reading": "ドーナッツかげんしょう",
     "upstream": "propose",
     "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2570040",
+    "spelling": "朝焼けは雨夕焼けは晴れ",
+    "reading": "あさやけはあめゆうやけははれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2612840",
@@ -2007,6 +2133,13 @@
     "reading": "やきドーナッツ",
     "upstream": "propose",
     "note": "Loanword variant: ドーナッツ is a real, widely said pronunciation (JMdict lists it as a reading of ドーナツ itself); somewhat unsure whether JMdict wants it per compound."
+  },
+  {
+    "id": "2708140",
+    "spelling": "前門の虎後門の狼",
+    "reading": "ぜんもんのとらこうもんのおおかみ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2710650",
@@ -2161,6 +2294,13 @@
     "reading": "わるいところどり",
     "upstream": "restricted",
     "note": "JMdict has わるいところどり, but restricted to 悪い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2757120",
+    "spelling": "問うは一度の恥問わぬは末代の恥",
+    "reading": "とうはいちどのはじとわぬはまつだいのはじ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2773710",
@@ -2366,6 +2506,20 @@
     "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
   },
   {
+    "id": "2827812",
+    "spelling": "桜切る馬鹿梅切らぬ馬鹿",
+    "reading": "さくらきるばかうめきらぬばか",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2828341",
+    "spelling": "花は桜木人は武士",
+    "reading": "はなはさくらぎひとはぶし",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2829466",
     "spelling": "喉鳴らす",
     "reading": "のどならす",
@@ -2422,11 +2576,74 @@
     "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
   },
   {
+    "id": "2833702",
+    "spelling": "指切りげんまん嘘ついたら針千本飲ます",
+    "reading": "ゆびきりげんまんうそついたらはりせんぼんのます",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2833702",
+    "spelling": "指切拳万嘘ついたら針千本飲ます",
+    "reading": "ゆびきりげんまんうそついたらはりせんぼんのます",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2833961",
+    "spelling": "梅は食うとも核食うな中に天神寝てござる",
+    "reading": "うめはくうともさねくうななかにてんじんねてござる",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2834251",
+    "spelling": "来た見た勝った",
+    "reading": "きたみたかった",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2834318",
+    "spelling": "二人は伴侶三人は仲間割れ",
+    "reading": "ふたりははんりょさんにんはなかまわれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2834319",
+    "spelling": "鱧も一期海老も一期",
+    "reading": "はももいちごえびもいちご",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2834363",
+    "spelling": "墨は餓鬼に磨らせ筆は鬼に持たせよ",
+    "reading": "すみはがきにすらせふではおににもたせよ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2834410",
     "spelling": "微々たるもん",
     "reading": "びびたるもん",
     "upstream": "propose",
     "note": "Colloquial もん for もの, a distinct spoken form."
+  },
+  {
+    "id": "2834547",
+    "spelling": "朝に道を聞かば夕べに死すとも可なり",
+    "reading": "あしたにみちをきかばゆうべにしすともかなり",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2834642",
+    "spelling": "柳は緑花は紅",
+    "reading": "やなぎはみどりはなはくれない",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2834798",
@@ -2483,6 +2700,20 @@
     "reading": "ハイブリットせんそう",
     "upstream": "none",
     "note": "Misspelling: ハイブリット for ハイブリッド."
+  },
+  {
+    "id": "2836571",
+    "spelling": "聞くは一時の恥聞かぬは一生の恥",
+    "reading": "きくはいっときのはじきかぬはいっしょうのはじ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2836754",
+    "spelling": "ブルータスよお前もか",
+    "reading": "ブルータスよおまえもか",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2837535",
@@ -2555,6 +2786,13 @@
     "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
   },
   {
+    "id": "2840452",
+    "spelling": "地球規模で考え足元から行動せよ",
+    "reading": "ちきゅうきぼでかんがえあしもとからこうどうせよ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2840979",
     "spelling": "与えたまう",
     "reading": "あたえたまう",
@@ -2562,11 +2800,74 @@
     "note": "JMdict has あたえたまう, but restricted to 与え給う、与え賜う; search-only spellings take no restrictions."
   },
   {
+    "id": "2842585",
+    "spelling": "聞くも涙語るも涙",
+    "reading": "きくもなみだかたるもなみだ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2843963",
+    "spelling": "性相近し習い相遠し",
+    "reading": "せいあいちかしならいあいとおし",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2844316",
     "spelling": "住宅メーカ",
     "reading": "じゅうたくメーカ",
     "upstream": "none",
     "note": "Loanword kana variant: the long-vowel mark difference is a spelling convention, not a distinct reading."
+  },
+  {
+    "id": "2844533",
+    "spelling": "京の夢大阪の夢",
+    "reading": "きょうのゆめおおさかのゆめ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2844869",
+    "spelling": "借りる時の地蔵顔なす時の閻魔顔",
+    "reading": "かりるときのじぞうがおなすときのえんまがお",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2844869",
+    "spelling": "借りる時の地蔵顔済す時の閻魔顔",
+    "reading": "かりるときのじぞうがおなすときのえんまがお",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2845260",
+    "spelling": "他所は他所うちはうち",
+    "reading": "よそはよそうちはうち",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2845806",
+    "spelling": "合うも不思議合わぬも不思議",
+    "reading": "あうもふしぎあわぬもふしぎ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2845915",
+    "spelling": "旅は情け人は心",
+    "reading": "たびはなさけひとはこころ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2845916",
+    "spelling": "人は人我は我",
+    "reading": "ひとはひとわれはわれ",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2847049",
@@ -2639,6 +2940,20 @@
     "note": "JMdict has ねつきのよい, but restricted to 寝付きの良い; search-only spellings take no restrictions."
   },
   {
+    "id": "2851357",
+    "spelling": "天知る地知る我知る子知る",
+    "reading": "てんしるちしるわれしるししる",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2851358",
+    "spelling": "天知る地知る我知る人知る",
+    "reading": "てんしるちしるわれしるひとしる",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "2851557",
     "spelling": "専門メーカ",
     "reading": "せんもんメーカ",
@@ -2651,6 +2966,13 @@
     "reading": "うおジラミ",
     "upstream": "restricted",
     "note": "JMdict has ウオジラミ, but only as a kana form that applies to no kanji spelling; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2851966",
+    "spelling": "今日の一針明日の十針",
+    "reading": "きょうのひとはりあすのとはり",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2852394",
@@ -2679,6 +3001,20 @@
     "reading": "きゅうりょうドロボー",
     "upstream": "none",
     "note": "Kana variant: ドロボー for どろぼう, same sound."
+  },
+  {
+    "id": "2854982",
+    "spelling": "遅牛も淀早牛も淀",
+    "reading": "おそうしもよどはやうしもよど",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "2854983",
+    "spelling": "早牛も淀遅牛も淀",
+    "reading": "はやうしもよどおそうしもよど",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
     "id": "2855906",
@@ -3528,10 +3864,38 @@
     "note": "Historical kana: full-size つ and や for っ and ゃ; the literal reading is correct."
   },
   {
+    "id": "5743377",
+    "spelling": "春麗",
+    "reading": "チュンリー",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
     "id": "5743381",
     "spelling": "石川五ェ門",
     "reading": "いしかわごェもん",
     "upstream": "none",
     "note": "Small ェ belongs to 五ェ門 (ごェもん), not after い."
+  },
+  {
+    "id": "5746587",
+    "spelling": "ＷｉｎｄｏｗｓＸＰ",
+    "reading": "ウィンドウズエックスピー",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "5746587",
+    "spelling": "ウィンドウズＸＰ",
+    "reading": "ウィンドウズエックスピー",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
+  },
+  {
+    "id": "5746671",
+    "spelling": "ＮＳＣ",
+    "reading": "エンエスシー",
+    "upstream": "none",
+    "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   }
 ]

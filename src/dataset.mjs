@@ -146,7 +146,7 @@ export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources
  * divide as ＳＭ read エスエム does. The marks are put back afterwards: one that both sides have
  * at the same place becomes its own segment, a spelling's mark joins the segment before it,
  * which the release shows as plain text, and a reading's mark joins a neighboring ruby segment,
- * which makes the pair mismatched.
+ * which makes the pair mispaired.
  *
  * A mark can also be read aloud, as the dot of Ｗｅｂ２．０ is ポイント, so each side's marks are
  * set aside separately as well as together.

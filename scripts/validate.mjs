@@ -13,7 +13,7 @@ import {
 import { pairKey, recordKey } from "../src/segments.mjs";
 import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
-import { contradictsSpelling, isMismatched } from "../src/pairings.mjs";
+import { contradictionKind, contradictsSpelling } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
 import { isSilentPunctuation, splitGraphemes } from "../src/kana.mjs";
 import { parseDatabaseVersion } from "./lib/database-files.mjs";
@@ -91,6 +91,10 @@ const jmdictPairs = new Map(
   ]),
 );
 const expected = new Set(jmdictPairs.keys());
+const siblingReadings = Map.groupBy(
+  [...jmdictPairs.values()].filter((pair) => !pair.readingTags.includes("sk")),
+  (pair) => `${pair.id}\t${pair.spelling}`,
+);
 for (const key of annotations.keys())
   assert.ok(
     expected.has(key) || synthesized.has(key),
@@ -121,8 +125,8 @@ for (const [id, records] of Object.entries(output.entries)) {
     );
     pairSegments.set(pair, segments);
     validateDisplayAlignment(record.spelling, record.reading, record.segments);
-    // Punctuation is never read, so outside a mismatched pair no ruby text holds any.
-    if (record.pairing !== "mismatched") {
+    // Punctuation is never read, so outside a mispaired pair no ruby text holds any.
+    if (record.pairing !== "mispaired") {
       for (const segment of record.segments) {
         assert.ok(
           typeof segment === "string" || !splitGraphemes(segment[1]).some(isSilentPunctuation),
@@ -154,16 +158,21 @@ for (const [id, records] of Object.entries(output.entries)) {
     }
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
     const recordDrops = drops.get(pairKey(record.spelling, record.reading));
-    const mismatched = isMismatched(jmdictPairs.get(key), recordDrops, record.segments);
+    const kind = contradictionKind(
+      record.spelling,
+      record.reading,
+      recordDrops,
+      record.segments,
+      (siblingReadings.get(`${id}\t${record.spelling}`) ?? []).map((sibling) => sibling.reading),
+    );
     assert.deepEqual(
       Object.keys(record),
-      mismatched
-        ? ["spelling", "reading", "segments", "pairing"]
-        : ["spelling", "reading", "segments"],
+      kind === undefined
+        ? ["spelling", "reading", "segments"]
+        : ["spelling", "reading", "segments", "pairing"],
     );
-    if (mismatched) assert.equal(record.pairing, "mismatched");
-    if (!contradictsSpelling(record.spelling, record.reading, recordDrops, record.segments))
-      fitting.add(`${id}\t${record.spelling}`);
+    assert.equal(record.pairing, kind);
+    if (kind === undefined) fitting.add(`${id}\t${record.spelling}`);
     ++count;
   }
 }

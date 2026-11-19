@@ -4,7 +4,7 @@ import {
   contradictsSpelling,
   fitsSpelling,
   impliedReading,
-  isMismatched,
+  contradictionKind,
   planSynthesizedPairs,
 } from "../src/pairings.mjs";
 
@@ -43,17 +43,89 @@ test("a reading fits a spelling when the spelling's kana appear in it in order",
   );
 });
 
-test("only pairs with a search-only form are flagged as mismatched", () => {
-  const pair = (spelling, reading, spellingTags = [], readingTags = []) => ({
-    spelling,
-    reading,
-    spellingTags,
-    readingTags,
-  });
-  assert.ok(isMismatched(pair("気持ちよい", "きもちいい", ["sK"])));
-  assert.ok(isMismatched(pair("一日じゅう", "いちにちぢゅう", [], ["sk"])));
-  assert.ok(!isMismatched(pair("宣ふ", "のたまう")));
-  assert.ok(!isMismatched(pair("気持ちいい", "きもちいい", ["sK"])));
+test("a contradicting pair is phonetic when its reading gives a sound the spelling's kana do not", () => {
+  const kind = (spelling, reading, segments, siblings = [reading]) =>
+    contradictionKind(spelling, reading, undefined, segments, siblings);
+  // Historical kana, the particle は, and full-size kana for small ones.
+  assert.equal(
+    kind("宣ふ", "のたまう", [
+      ["宣", "のたま"],
+      ["ふ", "う"],
+    ]),
+    "phonetic",
+  );
+  assert.equal(kind("宣ふ", "のたもう", [["宣ふ", "のたもう"]]), "phonetic");
+  assert.equal(
+    kind("坊つちやん", "ぼっちゃん", [["坊", "ぼ"], ["つ", "っ"], "ち", ["や", "ゃ"], "ん"]),
+    "phonetic",
+  );
+  assert.equal(
+    kind(
+      "今日は",
+      "こんにちわ",
+      [
+        ["今", "こん"],
+        ["日", "にち"],
+        ["は", "わ"],
+      ],
+      ["こんにちは"],
+    ),
+    "phonetic",
+  );
+  assert.equal(
+    kind("同じうする", "おなじゅうする", [["同", "おな"], ["じ", "じゅ"], "うする"]),
+    "phonetic",
+  );
+  // The same sound spelled another way is no aid.
+  assert.equal(
+    kind("税金ドロボー", "ぜいきんどろぼう", [
+      ["税", "ぜい"],
+      ["金", "きん"],
+      "ドロボ",
+      ["ー", "う"],
+    ]),
+    "mispaired",
+  );
+  assert.equal(
+    kind("元どうり", "もとどおり", [["元", "もと"], "ど", ["う", "お"], "り"]),
+    "mispaired",
+  );
+  // A spelling that JMdict also reads at face value is itself how the word is said.
+  assert.equal(
+    kind(
+      "しようが無い",
+      "しょうがない",
+      ["し", ["よ", "ょ"], "うが", ["無", "な"], "い"],
+      ["しようがない"],
+    ),
+    "mispaired",
+  );
+  assert.equal(
+    kind("草はら", "くさわら", [["草", "くさ"], ["は", "わ"], "ら"], ["くさはら"]),
+    "mispaired",
+  );
+  // Other contradictions.
+  assert.equal(
+    kind("気持ちよい", "きもちいい", [["気", "き"], ["持", "も"], "ち", ["よ", "い"], "い"]),
+    "mispaired",
+  );
+  assert.equal(
+    kind("ＳＦ", "エス・エフ", [
+      ["Ｓ", "エス・"],
+      ["Ｆ", "エフ"],
+    ]),
+    "mispaired",
+  );
+  assert.equal(
+    contradictionKind(
+      "そっぽ向く",
+      "そっぽをむく",
+      [{ offset: 3, particle: "を" }],
+      ["そっぽ", ["向", "をむ"], "く"],
+    ),
+    "mispaired",
+  );
+  assert.equal(kind("気持ちいい", "きもちいい", [["気", "き"], ["持", "も"], "ちいい"]), undefined);
 });
 
 test("the implied reading keeps contradicted kana as written and removes an omitted particle", () => {

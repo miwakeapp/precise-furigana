@@ -5,7 +5,7 @@ import { pairKey, segmentReading, segmentText } from "./segments.mjs";
 // beside non-kana, as in 一ケ月; inside a katakana word such as ケータイ it is kana.
 const isSoundSymbol = (unit, previous = "", next = "") =>
   /^[ヶヵゝゞヽヾ]$/u.test(unit) || (unit === "ケ" && !isKana(previous) && !isKana(next));
-// JMdict spellings that pun on their reading, where the mismatched kana is the point.
+// JMdict spellings that pun on their reading, where the kana that differ are the point.
 const kanaPuns = new Set([pairKey("怪レい日本語", "あやしいにほんご"), pairKey("ネ申", "かみ")]);
 // Kana stand for themselves. Punctuation and symbols may be silent, like ・, or read, like ＆ for アンド.
 // Anything else, such as a kanji, a letter, or a counter symbol, stands for some reading.
@@ -94,23 +94,100 @@ export function contradictsSpelling(spelling, reading, drops, segments = []) {
   );
 }
 
+// Kana that a reading gives another sound: a modern sound for historical kana, わ for the particle
+// は, and small kana for the full-size ones older texts wrote. Kana that only spell the same sound
+// another way, as ー does う, are not here: glossing them tells a reader nothing.
+const phoneticRespellings = new Map([
+  ["ふ", "う"],
+  ["ひ", "い"],
+  ["へ", "え"],
+  ["ほ", "お"],
+  ["は", "わ"],
+  ["ゐ", "い"],
+  ["ゑ", "え"],
+  ["つ", "っ"],
+  ["や", "ゃ"],
+  ["ゆ", "ゅ"],
+  ["よ", "ょ"],
+]);
+// Historical spelling also wrote an い-row kana before う for what is now said with ゅ, as じう
+// for じゅう.
+const palatalizedBeforeU = "きしちにひみりぎじぢびぴ";
+
 /**
- * A contradicting pair is flagged as mismatched when it involves a search-only
- * spelling or reading: JMdict does not restrict search-only forms, so such pairs
- * combine forms that do not belong together. A visible pair such as 宣ふ with
- * のたまう contradicts its kana only by orthographic convention, and showing ふ
- * read う is a legitimate display, so it is not flagged.
- *
- * A reading with punctuation the spelling lacks is flagged whatever its forms'
- * tags: no display of ＳＦ should carry the dot of エス・エフ, and the reading
- * without it, which JMdict or a synthesized pair supplies, is the one to use.
+ * If the reading fits the spelling once some of the spelling's kana are read as
+ * `phoneticRespellings` gives them, return the reading with those kana as written, which is the
+ * spelling read at face value, and whether the only such kana is a final は. Undefined when
+ * the reading needs no respelling or needs some other change. `alone` is for a single segment,
+ * whose following kana are not in view.
  */
-export function isMismatched(pair, drops, segments) {
-  return (
-    hasUnwrittenPunctuation(pair.spelling, pair.reading) ||
-    ((pair.spellingTags.includes("sK") || pair.readingTags.includes("sk")) &&
-      contradictsSpelling(pair.spelling, pair.reading, drops, segments))
+function faceValueReading(spelling, reading, alone = false) {
+  if (hasUnwrittenPunctuation(spelling, reading)) return undefined;
+  const runs = units(spelling);
+  const pattern = runs
+    .map(({ kind, text }, index) => {
+      if (kind !== "kana") return kind === "symbol" ? "(.*?)" : "(.+?)";
+      const kana = pronounced(text);
+      const next = runs[index + 1];
+      const beforeU =
+        next === undefined ? alone : next.kind === "kana" && pronounced(next.text) === "う";
+      const sounds = [kana, fullSize.get(kana), phoneticRespellings.get(kana)];
+      if (palatalizedBeforeU.includes(kana) && beforeU) sounds.push(`${kana}ゅ`);
+      return `(${sounds.filter((sound) => sound !== undefined).join("|")})`;
+    })
+    .join("");
+  const match = new RegExp(`^${pattern}$`, "u").exec(pronounced(reading));
+  if (match === null) return undefined;
+  const respelled = [];
+  const faceValue = runs
+    .map(({ kind, text }, index) => {
+      if (kind !== "kana") return match[index + 1];
+      const kana = pronounced(text);
+      if (match[index + 1] === kana || match[index + 1] === fullSize.get(kana))
+        return match[index + 1];
+      respelled.push({ kana, last: index === runs.length - 1 });
+      return kana;
+    })
+    .join("");
+  if (respelled.length === 0) return undefined;
+  return {
+    reading: faceValue,
+    particleOnly: respelled.every(({ kana, last }) => kana === "は" && last),
+  };
+}
+
+/**
+ * How a JMdict pair that contradicts its spelling is flagged; undefined when it does not
+ * contradict it. `siblingReadings` lists the readings JMdict pairs with this spelling in the entry,
+ * leaving out search-only ones, which are lookup keys and not ways the word is said.
+ *
+ * "phonetic": the reading gives the sound of kana that the spelling writes another way, as
+ * のたまう does for 宣ふ and こんにちわ for 今日は. Ruby over those kana is a real pronunciation
+ * aid, so whether to use the pair depends on what is being annotated. A spelling that JMdict also
+ * reads at face value is itself how the word is said, as しようが無い is beside しょうがない, so its
+ * other readings belong to other spellings; the particle は, which is never said は, is the
+ * exception.
+ *
+ * "mispaired": every other contradiction. The reading belongs to another spelling, says
+ * different words, has punctuation the spelling lacks, or only spells the same sound another way.
+ * No use of the spelling is better served by it than by a pair that fits.
+ */
+export function contradictionKind(spelling, reading, drops, segments = [], siblingReadings = []) {
+  if (!contradictsSpelling(spelling, reading, drops, segments)) return undefined;
+  if ((drops?.length ?? 0) > 0) return "mispaired";
+  const faceValue = faceValueReading(spelling, reading);
+  if (faceValue === undefined) return "mispaired";
+  const glossed = segments.every(
+    (segment) =>
+      typeof segment === "string" ||
+      fitsSpelling(segment[0], segment[1]) ||
+      faceValueReading(segment[0], segment[1], true) !== undefined,
   );
+  if (!glossed) return "mispaired";
+  const saidAsWritten = siblingReadings.some(
+    (sibling) => pronounced(sibling) === faceValue.reading,
+  );
+  return saidAsWritten && !faceValue.particleOnly ? "mispaired" : "phonetic";
 }
 
 /**
@@ -168,7 +245,7 @@ function literalReading(spelling, reading) {
 }
 
 /**
- * The reading that a mismatched pair's spelling implies. An omitted particle
+ * The reading that a contradicting pair's spelling implies. An omitted particle
  * is removed beside the cut where the generator's segments put it; otherwise
  * the spelling's own kana replace the ones the reading contradicts. Undefined
  * when the segments have no cut at the omitted particle.

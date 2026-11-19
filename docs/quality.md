@@ -17,7 +17,7 @@ These show the intended behavior. A change that alters one of them needs a reaso
 | 達磨           | <ruby>達<rt>だる</rt></ruby><ruby>磨<rt>ま</rt></ruby>                                                                                       | [A lexical fact](https://en.wiktionary.org/w/index.php?oldid=92643544#Japanese) supplies the transliteration sound of 達.                                                 |
 | 端折る         | <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る                                                                                     | [The source](https://en.wiktionary.org/w/index.php?oldid=86463303#Japanese) assigns the contracted ょ to 折 (from 端を折る).                                              |
 | 御器噛り       | <ruby>御<rt>ご</rt></ruby><ruby>器<rt>っ</rt></ruby><ruby>噛<rt>かぶ</rt></ruby>り                                                           | 御器 ごき plus 噛り かぶり, with き geminated.                                                                                                                            |
-| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | The entry's other spellings put the extra ー with カ, not on 希望価格. The pair is mismatched; the synthesized メーカきぼうかかく shows the kana as written.              |
+| メーカ希望価格 | メー<ruby>カ<rt>カー</rt></ruby><ruby>希<rt>き</rt></ruby><ruby>望<rt>ぼう</rt></ruby><ruby>価<rt>か</rt></ruby><ruby>格<rt>かく</rt></ruby> | The entry's other spellings put the extra ー with カ, not on 希望価格. The pair is mispaired; the synthesized メーカきぼうかかく shows the kana as written.               |
 
 ## Deliberately unresolved
 

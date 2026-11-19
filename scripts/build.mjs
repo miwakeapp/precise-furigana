@@ -5,7 +5,7 @@ import { digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
 import { pairKey, recordKey, validateAlignment } from "../src/segments.mjs";
 import { displaySegments } from "../src/display.mjs";
 import {
-  isMismatched,
+  contradictionKind,
   planSynthesizedPairs,
   withoutUnwrittenPunctuation,
 } from "../src/pairings.mjs";
@@ -37,6 +37,10 @@ const seen = new Set();
 const counts = { entries: 0, pairs: 0, synthesized: 0 };
 const drops = dataset.omittedParticles?.drops ?? new Map();
 const records = [];
+const siblingReadings = Map.groupBy(
+  [...dataset.pairs()].filter((pair) => !pair.readingTags.includes("sk")),
+  (pair) => `${pair.id}\t${pair.spelling}`,
+);
 for (const pair of dataset.pairs()) {
   const key = recordKey(pair.id, pair.spelling, pair.reading);
   if (seen.has(key)) continue;
@@ -54,8 +58,14 @@ for (const pair of dataset.pairs()) {
     segments,
     displaySegments: record.segments,
   });
-  if (isMismatched(pair, drops.get(pairKey(pair.spelling, pair.reading)), record.segments))
-    record.pairing = "mismatched";
+  const kind = contradictionKind(
+    pair.spelling,
+    pair.reading,
+    drops.get(pairKey(pair.spelling, pair.reading)),
+    record.segments,
+    (siblingReadings.get(`${pair.id}\t${pair.spelling}`) ?? []).map((sibling) => sibling.reading),
+  );
+  if (kind !== undefined) record.pairing = kind;
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;
 }

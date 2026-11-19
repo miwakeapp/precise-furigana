@@ -218,3 +218,152 @@ test("target constraints reject invalid projections and malformed maps", () => {
     /reconstruct/u,
   );
 });
+
+test("readings that differ by one kana share boundaries when the change cannot cross one", () => {
+  const near = (spelling, readings, segments) => {
+    const [from, to] = readings;
+    const align = (_, reading) =>
+      reading === from
+        ? { status: "aligned", segments }
+        : { status: "aligned", segments: [[spelling, reading]] };
+    return deriveReadingVariantAlignments(dictionary(spelling, readings), align, {
+      nearVariants: true,
+    })
+      .wordAlignments.get(spelling)
+      ?.get(to);
+  };
+  // An added sokuon or long vowel extends the kana before it, wherever it falls.
+  assert.deepEqual(
+    near(
+      "盤谷",
+      ["バンコク", "バンコック"],
+      [
+        ["盤", "バン"],
+        ["谷", "コク"],
+      ],
+    ),
+    [
+      ["盤", "バン"],
+      ["谷", "コック"],
+    ],
+  );
+  assert.deepEqual(
+    near(
+      "其方",
+      ["そち", "そっち"],
+      [
+        ["其", "そ"],
+        ["方", "ち"],
+      ],
+    ),
+    [
+      ["其", "そっ"],
+      ["方", "ち"],
+    ],
+  );
+  assert.deepEqual(
+    near(
+      "祖父",
+      ["おじ", "おおじ"],
+      [
+        ["祖", "お"],
+        ["父", "じ"],
+      ],
+    ),
+    [
+      ["祖", "おお"],
+      ["父", "じ"],
+    ],
+  );
+  // A dropped small kana leaves the rest of its segment.
+  assert.deepEqual(
+    near(
+      "撞木",
+      ["しゅもく", "しもく"],
+      [
+        ["撞", "しゅ"],
+        ["木", "もく"],
+      ],
+    ),
+    [
+      ["撞", "し"],
+      ["木", "もく"],
+    ],
+  );
+  // A replaced kana stays in a segment that keeps another kana, or is the same kana respelled.
+  assert.deepEqual(
+    near(
+      "壱越",
+      ["いちこつ", "いちこち"],
+      [
+        ["壱", "いち"],
+        ["越", "こつ"],
+      ],
+    ),
+    [
+      ["壱", "いち"],
+      ["越", "こち"],
+    ],
+  );
+  assert.deepEqual(
+    near(
+      "何処",
+      ["いずこ", "いづこ"],
+      [
+        ["何", "いず"],
+        ["処", "こ"],
+      ],
+    ),
+    [
+      ["何", "いづ"],
+      ["処", "こ"],
+    ],
+  );
+  // A segment's only kana cannot be replaced, a full kana cannot be added, and literal kana must match.
+  assert.equal(
+    near(
+      "祖父",
+      ["じじ", "じい"],
+      [
+        ["祖", "じ"],
+        ["父", "じ"],
+      ],
+    ),
+    undefined,
+  );
+  assert.equal(
+    near(
+      "茄子",
+      ["なす", "なすび"],
+      [
+        ["茄", "な"],
+        ["子", "す"],
+      ],
+    ),
+    undefined,
+  );
+  assert.equal(
+    near(
+      "商人",
+      ["あきうど", "あきびと"],
+      [
+        ["商", "あき"],
+        ["人", "うど"],
+      ],
+    ),
+    undefined,
+  );
+  assert.equal(near("食べる", ["たべる", "たべろ"], [["食", "た"], "べる"]), undefined);
+  // No segment may come to start with a kana that belongs to the syllable before it.
+  assert.equal(
+    near(
+      "仕様",
+      ["しよう", "しょう"],
+      [
+        ["仕", "し"],
+        ["様", "よう"],
+      ],
+    ),
+    undefined,
+  );
+});

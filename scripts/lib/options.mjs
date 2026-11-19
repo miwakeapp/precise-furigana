@@ -38,6 +38,7 @@ const switches = {
   "no-on-reading-spelling": "onReadingSpelling",
   "no-source-unit-transfers": "sourceUnitTransfers",
   "no-shared-run-transfers": "sharedRunTransfers",
+  "no-late-sibling-transfers": "lateSiblingTransfers",
 };
 
 export function parseGeneratorOptions(defaultOutput, args = process.argv.slice(2)) {

@@ -1,5 +1,11 @@
 import { enumeratePairs } from "./sources.mjs";
-import { isKana, kanaPronunciation, normalizeKana, splitGraphemes } from "./kana.mjs";
+import {
+  getKanaVowels,
+  isKana,
+  kanaPronunciation,
+  normalizeKana,
+  splitGraphemes,
+} from "./kana.mjs";
 import {
   boundaries,
   pairKey,
@@ -45,17 +51,93 @@ function transferReadings(source, targetReading) {
   return complete[0].segments;
 }
 
+// Kana that cannot begin a reading: small kana, the sokuon, ん, and the long-vowel mark.
+const dependentKana = /^[ぁぃぅぇぉゃゅょゎっんー]$/u;
+// Kana that are written differently but stand for the same kana in another orthography.
+const writtenAs = new Map(
+  [..."ぁあぃいぅうぇえぉおゃやゅゆょよゎわっつづずぢじをおゑえゐい"].flatMap((kana, index, all) =>
+    index % 2 === 0 ? [[kana, all[index + 1]]] : [],
+  ),
+);
+const written = (kana) => writtenAs.get(kana) ?? kana;
+/** Whether a kana only extends the one before it, by lengthening its vowel or by being unable to stand alone. */
+const extendsKana = (previous, kana) =>
+  previous !== undefined &&
+  (dependentKana.test(kana) || (getKanaVowels(previous) ?? []).includes(kana));
+
+/**
+ * Carry boundaries to a reading that differs from the source's by one kana, as バンコック
+ * does from バンコク or いちこち from いちこつ. The readings are one word's pronunciations,
+ * so the change stays inside the segment it falls in. That is only certain when the changed
+ * kana cannot have crossed a boundary: a replaced kana must leave its segment another kana,
+ * or be the same kana in another orthography, and an added or dropped kana must be one that
+ * only extends the kana before it. No segment may come to start with such a kana.
+ */
+function transferNearReading(source, targetReading) {
+  const from = source.segments.flatMap((segment, index) =>
+    splitGraphemes(segmentReading(segment)).map((kana) => ({ kana: normalizeKana(kana), index })),
+  );
+  const target = splitGraphemes(targetReading);
+  const to = target.map((kana) => normalizeKana(kana));
+  let prefix = 0;
+  while (prefix < from.length && prefix < to.length && from[prefix].kana === to[prefix]) ++prefix;
+  let suffix = 0;
+  while (
+    suffix < from.length - prefix &&
+    suffix < to.length - prefix &&
+    from.at(-1 - suffix).kana === to.at(-1 - suffix)
+  )
+    ++suffix;
+  const removed = from.length - prefix - suffix,
+    added = to.length - prefix - suffix;
+  if (removed > 1 || added > 1 || removed + added === 0) return undefined;
+  const sizes = source.segments.map(
+    (_, index) => from.filter((unit) => unit.index === index).length,
+  );
+  const before = from[prefix - 1];
+  if (removed === 0) {
+    if (!extendsKana(before?.kana, to[prefix])) return undefined;
+    ++sizes[before.index];
+  } else {
+    const { kana, index } = from[prefix];
+    if (added === 1) {
+      if (sizes[index] < 2 && written(kana) !== written(to[prefix])) return undefined;
+    } else {
+      if (before?.index !== index || !extendsKana(before.kana, kana)) return undefined;
+      --sizes[index];
+    }
+  }
+  const segments = [];
+  let offset = 0;
+  for (const [index, segment] of source.segments.entries()) {
+    const spelling = segmentText(segment);
+    const candidate = target.slice(offset, offset + sizes[index]).join("");
+    offset += sizes[index];
+    const reading = normalizeKana(segmentReading(segment));
+    if (normalizeKana(spelling) === reading && normalizeKana(candidate) !== reading)
+      return undefined;
+    // A respelling such as しよう to しょう would leave a segment starting inside a syllable.
+    const first = normalizeKana(target[offset - sizes[index]] ?? "");
+    if (dependentKana.test(first) && !reading.startsWith(first)) return undefined;
+    segments.push(spelling === candidate ? spelling : [spelling, candidate]);
+  }
+  return segments;
+}
+
 function normalizedBoundaries(segments) {
   return boundaries(
     segments.map((segment) => [segmentText(segment), normalizeKana(segmentReading(segment))]),
   );
 }
 
-/** Transfer boundaries only between attested readings of the same spelling and entry. */
+/**
+ * Transfer boundaries only between attested readings of the same spelling and entry. The
+ * readings must sound alike apart from vowel length, or, with `nearVariants`, differ by one kana.
+ */
 export function deriveReadingVariantAlignments(
   jmdict,
   align,
-  { targetAlignments = new Map() } = {},
+  { targetAlignments = new Map(), nearVariants = false } = {},
 ) {
   if (!(targetAlignments instanceof Map)) throw new TypeError("targetAlignments must be a Map");
   const constraints = new Map();
@@ -87,7 +169,7 @@ export function deriveReadingVariantAlignments(
       if (readings.size < 2) continue;
       for (const from of readings) {
         const targets = [...readings].filter(
-          (to) => to !== from && soundKey(to) === soundKey(from),
+          (to) => to !== from && (nearVariants || soundKey(to) === soundKey(from)),
         );
         if (targets.length === 0) continue;
         const key = pairKey(spelling, from);
@@ -98,7 +180,10 @@ export function deriveReadingVariantAlignments(
         }
         if (source.status !== "aligned" || source.segments.length < 2) continue;
         for (const reading of targets) {
-          const segments = transferReadings(source, reading);
+          const segments =
+            soundKey(reading) === soundKey(from)
+              ? transferReadings(source, reading)
+              : transferNearReading(source, reading);
           if (segments === undefined) continue;
           validateAlignment(spelling, reading, segments);
           const required = constraints.get(pairKey(spelling, normalizeKana(reading)));

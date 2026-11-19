@@ -1813,5 +1813,66 @@
       ]
     ],
     "category": "unresolved sound ownership across alternate foreign readings"
+  },
+  {
+    "spelling": "菓物",
+    "reading": "くだもの",
+    "segments": [
+      [
+        "菓",
+        "くだ"
+      ],
+      [
+        "物",
+        "もの"
+      ]
+    ],
+    "category": "sibling spelling of a reviewed fact"
+  },
+  {
+    "spelling": "盤谷",
+    "reading": "バンコック",
+    "segments": [
+      [
+        "盤",
+        "バン"
+      ],
+      [
+        "谷",
+        "コック"
+      ]
+    ],
+    "category": "sibling reading differing by one kana"
+  },
+  {
+    "spelling": "壱越調",
+    "reading": "いちこちちょう",
+    "segments": [
+      [
+        "壱",
+        "いち"
+      ],
+      [
+        "越",
+        "こち"
+      ],
+      [
+        "調",
+        "ちょう"
+      ]
+    ],
+    "category": "sibling reading differing by one kana"
+  },
+  {
+    "spelling": "仕様がない",
+    "reading": "しょうがない",
+    "segments": [
+      [
+        "仕様",
+        "しょう"
+      ],
+      "がない"
+    ],
+    "category": "sibling reading that would start a segment mid-syllable"
   }
 ]

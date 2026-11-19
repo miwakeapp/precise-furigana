@@ -79,6 +79,7 @@ export const defaultConfiguration = {
   onReadingSpelling: true,
   sourceUnitTransfers: true,
   sharedRunTransfers: true,
+  lateSiblingTransfers: true,
 };
 
 export function digest(contents) {
@@ -910,16 +911,49 @@ function compilePipeline(
             sharedRuns.wordAlignments.get(spelling)?.get(reading),
             "same-entry-shared-run",
           );
+  // The sibling passes ran before most evidence was in, so a split that a later stage established
+  // never reached the entry's other spellings and readings. Run both once more over the result.
+  const lateSiblings = configuration.variantTransfers && configuration.lateSiblingTransfers;
+  const siblingBase = lateSiblings ? cacheAligner(alignSharedRuns) : alignSharedRuns;
+  const siblingSpellings = lateSiblings
+    ? deriveVariantAlignments(jmdict, siblingBase, {
+        kanaSubstitutions: configuration.kanaSubstitutions,
+        hanSubstitutions: configuration.hanSubstitutions,
+        counterSymbols: configuration.counterSymbols,
+        latinSubstitutions: configuration.latinSubstitutions,
+        characterReadings,
+        continuativeReadings: alignerOptions.continuativeReadings,
+      })
+    : { wordAlignments: new Map(), transfers: [] };
+  const siblingReadings =
+    lateSiblings && configuration.readingVariants
+      ? deriveReadingVariantAlignments(jmdict, siblingBase, {
+          targetAlignments: variantTargets,
+          nearVariants: true,
+        })
+      : { wordAlignments: new Map(), witnesses: [] };
+  const alignSiblings = lateSiblings
+    ? (spelling, reading) =>
+        applyRefinement(
+          applyRefinement(
+            siblingBase(spelling, reading),
+            siblingSpellings.wordAlignments.get(spelling)?.get(reading),
+            "alternate-spelling",
+          ),
+          siblingReadings.wordAlignments.get(spelling)?.get(reading),
+          "attested-reading-variant",
+        )
+    : alignSharedRuns;
   // Any stage can cut beside an omitted particle, so the grouping is applied last.
   const omittedParticles = configuration.variantTransfers
     ? deriveOmittedParticles(jmdict, characterReadings)
     : undefined;
   const align =
     omittedParticles === undefined
-      ? alignSharedRuns
+      ? alignSiblings
       : (spelling, reading) =>
           joinOmittedParticles(
-            alignSharedRuns(spelling, reading),
+            alignSiblings(spelling, reading),
             omittedParticleSites(omittedParticles, spelling, reading),
           );
   const lateWitnesses = (name) =>

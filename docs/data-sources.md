@@ -41,6 +41,14 @@ Both Wiktionary files keep only readings the source explicitly marks as on or ku
 
 The facts were compiled from Wiktionary word tables, Kotobank and other dictionaries, and reviewed [Doublevil/JmdictFurigana](https://github.com/Doublevil/JmdictFurigana) candidates. AI agents reviewed them against the cited sources; no lexicographer has.
 
+A fact needs a source for each boundary it adds. Any of these counts:
+
+- a reading table that assigns the reading to the characters, as Wiktionary's does;
+- a dictionary's kana headword divided where the fact divides it, as in ながし‐め for 流眄, provided the dictionary does not mark the characters as a jukujikun unit. In Daijisen, ＝ between the characters marks a jukujikun and ‐ marks one from the Jōyō table's appendix, so neither is a division: おか‐ぼ【陸＝稲】 does not divide 陸稲;
+- a reading KANJIDIC2 lists for the character, after at most one ordinary sound change that the reason names.
+
+A character whose share nothing documents stays grouped with a neighbor, as 信楽 does in <ruby>信楽<rt>しがらき</rt></ruby><ruby>焼<rt>やき</rt></ruby>. It is never given the remainder by subtraction.
+
 ### Annotations
 
 Same fields as a lexical fact, except that `id` is the JMdict ID and `sources` is a list of URLs. An annotation whose pair has left JMdict fails the build, so it gets reviewed.

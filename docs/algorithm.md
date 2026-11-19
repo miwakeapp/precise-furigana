@@ -33,11 +33,10 @@ Constraints that apply across passes:
 - Transfers come only from restriction-valid source pairs. Conflicting or ambiguous witnesses are dropped, not resolved.
 - Omitted okurigana joins the preceding character: 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>.
 - An omitted particle belongs to neither neighbor. Where a sibling spelling writes の, を, or が between two kanji that the reading pronounces, a final pass groups the two kanji: <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs last because several earlier passes can independently cut beside the particle.
-- Silent punctuation is set aside while aligning, on either side, so Ｓ・Ｍ read エス・エム divides as ＳＭ read エスエム does, and the boundaries this finds are added to the direct alignment's. A mark both sides share becomes its own segment; a spelling's mark joins the segment before it and is shown plain; a reading's mark joins a neighboring ruby segment and makes the pair mismatched. This runs on the finished pipeline only.
+- Silent punctuation is set aside while aligning, on either side, so Ｓ・Ｍ read エス・エム divides as ＳＭ read エスエム does, and the boundaries this finds are added to the direct alignment's. A mark both sides share becomes its own segment; a spelling's mark joins the segment before it and is shown plain; a reading's mark joins a neighboring ruby segment and makes the pair mismatched.
 - A positional numeral's reading is parsed into chunks, one per nonzero digit with its zeros ([src/numeral-chunks.mjs](../src/numeral-chunks.mjs)). A reading that does not parse that way, such as digits read one by one, keeps whatever division it had.
 - A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
 - Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.
-- Optional weak sound changes (dictionary nasal loss and initial voicing) can shift the evidence that spelling transfers rely on, so the pipeline also compiles a reduced copy of itself without them and keeps the boundaries that copy establishes. This roughly doubles the early stages' cost.
 - No pass feeds inferred readings back into the character inventories.
 
 ## After alignment

@@ -139,8 +139,7 @@ export function compileAnnotations(annotations) {
 
 export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources = {}) {
   const pipeline = compilePipeline(jmdict, kanjidic, options, sources);
-  // These apply to the finished pipeline only: the reduced copy that a pipeline compiles of
-  // itself must not see their boundaries.
+  // These two steps work on a finished alignment, so they wrap the pipeline's result.
   return { ...pipeline, align: chunkNumerals(alignPastPunctuation(pipeline.align)) };
 }
 
@@ -505,7 +504,6 @@ function compilePipeline(
     kanjidicSource,
     jmdictSource,
   },
-  inheritedVariantTargets,
 ) {
   const configuration = { ...defaultConfiguration };
   for (const [name, value] of Object.entries(options)) {
@@ -514,39 +512,12 @@ function compilePipeline(
   const facts = configuration.reviewedLexicalEvidence
     ? compileLexicalEvidence(lexicalEvidence)
     : [];
-  const variantTargets = inheritedVariantTargets ?? new Map();
-  if (inheritedVariantTargets === undefined)
-    for (const fact of facts) {
-      const readings = variantTargets.get(fact.spelling) ?? new Map();
-      readings.set(fact.reading, fact.segments);
-      variantTargets.set(fact.spelling, readings);
-    }
-  // The protected pipeline omits late lexical refinement, but must reject
-  // the same contradicted transfers before its boundaries become protected.
-  const protectedPipeline =
-    configuration.dictionaryNasalLoss || configuration.dictionaryInitialVoicing
-      ? compilePipeline(
-          jmdict,
-          kanjidic,
-          {
-            ...configuration,
-            dictionaryNasalLoss: false,
-            dictionaryInitialVoicing: false,
-            listedCharacterReadings: false,
-            reviewedLexicalEvidence: false,
-            unihanOnLengthening: false,
-            nativeCompounds: false,
-            englishCharacterReadings: false,
-            listedPhonology: false,
-            koreanReadings: false,
-            onReadingSpelling: false,
-            sourceUnitTransfers: false,
-            sharedRunTransfers: false,
-          },
-          { unihanReadings },
-          variantTargets,
-        )
-      : undefined;
+  const variantTargets = new Map();
+  for (const fact of facts) {
+    const readings = variantTargets.get(fact.spelling) ?? new Map();
+    readings.set(fact.reading, fact.segments);
+    variantTargets.set(fact.spelling, readings);
+  }
   const characterReadings = makeCharacterReadings(kanjidic);
   const alignerOptions = {
     characterReadings,
@@ -671,14 +642,8 @@ function compilePipeline(
     // A transferred subword can compete with different character readings in
     // a longer input. Preserve the boundaries accepted before those transfers.
     const result = refineAlignment(previous, candidate);
-    // Optional weak sound changes can alter the evidence used by spelling
-    // transfers. Compare complete pipelines to preserve those earlier bounds.
-    const protectedResult =
-      protectedPipeline === undefined
-        ? result
-        : refineAlignment(protectedPipeline.align(spelling, reading), result);
-    baseCache.set(key, protectedResult);
-    return protectedResult;
+    baseCache.set(key, result);
+    return result;
   };
   const listed =
     configuration.listedCharacterReadings && characterReadingBundle !== undefined

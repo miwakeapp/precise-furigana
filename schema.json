@@ -1,10 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Precise furigana database, schema 2",
+  "title": "Precise furigana database, schema 1",
   "type": "object",
-  "required": ["schemaVersion", "jmdictDate", "license", "attribution", "entries"],
+  "required": ["version", "schemaVersion", "jmdictDate", "license", "attribution", "entries"],
   "additionalProperties": false,
   "properties": {
+    "version": { "type": "string", "pattern": "^1\\.[0-9]{8}\\.(0-dev|0|[1-9][0-9]*)$" },
     "schemaVersion": { "const": 1 },
     "jmdictDate": { "type": "string", "format": "date" },
     "license": { "const": "CC-BY-SA-4.0" },

@@ -5,8 +5,9 @@
 <!-- oxfmt-ignore -->
 ```json
 {
+  "version": "1.20261116.0",
   "schemaVersion": 1,
-  "jmdictDate": "2026-10-05",
+  "jmdictDate": "2026-11-16",
   "license": "CC-BY-SA-4.0",
   "attribution": "Based on JMdict and KANJIDIC2, copyright EDRDG, …",
   "entries": {
@@ -16,6 +17,8 @@
   }
 }
 ```
+
+`version` is `<schema version>.<JMdict date>.<revision>`. The major changes only when consumers' code must; the minor is the dictionary date as eight digits; the revision counts releases for that date, starting at 0, and goes up when a generator or data fix is released without a new dictionary. `schemaVersion` and `jmdictDate` restate the first two parts. A local build that is not a release has the revision `0-dev`.
 
 `entries` maps each JMdict ID to its records: one per permitted spelling/reading pair, plus any synthesized pairs. No two records in an entry share both spelling and reading. A spelling/reading pair that appears in several entries has the same segments in each, though its `pairing` can differ. Kana-only words, and kana forms JMdict marks `[nokanji]`, get a record whose spelling is the kana and whose only segment is that kana.
 
@@ -46,6 +49,6 @@ Visible (non-search-only) pairs whose kana differ only by convention, such as hi
 
 ## Releases
 
-A release publishes only `precise-furigana.json` and `precise-furigana.json.gz`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE](../NOTICE) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
+A release publishes only `precise-furigana.json` and `precise-furigana.json.gz`. Its tag is `v` followed by the database's `version`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE](../NOTICE) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
 
 `npm run inspect -- <spelling> <reading> --explain` shows how any record was derived; derivations are not part of the release.

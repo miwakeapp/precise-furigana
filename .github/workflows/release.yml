@@ -1,8 +1,7 @@
 name: Release
 
-# Every release is built from a commit on the default branch, pinned inputs included. The
-# release tag contains a hash of the database, so a push that leaves the data unchanged
-# publishes nothing.
+# Every release is built from a commit on the default branch, pinned inputs included. A push
+# that leaves the database unchanged publishes nothing.
 on:
   push:
     branches: [main]
@@ -33,8 +32,15 @@ jobs:
       - run: npm test
       - run: npm run fetch
       - run: npm run build
+      # Gives the database its release version, or reports that it is already released.
+      - id: stamp
+        run: node scripts/release.mjs --stamp
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
       - run: npm run validate
-      - run: node scripts/release.mjs --publish
+      - if: steps.stamp.outputs.publish == 'true'
+        run: node scripts/release.mjs --publish
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}

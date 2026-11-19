@@ -42,7 +42,6 @@ import { deriveSeparatorAlignments } from "./separator-alignments.mjs";
 import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 
 export const schemaVersion = 1;
-export const algorithmVersion = "0.1.0";
 export const defaultConfiguration = {
   terminalContraction: true,
   phonologicalAlternations: true,
@@ -858,7 +857,6 @@ export async function loadDataset(options = {}) {
 
 export async function evaluationProvenance(dataset, goldText) {
   return {
-    algorithmVersion,
     generatorSHA256: await generatorDigest(),
     sourcesSHA256: digest(JSON.stringify(dataset.lock)),
     annotationsSHA256: dataset.annotationsSHA256,

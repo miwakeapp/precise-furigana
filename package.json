@@ -1,6 +1,6 @@
 {
   "name": "precise-furigana",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Evidence-based furigana alignment for every JMdict spelling and reading",
   "license": "MIT",

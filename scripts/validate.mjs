@@ -4,7 +4,6 @@ import { parseArgs } from "node:util";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import {
-  algorithmVersion,
   compileAnnotations,
   defaultConfiguration,
   digest,
@@ -16,6 +15,7 @@ import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
 import { contradictsSpelling, isMismatched } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
+import { parseDatabaseVersion } from "./lib/database-files.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
 const bytes = await readFile(join(values.directory, "precise-furigana.json"));
@@ -45,6 +45,7 @@ const synthesized = new Map(
 );
 const annotations = compileAnnotations(JSON.parse(annotationsText));
 assert.deepEqual(Object.keys(output), [
+  "version",
   "schemaVersion",
   "jmdictDate",
   "license",
@@ -56,12 +57,17 @@ assert.equal(
   lock.sources.jmdict.dictDate,
   "Output uses the locked input release",
 );
+// The version restates the schema version and dictionary date, and adds the release's revision.
+assert.equal(manifest.version, output.version);
+assert.deepEqual(
+  { ...parseDatabaseVersion(output.version), revision: undefined },
+  { schemaVersion, jmdictDate: output.jmdictDate, revision: undefined },
+);
 // The manifest binds the evaluation to this database; its provenance records the build inputs.
 const { provenance } = JSON.parse(
   await readFile(join(values.directory, "evaluation.json"), "utf8"),
 );
 assert.ok(manifest.files["evaluation.json"], "The manifest covers the evaluation");
-assert.equal(provenance.algorithmVersion, algorithmVersion);
 assert.equal(
   provenance.generatorSHA256,
   await generatorDigest(),

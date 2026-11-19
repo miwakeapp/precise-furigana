@@ -103,6 +103,8 @@ Afterwards run `npm run build` and `npm run validate` until both pass, then writ
 
 `.github/workflows/release.yml` runs on every push to the default branch, and on manual dispatch. It builds from that commit's pinned inputs, validates, and publishes the two database files. Every release therefore corresponds to exactly one commit, lockfile included.
 
-The tag is `data-<JMdict date>-v<algorithm version>-<database hash>`, so a push that leaves the database unchanged publishes nothing, and a generator or data change publishes a new release for the same dictionary date. Rerunning a release verifies the existing files against GitHub's recorded digests instead of overwriting them. `--publish` needs `GITHUB_REPOSITORY`, `GITHUB_SHA`, and `GH_TOKEN`.
+A build's database has the development version `<schema version>.<JMdict date>.0-dev`. `node scripts/release.mjs --stamp` replaces it with the next unreleased revision for that date, read from the repository's tags, and the workflow validates the stamped files before `--publish` creates the release, tagged `v<version>`. To avoid publishing a duplicate, `--stamp` first stamps the latest released revision: an unchanged database is then byte-identical to that release, whose digest GitHub records, and nothing is published. A generator or data change therefore publishes the next revision for the same dictionary date, and a push that leaves the database unchanged publishes nothing.
+
+Bump the schema version, and the major of the private `package.json` version with it, only when consumers' code must change. There is no separate generator version: a release's tag points at the commit that generated it. `--stamp` and `--publish` need `GITHUB_REPOSITORY` and `GH_TOKEN`; `--publish` also needs `GITHUB_SHA`.
 
 To reproduce a release, check out its tag, then run `npm run fetch` and `npm run build`.

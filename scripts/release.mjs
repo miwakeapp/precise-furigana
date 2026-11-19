@@ -1,30 +1,36 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { appendFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs, isDeepStrictEqual } from "node:util";
-import {
-  algorithmVersion,
-  defaultConfiguration,
-  digest,
-  generatorDigest,
-} from "../src/dataset.mjs";
+import { defaultConfiguration, digest, generatorDigest } from "../src/dataset.mjs";
 import { defaultLockPath } from "../src/sources.mjs";
-
-/** The build's other outputs verify a release but are not published with it. */
-export const releaseFiles = ["precise-furigana.json", "precise-furigana.json.gz"];
+import {
+  databaseFiles,
+  databaseVersion,
+  parseDatabaseVersion,
+  stampVersion,
+} from "./lib/database-files.mjs";
 
 export function releaseDescriptor(manifest, lock) {
-  const date = lock.sources.jmdict.dictDate;
-  const hash = manifest.files["precise-furigana.json"].sha256;
-  const tag = `data-${date}-v${manifest.algorithmVersion}-${hash.slice(0, 12)}`;
-  const { counts } = manifest;
+  const { counts, version } = manifest;
+  const { jmdictDate } = parseDatabaseVersion(version);
   return {
-    tag,
-    title: `Precise furigana · ${date}`,
-    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, based on [jmdict-simplified ${lock.release.tag}](${lock.release.url}).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs. Schema ${manifest.schemaVersion}.\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`,
+    tag: `v${version}`,
+    title: `Precise Furigana ${version}`,
+    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs.\n\n\`precise-furigana.json\` SHA-256: \`${manifest.files[databaseFiles[0]].sha256}\`\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. The NOTICE file in the tagged source has full attribution.\n`,
   };
+}
+
+/** The revisions already released for a version's schema and dictionary date, from its tags. */
+export function releasedRevisions(refs, jmdictDate) {
+  const prefix = `refs/tags/v${databaseVersion(jmdictDate, "")}`;
+  return refs
+    .map(({ ref }) => ref)
+    .filter((ref) => ref.startsWith(prefix) && /^(0|[1-9]\d*)$/u.test(ref.slice(prefix.length)))
+    .map((ref) => Number(ref.slice(prefix.length)))
+    .sort((left, right) => left - right);
 }
 
 /** Bind the regression results to the inputs being released. */
@@ -35,7 +41,6 @@ export function verifyEvaluation(evaluation, goldText, current) {
     defaultConfiguration,
     "Experimental configurations must not be published",
   );
-  assert.equal(provenance.algorithmVersion, algorithmVersion);
   assert.equal(provenance.generatorSHA256, current.generatorSHA256);
   assert.equal(provenance.sourcesSHA256, current.sourcesSHA256);
   assert.equal(provenance.annotationsSHA256, current.annotationsSHA256);
@@ -74,19 +79,76 @@ export function verifyExistingRelease(release, assets) {
   }
 }
 
+async function github(path, { missing } = {}) {
+  const response = await fetch(
+    `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/${path}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.GH_TOKEN}`,
+        Accept: "application/vnd.github+json",
+      },
+      signal: AbortSignal.timeout(30_000),
+    },
+  );
+  if (response.status === 404 && missing) return undefined;
+  if (!response.ok) throw new Error(`GitHub request failed: HTTP ${response.status} for ${path}`);
+  return response.json();
+}
+
+/**
+ * Give the built database the next unreleased revision for its dictionary date. Returns false,
+ * leaving the latest release's version on it, when that release already holds the same data.
+ */
+async function stamp(directory, jmdictDate) {
+  const refs = await github(`git/matching-refs/tags/v${databaseVersion(jmdictDate, "")}`);
+  const latest = releasedRevisions(refs, jmdictDate).at(-1);
+  if (latest !== undefined) {
+    // Stamped with the latest revision, an unchanged database is byte-identical to that release.
+    const manifest = await stampVersion(directory, databaseVersion(jmdictDate, latest));
+    const release = await github(`releases/tags/v${manifest.version}`, { missing: true });
+    const published = release?.assets.find((asset) => asset.name === databaseFiles[0]);
+    if (published?.digest === `sha256:${manifest.files[databaseFiles[0]].sha256}`) {
+      verifyExistingRelease(
+        release,
+        Object.fromEntries(databaseFiles.map((name) => [name, manifest.files[name]])),
+      );
+      console.log(`Release v${manifest.version} already holds this database; nothing to publish.`);
+      return false;
+    }
+  }
+  const manifest = await stampVersion(directory, databaseVersion(jmdictDate, (latest ?? -1) + 1));
+  console.log(`Stamped version ${manifest.version}.`);
+  return true;
+}
+
 async function main() {
   const { values } = parseArgs({
     options: {
+      stamp: { type: "boolean", default: false },
       publish: { type: "boolean", default: false },
       directory: { type: "string", default: "dist" },
     },
   });
+  if (values.stamp || values.publish) {
+    assert.match(
+      process.env.GITHUB_REPOSITORY ?? "",
+      /^[\w.-]+\/[\w.-]+$/u,
+      "Set GITHUB_REPOSITORY to owner/repository",
+    );
+    assert.ok(process.env.GH_TOKEN, "Set GH_TOKEN");
+  }
+  const lock = JSON.parse(await readFile(defaultLockPath, "utf8"));
+  if (values.stamp) {
+    const publish = await stamp(values.directory, lock.sources.jmdict.dictDate);
+    if (process.env.GITHUB_OUTPUT)
+      await appendFile(process.env.GITHUB_OUTPUT, `publish=${publish}\n`);
+    return;
+  }
   const manifest = JSON.parse(await readFile(join(values.directory, "manifest.json"), "utf8"));
   for (const [name, expected] of Object.entries(manifest.files)) {
     const bytes = await readFile(join(values.directory, name));
     assert.equal(digest(bytes), expected.sha256, `${name}: SHA256`);
   }
-  const lock = JSON.parse(await readFile(defaultLockPath, "utf8"));
   const evaluation = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
   assert.ok(manifest.files["evaluation.json"], "Run build with matching inputs before release");
   verifyEvaluation(
@@ -106,32 +168,13 @@ async function main() {
   console.log(JSON.stringify(descriptor, undefined, 2));
   if (!values.publish) return;
 
-  const repository = process.env.GITHUB_REPOSITORY;
   const revision = process.env.GITHUB_SHA;
-  const token = process.env.GH_TOKEN;
-  assert.match(
-    repository ?? "",
-    /^[\w.-]+\/[\w.-]+$/u,
-    "Set GITHUB_REPOSITORY to owner/repository",
-  );
   assert.match(revision ?? "", /^[a-f0-9]{40}$/u, "Set GITHUB_SHA to the source commit");
-  assert.ok(token, "Set GH_TOKEN");
-  const existing = await fetch(
-    `https://api.github.com/repos/${repository}/releases/tags/${encodeURIComponent(descriptor.tag)}`,
-    {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
-      signal: AbortSignal.timeout(30_000),
-    },
+  assert.notEqual(
+    parseDatabaseVersion(manifest.version).revision,
+    undefined,
+    "Run with --stamp first; a development build cannot be published",
   );
-  if (existing.ok) {
-    verifyExistingRelease(
-      await existing.json(),
-      Object.fromEntries(releaseFiles.map((name) => [name, manifest.files[name]])),
-    );
-    console.log(`Release ${descriptor.tag} already exists; no changes published.`);
-    return;
-  }
-  if (existing.status !== 404) throw new Error(`Release lookup failed: HTTP ${existing.status}`);
   execFileSync(
     "gh",
     [
@@ -139,14 +182,14 @@ async function main() {
       "create",
       descriptor.tag,
       "--repo",
-      repository,
+      process.env.GITHUB_REPOSITORY,
       "--target",
       revision,
       "--title",
       descriptor.title,
       "--notes-file",
       notesPath,
-      ...releaseFiles.map((name) => join(values.directory, name)),
+      ...databaseFiles.map((name) => join(values.directory, name)),
     ],
     { stdio: "inherit" },
   );

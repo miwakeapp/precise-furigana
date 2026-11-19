@@ -1,11 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { gzipSync } from "node:zlib";
 import { join } from "node:path";
-import { algorithmVersion, digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
+import { digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
 import { pairKey, recordKey, validateAlignment } from "../src/segments.mjs";
 import { displaySegments } from "../src/display.mjs";
 import { isMismatched, planSynthesizedPairs } from "../src/pairings.mjs";
+import { databaseFiles, databaseVersion, writeDatabase } from "./lib/database-files.mjs";
 import { evaluateDataset } from "./lib/evaluation.mjs";
 import { parseGeneratorOptions } from "./lib/options.mjs";
 
@@ -99,36 +99,34 @@ for (const key of dataset.annotations.keys()) {
   if (!seen.has(key)) throw new Error(`Stale annotation absent from source dictionary: ${key}`);
 }
 counts.entries = Object.keys(entries).length;
-const output =
-  JSON.stringify({
-    schemaVersion,
-    jmdictDate: dataset.lock.sources.jmdict.dictDate,
-    license: "CC-BY-SA-4.0",
-    attribution:
-      "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE in the source repository.",
-    entries,
-  }) + "\n";
-const compressed = gzipSync(output, { level: 9 });
+const jmdictDate = dataset.lock.sources.jmdict.dictDate;
+// A release stamps its own revision over this development version.
+const version = databaseVersion(jmdictDate);
 await mkdir(outputDirectory, { recursive: true });
-await writeFile(
-  join(outputDirectory, "evaluation.json"),
-  JSON.stringify(evaluation, undefined, 2) + "\n",
-);
-await writeFile(join(outputDirectory, "precise-furigana.json"), output);
-await writeFile(join(outputDirectory, "precise-furigana.json.gz"), compressed);
-const manifest = { schemaVersion, algorithmVersion, counts, files: {} };
-const files = ["precise-furigana.json", "precise-furigana.json.gz", "evaluation.json"];
-for (const name of files) {
-  const bytes = await readFile(join(outputDirectory, name));
-  manifest.files[name] = { bytes: bytes.length, sha256: digest(bytes) };
-}
+const files = await writeDatabase(outputDirectory, {
+  version,
+  schemaVersion,
+  jmdictDate,
+  license: "CC-BY-SA-4.0",
+  attribution:
+    "Based on JMdict and KANJIDIC2, copyright EDRDG, with Unicode Unihan and reviewed Wiktionary and JmdictFurigana data. See NOTICE in the source repository.",
+  entries,
+});
+const evaluationBytes = Buffer.from(JSON.stringify(evaluation, undefined, 2) + "\n");
+await writeFile(join(outputDirectory, "evaluation.json"), evaluationBytes);
+files["evaluation.json"] = { bytes: evaluationBytes.length, sha256: digest(evaluationBytes) };
+const manifest = { version, schemaVersion, counts, files };
 await writeFile(
   join(outputDirectory, "manifest.json"),
   JSON.stringify(manifest, undefined, 2) + "\n",
 );
 console.log(
   JSON.stringify(
-    { ...counts, bytes: Buffer.byteLength(output), gzipBytes: compressed.length },
+    {
+      ...counts,
+      bytes: files[databaseFiles[0]].bytes,
+      gzipBytes: files[databaseFiles[1]].bytes,
+    },
     undefined,
     2,
   ),

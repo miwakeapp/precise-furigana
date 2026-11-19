@@ -25,7 +25,7 @@ The input is a spelling and its complete reading. The generator divides the read
 | Phonetic ateji and foreign readings                                                     | `ateji`, `loan-readings`, `korean-readings`                                       |
 | Unihan and Wiktionary character readings                                                | `unihan`, `character-readings`, `exact-character-allocation`                      |
 | Restricted transformations of listed readings (ケー for ケイ)                           | `unihan-phonology`, `listed-phonology`, `on-reading-spelling`, `native-compounds` |
-| Cuts inside longer words and alternate spellings                                        | `source-units`, `separator-alignments`, `shared-run-alignments`                   |
+| Cuts inside longer words and alternate spellings                                        | `source-units`, `shared-run-alignments`                                           |
 | Reviewed word-local facts                                                               | `lexical-evidence`                                                                |
 
 Constraints that apply across passes:
@@ -35,7 +35,6 @@ Constraints that apply across passes:
 - An omitted particle belongs to neither neighbor. Where a sibling spelling writes の, を, or が between two kanji that the reading pronounces, a final pass groups the two kanji: <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs last because several earlier passes can independently cut beside the particle.
 - Silent punctuation is set aside while aligning, on either side, so Ｓ・Ｍ read エス・エム divides as ＳＭ read エスエム does, and the boundaries this finds are added to the direct alignment's. A mark both sides share becomes its own segment; a spelling's mark joins the segment before it and is shown plain; a reading's mark joins a neighboring ruby segment and makes the pair mismatched. This runs on the finished pipeline only.
 - A positional numeral's reading is parsed into chunks, one per nonzero digit with its zeros ([src/numeral-chunks.mjs](../src/numeral-chunks.mjs)). A reading that does not parse that way, such as digits read one by one, keeps whatever division it had.
-- Silent middle dots join a neighboring segment and are shown without ruby; cuts transfer from the undotted spelling only when its character allocation is complete and unambiguous.
 - A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
 - Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.
 - Optional weak sound changes (dictionary nasal loss and initial voicing) can shift the evidence that spelling transfers rely on, so the pipeline also compiles a reduced copy of itself without them and keeps the boundaries that copy establishes. This roughly doubles the early stages' cost.

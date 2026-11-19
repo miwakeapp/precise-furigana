@@ -37,8 +37,6 @@ const switches = {
   "no-untagged-katakana-korean": "untaggedKatakanaKorean",
   "no-on-reading-spelling": "onReadingSpelling",
   "no-source-unit-transfers": "sourceUnitTransfers",
-  "no-separator-transfers": "separatorTransfers",
-  "no-virtual-separator-sources": "virtualSeparatorSources",
   "no-shared-run-transfers": "sharedRunTransfers",
 };
 

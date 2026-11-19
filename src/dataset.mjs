@@ -39,7 +39,6 @@ import { deriveListedPhonologyAlignments } from "./listed-phonology.mjs";
 import { deriveKoreanAlignments } from "./korean-readings.mjs";
 import { deriveOnReadingSpellingAlignments } from "./on-reading-spelling.mjs";
 import { deriveSourceUnitAlignments } from "./source-units.mjs";
-import { deriveSeparatorAlignments } from "./separator-alignments.mjs";
 import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 
 export const schemaVersion = 1;
@@ -79,8 +78,6 @@ export const defaultConfiguration = {
   untaggedKatakanaKorean: true,
   onReadingSpelling: true,
   sourceUnitTransfers: true,
-  separatorTransfers: true,
-  virtualSeparatorSources: true,
   sharedRunTransfers: true,
 };
 
@@ -544,8 +541,6 @@ function compilePipeline(
             koreanReadings: false,
             onReadingSpelling: false,
             sourceUnitTransfers: false,
-            separatorTransfers: false,
-            virtualSeparatorSources: false,
             sharedRunTransfers: false,
           },
           { unihanReadings },
@@ -926,34 +921,9 @@ function compilePipeline(
             sourceUnits.wordAlignments.get(spelling)?.get(reading),
             "independently-supported-word-unit",
           );
-  const separators = configuration.separatorTransfers
-    ? deriveSeparatorAlignments(jmdict, kanjidic, alignUnits, {
-        jmdictSource,
-        kanjidicSource,
-        allowVirtualSources: configuration.virtualSeparatorSources,
-        // Optional dictionary sound inferences stay disabled in this independent
-        // raw source aligner, matching the reviewed separator-transfer experiment.
-        rawAlignerOptions: {
-          phonologicalAlternations: configuration.phonologicalAlternations,
-          terminalContraction: configuration.terminalContraction,
-          compoundVoicing: configuration.compoundVoicing,
-          kanaRunCorrespondence: configuration.kanaRunCorrespondence,
-          internalKanaAnchors: configuration.internalKanaAnchors,
-        },
-      })
-    : { wordAlignments: new Map(), witnesses: [] };
-  const alignSeparators =
-    separators.wordAlignments.size === 0
-      ? alignUnits
-      : (spelling, reading) =>
-          applyRefinement(
-            alignUnits(spelling, reading),
-            separators.wordAlignments.get(spelling)?.get(reading),
-            "separator-spelling-evidence",
-          );
   const sharedRuns =
     configuration.variantTransfers && configuration.sharedRunTransfers
-      ? deriveSharedRunAlignments(jmdict, kanjidic, alignSeparators, {
+      ? deriveSharedRunAlignments(jmdict, kanjidic, alignUnits, {
           reviewedFacts: facts,
           jmdictSource,
           kanjidicSource,
@@ -968,10 +938,10 @@ function compilePipeline(
       : { wordAlignments: new Map(), witnesses: [] };
   const alignSharedRuns =
     sharedRuns.wordAlignments.size === 0
-      ? alignSeparators
+      ? alignUnits
       : (spelling, reading) =>
           applyRefinement(
-            alignSeparators(spelling, reading),
+            alignUnits(spelling, reading),
             sharedRuns.wordAlignments.get(spelling)?.get(reading),
             "same-entry-shared-run",
           );
@@ -1009,7 +979,6 @@ function compilePipeline(
     koreanReadings: lateWitnesses("korean"),
     onReadingSpelling: lateWitnesses("onSpelling"),
     sourceUnitTransfers: sourceUnits.witnesses,
-    separatorTransfers: separators.witnesses,
     sharedRunTransfers: sharedRuns.witnesses,
     omittedParticles,
     align,

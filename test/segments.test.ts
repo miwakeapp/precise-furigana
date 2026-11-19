@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { boundaries, combineAlignments, validateAlignment } from "../src/segments.ts";
+import type { Segment } from "../src/types.ts";
 
 test("segments preserve the exact spelling and reading, including script", () => {
   validateAlignment("ヤブ蚊", "やぶっか", [
@@ -28,12 +29,12 @@ test("boundary coordinates count supplementary-plane characters once", () => {
 });
 
 test("independent word evidence retains compatible refinements of both halves", () => {
-  const first = [
+  const first: Segment[] = [
     ["甲", "こう"],
     ["乙", "おつ"],
     ["丙丁", "へいてい"],
   ];
-  const second = [
+  const second: Segment[] = [
     ["甲乙", "こうおつ"],
     ["丙", "へい"],
     ["丁", "てい"],
@@ -48,7 +49,7 @@ test("independent word evidence retains compatible refinements of both halves", 
 });
 
 test("conflicting or crossing word evidence retains the earlier alignment", () => {
-  const first = [
+  const first: Segment[] = [
     ["甲", "こう"],
     ["乙丙", "おつへい"],
   ];

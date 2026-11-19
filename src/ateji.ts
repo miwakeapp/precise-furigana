@@ -8,6 +8,13 @@ import {
   splitGraphemes,
 } from "./kana.ts";
 import { boundaries, segmentReading, segmentText, validateAlignment } from "./segments.ts";
+import type { Aligner, JMdict, PassResult, ReadingMap, Segment, WordAlignments } from "./types.ts";
+
+export interface AtejiWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+}
 
 const consonants = new Map(
   [
@@ -23,22 +30,28 @@ const consonants = new Map(
     ["わゐゑをゎ", "w"],
     ["ん", "N"],
     ["っ", "Q"],
-  ].flatMap(([text, consonant]) => Array.from(text, (kana) => [kana, consonant])),
+  ].flatMap(([text, consonant]) => Array.from(text, (kana): [string, string] => [kana, consonant])),
 );
 
-function morae(text) {
+function morae(text: string): string[] {
   return kanaPronunciation(text).match(/.[ぁぃぅぇぉゃゅょゎ]?/gu) ?? [];
 }
 
-function alternatives(reading) {
+/**
+ * A sound a character can stand for: an on reading as morae, at the cost of any shortening, or
+ * another reading that must match exactly.
+ */
+type PhoneticCandidate = { parts: string[]; cost: number; exact?: undefined } | { exact: string };
+
+function alternatives(reading: string): PhoneticCandidate[] {
   const parts = morae(reading).filter((part) => part !== "ー");
-  const result = [{ parts, cost: 0 }];
-  if (parts.length > 1 && /^[いうくきちつん]$/u.test(parts.at(-1)))
+  const result: PhoneticCandidate[] = [{ parts, cost: 0 }];
+  if (parts.length > 1 && /^[いうくきちつん]$/u.test(parts.at(-1)!))
     result.push({ parts: parts.slice(0, -1), cost: 2 });
   return result;
 }
 
-function phoneticCost(candidate, reading) {
+function phoneticCost(candidate: PhoneticCandidate, reading: string): number {
   if (candidate.exact !== undefined)
     return normalizeKana(reading) === candidate.exact ? 0 : Infinity;
   const target = morae(reading).filter((part) => part !== "ー");
@@ -57,15 +70,21 @@ function phoneticCost(candidate, reading) {
   return cost <= 4 ? cost : Infinity;
 }
 
-function splitPhonetic(spelling, reading, onReadings) {
+function splitPhonetic(
+  spelling: string,
+  reading: string,
+  onReadings: Map<string, PhoneticCandidate[]>,
+): [string, string][] | undefined {
   const units = splitGraphemes(spelling);
   const readUnits = splitGraphemes(reading);
   if (units.length < 2 || !units.every(isIdeograph) || !isKana(reading)) return undefined;
-  let paths = [{ end: 0, cost: 0, segments: [] }];
+  let paths: { end: number; cost: number; segments: [string, string][] }[] = [
+    { end: 0, cost: 0, segments: [] },
+  ];
   for (const [index, character] of units.entries()) {
     const candidates = onReadings.get(character);
     if (candidates === undefined) return undefined;
-    const next = [];
+    const next: typeof paths = [];
     for (const path of paths) {
       for (let end = path.end + 1; end <= readUnits.length - (units.length - index - 1); ++end) {
         const piece = readUnits.slice(path.end, end).join("");
@@ -91,18 +110,22 @@ function splitPhonetic(spelling, reading, onReadings) {
 }
 
 /** Experimental phonetic correspondence, restricted to explicitly tagged ateji pairs. */
-export function deriveAtejiAlignments(jmdict, characterReadings, align) {
-  const onReadings = new Map();
+export function deriveAtejiAlignments(
+  jmdict: JMdict,
+  characterReadings: ReadingMap,
+  align: Aligner,
+): PassResult<AtejiWitness> {
+  const onReadings = new Map<string, PhoneticCandidate[]>();
   for (const [spelling, readings] of characterReadings) {
-    const candidates = readings.flatMap((reading) =>
+    const candidates = readings.flatMap((reading): PhoneticCandidate[] =>
       /^[\p{Script=Katakana}ー]+$/u.test(reading)
         ? alternatives(readingStem(reading))
         : [{ exact: readingStem(reading) }],
     );
     if (candidates.length) onReadings.set(spelling, candidates);
   }
-  const wordAlignments = new Map();
-  const witnesses = [];
+  const wordAlignments: WordAlignments = new Map();
+  const witnesses: AtejiWitness[] = [];
   for (const pair of enumeratePairs(jmdict)) {
     if (
       pair.kind !== "kanji" ||
@@ -112,7 +135,7 @@ export function deriveAtejiAlignments(jmdict, characterReadings, align) {
       continue;
     const original = align(pair.spelling, pair.reading);
     const segments = original.segments.flatMap(
-      (segment) =>
+      (segment): Segment[] =>
         splitPhonetic(segmentText(segment), segmentReading(segment), onReadings) ?? [segment],
     );
     if (boundaries(segments).length <= boundaries(original.segments).length) continue;

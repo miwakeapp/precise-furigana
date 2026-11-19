@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createAligner } from "../src/align.ts";
+import type { AlignerOptions } from "../src/align.ts";
 import { normalizeKana, readingStem } from "../src/kana.ts";
 import { boundaries } from "../src/segments.ts";
+import type { AlignmentStatus, Segment } from "../src/types.ts";
 
 // These small fixtures describe linguistic cases; production data is supplied
 // separately by the caller and is never fetched by the alignment engine.
@@ -49,7 +51,12 @@ const wordReadings = new Map([
 
 const align = createAligner({ characterReadings, wordReadings });
 
-function assertAlignment(spelling, reading, expected, expectedStatus = "aligned") {
+function assertAlignment(
+  spelling: string,
+  reading: string,
+  expected: Segment[],
+  expectedStatus: AlignmentStatus = "aligned",
+) {
   const result = align(spelling, reading);
   assert.deepEqual(result.segments, expected);
   assert.equal(result.status, expectedStatus);
@@ -241,7 +248,7 @@ test("a dotted reading can absorb only a prefix of its literally remaining okuri
     ["出す", "いだす"],
     ["出山", "いだやま"],
     ["出せ", "いだせ"],
-  ]) {
+  ] satisfies [string, string][]) {
     assert.equal(
       localAlign(...pair).evidence.some((part) => part.rules.includes("partial-okurigana")),
       false,
@@ -377,8 +384,8 @@ test("dictionary kana trimming cannot assign a neighboring possible long vowel t
     ["ちょうちょ結び", "ちょうちょうむすび"],
     ["日おい", "ひおおい"],
   ];
-  const localWords = new Map([
-    ...pairs.map(([spelling, reading]) => [spelling, [reading]]),
+  const localWords = new Map<string, string[]>([
+    ...pairs.map(([spelling, reading]): [string, string[]] => [spelling, [reading]]),
     ["笑", ["わらい"]],
   ]);
   const localAlign = createAligner({
@@ -490,7 +497,7 @@ test("kana-run alternatives cannot displace a stronger literal prefix and annota
   for (const pair of [
     ["くれの母", "くれのおも"],
     ["呉の母", "くれのおも"],
-  ]) {
+  ] satisfies [string, string][]) {
     assert.equal(
       localAlign(...pair).evidence.some((part) => part.rules.includes("kana-run-correspondence")),
       false,
@@ -1171,7 +1178,7 @@ test("rendaku can voice an attested dictionary compound after another word", () 
 });
 
 test("voiced supplied compounds retain their attested internal boundaries", () => {
-  const options = {
+  const options: AlignerOptions = {
     characterReadings: new Map([
       ["腕", ["うで"]],
       ["時", ["ジ", "とき"]],
@@ -1226,21 +1233,29 @@ test("long expressions retain repeated supported boundaries", () => {
 
 test("invalid API inputs fail explicitly", () => {
   assert.throws(() => createAligner(), TypeError);
+  // @ts-expect-error A plain object is not a Map.
   assert.throws(() => createAligner({ characterReadings: {} }), TypeError);
+  // @ts-expect-error Readings must be arrays.
   assert.throws(() => createAligner({ characterReadings: new Map([["山", "やま"]]) }), TypeError);
+  // @ts-expect-error A plain object is not a Map.
   assert.throws(() => createAligner({ characterReadings, wordAlignments: {} }), TypeError);
+  // @ts-expect-error A plain object is not a Map.
   assert.throws(() => createAligner({ characterReadings, wordAlignmentRules: {} }), TypeError);
   assert.throws(
     () =>
       createAligner({
         characterReadings,
+        // @ts-expect-error Rules must be arrays.
         wordAlignmentRules: new Map([["山", new Map([["やま", "source"]])]]),
       }),
     TypeError,
   );
+  // @ts-expect-error A plain object is not a Map.
   assert.throws(() => createAligner({ characterReadings, continuativeReadings: {} }), TypeError);
+  // @ts-expect-error A plain object is not a Map.
   assert.throws(() => createAligner({ characterReadings, weakCharacterReadings: {} }), TypeError);
   assert.throws(
+    // @ts-expect-error A spelling must map to a Map of readings.
     () => createAligner({ characterReadings, wordAlignments: new Map([["山", ["やま"]]]) }),
     TypeError,
   );
@@ -1252,6 +1267,7 @@ test("invalid API inputs fail explicitly", () => {
       }),
     /projections/u,
   );
+  // @ts-expect-error The reading must be a string.
   assert.throws(() => align("山", undefined), TypeError);
 });
 

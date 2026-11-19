@@ -1,22 +1,46 @@
 import { isKana, normalizeKana, readingStem, splitGraphemes } from "./kana.ts";
 import { enumeratePairs } from "./sources.ts";
+import type { JMdict, ReadingMap } from "./types.ts";
+
+/** A JMdict pair whose single kanji, once its surrounding kana is taken away, has the reading. */
+export interface CharacterReadingWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+}
+
+/** A reading for a character that the base map does not already list. */
+export interface CharacterReadingCandidate {
+  character: string;
+  reading: string;
+  witnesses: CharacterReadingWitness[];
+}
+
+export interface DerivedCharacterReadings {
+  /** The base map's readings, followed by the additions. */
+  characterReadings: ReadingMap;
+  additions: CharacterReadingCandidate[];
+}
 
 const hanGraphemePattern = /^\p{Unified_Ideograph}[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]*$/u;
 const excludedReadingTags = new Set(["ik", "sk"]);
 
-function compareText(left, right) {
+function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
 /** Derive candidates from a single written kanji and exact surrounding kana, keeping source witnesses. */
-export function deriveCharacterReadings(jmdict, baseMap = new Map()) {
-  const characterReadings = new Map(
+export function deriveCharacterReadings(
+  jmdict: JMdict,
+  baseMap: ReadingMap = new Map(),
+): DerivedCharacterReadings {
+  const characterReadings: ReadingMap = new Map(
     [...baseMap].map(([character, readings]) => [character, [...readings]]),
   );
   const baseReadings = new Map(
     [...baseMap].map(([character, readings]) => [character, new Set(readings.map(readingStem))]),
   );
-  const candidates = new Map();
+  const candidates = new Map<string, CharacterReadingCandidate>();
 
   for (const pair of enumeratePairs(jmdict)) {
     if (

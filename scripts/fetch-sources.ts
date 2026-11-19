@@ -9,14 +9,90 @@ import {
   loadBundledSource,
   sha256,
 } from "../src/sources.ts";
+import type { LockedSource } from "../src/sources.ts";
 import { extractZIPMember } from "./lib/zip.ts";
+
+/** A dictionary archive from a jmdict-simplified release. Fetching it records what it holds. */
+interface DictionarySource extends LockedSource {
+  asset: string;
+  url: string;
+  sha256: string;
+  bytes: number;
+  /** The JSON file's name in the cache. */
+  file: string;
+  entryCount?: number;
+}
+
+/** A source checked into the repository beside the lock. */
+interface BundledSource extends LockedSource {
+  format: "bundled-json";
+  file: string;
+}
+
+/** A text file from inside a downloaded ZIP archive. */
+interface ZIPTextSource extends LockedSource {
+  format: "zip-text";
+  version: string;
+  asset: string;
+  url: string;
+  sha256: string;
+  bytes: number;
+  /** The text file's name in the archive, and then in the cache. */
+  member: string;
+  file: string;
+  textSHA256: string;
+}
+
+/** `data/sources.lock.json`, with everything that fetching reads and writes. */
+export interface FetchedLock {
+  schemaVersion: number;
+  repository: string;
+  release: { tag: string; url: string; publishedAt: string };
+  license: { id: string; url: string; statementURL: string; attribution: string };
+  sources: Record<string, DictionarySource>;
+  lexicalSources?: Record<string, BundledSource | ZIPTextSource>;
+}
+
+export interface FetchSourcesOptions {
+  /** Choose an upstream release and rewrite the lock, instead of fetching what the lock pins. */
+  update?: boolean;
+  /** The jmdict-simplified release tag to move to; the latest when undefined. */
+  release?: string;
+  cacheDirectory?: string;
+  lockPath?: string;
+}
+
+/** A release, as GitHub's API describes it. */
+interface GitHubRelease {
+  tag_name: string;
+  html_url: string;
+  published_at: string;
+  assets: GitHubAsset[];
+}
+
+interface GitHubAsset {
+  name: string;
+  browser_download_url: string;
+  size: number;
+  /** The contents' checksum, as `sha256:` and hexadecimal digits. Older assets have none. */
+  digest?: string | null;
+}
+
+/** The parts of a jmdict-simplified dictionary file that fetching checks and records. */
+interface DictionaryFile {
+  words?: unknown;
+  characters?: unknown;
+  commonOnly?: unknown;
+  version?: string;
+  dictDate?: string;
+}
 
 const repositoryURL = "https://github.com/scriptin/jmdict-simplified";
 const releasesAPIURL = "https://api.github.com/repos/scriptin/jmdict-simplified/releases";
 const sourcePrefixes = { jmdict: "jmdict-all-", kanjidic: "kanjidic2-all-" };
 
-async function fetchBytes(url, { api = false } = {}) {
-  const headers = {
+async function fetchBytes(url: string, { api = false }: { api?: boolean } = {}): Promise<Buffer> {
+  const headers: Record<string, string> = {
     "User-Agent": "precise-furigana",
     Accept: api ? "application/vnd.github+json" : "application/octet-stream",
   };
@@ -30,7 +106,7 @@ async function fetchBytes(url, { api = false } = {}) {
   return Buffer.from(await response.arrayBuffer());
 }
 
-async function atomicWrite(path, bytes) {
+async function atomicWrite(path: string, bytes: string | Buffer): Promise<void> {
   const temporaryPath = `${path}.${process.pid}.tmp`;
   try {
     await writeFile(temporaryPath, bytes);
@@ -40,14 +116,14 @@ async function atomicWrite(path, bytes) {
   }
 }
 
-function readTarText(header, start, end) {
+function readTarText(header: Buffer, start: number, end: number): string {
   return header.subarray(start, end).toString("utf8").replace(/\0.*$/su, "");
 }
 
 // Select the sole regular JSON member without extracting paths or links onto the filesystem.
-export function extractJSONFromTGZ(bytes) {
+export function extractJSONFromTGZ(bytes: Buffer): Buffer {
   const archive = gunzipSync(bytes, { maxOutputLength: 1_000_000_000 });
-  let result;
+  let result: Buffer | undefined;
   let offset = 0;
   while (offset + 512 <= archive.length) {
     const header = archive.subarray(offset, offset + 512);
@@ -88,13 +164,15 @@ export function extractJSONFromTGZ(bytes) {
   return result;
 }
 
-async function resolveLock(tag) {
+async function resolveLock(tag: string | undefined): Promise<FetchedLock> {
   const url =
     tag === undefined
       ? `${releasesAPIURL}/latest`
       : `${releasesAPIURL}/tags/${encodeURIComponent(tag)}`;
-  const release = JSON.parse((await fetchBytes(url, { api: true })).toString("utf8"));
-  const sources = {};
+  const release: GitHubRelease = JSON.parse(
+    (await fetchBytes(url, { api: true })).toString("utf8"),
+  );
+  const sources: FetchedLock["sources"] = {};
   for (const [name, prefix] of Object.entries(sourcePrefixes)) {
     const asset = release.assets.find(
       (candidate) => candidate.name.startsWith(prefix) && candidate.name.endsWith(".json.tgz"),
@@ -107,7 +185,7 @@ async function resolveLock(tag) {
     sources[name] = {
       asset: asset.name,
       url: asset.browser_download_url,
-      sha256: asset.digest.slice("sha256:".length),
+      sha256: asset.digest!.slice("sha256:".length),
       bytes: asset.size,
       file: asset.name.slice(0, -".tgz".length),
     };
@@ -132,22 +210,22 @@ export async function fetchSources({
   release,
   cacheDirectory = defaultCacheDirectory,
   lockPath = defaultLockPath,
-} = {}) {
-  let lock;
+}: FetchSourcesOptions = {}): Promise<FetchedLock> {
+  let lock: FetchedLock;
   if (update) {
     lock = await resolveLock(release);
     // Annual lexical sources remain pinned when the weekly JMdict input moves.
     try {
-      const previous = JSON.parse(await readFile(lockPath, "utf8"));
+      const previous: FetchedLock = JSON.parse(await readFile(lockPath, "utf8"));
       if (previous.lexicalSources !== undefined) lock.lexicalSources = previous.lexicalSources;
     } catch (error) {
-      if (error.code !== "ENOENT") throw error;
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   } else {
     try {
       lock = JSON.parse(await readFile(lockPath, "utf8"));
     } catch (error) {
-      if (error.code === "ENOENT") {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
         throw new Error(
           "No source lock exists. Run npm run fetch -- --update to choose the latest upstream release.",
           { cause: error },
@@ -165,11 +243,11 @@ export async function fetchSources({
       throw new Error(`Invalid source file name for ${name}`);
     }
     const archivePath = join(cacheDirectory, source.asset);
-    let bytes;
+    let bytes: Buffer;
     try {
       bytes = await readFile(archivePath);
     } catch (error) {
-      if (error.code !== "ENOENT") {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
       }
       console.log(`Downloading ${source.asset}`);
@@ -186,7 +264,7 @@ export async function fetchSources({
     if (!update && jsonSHA256 !== source.jsonSHA256) {
       throw new Error(`Extracted JSON checksum mismatch for ${name}`);
     }
-    const dictionary = JSON.parse(jsonBytes.toString("utf8"));
+    const dictionary: DictionaryFile = JSON.parse(jsonBytes.toString("utf8"));
     const entries = name === "jmdict" ? dictionary.words : dictionary.characters;
     if (!Array.isArray(entries) || (name === "jmdict" && dictionary.commonOnly !== false)) {
       throw new Error(`Unexpected ${name} dictionary format`);
@@ -214,11 +292,11 @@ export async function fetchSources({
       throw new Error(`Invalid lexical source format for ${name}`);
     }
     const archivePath = join(cacheDirectory, source.asset);
-    let bytes;
+    let bytes: Buffer;
     try {
       bytes = await readFile(archivePath);
     } catch (error) {
-      if (error.code !== "ENOENT") throw error;
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       console.log(`Downloading ${source.asset}`);
       bytes = await fetchBytes(source.url);
     }
@@ -258,7 +336,7 @@ if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.a
       await fetchSources({ update: values.update, release: values.release });
     }
   } catch (error) {
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exitCode = 1;
   }
 }

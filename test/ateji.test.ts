@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createAligner } from "../src/align.ts";
 import { deriveAtejiAlignments } from "../src/ateji.ts";
+import type { JMdict } from "../src/types.ts";
+import { jmdict } from "./support/dictionaries.ts";
 
-function dictionary(spelling, reading, tags = ["ateji"]) {
-  return {
+function dictionary(spelling: string, reading: string, tags: string[] = ["ateji"]): JMdict {
+  return jmdict({
     words: [
       {
         id: "1000000",
@@ -12,7 +14,7 @@ function dictionary(spelling, reading, tags = ["ateji"]) {
         kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
       },
     ],
-  };
+  });
 }
 
 test("phonetic ateji can vary vowels while preserving character consonants", () => {
@@ -25,7 +27,7 @@ test("phonetic ateji can vary vowels while preserving character consonants", () 
     wordReadings: new Map([["珈琲", ["コーヒー"]]]),
   });
   const result = deriveAtejiAlignments(dictionary("珈琲", "コーヒー"), characters, align);
-  assert.deepEqual(result.wordAlignments.get("珈琲").get("コーヒー"), [
+  assert.deepEqual(result.wordAlignments.get("珈琲")!.get("コーヒー"), [
     ["珈", "コー"],
     ["琲", "ヒー"],
   ]);
@@ -62,7 +64,7 @@ test("ordinary kun readings stay exact in phonetic spellings", () => {
   });
   assert.deepEqual(
     deriveAtejiAlignments(dictionary("型録", "カタログ"), characters, align)
-      .wordAlignments.get("型録")
+      .wordAlignments.get("型録")!
       .get("カタログ"),
     [
       ["型", "カタ"],

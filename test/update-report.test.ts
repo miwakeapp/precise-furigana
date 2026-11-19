@@ -7,18 +7,31 @@ import {
   reviewReasons,
   summarizeChanges,
 } from "../scripts/lib/update-report.ts";
+import type {
+  ChangedRecord,
+  SegmentationChange,
+  StepResult,
+  Update,
+} from "../scripts/lib/update-report.ts";
+import type { SynthesizedPair } from "../src/pairings.ts";
+import type { Segment } from "../src/types.ts";
 
-const pair = (spelling, reading, unreviewed = false) => ({
+const pair = (spelling: string, reading: string, unreviewed = false): SynthesizedPair => ({
   id: "1",
   spelling,
   reading,
   note: "",
   ...(unreviewed ? { unreviewed } : {}),
 });
-const record = (segments) => ({ id: "1", spelling: "山川", reading: "やまかわ", segments });
-const passed = { passed: true, output: "" };
+const record = (segments: Segment[]): ChangedRecord => ({
+  id: "1",
+  spelling: "山川",
+  reading: "やまかわ",
+  segments,
+});
+const passed: StepResult = { passed: true, output: "" };
 
-function update(overrides = {}) {
+function update(overrides: Partial<Update> = {}): Update {
   return {
     before: { tag: "3.6.2+20261005", url: "https://example.test/old", date: "2026-10-05" },
     after: { tag: "3.6.2+20261012", url: "https://example.test/new", date: "2026-10-12" },
@@ -65,7 +78,7 @@ test("an update that only drops synthesized pairs and adds or refines records is
 });
 
 test("anything a person should look at makes an update need review", () => {
-  const coarser = {
+  const coarser: SegmentationChange = {
     change: "coarser",
     before: record([
       ["山", "やま"],

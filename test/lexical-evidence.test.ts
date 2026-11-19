@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { compileLexicalEvidence, refineWithLexicalEvidence } from "../src/lexical-evidence.ts";
+import type { LexicalFact } from "../src/lexical-evidence.ts";
+import type { Alignment, Segment } from "../src/types.ts";
 
-const fact = (spelling, reading, segments) => ({
+const fact = (spelling: string, reading: string, segments: Segment[]): LexicalFact => ({
   id: spelling,
   spelling,
   reading,
@@ -11,7 +13,7 @@ const fact = (spelling, reading, segments) => ({
   reason: "Independently reviewed local sound correspondence",
   sources: [{ url: "https://example.com/dictionary" }],
 });
-const original = (segments) => ({ status: "aligned", segments });
+const original = (segments: Segment[]): Alignment => ({ status: "aligned", segments });
 
 test("reusable sound opt-ins identify complete safe single-character allocations", () => {
   const source = fact("甲乙", "あい", [
@@ -28,6 +30,7 @@ test("reusable sound opt-ins identify complete safe single-character allocations
   );
   for (const reusableSegments of [null, 0, ["0"], [0, 0], [-1], [2], [0.5]]) {
     assert.throws(
+      // @ts-expect-error: most of these are not lists of indexes
       () => compileLexicalEvidence([{ ...source, reusableSegments }]),
       /reusableSegments/u,
     );
@@ -40,8 +43,12 @@ test("reusable sound opt-ins identify complete safe single-character allocations
     ["甲乙", "あい", [["甲乙", "あい"]]],
     ["あ", "あ", ["あ"]],
     ["々", "あ", [["々", "あ"]]],
-    ...["ぁ", "っ", "ん", "ー"].map((reading) => ["甲", reading, [["甲", reading]]]),
-  ])
+    ...["ぁ", "っ", "ん", "ー"].map((reading): [string, string, Segment[]] => [
+      "甲",
+      reading,
+      [["甲", reading]],
+    ]),
+  ] satisfies [string, string, Segment[]][])
     assert.throws(
       () =>
         compileLexicalEvidence([{ ...fact(spelling, reading, segments), reusableSegments: [0] }]),
@@ -59,6 +66,7 @@ test("source entries are JMdict IDs", () => {
     ["1000390"],
   );
   for (const jmdictEntries of ["1000390", [1000390], ["JMdict:1000390"]]) {
+    // @ts-expect-error: none of these is a list of ID strings
     assert.throws(() => compileLexicalEvidence([{ ...source, jmdictEntries }]), /jmdictEntries/u);
   }
 });
@@ -142,7 +150,7 @@ test("a larger reviewed context rejects a shorter unit's contradicted endpoint",
       ["鶫", "つぐみ"],
     ]);
     assert.deepEqual(
-      result.evidence.map((item) => item.facts),
+      result.evidence!.map((item) => item.facts),
       [["真似鶫"], ["真似鶫"]],
     );
     assert.deepEqual(
@@ -259,7 +267,7 @@ test("a rejected context cannot invalidate a compatible shorter occurrence", () 
       ["丁", "お"],
     ]);
     assert.deepEqual(
-      result.evidence.map((item) => item.facts),
+      result.evidence!.map((item) => item.facts),
       Array(3).fill(["甲乙丙丁", "甲乙"]),
     );
   }
@@ -306,7 +314,7 @@ test("reviewed source data has complete projections and no duplicate normalized 
   assert.throws(() => compileLexicalEvidence([value, value]), /Duplicate/u);
 });
 
-const compile = (...facts) => compileLexicalEvidence(facts);
+const compile = (...facts: LexicalFact[]) => compileLexicalEvidence(facts);
 
 test("a complete fact crosses a literal boundary and preserves unchanged evidence", () => {
   const literal = { spelling: "う", reading: "う", type: "literal", rules: ["original-literal"] };
@@ -316,21 +324,21 @@ test("a complete fact crosses a literal boundary and preserves unchanged evidenc
     evidence: [{ type: "dictionary" }, literal, known],
     status: "ambiguous",
     score: { cost: 99 },
-  };
+  } as Alignment;
   const result = refineWithLexicalEvidence(
     original,
     compile(fact("甲乙う丙", "かきうく", [["甲", "か"], ["乙", "き"], "う", ["丙", "く"]])),
   );
   assert.deepEqual(result.segments, [["甲", "か"], ["乙", "き"], "う", ["丙", "く"]]);
-  assert.equal(result.evidence[2], literal);
-  assert.equal(result.evidence[3], known);
+  assert.equal(result.evidence![2], literal);
+  assert.equal(result.evidence![3], known);
   assert.equal(result.segments[3], original.segments[2]);
   assert.equal(result.status, original.status);
   assert.equal(result.score, original.score);
 });
 
 test("a fact contradicting an existing coordinate cannot move that coordinate", () => {
-  const original = {
+  const original: Alignment = {
     segments: [
       ["甲", "あ"],
       ["乙丙", "いうえ"],
@@ -355,7 +363,10 @@ test("a fact contradicting an existing coordinate cannot move that coordinate", 
 });
 
 test("repeated written occurrences refine when each reading placement is anchored", () => {
-  const original = { segments: [["甲乙", "かき"], "う", ["甲乙", "かき"]], status: "aligned" };
+  const original: Alignment = {
+    segments: [["甲乙", "かき"], "う", ["甲乙", "かき"]],
+    status: "aligned",
+  };
   assert.deepEqual(
     refineWithLexicalEvidence(
       original,
@@ -371,7 +382,7 @@ test("repeated written occurrences refine when each reading placement is anchore
 });
 
 test("an existing boundary owns a following literal small kana", () => {
-  const original = { segments: [["甲乙", "かき"], "っぽい"], status: "aligned" };
+  const original: Alignment = { segments: [["甲乙", "かき"], "っぽい"], status: "aligned" };
   assert.deepEqual(
     refineWithLexicalEvidence(
       original,
@@ -387,7 +398,10 @@ test("an existing boundary owns a following literal small kana", () => {
 });
 
 test("a cross-boundary fact emits only internal points and preserves surrounding material", () => {
-  const original = { segments: [["丁甲乙", "たかき"], "う", ["丙戊", "くつ"]], status: "aligned" };
+  const original: Alignment = {
+    segments: [["丁甲乙", "たかき"], "う", ["丙戊", "くつ"]],
+    status: "aligned",
+  };
   const result = refineWithLexicalEvidence(
     original,
     compile(fact("甲乙う丙", "かきうく", [["甲", "か"], ["乙", "き"], "う", ["丙", "く"]])),
@@ -396,7 +410,10 @@ test("a cross-boundary fact emits only internal points and preserves surrounding
 });
 
 test("a full grouped context permits compatible finer cuts across an old boundary", () => {
-  const original = { segments: [["甲乙", "かき"], "う", ["丙", "く"]], status: "aligned" };
+  const original: Alignment = {
+    segments: [["甲乙", "かき"], "う", ["丙", "く"]],
+    status: "aligned",
+  };
   const finer = fact("甲乙", "かき", [
     ["甲", "か"],
     ["乙", "き"],
@@ -412,7 +429,7 @@ test("a full grouped context permits compatible finer cuts across an old boundar
 });
 
 test("original grapheme coordinates survive a decomposed kana prefix", () => {
-  const original = { segments: ["か\u3099", ["甲乙", "あい"], "う"], status: "aligned" };
+  const original: Alignment = { segments: ["か\u3099", ["甲乙", "あい"], "う"], status: "aligned" };
   const result = refineWithLexicalEvidence(
     original,
     compile(fact("が甲乙う", "があいう", ["が", ["甲", "あ"], ["乙", "い"], "う"])),

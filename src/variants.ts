@@ -1,18 +1,70 @@
 import { isIdeograph, isKana, normalizeKana, splitGraphemes } from "./kana.ts";
 import { enumeratePairs } from "./sources.ts";
 import { boundaries, pairKey, validateAlignment } from "./segments.ts";
+import type {
+  Aligner,
+  Alignment,
+  Evidence,
+  JMdict,
+  ReadingMap,
+  Segment,
+  WordAlignments,
+} from "./types.ts";
+
+/** Where a spelling omits a particle: the offset, in graphemes, of the character after the gap. */
+export interface ParticleSite {
+  offset: number;
+  particle: string;
+}
+
+/** A site whose particle is unstated when the spelling/reading pair itself establishes it. */
+export interface OmittedParticleSite {
+  offset: number;
+  particle?: string;
+}
+
+export interface OmittedParticles {
+  /** Pair key to the offsets where the reading pronounces a particle the spelling omits. */
+  pairs: Map<string, number[]>;
+  /** Spelling to its sites, for occurrences inside longer words. */
+  words: Map<string, ParticleSite[]>;
+  /** Pair key to the particles a search-only spelling drops although its reading keeps them. */
+  drops: Map<string, ParticleSite[]>;
+}
+
+export interface VariantAlignmentOptions {
+  kanaSubstitutions?: boolean;
+  hanSubstitutions?: boolean;
+  counterSymbols?: boolean;
+  latinSubstitutions?: boolean;
+  characterReadings?: ReadingMap;
+  continuativeReadings?: ReadingMap;
+}
+
+/** One sibling spelling whose alignment was carried to another. */
+export interface VariantTransfer {
+  id: string;
+  from: string;
+  to: string;
+  reading: string;
+}
+
+export interface VariantAlignments {
+  wordAlignments: WordAlignments;
+  transfers: VariantTransfer[];
+}
 
 const numeralPattern =
   /^[〇零一二三四五六七八九十百千万億兆京壱弐参拾廿卅卌壹貳參肆伍陸柒捌玖佰仟陌阡萬]/u;
 
-function sameGrapheme(left, right) {
+function sameGrapheme(left: string, right: string): boolean {
   return (
     left === right ||
     (isKana(left) && isKana(right) && normalizeKana(left) === normalizeKana(right))
   );
 }
 
-function uniqueDeletionMapping(source, target) {
+function uniqueDeletionMapping(source: string[], target: string[]): number[] | undefined {
   if (source.length <= target.length) return undefined;
   const sourceIdeographs = source.filter(isIdeograph);
   const targetIdeographs = target.filter(isIdeograph);
@@ -33,7 +85,7 @@ function uniqueDeletionMapping(source, target) {
   }
   if (paths[0] !== 1) return undefined;
 
-  const mapping = [];
+  const mapping: number[] = [];
   let targetIndex = 0;
   for (let sourceIndex = 0; sourceIndex < source.length; ++sourceIndex) {
     if (
@@ -49,7 +101,7 @@ function uniqueDeletionMapping(source, target) {
   return mapping;
 }
 
-function pushSegment(segments, spelling, reading) {
+function pushSegment(segments: Segment[], spelling: string, reading: string): void {
   if (spelling === reading) {
     if (typeof segments.at(-1) === "string") segments[segments.length - 1] += spelling;
     else segments.push(spelling);
@@ -64,7 +116,7 @@ function pushSegment(segments, spelling, reading) {
 // starts a KANJIDIC okurigana of the preceding kanji, such as 曲が for ま.がる.
 const particles = new Set(["の", "を", "が"]);
 const determiners = new Set(["此", "其", "彼", "何", "我", "吾"]);
-const startsOkurigana = (characterReadings, kanji, kana) =>
+const startsOkurigana = (characterReadings: ReadingMap, kanji: string, kana: string): boolean =>
   (characterReadings.get(kanji) ?? []).some((reading) =>
     normalizeKana(reading.replace(/^-|-$/gu, "").split(".")[1] ?? "").startsWith(kana),
   );
@@ -75,13 +127,13 @@ const startsOkurigana = (characterReadings, kanji, kana) =>
  * Returns each sibling unit's target index, or -1 when deleted, only if the
  * alignment is unique.
  */
-function siblingDeletionMapping(source, target) {
+function siblingDeletionMapping(source: string[], target: string[]): number[] | undefined {
   if (
     source.length <= target.length ||
     source.filter(isIdeograph).length !== target.filter(isIdeograph).length
   )
     return undefined;
-  const matches = (left, right) =>
+  const matches = (left: string, right: string): boolean =>
     sameGrapheme(left, right) || (isIdeograph(left) && isIdeograph(right));
   const width = target.length + 1;
   const paths = new Uint8Array((source.length + 1) * width);
@@ -95,7 +147,7 @@ function siblingDeletionMapping(source, target) {
     }
   }
   if (paths[0] !== 1) return undefined;
-  const mapping = [];
+  const mapping: number[] = [];
   let targetIndex = 0;
   for (let sourceIndex = 0; sourceIndex < source.length; ++sourceIndex) {
     if (
@@ -122,13 +174,16 @@ function siblingDeletionMapping(source, target) {
  * reading with it. `drops` maps those pairs to the particle and its offset,
  * wherever it sits, so that the ruby can leave the particle out.
  */
-export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
-  const pairs = new Map(),
-    words = new Map(),
-    drops = new Map();
+export function deriveOmittedParticles(
+  jmdict: JMdict,
+  characterReadings: ReadingMap = new Map(),
+): OmittedParticles {
+  const pairs: OmittedParticles["pairs"] = new Map(),
+    words: OmittedParticles["words"] = new Map(),
+    drops: OmittedParticles["drops"] = new Map();
   for (const word of jmdict.words) {
     const spellings = [...new Set(word.kanji.map((kanji) => kanji.text))];
-    const readings = (spelling) =>
+    const readings = (spelling: string): string[] =>
       word.kana
         .filter(
           (kana) => kana.appliesToKanji.includes("*") || kana.appliesToKanji.includes(spelling),
@@ -141,7 +196,7 @@ export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
         const mapping = siblingDeletionMapping(units, targetUnits);
         if (mapping === undefined) continue;
         const sourceReadings = new Set(readings(source));
-        const searchOnly = word.kanji.find((kanji) => kanji.text === target).tags.includes("sK");
+        const searchOnly = word.kanji.find((kanji) => kanji.text === target)!.tags.includes("sK");
         for (let index = 1; index < units.length - 1; ++index) {
           // A substituted neighbor can own the sound itself, as 金 owns がね in 雁金 beside 雁が音.
           if (
@@ -158,7 +213,7 @@ export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
           // A reading can also skip the particle, as in おなかすく for お腹空く.
           const particle = normalizeKana(units[index]);
           if (startsOkurigana(characterReadings, units[index - 1], particle)) continue;
-          const count = (text) =>
+          const count = (text: string): number =>
             Array.from(normalizeKana(text)).filter((unit) => unit === particle).length;
           const pronounced = readings(target).filter(
             (value) => sourceReadings.has(value) && count(value) > count(target),
@@ -194,8 +249,14 @@ export function deriveOmittedParticles(jmdict, characterReadings = new Map()) {
  * shorter word inside it carry their particle, which must then be beside the
  * cut in the reading.
  */
-export function omittedParticleSites({ pairs, words }, spelling, reading) {
-  const sites = (pairs.get(pairKey(spelling, reading)) ?? []).map((offset) => ({ offset }));
+export function omittedParticleSites(
+  { pairs, words }: Pick<OmittedParticles, "pairs" | "words">,
+  spelling: string,
+  reading: string,
+): OmittedParticleSite[] {
+  const sites: OmittedParticleSite[] = (pairs.get(pairKey(spelling, reading)) ?? []).map(
+    (offset) => ({ offset }),
+  );
   const units = splitGraphemes(spelling);
   for (const [word, wordSites] of words) {
     if (word === spelling || !spelling.includes(word)) continue;
@@ -210,10 +271,10 @@ export function omittedParticleSites({ pairs, words }, spelling, reading) {
 }
 
 /** Merge the ruby on either side of each omitted particle, whichever side an earlier stage gave it to. */
-export function joinOmittedParticles(result, sites) {
+export function joinOmittedParticles(result: Alignment, sites: OmittedParticleSite[]): Alignment {
   if (sites.length === 0) return result;
-  const segments = [],
-    evidence = [];
+  const segments: Segment[] = [],
+    evidence: (Evidence | undefined)[] = [];
   let spellingOffset = 0;
   for (const [index, segment] of result.segments.entries()) {
     const previous = segments.at(-1);
@@ -242,18 +303,29 @@ export function joinOmittedParticles(result, sites) {
     spellingOffset += splitGraphemes(typeof segment === "string" ? segment : segment[0]).length;
   }
   if (segments.length === result.segments.length) return result;
-  return { ...result, segments, ...(result.evidence ? { evidence } : {}) };
+  // Every item came from `result.evidence` or was made above, so none is undefined here.
+  return {
+    ...result,
+    segments,
+    ...(result.evidence ? { evidence: evidence as Evidence[] } : {}),
+  };
 }
 
-function attachDeletedReading(segments, reading) {
+function attachDeletedReading(segments: Segment[], reading: string): boolean {
   const previous = segments.at(-1);
-  if (!Array.isArray(previous) || !isIdeograph(splitGraphemes(previous[0]).at(-1))) return false;
+  if (!Array.isArray(previous) || !isIdeograph(splitGraphemes(previous[0]).at(-1)!)) return false;
   previous[1] += reading;
   return true;
 }
 
-function transferSegments(source, target, reading, mapping, segments) {
-  const output = [];
+function transferSegments(
+  source: string[],
+  target: string[],
+  reading: string,
+  mapping: number[],
+  segments: Segment[],
+): Segment[] | undefined {
+  const output: Segment[] = [];
   let offset = 0;
   for (const segment of segments) {
     const literal = typeof segment === "string";
@@ -296,20 +368,38 @@ function transferSegments(source, target, reading, mapping, segments) {
   return output;
 }
 
-function uniqueSubstitutionMapping(source, target, kanaSubstitutions, latinSubstitutions) {
-  const isLatin = (value) => /^[A-Za-zＡ-Ｚａ-ｚ]$/u.test(value);
+/** One step of a mapping between sibling spellings: a shared grapheme, or kana replaced by a run. */
+interface SubstitutionOperation {
+  sourceStart: number;
+  sourceEnd: number;
+  targetStart: number;
+  targetEnd: number;
+  substitution: boolean;
+}
+
+function uniqueSubstitutionMapping(
+  source: string[],
+  target: string[],
+  kanaSubstitutions: boolean,
+  latinSubstitutions: boolean,
+): SubstitutionOperation[] | undefined {
+  const isLatin = (value: string): boolean => /^[A-Za-zＡ-Ｚａ-ｚ]$/u.test(value);
   const hasKanjiReplacement =
     kanaSubstitutions && source.filter(isIdeograph).length < target.filter(isIdeograph).length;
   const hasLatinReplacement =
     latinSubstitutions && source.filter(isLatin).length < target.filter(isLatin).length;
   if (!hasKanjiReplacement && !hasLatinReplacement) return undefined;
-  const memo = new Map();
-  function visit(sourceIndex, targetIndex, replaced) {
+  const memo = new Map<string, SubstitutionOperation[][]>();
+  function visit(
+    sourceIndex: number,
+    targetIndex: number,
+    replaced: boolean,
+  ): SubstitutionOperation[][] {
     const key = `${sourceIndex}:${targetIndex}:${replaced}`;
-    if (memo.has(key)) return memo.get(key);
+    if (memo.has(key)) return memo.get(key)!;
     if (sourceIndex === source.length && targetIndex === target.length) return [[]];
-    const paths = [];
-    function add(sourceEnd, targetEnd, substitution) {
+    const paths: SubstitutionOperation[][] = [];
+    function add(sourceEnd: number, targetEnd: number, substitution: boolean): void {
       for (const suffix of visit(sourceEnd, targetEnd, substitution)) {
         paths.push([
           {
@@ -364,8 +454,15 @@ function uniqueSubstitutionMapping(source, target, kanaSubstitutions, latinSubst
   return paths.length === 1 ? paths[0] : undefined;
 }
 
-function transferSubstitutions(source, target, reading, mapping, segments, boundaryReadings) {
-  const sourceBoundaries = new Map([[0, 0]]);
+function transferSubstitutions(
+  source: string[],
+  target: string[],
+  reading: string,
+  mapping: SubstitutionOperation[],
+  segments: Segment[],
+  boundaryReadings: ReadingMap,
+): Segment[] | undefined {
+  const sourceBoundaries = new Map<number, number>([[0, 0]]);
   let sourceOffset = 0;
   let readingOffset = 0;
   for (const segment of segments) {
@@ -386,7 +483,7 @@ function transferSubstitutions(source, target, reading, mapping, segments, bound
   }
   if (sourceOffset !== source.length) return undefined;
 
-  const targetBoundaries = new Map([[0, 0]]);
+  const targetBoundaries = new Map<number, number>([[0, 0]]);
   const readingGraphemes = splitGraphemes(reading);
   for (const operation of mapping) {
     if (
@@ -424,11 +521,11 @@ function transferSubstitutions(source, target, reading, mapping, segments, bound
         return undefined;
     }
     if (sourceBoundaries.has(operation.sourceStart))
-      targetBoundaries.set(operation.targetStart, sourceBoundaries.get(operation.sourceStart));
+      targetBoundaries.set(operation.targetStart, sourceBoundaries.get(operation.sourceStart)!);
     if (sourceBoundaries.has(operation.sourceEnd))
-      targetBoundaries.set(operation.targetEnd, sourceBoundaries.get(operation.sourceEnd));
+      targetBoundaries.set(operation.targetEnd, sourceBoundaries.get(operation.sourceEnd)!);
   }
-  const output = [];
+  const output: Segment[] = [];
   let previousSpelling = 0;
   let previousReading = 0;
   for (const [spellingEnd, readingEnd] of [...targetBoundaries]
@@ -446,7 +543,7 @@ function transferSubstitutions(source, target, reading, mapping, segments, bound
   return output;
 }
 
-function canSubstituteHan(source, target) {
+function canSubstituteHan(source: string[], target: string[]): boolean {
   if (source.length !== target.length) return false;
   let substitutions = 0;
   let sharedIdeographs = 0;
@@ -468,7 +565,7 @@ function canSubstituteHan(source, target) {
   return substitutions === 1 && sharedIdeographs > 0;
 }
 
-function canSubstituteCounterSymbol(source, target) {
+function canSubstituteCounterSymbol(source: string[], target: string[]): boolean {
   if (source.length !== target.length) return false;
   let substitutions = 0;
   for (let index = 0; index < source.length; ++index) {
@@ -484,8 +581,12 @@ function canSubstituteCounterSymbol(source, target) {
   return substitutions === 1;
 }
 
-function transferHanSubstitution(target, reading, segments) {
-  const output = [];
+function transferHanSubstitution(
+  target: string[],
+  reading: string,
+  segments: Segment[],
+): Segment[] {
+  const output: Segment[] = [];
   let offset = 0;
   for (const segment of segments) {
     const literal = typeof segment === "string";
@@ -502,10 +603,22 @@ function transferHanSubstitution(target, reading, segments) {
   return output;
 }
 
+/** The alignment proposed for one target pair, with the siblings that support it. */
+interface VariantCandidate {
+  spelling: string;
+  reading: string;
+  segments: Segment[];
+  /** The segments as JSON, for comparing proposals. */
+  signature: string;
+  witnesses: VariantTransfer[];
+  /** Whether siblings proposed alignments that cannot both hold. */
+  conflict: boolean;
+}
+
 /** Transfer boundaries between attested sibling spellings without learning reusable character readings. */
 export function deriveVariantAlignments(
-  jmdict,
-  align,
+  jmdict: JMdict,
+  align: Aligner,
   {
     kanaSubstitutions = false,
     hanSubstitutions = false,
@@ -513,11 +626,11 @@ export function deriveVariantAlignments(
     latinSubstitutions = false,
     characterReadings,
     continuativeReadings,
-  } = {},
-) {
-  const sourceAlignments = new Map();
-  const candidates = new Map();
-  const boundaryReadings = new Map();
+  }: VariantAlignmentOptions = {},
+): VariantAlignments {
+  const sourceAlignments = new Map<string, Alignment>();
+  const candidates = new Map<string, VariantCandidate>();
+  const boundaryReadings: ReadingMap = new Map();
   if (kanaSubstitutions || latinSubstitutions) {
     if (!(characterReadings instanceof Map) || !(continuativeReadings instanceof Map)) {
       throw new TypeError(
@@ -538,7 +651,7 @@ export function deriveVariantAlignments(
   }
 
   for (const word of jmdict.words) {
-    const readingGroups = new Map();
+    const readingGroups = new Map<string, Set<string>>();
     for (const pair of enumeratePairs({ words: [word] })) {
       if (pair.kind !== "kanji") continue;
       let group = readingGroups.get(pair.reading);
@@ -616,7 +729,7 @@ export function deriveVariantAlignments(
                     from.graphemes,
                     to.graphemes,
                     reading,
-                    substitutionMapping,
+                    substitutionMapping!,
                     result.segments,
                     boundaryReadings,
                   );
@@ -624,7 +737,12 @@ export function deriveVariantAlignments(
 
           const targetKey = pairKey(to.spelling, reading);
           const signature = JSON.stringify(segments);
-          const witness = { id: word.id, from: from.spelling, to: to.spelling, reading };
+          const witness: VariantTransfer = {
+            id: word.id,
+            from: from.spelling,
+            to: to.spelling,
+            reading,
+          };
           const candidate = candidates.get(targetKey);
           if (candidate === undefined) {
             candidates.set(targetKey, {
@@ -661,8 +779,8 @@ export function deriveVariantAlignments(
     }
   }
 
-  const wordAlignments = new Map();
-  const transfers = [];
+  const wordAlignments: WordAlignments = new Map();
+  const transfers: VariantTransfer[] = [];
   for (const candidate of candidates.values()) {
     if (candidate.conflict) continue;
     let readings = wordAlignments.get(candidate.spelling);

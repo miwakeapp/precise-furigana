@@ -1,15 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { alignPastPunctuation } from "../src/dataset.ts";
+import type { Segment } from "../src/types.ts";
 
 // A stand-in aligner that knows a few alignments and groups everything else.
-function aligner(known) {
+function aligner(known: Partial<Record<string, Segment[]>>) {
   return alignPastPunctuation((spelling, reading) => ({
     status: "aligned",
     segments: known[`${spelling}/${reading}`] ?? [[spelling, reading]],
   }));
 }
-const known = {
+const known: Partial<Record<string, Segment[]>> = {
   "ＳＦ/エスエフ": [
     ["Ｓ", "エス"],
     ["Ｆ", "エフ"],
@@ -75,17 +76,19 @@ test("a boundary found without the marks is added to the direct alignment's", ()
   // The direct alignment divides the first half, and the one without marks divides the second.
   const align = alignPastPunctuation((spelling, reading) => ({
     status: "aligned",
-    segments: {
-      "甲乙・丙丁/かきくけ": [
-        ["甲", "か"],
-        ["乙・丙丁", "きくけ"],
-      ],
-      "甲乙丙丁/かきくけ": [
-        ["甲乙", "かき"],
-        ["丙", "く"],
-        ["丁", "け"],
-      ],
-    }[`${spelling}/${reading}`] ?? [[spelling, reading]],
+    segments: (
+      {
+        "甲乙・丙丁/かきくけ": [
+          ["甲", "か"],
+          ["乙・丙丁", "きくけ"],
+        ],
+        "甲乙丙丁/かきくけ": [
+          ["甲乙", "かき"],
+          ["丙", "く"],
+          ["丁", "け"],
+        ],
+      } as Partial<Record<string, Segment[]>>
+    )[`${spelling}/${reading}`] ?? [[spelling, reading]],
   }));
   assert.deepEqual(align("甲乙・丙丁", "かきくけ").segments, [
     ["甲", "か"],

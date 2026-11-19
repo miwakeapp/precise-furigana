@@ -1,26 +1,35 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { compileAlignmentPipeline, defaultConfiguration } from "../src/dataset.ts";
+import type { PipelineSources } from "../src/dataset.ts";
+import type { LexicalFact } from "../src/lexical-evidence.ts";
+import type { Evidence, Segment } from "../src/types.ts";
+import * as fixture from "./support/dictionaries.ts";
+
+/** One of the spans that `supportingSpans` lists in the evidence for a combined segment. */
+type SupportingSpan = Evidence & { context: string; facts?: string[] };
 
 function fixtures() {
-  const word = (id, spelling, reading, tags = []) => ({
+  const word = (id: string, spelling: string, reading: string, tags: string[] = []) => ({
     id,
     kanji: [{ text: spelling, tags }],
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
     sense: [],
   });
-  const jmdict = { words: [word("1", "甲乙", "かこ", ["ateji"]), word("2", "甲乙丙", "かこくぐ")] };
+  const jmdict = fixture.jmdict({
+    words: [word("1", "甲乙", "かこ", ["ateji"]), word("2", "甲乙丙", "かこくぐ")],
+  });
   const readings = new Map([
     ["甲", ["カ", "カコ"]],
     ["乙", ["ク"]],
     ["丙", ["ク", "クグ"]],
   ]);
-  const kanjidic = {
+  const kanjidic = fixture.kanjidic({
     characters: [...readings].map(([literal, values]) => ({
       literal,
       readingMeaning: { groups: [{ readings: values.map((value) => ({ type: "ja_on", value })) }] },
     })),
-  };
+  });
   return { jmdict, kanjidic };
 }
 
@@ -44,7 +53,7 @@ test("phonetic subword transfers cannot move accepted boundaries in a longer wor
   ];
   assert.deepEqual(baseline.align("甲乙丙", "かこくぐ").segments, expected);
   assert.deepEqual(transferred.align("甲乙丙", "かこくぐ").segments, expected);
-  assert.deepEqual(transferred.align("甲乙丙", "かこくぐ").evidence.at(-1).rules, ["rendaku"]);
+  assert.deepEqual(transferred.align("甲乙丙", "かこくぐ").evidence!.at(-1)!.rules, ["rendaku"]);
 });
 
 test("undefined pipeline options retain defaults while false disables a feature", () => {
@@ -69,14 +78,14 @@ test("final-character lengthening is switchable and cannot propagate to unattest
     ["贔屓", "ひいき"],
     ["御御様", "おごうさま"],
   ];
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: pairs.map(([spelling, reading], index) => ({
       id: String(index),
       kanji: [{ text: spelling, tags: [] }],
       kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
       sense: [],
     })),
-  };
+  });
   const readings = new Map([
     ["心", ["こころ"]],
     ["贔", ["ヒ"]],
@@ -84,7 +93,7 @@ test("final-character lengthening is switchable and cannot propagate to unattest
     ["御", ["お"]],
     ["様", ["さま"]],
   ]);
-  const kanjidic = {
+  const kanjidic = fixture.kanjidic({
     characters: [...readings].map(([literal, values]) => ({
       literal,
       readingMeaning: {
@@ -98,7 +107,7 @@ test("final-character lengthening is switchable and cannot propagate to unattest
         ],
       },
     })),
-  };
+  });
   const sources = {
     unihanReadings: new Map([
       ["贔", ["ヒ"]],
@@ -132,7 +141,7 @@ test("final-character lengthening is switchable and cannot propagate to unattest
 });
 
 test("listed phonology honors both source and correspondence switches", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -141,16 +150,16 @@ test("listed phonology honors both source and correspondence switches", () => {
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       {
         literal: "愛",
         readingMeaning: { groups: [{ readings: [{ type: "ja_on", value: "アイ" }] }] },
       },
     ],
-  };
-  const sources = {
+  });
+  const sources: PipelineSources = {
     englishCharacterReadingBundle: {
       schemaVersion: 1,
       source: {
@@ -193,7 +202,7 @@ test("listed phonology honors both source and correspondence switches", () => {
 });
 
 test("reviewed target facts constrain variant transfers before protected boundaries are created", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -208,8 +217,8 @@ test("reviewed target facts constrain variant transfers before protected boundar
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       ["玄", "くろ"],
       ["人", "と"],
@@ -217,7 +226,7 @@ test("reviewed target facts constrain variant transfers before protected boundar
       literal,
       readingMeaning: { groups: [{ readings: [{ type: "ja_kun", value }] }] },
     })),
-  };
+  });
   const lexicalEvidence = [
     {
       id: "expert",
@@ -226,7 +235,7 @@ test("reviewed target facts constrain variant transfers before protected boundar
       segments: [
         ["玄", "くろ"],
         ["人", "うと"],
-      ],
+      ] satisfies Segment[],
     },
     {
       id: "day",
@@ -235,7 +244,7 @@ test("reviewed target facts constrain variant transfers before protected boundar
       segments: [
         ["一昨", "おとと"],
         ["日", "い"],
-      ],
+      ] satisfies Segment[],
     },
   ].map((fact) => ({
     ...fact,
@@ -281,7 +290,7 @@ test("reviewed target facts constrain variant transfers before protected boundar
 });
 
 test("on-reading spelling is a final exact-pair refinement with an independent off switch", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -290,8 +299,8 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       ["警", "ケイ"],
       ["察", "サツ"],
@@ -299,7 +308,7 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
       literal,
       readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] },
     })),
-  };
+  });
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
   const disabled = compileAlignmentPipeline(jmdict, kanjidic, { onReadingSpelling: false });
   assert.deepEqual(enabled.align("警察", "ケーサツ").segments, [
@@ -310,7 +319,7 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
   assert.equal(enabled.onReadingSpelling.length, 1);
   assert.equal(disabled.onReadingSpelling.length, 0);
   assert.equal(enabled.align("警察", "ケーサツ").status, "aligned");
-  assert.deepEqual(enabled.align("警察", "ケーサツ").evidence[0].rules, [
+  assert.deepEqual(enabled.align("警察", "ケーサツ").evidence![0].rules, [
     "on-long-vowel-notation-equivalence",
   ]);
   // Default weak-sound protection must not run this late stage early and
@@ -325,7 +334,7 @@ test("on-reading spelling is a final exact-pair refinement with an independent o
 });
 
 test("on-reading spelling respects each optional typed source flag", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -334,15 +343,15 @@ test("on-reading spelling respects each optional typed source flag", () => {
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       {
         literal: "察",
         readingMeaning: { groups: [{ readings: [{ type: "ja_on", value: "サツ" }] }] },
       },
     ],
-  };
+  });
   const bundle = {
     schemaVersion: 1,
     source: { name: "Typed fixture", version: "1", sha256: "b".repeat(64) },
@@ -377,13 +386,16 @@ test("on-reading spelling respects each optional typed source flag", () => {
 });
 
 function lateEvidenceFixture() {
-  const word = (id, spelling, readings) => ({
+  const word = (id: string, spelling: string, readings: string[]) => ({
     id,
     kanji: [{ text: spelling, tags: [] }],
     kana: readings.map((text) => ({ text, tags: [], appliesToKanji: ["*"] })),
     sense: [],
   });
-  const bundle = (name, records) => ({
+  const bundle = (
+    name: string,
+    records: [character: string, reading: string, kind: "on" | "kun"][],
+  ) => ({
     schemaVersion: 1,
     source: { name, version: "1", sha256: "c".repeat(64) },
     readings: records.map(([character, reading, kind]) => ({
@@ -394,7 +406,12 @@ function lateEvidenceFixture() {
       tags: [kind, "transliteration"],
     })),
   });
-  const fact = (id, spelling, reading, segments) => ({
+  const fact = (
+    id: string,
+    spelling: string,
+    reading: string,
+    segments: Segment[],
+  ): LexicalFact => ({
     id,
     spelling,
     reading,
@@ -412,7 +429,7 @@ function lateEvidenceFixture() {
   };
   // The actual source relationship: primary 自じ, weak/JP 刀と, and the
   // independently listed English-source 母おも/あも readings.
-  const kanjidic = {
+  const kanjidic = fixture.kanjidic({
     characters: [
       {
         literal: "母",
@@ -440,7 +457,7 @@ function lateEvidenceFixture() {
         readingMeaning: { groups: [{ readings: [{ type: "ja_on", value: "ジ" }] }] },
       },
     ],
-  };
+  });
   const sources = {
     characterReadingBundle: bundle("Japanese fixture", [["刀", "ト", "on"]]),
     englishCharacterReadingBundle: bundle("English fixture", [
@@ -459,7 +476,7 @@ function lateEvidenceFixture() {
 
 test("coarse lexical facts cannot erase finer independently witnessed character boundaries", () => {
   const { word, options, kanjidic, sources } = lateEvidenceFixture();
-  const jmdict = { words: [word("1", "母刀自", ["おもとじ", "あもとじ"])] };
+  const jmdict = fixture.jmdict({ words: [word("1", "母刀自", ["おもとじ", "あもとじ"])] });
   const baseline = compileAlignmentPipeline(
     jmdict,
     kanjidic,
@@ -480,8 +497,8 @@ test("coarse lexical facts cannot erase finer independently witnessed character 
   assert.ok(
     refined.englishCharacterReadings.every(
       (witness) =>
-        witness.lexicalContexts.length === 1 &&
-        witness.lexicalContexts[0] === "without-lexical-refinement",
+        witness.lexicalContexts!.length === 1 &&
+        witness.lexicalContexts![0] === "without-lexical-refinement",
     ),
   );
   const withoutEnglish = compileAlignmentPipeline(
@@ -501,7 +518,7 @@ test("independent and lexical paths union disjoint cuts with their source attrib
   const { word, fact, options, kanjidic, sources } = lateEvidenceFixture();
   const spelling = "母刀自で甲乙",
     reading = "おもとじでこうおつ";
-  const jmdict = { words: [word("1", spelling, [reading])] };
+  const jmdict = fixture.jmdict({ words: [word("1", spelling, [reading])] });
   sources.lexicalEvidence.push(
     fact("right", "甲乙", "こうおつ", [
       ["甲", "こう"],
@@ -533,23 +550,21 @@ test("independent and lexical paths union disjoint cuts with their source attrib
     ["甲", "こう"],
     ["乙", "おつ"],
   ]);
-  assert.ok(result.evidence[1].rules.includes("english-listed-character-evidence"));
-  assert.ok(result.evidence.at(-1).rules.includes("reviewed-lexical-unit"));
-  assert.ok(!result.evidence.at(-1).rules.includes("english-listed-character-evidence"));
+  assert.ok(result.evidence![1].rules.includes("english-listed-character-evidence"));
+  assert.ok(result.evidence!.at(-1)!.rules.includes("reviewed-lexical-unit"));
+  assert.ok(!result.evidence!.at(-1)!.rules.includes("english-listed-character-evidence"));
   assert.ok(
-    !result.evidence
-      .at(-1)
-      .supportingSpans.some((span) => span.rules.includes("english-listed-character-evidence")),
+    !(result.evidence!.at(-1)!.supportingSpans as SupportingSpan[]).some((span) =>
+      span.rules.includes("english-listed-character-evidence"),
+    ),
   );
   assert.ok(
-    result.evidence
-      .at(-1)
-      .supportingSpans.some(
-        (span) => span.context === "with-lexical-refinement" && span.facts?.includes("right"),
-      ),
+    (result.evidence!.at(-1)!.supportingSpans as SupportingSpan[]).some(
+      (span) => span.context === "with-lexical-refinement" && span.facts?.includes("right"),
+    ),
   );
   assert.ok(
-    result.evidence[1].supportingSpans.some(
+    (result.evidence![1].supportingSpans as SupportingSpan[]).some(
       (span) => span.context === "without-lexical-refinement",
     ),
   );
@@ -557,8 +572,8 @@ test("independent and lexical paths union disjoint cuts with their source attrib
 
 test("conflicting independent cuts cannot override a reviewed local boundary", () => {
   const { word, bundle, fact, options } = lateEvidenceFixture();
-  const jmdict = { words: [word("1", "甲乙丙", ["かきくけ"])] };
-  const kanjidic = {
+  const jmdict = fixture.jmdict({ words: [word("1", "甲乙丙", ["かきくけ"])] });
+  const kanjidic = fixture.kanjidic({
     characters: [
       ["甲", "カキ"],
       ["乙", "ク"],
@@ -566,7 +581,7 @@ test("conflicting independent cuts cannot override a reviewed local boundary", (
       literal,
       readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] },
     })),
-  };
+  });
   const sources = {
     englishCharacterReadingBundle: bundle("English fixture", [["丙", "ケ", "on"]]),
     lexicalEvidence: [
@@ -598,15 +613,17 @@ test("a conflicting region cannot erase compatible independent cuts beyond share
   const { word, fact, options, kanjidic, sources } = lateEvidenceFixture();
   const spelling = "甲乙丙で母刀自",
     reading = "かきくけでおもとじ";
-  const jmdict = { words: [word("1", spelling, [reading])] };
+  const jmdict = fixture.jmdict({ words: [word("1", spelling, [reading])] });
   for (const [literal, value] of [
     ["甲", "カキ"],
     ["乙", "ク"],
   ]) {
-    kanjidic.characters.push({
-      literal,
-      readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] },
-    });
+    kanjidic.characters.push(
+      fixture.kanjidicCharacter({
+        literal,
+        readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] },
+      }),
+    );
   }
   sources.englishCharacterReadingBundle.readings.push({
     character: "丙",
@@ -648,15 +665,15 @@ test("a conflicting region cannot erase compatible independent cuts beyond share
     ["刀", "と"],
     ["自", "じ"],
   ]);
-  assert.ok(integrated.evidence.at(-1).rules.includes("english-listed-character-evidence"));
-  assert.ok(integrated.evidence[0].rules.includes("reviewed-lexical-unit"));
-  assert.ok(!integrated.evidence[0].rules.includes("english-listed-character-evidence"));
+  assert.ok(integrated.evidence!.at(-1)!.rules.includes("english-listed-character-evidence"));
+  assert.ok(integrated.evidence![0].rules.includes("reviewed-lexical-unit"));
+  assert.ok(!integrated.evidence![0].rules.includes("english-listed-character-evidence"));
 });
 
 test("disabled sources cannot supply positive companion readings to another listed source", () => {
   const { word, bundle } = lateEvidenceFixture();
-  const jmdict = { words: [word("1", "甲乙", ["かき"])] },
-    kanjidic = { characters: [] };
+  const jmdict = fixture.jmdict({ words: [word("1", "甲乙", ["かき"])] }),
+    kanjidic = fixture.kanjidic({ characters: [] });
   const options = Object.fromEntries(
     Object.keys(defaultConfiguration).map((name) => [name, false]),
   );
@@ -710,7 +727,7 @@ test("disabled sources cannot supply positive companion readings to another list
 });
 
 test("shared runs recover supported internal cuts and honor both variant switches", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -719,8 +736,8 @@ test("shared runs recover supported internal cuts and honor both variant switche
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       ["奈", "ナ"],
       ["良", "ラ"],
@@ -730,7 +747,7 @@ test("shared runs recover supported internal cuts and honor both variant switche
       literal,
       readingMeaning: { groups: [{ readings: [{ type: "ja_on", value }] }] },
     })),
-  };
+  });
   const enabled = compileAlignmentPipeline(jmdict, kanjidic);
   assert.deepEqual(enabled.align("寧楽時代", "ならじだい").segments, [
     ["寧楽時", "ならじ"],
@@ -755,7 +772,7 @@ test("shared runs recover supported internal cuts and honor both variant switche
 });
 
 test("the pipeline never guesses an unsupported character reading", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -764,15 +781,15 @@ test("the pipeline never guesses an unsupported character reading", () => {
         sense: [],
       },
     ],
-  };
-  const kanjidic = {
+  });
+  const kanjidic = fixture.kanjidic({
     characters: [
       {
         literal: "甲",
         readingMeaning: { groups: [{ readings: [{ type: "ja_kun", value: "あ" }] }] },
       },
     ],
-  };
+  });
   const result = compileAlignmentPipeline(jmdict, kanjidic).align("甲乙", "あぬ");
   assert.deepEqual(result.segments, [["甲乙", "あぬ"]]);
   assert.equal(result.status, "aligned");

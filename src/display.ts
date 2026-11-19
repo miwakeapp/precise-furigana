@@ -1,10 +1,12 @@
 import { isKana, isSilentPunctuation, normalizeKana, splitGraphemes } from "./kana.ts";
 import { segmentReading, segmentText } from "./segments.ts";
+import type { Segment } from "./types.ts";
 
-const pronounced = (text) => normalizeKana(text).replace(/[^\p{Script=Hiragana}ー]/gu, "");
+const pronounced = (text: string): string =>
+  normalizeKana(text).replace(/[^\p{Script=Hiragana}ー]/gu, "");
 
 // Kana and silent punctuation that sound exactly like the reading need no ruby.
-function needsRuby(base, reading) {
+function needsRuby(base: string, reading: string): boolean {
   const sounded = splitGraphemes(base)
     .filter((unit) => !(isSilentPunctuation(unit) && !reading.includes(unit)))
     .join("");
@@ -23,7 +25,7 @@ function needsRuby(base, reading) {
  * ん plain beside ぼう read ぼ. A cut never falls before a small kana, which
  * belongs with the kana before it.
  */
-function peelKana([spelling, reading]) {
+function peelKana([spelling, reading]: [string, string]): Segment[] {
   const units = splitGraphemes(spelling),
     sounds = splitGraphemes(reading);
   if (units.every(isKana)) return peelKanaGroup(units, sounds) ?? [[spelling, reading]];
@@ -31,7 +33,7 @@ function peelKana([spelling, reading]) {
     end = units.length;
   while (start < end && isKana(units[start])) ++start;
   while (end > start && isKana(units[end - 1])) --end;
-  const repeats = (run, candidates) =>
+  const repeats = (run: string[], candidates: string[]): boolean =>
     run.length > 0 &&
     run.every((unit, index) => normalizeKana(unit) === normalizeKana(candidates[index] ?? ""));
   const leading = repeats(units.slice(0, start), sounds) ? start : 0;
@@ -40,21 +42,24 @@ function peelKana([spelling, reading]) {
     : 0;
   if (start === end || leading + trailing === 0 || leading + trailing >= sounds.length)
     return [[spelling, reading]];
-  return [
-    units.slice(0, leading).join(""),
+  return (
     [
-      units.slice(leading, units.length - trailing).join(""),
-      sounds.slice(leading, sounds.length - trailing).join(""),
-    ],
-    units.slice(units.length - trailing).join(""),
-  ].filter((part) => part !== "");
+      units.slice(0, leading).join(""),
+      [
+        units.slice(leading, units.length - trailing).join(""),
+        sounds.slice(leading, sounds.length - trailing).join(""),
+      ],
+      units.slice(units.length - trailing).join(""),
+    ] satisfies Segment[]
+  ).filter((part) => part !== "");
 }
 
-const isSmallKana = (unit) => /^[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ]$/u.test(unit);
-const sameKana = (left, right) =>
+const isSmallKana = (unit: string): boolean =>
+  /^[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ]$/u.test(unit);
+const sameKana = (left: string, right: string | undefined): boolean =>
   right !== undefined && normalizeKana(left) === normalizeKana(right);
 
-function peelKanaGroup(units, sounds) {
+function peelKanaGroup(units: string[], sounds: string[]): Segment[] | undefined {
   let leading = 0,
     trailing = 0;
   // Keep at least one written unit and one sound in the group.
@@ -69,19 +74,21 @@ function peelKanaGroup(units, sounds) {
     ++leading;
   while (
     room() &&
-    sameKana(units.at(-1 - trailing), sounds.at(-1 - trailing)) &&
-    !isSmallKana(units.at(-1 - trailing))
+    sameKana(units.at(-1 - trailing)!, sounds.at(-1 - trailing)) &&
+    !isSmallKana(units.at(-1 - trailing)!)
   )
     ++trailing;
   if (leading + trailing === 0) return undefined;
-  return [
-    units.slice(0, leading).join(""),
+  return (
     [
-      units.slice(leading, units.length - trailing).join(""),
-      sounds.slice(leading, sounds.length - trailing).join(""),
-    ],
-    units.slice(units.length - trailing).join(""),
-  ].filter((part) => part !== "");
+      units.slice(0, leading).join(""),
+      [
+        units.slice(leading, units.length - trailing).join(""),
+        sounds.slice(leading, sounds.length - trailing).join(""),
+      ],
+      units.slice(units.length - trailing).join(""),
+    ] satisfies Segment[]
+  ).filter((part) => part !== "");
 }
 
 /**
@@ -90,9 +97,9 @@ function peelKanaGroup(units, sounds) {
  * punctuation at the edge of a ruby group becomes its own string, and kana
  * that the reading repeats loses its ruby.
  */
-export function displaySegments(segments) {
-  const result = [];
-  const push = (segment) => {
+export function displaySegments(segments: Segment[]): Segment[] {
+  const result: Segment[] = [];
+  const push = (segment: Segment) => {
     if (typeof segment === "string" && typeof result.at(-1) === "string")
       result[result.length - 1] += segment;
     else result.push(segment);
@@ -104,7 +111,7 @@ export function displaySegments(segments) {
     }
     const [spelling, reading] = segment;
     const units = splitGraphemes(spelling);
-    const silent = (unit) => isSilentPunctuation(unit) && !reading.includes(unit);
+    const silent = (unit: string) => isSilentPunctuation(unit) && !reading.includes(unit);
     let start = 0,
       end = units.length;
     while (start < end - 1 && silent(units[start])) ++start;
@@ -119,7 +126,11 @@ export function displaySegments(segments) {
 }
 
 /** Check that release segments are canonical and spell out the record's reading. */
-export function validateDisplayAlignment(spelling, reading, segments) {
+export function validateDisplayAlignment(
+  spelling: string,
+  reading: string,
+  segments: Segment[],
+): void {
   if (!Array.isArray(segments) || segments.length === 0)
     throw new Error(`Missing alignment: ${spelling}/${reading}`);
   for (const [index, segment] of segments.entries()) {

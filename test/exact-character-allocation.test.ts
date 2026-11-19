@@ -7,7 +7,7 @@ test("requires a complete exact allocation for every character", () => {
     ["甲", ["ア"]],
     ["乙", ["イ"]],
   ]);
-  assert.deepEqual(uniqueExactCharacterAlignment("甲乙", "あい", primary).segments, [
+  assert.deepEqual(uniqueExactCharacterAlignment("甲乙", "あい", primary)!.segments, [
     ["甲", "あ"],
     ["乙", "い"],
   ]);
@@ -29,11 +29,11 @@ test("deduplicates normalized sounds while preserving every raw form", () => {
     ["乙", ["イ"]],
   ]);
   const result = uniqueExactCharacterAlignment("甲乙", "あい", primary);
-  assert.deepEqual(result.segments, [
+  assert.deepEqual(result!.segments, [
     ["甲", "あ"],
     ["乙", "い"],
   ]);
-  assert.deepEqual(result.allocations[0].rawForms, ["ア", "あ", "あ.る", "-あ"]);
+  assert.deepEqual(result!.allocations[0].rawForms, ["ア", "あ", "あ.る", "-あ"]);
 });
 
 test("counts only complete solutions, not dead-end prefixes", () => {
@@ -41,7 +41,7 @@ test("counts only complete solutions, not dead-end prefixes", () => {
     ["甲", ["ア", "アイ", "アイウ"]],
     ["乙", ["エ"]],
   ]);
-  assert.deepEqual(uniqueExactCharacterAlignment("甲乙", "あいうえ", primary).segments, [
+  assert.deepEqual(uniqueExactCharacterAlignment("甲乙", "あいうえ", primary)!.segments, [
     ["甲", "あいう"],
     ["乙", "え"],
   ]);
@@ -49,14 +49,15 @@ test("counts only complete solutions, not dead-end prefixes", () => {
 
 test("keeps explicitly dotted suffixes literal rather than absorbing them", () => {
   const primary = new Map([["甲", ["あ.る"]]]);
-  assert.deepEqual(uniqueExactCharacterAlignment("甲る", "ある", primary).segments, [
+  assert.deepEqual(uniqueExactCharacterAlignment("甲る", "ある", primary)!.segments, [
     ["甲", "あ"],
     "る",
   ]);
   assert.equal(uniqueExactCharacterAlignment("甲", "ある", primary), undefined);
-  assert.deepEqual(uniqueExactCharacterAlignment("甲れ", "あれ", primary).allocations[0].rawForms, [
-    "あ.る",
-  ]);
+  assert.deepEqual(
+    uniqueExactCharacterAlignment("甲れ", "あれ", primary)!.allocations[0].rawForms,
+    ["あ.る"],
+  );
 });
 
 test("does not infer voicing, gemination, lengthening or truncated sounds", () => {
@@ -79,7 +80,7 @@ test("retains original script and combining graphemes", () => {
       ["乙", ["い"]],
     ]),
   );
-  assert.deepEqual(result.segments, [
+  assert.deepEqual(result!.segments, [
     ["甲", "ア"],
     ["カ\u3099", "ガ"],
     ["乙", "イ"],
@@ -88,9 +89,9 @@ test("retains original script and combining graphemes", () => {
 
 test("joins contiguous literal kana without introducing display-only cuts", () => {
   const result = uniqueExactCharacterAlignment("かな甲", "カナア", new Map([["甲", ["ア"]]]));
-  assert.deepEqual(result.segments, [
+  assert.deepEqual(result!.segments, [
     ["かな", "カナ"],
     ["甲", "ア"],
   ]);
-  assert.equal(result.allocations.length, 3);
+  assert.equal(result!.allocations.length, 3);
 });

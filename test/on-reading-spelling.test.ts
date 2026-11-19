@@ -1,20 +1,30 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveOnReadingSpellingAlignments } from "../src/on-reading-spelling.ts";
+import * as fixture from "./support/dictionaries.ts";
+import type { CharacterReadingBundle, CharacterReadingRecord } from "../src/character-readings.ts";
+import type { OnReadingSpellingOptions } from "../src/on-reading-spelling.ts";
+import type { Aligner, Alignment, Kanjidic2Reading } from "../src/types.ts";
 
-const entry = (id, spelling, reading, tags = []) => ({
-  id,
-  kanji: [{ text: spelling, tags: [] }],
-  kana: [{ text: reading, tags, appliesToKanji: ["*"] }],
-  sense: [],
-});
-const source = (forms) => ({
+/** A KANJIDIC reading, which may have a field KANJIDIC lacks that must still be carried through. */
+type SourceReading = fixture.Loose<Kanjidic2Reading> & { note?: string };
+/** A character and its readings; a bare string is typed by its script. */
+type Forms = [literal: string, readings: (string | SourceReading)[]][];
+
+const entry = (id: string, spelling: string, reading: string, tags: string[] = []) =>
+  fixture.jmdictWord({
+    id,
+    kanji: [{ text: spelling, tags: [] }],
+    kana: [{ text: reading, tags, appliesToKanji: ["*"] }],
+    sense: [],
+  });
+const source = (forms: Forms) => ({
   characters: forms.map(([literal, readings]) => ({
     literal,
     readingMeaning: {
       groups: [
         {
-          readings: readings.map((value) =>
+          readings: readings.map((value): SourceReading =>
             typeof value === "string"
               ? {
                   type: /^[ァ-ヺ]/u.test(value) ? "ja_on" : "ja_kun",
@@ -27,8 +37,13 @@ const source = (forms) => ({
     },
   })),
 });
-const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
-const bundle = (readings) => ({
+const grouped: Aligner = (spelling, reading) => ({
+  status: "aligned",
+  segments: [[spelling, reading]],
+});
+const bundle = (
+  readings: [character: string, reading: string, kind?: "on" | "kun"][],
+): CharacterReadingBundle => ({
   schemaVersion: 1,
   source: {
     name: "Typed fixture",
@@ -45,15 +60,21 @@ const bundle = (readings) => ({
     revisionId: 123,
   })),
 });
-function run(spelling, reading, forms, options, align = grouped) {
+function run(
+  spelling: string,
+  reading: string,
+  forms: Forms,
+  options?: OnReadingSpellingOptions,
+  align = grouped,
+) {
   return deriveOnReadingSpellingAlignments(
-    { words: [entry("1", spelling, reading)] },
-    source(forms),
+    fixture.jmdict({ words: [entry("1", spelling, reading)] }),
+    fixture.kanjidic(source(forms)),
     align,
     options,
   );
 }
-const police = [
+const police: Forms = [
   ["警", ["ケイ"]],
   ["察", ["サツ"]],
 ];
@@ -68,12 +89,12 @@ test("on notation equivalence preserves raw source records, identity and origina
     url: "https://example.test/kanjidic.json",
   };
   const result = deriveOnReadingSpellingAlignments(
-    { words: [entry("1", "警察", "ケーサツ")] },
-    kanjidic,
+    fixture.jmdict({ words: [entry("1", "警察", "ケーサツ")] }),
+    fixture.kanjidic(kanjidic),
     grouped,
     { kanjidicSource: identity },
   );
-  assert.deepEqual(result.wordAlignments.get("警察").get("ケーサツ"), [
+  assert.deepEqual(result.wordAlignments.get("警察")!.get("ケーサツ"), [
     ["警", "ケー"],
     ["察", "サツ"],
   ]);
@@ -95,11 +116,11 @@ test("matching cannot remove length, delete final morae, voice, or replace vowel
 });
 
 test("kun companions match literal stems without native vowel normalization or inferred okurigana", () => {
-  const forms = [
+  const forms: Forms = [
     ["労", ["ロウ"]],
     ["様", ["さま"]],
   ];
-  assert.deepEqual(run("労様", "ろーさま", forms).wordAlignments.get("労様").get("ろーさま"), [
+  assert.deepEqual(run("労様", "ろーさま", forms).wordAlignments.get("労様")!.get("ろーさま"), [
     ["労", "ろー"],
     ["様", "さま"],
   ]);
@@ -153,7 +174,7 @@ test("each refined opaque span must actually need notation equivalence", () => {
     undefined,
     () => ({ status: "aligned", segments: [["警察", "けーさつ"], "と", ["甲乙", "こうおつ"]] }),
   );
-  assert.deepEqual(result.wordAlignments.get("警察と甲乙").get("けーさつとこうおつ"), [
+  assert.deepEqual(result.wordAlignments.get("警察と甲乙")!.get("けーさつとこうおつ"), [
     ["警", "けー"],
     ["察", "さつ"],
     "と",
@@ -170,7 +191,7 @@ test("each refined opaque span must actually need notation equivalence", () => {
 });
 
 test("complete competing allocations are withheld even if one uses more exact readings", () => {
-  const forms = [
+  const forms: Forms = [
     ["甲", ["コ", "コウ"]],
     ["乙", ["ウエ", "エ"]],
     ["丙", ["ケイ"]],
@@ -179,12 +200,12 @@ test("complete competing allocations are withheld even if one uses more exact re
 });
 
 test("old boundaries and nonaligned statuses are preserved", () => {
-  const forms = [
+  const forms: Forms = [
     ["甲", ["コ", "コウ"]],
     ["乙", ["ウエ", "エ"]],
     ["丙", ["ケイ"]],
   ];
-  const original = {
+  const original: Alignment = {
     status: "aligned",
     segments: [
       ["甲", "こ"],
@@ -192,12 +213,12 @@ test("old boundaries and nonaligned statuses are preserved", () => {
     ],
   };
   const result = run("甲乙丙", "こうえけー", forms, undefined, () => original);
-  assert.deepEqual(result.wordAlignments.get("甲乙丙").get("こうえけー"), [
+  assert.deepEqual(result.wordAlignments.get("甲乙丙")!.get("こうえけー"), [
     ["甲", "こ"],
     ["乙", "うえ"],
     ["丙", "けー"],
   ]);
-  for (const status of ["ambiguous", "fallback", "reviewed"]) {
+  for (const status of ["ambiguous", "fallback", "reviewed"] as const) {
     assert.equal(
       run("警察", "ケーサツ", police, undefined, (spelling, reading) => ({
         ...grouped(spelling, reading),
@@ -209,28 +230,32 @@ test("old boundaries and nonaligned statuses are preserved", () => {
 });
 
 test("irregular subwords block changed or supplemental readings inside untagged compounds", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [entry("1", "甲乙", "こーおつ", ["gikun"]), entry("2", "丙甲乙", "へいこーおつ")],
-  };
-  const kanjidic = source([
-    ["甲", ["コウ"]],
-    ["乙", ["オツ"]],
-    ["丙", ["ヘイ"]],
-  ]);
+  });
+  const kanjidic = fixture.kanjidic(
+    source([
+      ["甲", ["コウ"]],
+      ["乙", ["オツ"]],
+      ["丙", ["ヘイ"]],
+    ]),
+  );
   assert.equal(deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped).wordAlignments.size, 0);
 });
 
 test("an actual notation change outside an irregular range does not veto its direct primary readings", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [entry("1", "甲乙", "こうおつ", ["gikun"]), entry("2", "甲乙丙", "こうおつへー")],
-  };
-  const kanjidic = source([
-    ["甲", ["コウ"]],
-    ["乙", ["オツ"]],
-    ["丙", ["ヘイ"]],
-  ]);
+  });
+  const kanjidic = fixture.kanjidic(
+    source([
+      ["甲", ["コウ"]],
+      ["乙", ["オツ"]],
+      ["丙", ["ヘイ"]],
+    ]),
+  );
   const result = deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped);
-  assert.deepEqual(result.wordAlignments.get("甲乙丙").get("こうおつへー"), [
+  assert.deepEqual(result.wordAlignments.get("甲乙丙")!.get("こうおつへー"), [
     ["甲", "こう"],
     ["乙", "おつ"],
     ["丙", "へー"],
@@ -245,7 +270,7 @@ test("typed bundle claims retain their original source forms without pretending 
   assert.equal(evidence.field, "forms");
   assert.deepEqual(evidence.form, characterReadingBundle.readings[0]);
   assert.deepEqual(evidence.sourceIdentity, characterReadingBundle.source);
-  assert.equal(evidence.form.revisionId, 123);
+  assert.equal((evidence.form as CharacterReadingRecord).revisionId, 123);
 });
 
 test("all source claims for the same allocation are retained without creating false ambiguity", () => {
@@ -254,33 +279,33 @@ test("all source claims for the same allocation are retained without creating fa
     readings: [{ type: "ja_on", value: "ケイ", note: "second claim" }],
   });
   const result = deriveOnReadingSpellingAlignments(
-    { words: [entry("1", "警察", "ケーサツ")] },
-    kanjidic,
+    fixture.jmdict({ words: [entry("1", "警察", "ケーサツ")] }),
+    fixture.kanjidic(kanjidic),
     grouped,
     { englishCharacterReadingBundle: bundle([["警", "ケイ"]]) },
   );
   const claims = result.witnesses[0].spans[0].characters[0].evidence;
   assert.equal(claims.length, 3);
-  assert.equal(claims[1].form.note, "second claim");
-  assert.equal(claims[2].form.revisionId, 123);
+  assert.equal((claims[1].form as SourceReading).note, "second claim");
+  assert.equal((claims[2].form as CharacterReadingRecord).revisionId, 123);
 });
 
 test("typed final sokuon checks actual following sounds across existing segment boundaries", () => {
   const characterReadingBundle = bundle([["乙", "カッ"]]);
-  const forms = [
+  const forms: Forms = [
     ["甲", ["コウ"]],
     ["丙", ["カ", "ア"]],
   ];
-  const align = (spelling, reading) => ({
+  const align: Aligner = (spelling, reading) => ({
     status: "aligned",
     segments: [
       ["甲乙", "こーかっ"],
-      ["丙", reading.at(-1)],
+      ["丙", reading.at(-1)!],
     ],
   });
   assert.deepEqual(
     run("甲乙丙", "こーかっか", forms, { characterReadingBundle }, align)
-      .wordAlignments.get("甲乙丙")
+      .wordAlignments.get("甲乙丙")!
       .get("こーかっか"),
     [
       ["甲", "こー"],
@@ -303,7 +328,7 @@ test("iteration, unlisted pairs and unsupported characters acquire no inferred r
 
 test("Unicode normalization is used only for matching", () => {
   const result = run("警察", "ｹｰｻﾂ", police);
-  assert.deepEqual(result.wordAlignments.get("警察").get("ｹｰｻﾂ"), [
+  assert.deepEqual(result.wordAlignments.get("警察")!.get("ｹｰｻﾂ"), [
     ["警", "ｹｰ"],
     ["察", "ｻﾂ"],
   ]);
@@ -311,20 +336,24 @@ test("Unicode normalization is used only for matching", () => {
     ["𠮷", ["コウ"]],
     ["察", ["サツ"]],
   ]);
-  assert.deepEqual(supplementary.wordAlignments.get("𠮷察").get("コーサツ"), [
+  assert.deepEqual(supplementary.wordAlignments.get("𠮷察")!.get("コーサツ"), [
     ["𠮷", "コー"],
     ["察", "サツ"],
   ]);
 });
 
 test("invalid arguments and source identities fail instead of triggering defaults", () => {
-  const jmdict = { words: [] },
-    kanjidic = source(police);
+  const jmdict = fixture.jmdict({ words: [] }),
+    kanjidic = fixture.kanjidic(source(police));
+  // @ts-expect-error: a dictionary without its array must be rejected.
   assert.throws(() => deriveOnReadingSpellingAlignments({}, kanjidic, grouped), TypeError);
+  // @ts-expect-error: a dictionary without its array must be rejected.
   assert.throws(() => deriveOnReadingSpellingAlignments(jmdict, {}, grouped), TypeError);
+  // @ts-expect-error: a missing aligner must be rejected.
   assert.throws(() => deriveOnReadingSpellingAlignments(jmdict, kanjidic, null), TypeError);
   for (const kanjidicSource of [null, {}, { version: "1", jsonSHA256: "bad" }]) {
     assert.throws(
+      // @ts-expect-error: null and incomplete source identities must be rejected.
       () => deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped, { kanjidicSource }),
       TypeError,
     );
@@ -332,6 +361,7 @@ test("invalid arguments and source identities fail instead of triggering default
   assert.throws(
     () =>
       deriveOnReadingSpellingAlignments(jmdict, kanjidic, grouped, {
+        // @ts-expect-error: a null option must be rejected, not treated as the default.
         characterReadingBundle: null,
       }),
     TypeError,

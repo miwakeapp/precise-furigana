@@ -9,12 +9,16 @@ import {
   planSynthesizedPairs,
   withoutUnwrittenPunctuation,
 } from "../src/pairings.ts";
+import type { PairingRecord, SynthesizedPair } from "../src/pairings.ts";
+import type { Database, DatabaseRecord, Segment } from "../src/types.ts";
+import type { ParticleSite } from "../src/variants.ts";
 import {
   databaseFile,
   databaseVersion,
   releaseFiles,
   writeDatabase,
 } from "./lib/database-files.ts";
+import type { Manifest } from "./lib/database-files.ts";
 import { evaluateDataset } from "./lib/evaluation.ts";
 import { parseGeneratorOptions } from "./lib/options.ts";
 
@@ -37,11 +41,11 @@ if (evaluation.summary.passed !== evaluation.summary.examples) {
   console.error("Regression evaluation failed; generated artifacts are not releasable");
   process.exitCode = 1;
 }
-const entries = {};
-const seen = new Set();
+const entries: Database["entries"] = {};
+const seen = new Set<string>();
 const counts = { entries: 0, pairs: 0, synthesized: 0 };
-const drops = dataset.omittedParticles?.drops ?? new Map();
-const records = [];
+const drops = dataset.omittedParticles?.drops ?? new Map<string, ParticleSite[]>();
+const records: PairingRecord[] = [];
 const siblingReadings = Map.groupBy(
   [...dataset.pairs()].filter((pair) => !pair.readingTags.includes("sk")),
   (pair) => `${pair.id}\t${pair.spelling}`,
@@ -51,7 +55,7 @@ for (const pair of dataset.pairs()) {
   if (seen.has(key)) continue;
   seen.add(key);
   const { segments } = dataset.alignPair(pair);
-  const record = {
+  const record: DatabaseRecord = {
     spelling: pair.spelling,
     reading: pair.reading,
     segments: displaySegments(segments),
@@ -76,7 +80,7 @@ for (const pair of dataset.pairs()) {
 }
 
 // Every spelling keeps at least one pair that fits its kana; where JMdict has none, the reviewed list supplies one.
-const reviewed = existsSync(synthesizedPairsURL)
+const reviewed: SynthesizedPair[] = existsSync(synthesizedPairsURL)
   ? JSON.parse(await readFile(synthesizedPairsURL, "utf8"))
   : [];
 const jmdictPairs = new Set(
@@ -102,11 +106,11 @@ if (updateSynthesizedPairs) {
 }
 // A synthesized reading that is a JMdict reading without its unwritten punctuation divides as
 // that reading does. Aligning it afresh would lose evidence that belongs to the attested pair.
-function unpunctuatedSegments(item) {
+function unpunctuatedSegments(item: SynthesizedPair): Segment[] | undefined {
   for (const record of records) {
     if (record.id !== item.id || record.spelling !== item.spelling) continue;
     if (withoutUnwrittenPunctuation(item.spelling, record.reading) !== item.reading) continue;
-    const segments = record.segments.map((segment) =>
+    const segments = record.segments.map((segment): Segment =>
       typeof segment === "string"
         ? segment
         : [segment[0], withoutUnwrittenPunctuation(item.spelling, segment[1])],
@@ -137,7 +141,7 @@ for (const key of dataset.annotations.keys()) {
   if (!seen.has(key)) throw new Error(`Stale annotation absent from source dictionary: ${key}`);
 }
 counts.entries = Object.keys(entries).length;
-const jmdictDate = dataset.lock.sources.jmdict.dictDate;
+const jmdictDate = dataset.lock.sources.jmdict.dictDate!;
 // A release stamps its own revision over this development version.
 const version = databaseVersion(jmdictDate);
 await mkdir(outputDirectory, { recursive: true });
@@ -150,7 +154,7 @@ const files = await writeDatabase(outputDirectory, {
 const evaluationBytes = Buffer.from(JSON.stringify(evaluation, undefined, 2) + "\n");
 await writeFile(join(outputDirectory, "evaluation.json"), evaluationBytes);
 files["evaluation.json"] = { bytes: evaluationBytes.length, sha256: digest(evaluationBytes) };
-const manifest = { version, schemaVersion, counts, files };
+const manifest: Manifest = { version, schemaVersion, counts, files };
 await writeFile(
   join(outputDirectory, "manifest.json"),
   JSON.stringify(manifest, undefined, 2) + "\n",

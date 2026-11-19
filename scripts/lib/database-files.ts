@@ -2,7 +2,31 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { constants, zstdCompressSync } from "node:zlib";
 import { digest, schemaVersion } from "../../src/dataset.ts";
+import type { Database } from "../../src/types.ts";
 import { createZIP } from "./zip.ts";
+import type { ZIPMember } from "./zip.ts";
+
+/** A written file's size and checksum, as the manifest records them. */
+export interface FileSummary {
+  bytes: number;
+  sha256: string;
+}
+
+/** What a build writes beside the database: its version, its counts, and each file's summary. */
+export interface Manifest {
+  version: string;
+  schemaVersion: number;
+  counts: { entries: number; pairs: number; synthesized: number };
+  files: Record<string, FileSummary>;
+}
+
+/** The parts of a database version. */
+export interface DatabaseVersion {
+  schemaVersion: number;
+  jmdictDate: string;
+  /** Undefined for a development build. */
+  revision: number | undefined;
+}
 
 /** The database itself. A build writes it, and a release publishes it inside the files below. */
 export const databaseFile = "precise-furigana.json";
@@ -19,12 +43,12 @@ export const companionFiles = ["schema.json", "NOTICE.md", "LICENSE.md"];
  * consumers' code must, the minor is the dictionary's date as eight digits, and the revision
  * counts releases for that date. Only a release knows its revision, so a plain build is `0-dev`.
  */
-export function databaseVersion(jmdictDate, revision) {
+export function databaseVersion(jmdictDate: string, revision?: number | string): string {
   return `${schemaVersion}.${jmdictDate.replaceAll("-", "")}.${revision ?? "0-dev"}`;
 }
 
 /** Split a version into its parts; `revision` is undefined for a development build. */
-export function parseDatabaseVersion(version) {
+export function parseDatabaseVersion(version: string): DatabaseVersion {
   const match = /^(0|[1-9]\d*)\.(\d{4})(\d{2})(\d{2})\.(0-dev|0|[1-9]\d*)$/u.exec(version);
   if (!match) throw new Error(`Invalid database version: ${version}`);
   return {
@@ -35,10 +59,13 @@ export function parseDatabaseVersion(version) {
 }
 
 /** Write the database and its published forms, returning each file's size and checksum. */
-export async function writeDatabase(directory, database) {
+export async function writeDatabase(
+  directory: string,
+  database: Database,
+): Promise<Record<string, FileSummary>> {
   const json = Buffer.from(JSON.stringify(database) + "\n");
   const companions = await Promise.all(
-    companionFiles.map(async (name) => [
+    companionFiles.map(async (name): Promise<ZIPMember> => [
       name,
       await readFile(new URL(`../../${name}`, import.meta.url)),
     ]),
@@ -51,7 +78,7 @@ export async function writeDatabase(directory, database) {
       pledgedSrcSize: json.length,
     }),
   };
-  const files = {};
+  const files: Record<string, FileSummary> = {};
   for (const [name, bytes] of Object.entries(contents)) {
     await writeFile(join(directory, name), bytes);
     files[name] = { bytes: bytes.length, sha256: digest(bytes) };
@@ -60,10 +87,10 @@ export async function writeDatabase(directory, database) {
 }
 
 /** Give a built database its release version, updating its files and the manifest. */
-export async function stampVersion(directory, version) {
-  const database = JSON.parse(await readFile(join(directory, databaseFile), "utf8"));
+export async function stampVersion(directory: string, version: string): Promise<Manifest> {
+  const database: Database = JSON.parse(await readFile(join(directory, databaseFile), "utf8"));
   const manifestPath = join(directory, "manifest.json");
-  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  const manifest: Manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   manifest.version = version;
   Object.assign(manifest.files, await writeDatabase(directory, { ...database, version }));
   await writeFile(manifestPath, JSON.stringify(manifest, undefined, 2) + "\n");

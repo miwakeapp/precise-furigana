@@ -2,6 +2,105 @@ import { createHash } from "node:crypto";
 import { enumeratePairs } from "./sources.ts";
 import { normalizeKana } from "./kana.ts";
 import { boundaries, pairKey, validateAlignment } from "./segments.ts";
+import type {
+  Aligner,
+  JMdict,
+  JMdictSense,
+  Kanjidic2,
+  Kanjidic2Reading,
+  JMdictLanguageSource,
+  PassResult,
+  Segment,
+  SourceIdentity,
+  WordAlignments,
+} from "./types.ts";
+
+/** A precomposed Hangul syllable as the indexes of its three jamo. */
+export interface HangulSyllable {
+  value: string;
+  onset: number;
+  vowel: number;
+  coda: number;
+}
+
+/** What transcribing a syllable needs to know of the syllable before it. */
+export interface HangulContext {
+  coda: number;
+  value?: string;
+}
+
+/** A syllable with its kana approximation and how that was reached. */
+export interface TranscribedHangul extends HangulSyllable {
+  reading: string;
+  rules: string[];
+  transcription: {
+    onset: string;
+    vowel: string;
+    coda: string;
+    onsetRow: string;
+    vowelClass: string;
+    syllableKana: string;
+    codaKana: string;
+    previousSyllable: string | undefined;
+  };
+}
+
+/** Where KANJIDIC lists a Korean reading of a character. */
+interface KoreanClaim {
+  groupIndex: number;
+  readingIndex: number;
+  form: Kanjidic2Reading;
+}
+
+/** Each character's listed Hangul readings, with every place that lists each one. */
+type KoreanInventory = Map<string, Map<string, KoreanClaim[]>>;
+
+interface KoreanAllocatedCharacter {
+  character: string;
+  reading: string;
+  value: string;
+  claims: KoreanClaim[];
+  rules: string[];
+  transcription: TranscribedHangul["transcription"];
+}
+
+interface KoreanAllocation {
+  segments: Segment[];
+  paths: KoreanAllocatedCharacter[][];
+}
+
+export interface KoreanEvidence extends KoreanClaim {
+  source: "KANJIDIC2";
+  field: "korean_h";
+  sourceIdentity: SourceIdentity | { name: string; readingsSHA256: string };
+  value: string;
+  rules: string[];
+  transcription: TranscribedHangul["transcription"];
+}
+
+export interface KoreanWitnessCharacter {
+  character: string;
+  spelling: string;
+  reading: string;
+  codepoint: string;
+  evidence: KoreanEvidence[];
+}
+
+export interface KoreanWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  interpretation: string;
+  eligibility: "source-language-kor" | "korean-only-katakana";
+  languageSources: JMdictLanguageSource[];
+  /** One item per way of reading the word from listed Hangul forms; each lists every character. */
+  sourcePaths: KoreanWitnessCharacter[][];
+}
+
+export interface KoreanAlignmentOptions {
+  untaggedKatakana?: boolean;
+  kanjidicSource?: SourceIdentity;
+}
 
 // A deliberately incomplete kana approximation, following Cho Ui-sung's
 // description at https://www.tufs.ac.jp/ts/personal/choes/Jnotice.html.
@@ -21,7 +120,7 @@ const vowels = new Map([
   [18, "u"],
   [20, "i"],
 ]);
-const rows = Object.fromEntries(
+const rows: Record<string, Record<string, string | undefined>> = Object.fromEntries(
   Object.entries({
     "": ["あ", "え", "や", "お", "よ", "う", "ゆ", "い"],
     k: ["か", "け", "きゃ", "こ", "きょ", "く", "きゅ", "き"],
@@ -70,9 +169,9 @@ const codas = new Map([
   [21, "ん"],
 ]);
 
-export function decodeHangul(value) {
+export function decodeHangul(value: string): HangulSyllable | undefined {
   if (typeof value !== "string" || !/^[가-힣]$/u.test(value)) return undefined;
-  const code = value.codePointAt(0) - 0xac00;
+  const code = value.codePointAt(0)! - 0xac00;
   return {
     value,
     onset: Math.floor(code / 588),
@@ -81,7 +180,7 @@ export function decodeHangul(value) {
   };
 }
 
-function compatibleContext(previous, current) {
+function compatibleContext(previous: HangulContext | undefined, current: HangulSyllable): boolean {
   if (previous === undefined || previous.coda === 0) return true;
   // These contexts can change consonant ownership through liaison, nasal or
   // liquid assimilation, or aspiration. No such transfer is inferred here.
@@ -93,7 +192,10 @@ function compatibleContext(previous, current) {
   return true;
 }
 
-export function transcribeHangul(value, previous) {
+export function transcribeHangul(
+  value: string,
+  previous?: HangulContext,
+): TranscribedHangul | undefined {
   const syllable = decodeHangul(value);
   if (syllable === undefined || !compatibleContext(previous, syllable)) return undefined;
   const onset = onsetRows.get(syllable.onset),
@@ -125,10 +227,10 @@ export function transcribeHangul(value, previous) {
   };
 }
 
-function makeKoreanInventory(kanjidic) {
-  const inventory = new Map();
+function makeKoreanInventory(kanjidic: Kanjidic2): KoreanInventory {
+  const inventory: KoreanInventory = new Map();
   for (const character of kanjidic.characters) {
-    const forms = new Map();
+    const forms = new Map<string, KoreanClaim[]>();
     for (const [groupIndex, group] of (character.readingMeaning?.groups ?? []).entries()) {
       for (const [readingIndex, form] of group.readings.entries()) {
         if (form.type !== "korean_h" || decodeHangul(form.value) === undefined) continue;
@@ -142,14 +244,24 @@ function makeKoreanInventory(kanjidic) {
   return inventory;
 }
 
-function allocateKorean(spelling, reading, inventory) {
+function allocateKorean(
+  spelling: string,
+  reading: string,
+  inventory: KoreanInventory,
+): KoreanAllocation | undefined {
   const characters = [...spelling],
     normalized = normalizeKana(reading),
     original = [...reading];
   // Matching must preserve the original reading's code-point positions.
   if ([...normalized].length !== original.length) return undefined;
-  const solutions = new Map();
-  function visit(index, offset, previous, segments, witnesses) {
+  const solutions = new Map<string, KoreanAllocation>();
+  function visit(
+    index: number,
+    offset: number,
+    previous: TranscribedHangul | undefined,
+    segments: Segment[],
+    witnesses: KoreanAllocatedCharacter[],
+  ): void {
     if (solutions.size > 1) return;
     if (index === characters.length) {
       if (offset === normalized.length) {
@@ -187,17 +299,17 @@ function allocateKorean(spelling, reading, inventory) {
   return solutions.size === 1 ? [...solutions.values()][0] : undefined;
 }
 
-function applies(restrictions, value) {
+function applies(restrictions: string[] | undefined, value: string): boolean | undefined {
   return restrictions?.includes("*") || restrictions?.includes(value);
 }
 
 /** Whole-attested-word sound compatibility, with no reusable Japanese readings. */
 export function deriveKoreanAlignments(
-  jmdict,
-  kanjidic,
-  align,
-  { untaggedKatakana = true, kanjidicSource } = {},
-) {
+  jmdict: JMdict,
+  kanjidic: Kanjidic2,
+  align: Aligner,
+  { untaggedKatakana = true, kanjidicSource }: KoreanAlignmentOptions = {},
+): PassResult<KoreanWitness> {
   if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
     throw new TypeError("JMdict and KANJIDIC arrays are required");
   if (typeof align !== "function" || typeof untaggedKatakana !== "boolean")
@@ -225,9 +337,9 @@ export function deriveKoreanAlignments(
         }
       : structuredClone(kanjidicSource);
   const words = new Map(jmdict.words.map((word) => [word.id, word]));
-  const wordAlignments = new Map(),
-    witnesses = [],
-    seen = new Set();
+  const wordAlignments: WordAlignments = new Map(),
+    witnesses: KoreanWitness[] = [],
+    seen = new Set<string>();
   for (const pair of enumeratePairs(jmdict)) {
     if (
       pair.kind !== "kanji" ||
@@ -236,7 +348,7 @@ export function deriveKoreanAlignments(
     )
       continue;
     const languageSources = words
-      .get(pair.id)
+      .get(pair.id)!
       .sense.filter(
         (sense) =>
           applies(sense.appliesToKanji, pair.spelling) &&
@@ -278,7 +390,7 @@ export function deriveKoreanAlignments(
           character: character.character,
           spelling: character.character,
           reading: character.reading,
-          codepoint: `U+${character.character.codePointAt(0).toString(16).toUpperCase()}`,
+          codepoint: `U+${character.character.codePointAt(0)!.toString(16).toUpperCase()}`,
           evidence: character.claims.map((claim) => ({
             source: "KANJIDIC2",
             field: "korean_h",

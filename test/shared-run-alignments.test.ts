@@ -3,14 +3,33 @@ import test from "node:test";
 import { deriveSharedRunAlignments } from "../src/shared-run-alignments.ts";
 import { compileLexicalEvidence } from "../src/lexical-evidence.ts";
 import { createAligner } from "../src/align.ts";
+import type { SharedRunOptions } from "../src/shared-run-alignments.ts";
+import type { Alignment, AlignmentStatus, Kanjidic2, Segment } from "../src/types.ts";
+import * as fixture from "./support/dictionaries.ts";
 
-function dictionary(values) {
-  return {
+interface DeriveOptions {
+  target?: string;
+  source?: string;
+  reading?: string;
+  values?: Record<string, string[]>;
+  sourceSegments?: Segment[];
+  targetSegments?: Segment[];
+  sourceStatus?: AlignmentStatus;
+  targetStatus?: AlignmentStatus;
+  options?: SharedRunOptions;
+}
+
+interface CorrespondingOptions extends Omit<DeriveOptions, "targetStatus"> {
+  restricted?: boolean;
+}
+
+function dictionary(values: Record<string, string[]>): Kanjidic2 {
+  return fixture.kanjidic({
     characters: Object.entries(values).map(([literal, forms]) => ({
       literal,
       readingMeaning: { groups: [{ readings: forms.map((value) => ({ type: "ja_on", value })) }] },
     })),
-  };
+  });
 }
 function derive({
   target = "甲乙丁",
@@ -26,8 +45,8 @@ function derive({
   sourceStatus = "aligned",
   targetStatus = "aligned",
   options = {},
-} = {}) {
-  const jmdict = {
+}: DeriveOptions = {}) {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -36,8 +55,8 @@ function derive({
         sense: [],
       },
     ],
-  };
-  const align = (spelling, sound) =>
+  });
+  const align = (spelling: string, sound: string): Alignment =>
     spelling === target
       ? { status: targetStatus, segments: targetSegments ?? [[spelling, sound]] }
       : { status: sourceStatus, segments: sourceSegments };
@@ -128,13 +147,13 @@ test("withholds raw ambiguous source allocations", () => {
 });
 
 test("requires accepted source alignment to support every raw cut", () => {
-  for (const sourceStatus of ["fallback", "ambiguous"])
+  for (const sourceStatus of ["fallback", "ambiguous"] as const)
     assert.equal(derive({ sourceStatus }).wordAlignments.size, 0);
   assert.equal(derive({ sourceSegments: [["甲乙丙", "あいう"]] }).wordAlignments.size, 0);
 });
 
 test("withholds ambiguous and fallback targets", () => {
-  for (const targetStatus of ["ambiguous", "fallback"])
+  for (const targetStatus of ["ambiguous", "fallback"] as const)
     assert.equal(derive({ targetStatus }).wordAlignments.size, 0);
 });
 
@@ -170,7 +189,7 @@ test("mixed literal runs can retain independently supported character cuts", () 
 });
 
 test("forwards the reviewed raw sound switches without accepting inferred dictionaries", () => {
-  const inputs = {
+  const inputs: DeriveOptions = {
     reading: "かがな",
     values: { 甲: ["カ"], 乙: ["カ"], 丙: ["ナ"] },
     sourceSegments: [
@@ -195,22 +214,24 @@ test("forwards the reviewed raw sound switches without accepting inferred dictio
     { wordAlignments: new Map() },
     { internalKanaAnchors: null },
   ]) {
+    // @ts-expect-error: each of these holds an unsupported or malformed option
     assert.throws(() => derive({ options: { rawAlignerOptions } }), TypeError);
   }
 });
 
 test("binds source identities and raw character forms in every selected witness", () => {
   const unit = derive().witnesses[0].units[0];
-  assert.match(unit.sourceIdentities.jmdict.inputSHA256, /^[a-f0-9]{64}$/u);
-  assert.match(unit.sourceIdentities.kanjidic.inputSHA256, /^[a-f0-9]{64}$/u);
+  assert.match(unit.sourceIdentities.jmdict.inputSHA256 as string, /^[a-f0-9]{64}$/u);
+  assert.match(unit.sourceIdentities.kanjidic.inputSHA256 as string, /^[a-f0-9]{64}$/u);
   assert.deepEqual(unit.rawCharacterReadings, { 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"] });
+  // @ts-expect-error: a source identity cannot be null
   assert.throws(() => derive({ options: { jmdictSource: null } }), TypeError);
 });
 
 test("rejects incomparable proposals from entries sharing a target pair", () => {
   const reading = "あいう",
     target = "甲乙丁";
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       [target, "甲乙丙"],
       [target, "戊乙丁"],
@@ -220,9 +241,9 @@ test("rejects incomparable proposals from entries sharing a target pair", () => 
       kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
       sense: [],
     })),
-  };
+  });
   const kanjidic = dictionary({ 甲: ["ア"], 乙: ["イ"], 丙: ["ウ"], 戊: ["ア"], 丁: ["ウ"] });
-  const align = (spelling) => ({
+  const align = (spelling: string): Alignment => ({
     status: "aligned",
     segments:
       spelling === target
@@ -239,15 +260,15 @@ test("retains both attested target witnesses when repeated entries agree", () =>
   const target = "甲乙丁",
     source = "甲乙丙",
     reading = "あいう";
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: ["1", "2"].map((id) => ({
       id,
       kanji: [target, source].map((text) => ({ text, tags: [] })),
       kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
       sense: [],
     })),
-  };
-  const align = (spelling) => ({
+  });
+  const align = (spelling: string): Alignment => ({
     status: "aligned",
     segments:
       spelling === target
@@ -283,8 +304,8 @@ function corresponding({
   options = {},
   restricted = false,
   sourceStatus = "aligned",
-} = {}) {
-  const jmdict = {
+}: CorrespondingOptions = {}) {
+  const jmdict = fixture.jmdict({
     words: [
       {
         id: "1",
@@ -293,8 +314,8 @@ function corresponding({
         sense: [],
       },
     ],
-  };
-  const align = (spelling) => ({
+  });
+  const align = (spelling: string): Alignment & { spelling: string; reading: string } => ({
     spelling,
     reading,
     status: spelling === source ? sourceStatus : "aligned",
@@ -321,7 +342,7 @@ test("one-to-one historical kana keep independent character ownership", () => {
       [targetKana, sourceKana],
       ["乙", "い"],
     ]);
-    assert.equal(result.witnesses[0].units[0].kanaCorrespondences[0].rule, "historical-kana");
+    assert.equal(result.witnesses[0].units[0].kanaCorrespondences![0].rule, "historical-kana");
   }
 });
 
@@ -389,7 +410,7 @@ test("former unequal okurigana-run failures cannot supply kana correspondence fa
       values: { 変: ["か.わる"] },
       sourceSegments: [["変", "かわ"], "りもの"],
     },
-  ])
+  ] as CorrespondingOptions[])
     assert.equal(corresponding(values).proposed, undefined);
 });
 
@@ -417,7 +438,7 @@ test("equal written length does not license a shifted or multi-grapheme kana all
 
 test("aligned internal-anchor ownership and inferred donor outputs cannot justify correspondence", () => {
   assert.equal(corresponding({ values: {} }).proposed, undefined);
-  for (const sourceStatus of ["fallback", "ambiguous"])
+  for (const sourceStatus of ["fallback", "ambiguous"] as const)
     assert.equal(corresponding({ sourceStatus }).proposed, undefined);
   assert.equal(corresponding({ sourceSegments: [["甲う乙", "あうい"]] }).proposed, undefined);
 });
@@ -496,7 +517,7 @@ test("a shorter reviewed endpoint vetoes the whole-target projected fact", () =>
 });
 
 test("script-equivalent runs stay grouped while preserving old cuts and new character ownership", () => {
-  const values = {
+  const values: CorrespondingOptions = {
     source: "カナ甲乙",
     target: "かな甲乙",
     reading: "カナあい",
@@ -536,19 +557,19 @@ test("script-equivalent runs stay grouped while preserving old cuts and new char
 });
 
 test("kana projections preserve cuts supplied by another shared-run witness", () => {
-  const word = (id, spellings, reading) => ({
+  const word = (id: string, spellings: string[], reading: string) => ({
     id,
     kanji: spellings.map((text) => ({ text, tags: [] })),
     kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
     sense: [],
   });
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [
       word("1", ["手提"], "てさげ"),
       word("2", ["手提げバッグ", "手提バッグ", "手提バック"], "てさげバッグ"),
     ],
-  };
-  const accepted = new Map([
+  });
+  const accepted = new Map<string, Segment[]>([
     [
       "手提",
       [
@@ -559,7 +580,7 @@ test("kana projections preserve cuts supplied by another shared-run witness", ()
     ["手提げバッグ", [["手", "て"], ["提", "さ"], "げバッグ"]],
     ["手提バッグ", [["手", "て"], ["提", "さげ"], "バッグ"]],
   ]);
-  const align = (spelling, reading) => ({
+  const align = (spelling: string, reading: string): Alignment => ({
     status: "aligned",
     segments: accepted.get(spelling) ?? [[spelling, reading]],
   });
@@ -577,7 +598,7 @@ test("long-vowel spelling correspondence follows its notation switch independent
     ["プレイ", "プレー"],
     ["プレー", "プレイ"],
   ]) {
-    const inputs = {
+    const inputs: CorrespondingOptions = {
       source: `甲${sourceKana}`,
       target: `甲${targetKana}`,
       reading: `あ${sourceKana}`,
@@ -595,7 +616,7 @@ test("long-vowel spelling correspondence follows its notation switch independent
     ]);
     assert.deepEqual(withoutPhonology.proposed, normal.proposed);
     assert.equal(
-      withoutPhonology.witnesses[0].units[0].kanaCorrespondences[0].rule,
+      withoutPhonology.witnesses[0].units[0].kanaCorrespondences![0].rule,
       "long-vowel-notation",
     );
     for (const phonologicalAlternations of [true, false]) {

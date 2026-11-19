@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { createAligner } from "../src/align.ts";
 import { deriveReadingVariantAlignments } from "../src/reading-variants.ts";
+import type { Aligner, JMdict, Segment, WordAlignments } from "../src/types.ts";
+import * as fixtures from "./support/dictionaries.ts";
 
-function dictionary(spelling, readings) {
-  return {
+function dictionary(spelling: string, readings: string[]): JMdict {
+  return fixtures.jmdict({
     words: [
       {
         id: "1000000",
@@ -12,7 +14,7 @@ function dictionary(spelling, readings) {
         kana: readings.map((text) => ({ text, tags: [], appliesToKanji: ["*"] })),
       },
     ],
-  };
+  });
 }
 
 test("attested short and long readings can share independently supported character boundaries", () => {
@@ -24,7 +26,7 @@ test("attested short and long readings can share independently supported charact
     wordReadings: new Map([["阿呆", ["あほう", "あほ"]]]),
   });
   const result = deriveReadingVariantAlignments(dictionary("阿呆", ["あほう", "あほ"]), align);
-  assert.deepEqual(result.wordAlignments.get("阿呆").get("あほ"), [
+  assert.deepEqual(result.wordAlignments.get("阿呆")!.get("あほ"), [
     ["阿", "あ"],
     ["呆", "ほ"],
   ]);
@@ -48,7 +50,7 @@ test("unrelated readings and literal kana cannot borrow sound boundaries", () =>
     dictionary("遠い", ["とおい", "とい"]),
     align,
   );
-  assert.deepEqual(changedLiteral.wordAlignments.get("遠い").get("とい"), [["遠", "と"], "い"]);
+  assert.deepEqual(changedLiteral.wordAlignments.get("遠い")!.get("とい"), [["遠", "と"], "い"]);
 });
 
 test("a lengthened reading cannot move an independently supported kanji boundary", () => {
@@ -74,11 +76,11 @@ test("reviewed exact target boundaries veto vowel ownership inferred from a shor
     wordReadings: new Map([["玄人", ["くろと", "くろうと"]]]),
   });
   const unguarded = deriveReadingVariantAlignments(jmdict, align);
-  assert.deepEqual(unguarded.wordAlignments.get("玄人").get("くろうと"), [
+  assert.deepEqual(unguarded.wordAlignments.get("玄人")!.get("くろうと"), [
     ["玄", "くろう"],
     ["人", "と"],
   ]);
-  const targetAlignments = new Map([
+  const targetAlignments: WordAlignments = new Map([
     [
       "玄人",
       new Map([
@@ -100,7 +102,7 @@ test("reviewed exact target boundaries veto vowel ownership inferred from a shor
   ]);
   assert.deepEqual(align("玄人", "くろうと").segments, [["玄人", "くろうと"]]);
   assert.deepEqual(
-    [...targetAlignments.get("玄人")],
+    [...targetAlignments.get("玄人")!],
     [
       [
         "クロウト",
@@ -127,7 +129,7 @@ test("target constraints are scoped to the exact pair and cannot become transfer
       ["阿呆", ["あほ", "あほう"]],
     ]),
   });
-  const unrelated = new Map([
+  const unrelated: WordAlignments = new Map([
     [
       "玄人",
       new Map([
@@ -157,14 +159,14 @@ test("target constraints are scoped to the exact pair and cannot become transfer
     deriveReadingVariantAlignments(dictionary("玄人", ["くろと", "くろうと"]), align, {
       targetAlignments: unrelated,
     })
-      .wordAlignments.get("玄人")
+      .wordAlignments.get("玄人")!
       .get("くろうと"),
     [
       ["玄", "くろう"],
       ["人", "と"],
     ],
   );
-  const targetAlignments = new Map([
+  const targetAlignments: WordAlignments = new Map([
     [
       "阿呆",
       new Map([
@@ -182,14 +184,17 @@ test("target constraints are scoped to the exact pair and cannot become transfer
     deriveReadingVariantAlignments(dictionary("阿呆", ["あほう", "あほ"]), align, {
       targetAlignments,
     })
-      .wordAlignments.get("阿呆")
+      .wordAlignments.get("阿呆")!
       .get("あほ"),
     [
       ["阿", "あ"],
       ["呆", "ほ"],
     ],
   );
-  const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
+  const grouped: Aligner = (spelling, reading) => ({
+    status: "aligned",
+    segments: [[spelling, reading]],
+  });
   assert.equal(
     deriveReadingVariantAlignments(dictionary("阿呆", ["あほう", "あほ"]), grouped, {
       targetAlignments,
@@ -202,11 +207,13 @@ test("target constraints reject invalid projections and malformed maps", () => {
   const jmdict = dictionary("甲乙", ["あい", "ああい"]),
     align = createAligner({ characterReadings: new Map() });
   assert.throws(
+    // @ts-expect-error Target alignments that are not a Map must be rejected.
     () => deriveReadingVariantAlignments(jmdict, align, { targetAlignments: null }),
     TypeError,
   );
   assert.throws(
     () =>
+      // @ts-expect-error A spelling whose readings are not a Map must be rejected.
       deriveReadingVariantAlignments(jmdict, align, { targetAlignments: new Map([["甲乙", []]]) }),
     TypeError,
   );
@@ -220,9 +227,9 @@ test("target constraints reject invalid projections and malformed maps", () => {
 });
 
 test("readings that differ by one kana share boundaries when the change cannot cross one", () => {
-  const near = (spelling, readings, segments) => {
+  const near = (spelling: string, readings: [string, string], segments: Segment[]) => {
     const [from, to] = readings;
-    const align = (_, reading) =>
+    const align: Aligner = (_, reading) =>
       reading === from
         ? { status: "aligned", segments }
         : { status: "aligned", segments: [[spelling, reading]] };

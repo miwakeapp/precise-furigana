@@ -1,6 +1,52 @@
 import { enumeratePairs } from "./sources.ts";
 import { isKana, kanaPronunciation, normalizeKana, splitGraphemes } from "./kana.ts";
 import { boundaries, segmentReading, segmentText, validateAlignment } from "./segments.ts";
+import type {
+  Aligner,
+  JMdict,
+  JMdictSense,
+  Kanjidic2,
+  Kanjidic2Reading,
+  JMdictLanguageSource,
+  PassResult,
+  Segment,
+  WordAlignments,
+} from "./types.ts";
+
+/** A Japanese onset vowel, the remaining kana, and whether the long-vowel mark may follow. */
+type Final = [vowel: string, tail: string, long?: boolean];
+
+/** Each character's possible sounds as pronunciation keys, with the listed readings behind each. */
+/** The part of a KANJIDIC2 reading kept as evidence for a loan sound. */
+export type LoanSoundSource = Pick<Kanjidic2Reading, "type" | "value">;
+type SoundEvidence = Map<string, Map<string, LoanSoundSource[]>>;
+
+/** One character of a loan, its part of the reading, and the listed readings that give it. */
+export interface LoanCharacter {
+  character: string;
+  reading: string;
+  sources: LoanSoundSource[];
+}
+
+interface LoanSplit {
+  segments: Segment[];
+  witnesses: LoanCharacter[];
+}
+
+export interface LoanWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  language: "chi" | undefined;
+  eligibility: "source-language" | "pinyin-only-katakana";
+  languageSources: JMdictLanguageSource[];
+  characters: LoanCharacter[];
+}
+
+export interface LoanAlignmentOptions {
+  /** Also accept an untagged all-katakana reading when Mandarin alone accounts for every character. */
+  untaggedKatakana?: boolean;
+}
 
 // Mandarin aspiration does not correspond to Japanese voicing. Both Japanese
 // stop rows occur in established loans; no Japanese rendaku is inferred here.
@@ -60,7 +106,7 @@ const kanaRows = new Map(
 // Each option has a Japanese onset vowel, the remaining kana, and whether an
 // open syllable permits the long-vowel notation commonly used in Chinese loans.
 const finals = new Map(
-  Object.entries({
+  Object.entries<Final[]>({
     a: [["a", "", true]],
     o: [["o", "", true]],
     e: [
@@ -152,7 +198,7 @@ const zeroInitial = new Map(
 );
 
 /** Bounded Mandarin sound correspondences, not a universal loanword converter. */
-export function transliteratePinyin(value) {
+export function transliteratePinyin(value: string): string[] {
   const syllable = value.toLowerCase().replace(/u:|ü/gu, "v");
   let pinyin = syllable.replace(/[1-5]$/u, "");
   pinyin = zeroInitial.get(pinyin) ?? pinyin;
@@ -161,10 +207,10 @@ export function transliteratePinyin(value) {
   let final = pinyin.slice(initial.length);
   if (/^[jqx]$/u.test(initial)) final = final.replace(/^u/u, "v");
   if (!initials.has(initial) || !finals.has(final)) return [];
-  const result = new Set();
-  for (const row of initials.get(initial)) {
-    for (const [vowel, tail, long] of finals.get(final)) {
-      let onset = kanaRows.get(row).get(vowel);
+  const result = new Set<string>();
+  for (const row of initials.get(initial)!) {
+    for (const [vowel, tail, long] of finals.get(final)!) {
+      let onset = kanaRows.get(row)!.get(vowel)!;
       if (final === "i" && /^[zcs]$/u.test(initial))
         onset = initial === "s" ? "す" : row === "z" ? "ず" : "つ";
       result.add(onset + tail);
@@ -179,10 +225,10 @@ export function transliteratePinyin(value) {
   return [...result];
 }
 
-function makeSoundEvidence(kanjidic, pinyinOnly = false) {
-  const result = new Map();
+function makeSoundEvidence(kanjidic: Kanjidic2, pinyinOnly = false): SoundEvidence {
+  const result: SoundEvidence = new Map();
   for (const character of kanjidic.characters) {
-    const candidates = new Map();
+    const candidates = new Map<string, LoanSoundSource[]>();
     for (const group of character.readingMeaning?.groups ?? []) {
       for (const source of group.readings) {
         const readings =
@@ -204,7 +250,11 @@ function makeSoundEvidence(kanjidic, pinyinOnly = false) {
   return result;
 }
 
-function splitLoanSegment(spelling, reading, evidence) {
+function splitLoanSegment(
+  spelling: string,
+  reading: string,
+  evidence: SoundEvidence,
+): LoanSplit | undefined {
   const characters = splitGraphemes(spelling);
   const kana = splitGraphemes(reading);
   if (
@@ -213,16 +263,16 @@ function splitLoanSegment(spelling, reading, evidence) {
     !isKana(reading)
   )
     return undefined;
-  const memo = new Map();
-  function visit(index, offset) {
+  const memo = new Map<string, LoanSplit[]>();
+  function visit(index: number, offset: number): LoanSplit[] {
     const key = `${index}:${offset}`;
-    if (memo.has(key)) return memo.get(key);
+    if (memo.has(key)) return memo.get(key)!;
     if (index === characters.length) {
       return offset === kana.length ? [{ segments: [], witnesses: [] }] : [];
     }
     const candidates = evidence.get(characters[index]);
     if (candidates === undefined) return [];
-    const solutions = [];
+    const solutions: LoanSplit[] = [];
     for (let end = offset + 1; end <= kana.length - (characters.length - index - 1); ++end) {
       const part = kana.slice(offset, end).join("");
       if (/^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizeKana(part))) continue;
@@ -252,22 +302,27 @@ function splitLoanSegment(spelling, reading, evidence) {
     : undefined;
 }
 
-function applies(restrictions, value) {
+function applies(restrictions: string[] | undefined, value: string): boolean | undefined {
   return restrictions?.includes("*") || restrictions?.includes(value);
 }
 
 /** Refine attested Chinese loans locally; no reusable character readings are learned. */
-export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana = false } = {}) {
+export function deriveLoanAlignments(
+  jmdict: JMdict,
+  kanjidic: Kanjidic2,
+  align: Aligner,
+  { untaggedKatakana = false }: LoanAlignmentOptions = {},
+): PassResult<LoanWitness> {
   const evidence = makeSoundEvidence(kanjidic);
   const pinyinEvidence = untaggedKatakana ? makeSoundEvidence(kanjidic, true) : undefined;
   const words = new Map(jmdict.words.map((word) => [word.id, word]));
-  const wordAlignments = new Map();
-  const witnesses = [];
+  const wordAlignments: WordAlignments = new Map();
+  const witnesses: LoanWitness[] = [];
   for (const pair of enumeratePairs(jmdict)) {
     if (pair.kind !== "kanji" || pair.readingTags.some((tag) => tag === "ik" || tag === "sk"))
       continue;
     const languageSources = words
-      .get(pair.id)
+      .get(pair.id)!
       .sense.filter(
         (sense) =>
           applies(sense.appliesToKanji, pair.spelling) &&
@@ -285,8 +340,8 @@ export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana
     )
       continue;
     const original = align(pair.spelling, pair.reading);
-    const characterEvidence = [];
-    let segments;
+    const characterEvidence: LoanCharacter[] = [];
+    let segments: Segment[];
     if (tagged) {
       segments = original.segments.flatMap((segment) => {
         const split = splitLoanSegment(segmentText(segment), segmentReading(segment), evidence);
@@ -297,7 +352,7 @@ export function deriveLoanAlignments(jmdict, kanjidic, align, { untaggedKatakana
     } else {
       // Without language metadata, require an independent Mandarin match for
       // every character in the complete word, including already aligned parts.
-      const split = splitLoanSegment(pair.spelling, pair.reading, pinyinEvidence);
+      const split = splitLoanSegment(pair.spelling, pair.reading, pinyinEvidence!);
       if (split === undefined || split.segments.length <= original.segments.length) continue;
       const proposedBoundaries = new Set(boundaries(split.segments));
       if (!boundaries(original.segments).every((boundary) => proposedBoundaries.has(boundary)))

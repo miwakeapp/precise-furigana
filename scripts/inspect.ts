@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { loadDataset } from "../src/dataset.ts";
 import { recordKey } from "../src/segments.ts";
+import type { Database } from "../src/types.ts";
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -35,7 +36,7 @@ if (values.explain) {
     ),
   );
 } else {
-  const database = JSON.parse(await readFile(values.database, "utf8"));
+  const database: Database = JSON.parse(await readFile(values.database, "utf8"));
   const records = Object.entries(database.entries).flatMap(([id, rows]) =>
     rows
       .filter((row) => row.spelling === spelling && row.reading === reading)

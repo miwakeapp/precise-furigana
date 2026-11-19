@@ -3,9 +3,11 @@ import test from "node:test";
 import { createAligner } from "../src/align.ts";
 import { deriveNumeralAlignments, deriveNumeralReadings } from "../src/numerals.ts";
 import { compileAlignmentPipeline } from "../src/dataset.ts";
+import type { Aligner, JMdict, JMdictWord } from "../src/types.ts";
+import * as fixtures from "./support/dictionaries.ts";
 
-function dictionary(spelling, reading) {
-  return {
+function dictionary(spelling: string, reading: string): JMdict {
+  return fixtures.jmdict({
     words: [
       {
         id: "1000000",
@@ -13,7 +15,7 @@ function dictionary(spelling, reading) {
         kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
       },
     ],
-  };
+  });
 }
 
 test("decimal numerals retain one base while their adjacent kanji stay precise", () => {
@@ -25,7 +27,7 @@ test("decimal numerals retain one base while their adjacent kanji stay precise",
     ]),
   });
   const result = deriveNumeralAlignments(dictionary("１１月", "じゅういちがつ"), align);
-  assert.deepEqual(result.wordAlignments.get("１１月").get("じゅういちがつ"), [
+  assert.deepEqual(result.wordAlignments.get("１１月")!.get("じゅういちがつ"), [
     ["１１", "じゅういち"],
     ["月", "がつ"],
   ]);
@@ -37,7 +39,7 @@ test("fullwidth spellings retain exact original text", () => {
     wordReadings: new Map([["Web", ["ウェブ"]]]),
   });
   const result = deriveNumeralAlignments(dictionary("Ｗｅｂ版", "ウェブばん"), align);
-  assert.deepEqual(result.wordAlignments.get("Ｗｅｂ版").get("ウェブばん"), [
+  assert.deepEqual(result.wordAlignments.get("Ｗｅｂ版")!.get("ウェブばん"), [
     ["Ｗｅｂ", "ウェブ"],
     ["版", "ばん"],
   ]);
@@ -52,7 +54,7 @@ test("unsupported synthetic spellings cannot establish new boundaries", () => {
 });
 
 test("width normalization also keeps an entire decimal numeral together", () => {
-  const align = (spelling) => ({
+  const align: Aligner = (spelling) => ({
     status: "aligned",
     segments:
       spelling === "11月"
@@ -64,7 +66,7 @@ test("width normalization also keeps an entire decimal numeral together", () => 
         : [[spelling, "じゅういちがつ"]],
   });
   const result = deriveNumeralAlignments(dictionary("１１月", "じゅういちがつ"), align);
-  assert.deepEqual(result.wordAlignments.get("１１月").get("じゅういちがつ"), [
+  assert.deepEqual(result.wordAlignments.get("１１月")!.get("じゅういちがつ"), [
     ["１１", "じゅういち"],
     ["月", "がつ"],
   ]);
@@ -98,7 +100,7 @@ test("number definitions respect reading restrictions and exclude incidental tra
     },
   ];
   const original = new Map([["3", ["さん"]]]);
-  const { readings, witnesses } = deriveNumeralReadings({ words }, original);
+  const { readings, witnesses } = deriveNumeralReadings(fixtures.jmdict({ words }), original);
   assert.deepEqual(readings.get("3"), ["さん", "スリー"]);
   assert.deepEqual(readings.get("３"), ["スリー"]);
   assert.deepEqual(original.get("3"), ["さん"]);
@@ -107,33 +109,35 @@ test("number definitions respect reading restrictions and exclude incidental tra
 });
 
 test("source number words refine mixed alphanumerics while spoken cardinals stay whole", () => {
-  const words = [];
-  const add = (spelling, reading, gloss) =>
-    words.push({
-      id: String(words.length + 1),
-      kanji: spelling === undefined ? [] : [{ text: spelling, tags: [] }],
-      kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
-      sense:
-        gloss === undefined
-          ? []
-          : [
-              {
-                appliesToKanji: ["*"],
-                appliesToKana: ["*"],
-                partOfSpeech: ["n"],
-                languageSource: [],
-                gloss: [{ lang: "eng", text: gloss }],
-              },
-            ],
-    });
+  const words: JMdictWord[] = [];
+  const add = (spelling: string | undefined, reading: string, gloss?: string) =>
+    words.push(
+      fixtures.jmdictWord({
+        id: String(words.length + 1),
+        kanji: spelling === undefined ? [] : [{ text: spelling, tags: [] }],
+        kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
+        sense:
+          gloss === undefined
+            ? []
+            : [
+                {
+                  appliesToKanji: ["*"],
+                  appliesToKana: ["*"],
+                  partOfSpeech: ["n"],
+                  languageSource: [],
+                  gloss: [{ lang: "eng", text: gloss }],
+                },
+              ],
+      }),
+    );
   add(undefined, "スリー", "three");
   add(undefined, "テン", "ten");
   add("Ｄ", "ディー");
   add("Ｇ", "ジー");
   add("３Ｄ", "スリーディー");
   add("Ｇ１０", "ジーテン");
-  const jmdict = { words },
-    kanjidic = { characters: [] };
+  const jmdict = fixtures.jmdict({ words }),
+    kanjidic = fixtures.kanjidic({ characters: [] });
   const baseline = compileAlignmentPipeline(jmdict, kanjidic, { foreignNumerals: false });
   const candidate = compileAlignmentPipeline(jmdict, kanjidic);
   assert.deepEqual(baseline.align("３Ｄ", "スリーディー").segments, [["３Ｄ", "スリーディー"]]);
@@ -148,7 +152,7 @@ test("source number words refine mixed alphanumerics while spoken cardinals stay
 });
 
 test("foreign number candidates cannot move a supported numeral boundary", () => {
-  const align = (spelling) =>
+  const align: Aligner = (spelling) =>
     spelling === "十二月"
       ? {
           status: "aligned",
@@ -159,7 +163,7 @@ test("foreign number candidates cannot move a supported numeral boundary", () =>
           ],
         }
       : { status: "fallback", segments: [[spelling, "じゅうにがつ"]] };
-  const foreignAlign = () => ({
+  const foreignAlign: Aligner = () => ({
     status: "aligned",
     segments: [
       ["１２", "じゅう"],
@@ -169,7 +173,7 @@ test("foreign number candidates cannot move a supported numeral boundary", () =>
   const result = deriveNumeralAlignments(dictionary("１２月", "じゅうにがつ"), align, {
     foreignAlign,
   });
-  assert.deepEqual(result.wordAlignments.get("１２月").get("じゅうにがつ"), [
+  assert.deepEqual(result.wordAlignments.get("１２月")!.get("じゅうにがつ"), [
     ["１２", "じゅうに"],
     ["月", "がつ"],
   ]);

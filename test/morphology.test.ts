@@ -1,8 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveContinuativeReadings } from "../src/morphology.ts";
+import { jmdict } from "./support/dictionaries.ts";
 
-function entry(id, spelling, reading, partOfSpeech, readingTags = []) {
+function entry(
+  id: string,
+  spelling: string,
+  reading: string,
+  partOfSpeech: string,
+  readingTags: string[] = [],
+) {
   return {
     id,
     kanji: [{ text: spelling, tags: [] }],
@@ -24,7 +31,7 @@ test("regular ichidan and godan classes produce the continuative form", () => {
     entry("1000008", "待つ", "まつ", "v5t"),
     entry("1000009", "買う", "かう", "v5u"),
   ];
-  const { readings, witnesses } = deriveContinuativeReadings({ words });
+  const { readings, witnesses } = deriveContinuativeReadings(jmdict({ words }));
   for (const [character, expected] of [
     ["植", "うえ"],
     ["書", "かき"],
@@ -60,7 +67,7 @@ test("irregular classes, adjectives, nouns, expressions, and suspect readings ar
   const expression = entry("1000010", "目がある", "めがある", "v5r");
   expression.sense[0].partOfSpeech.push("exp");
   words.push(expression);
-  assert.equal(deriveContinuativeReadings({ words }).readings.size, 0);
+  assert.equal(deriveContinuativeReadings(jmdict({ words })).readings.size, 0);
 });
 
 test("sense restrictions control the conjugation class of each exact pair", () => {
@@ -70,11 +77,11 @@ test("sense restrictions control the conjugation class of each exact pair", () =
     { partOfSpeech: ["v1"], appliesToKanji: ["着る"], appliesToKana: ["きる"] },
     { partOfSpeech: ["v5r"], appliesToKanji: ["切る"], appliesToKana: ["きる"] },
   ];
-  const { readings } = deriveContinuativeReadings({ words: [word] });
+  const { readings } = deriveContinuativeReadings(jmdict({ words: [word] }));
   assert.deepEqual(readings.get("着"), ["き"]);
   assert.deepEqual(readings.get("切"), ["きり"]);
   word.sense.push({ partOfSpeech: ["v5r"], appliesToKanji: ["着る"], appliesToKana: ["きる"] });
-  assert.equal(deriveContinuativeReadings({ words: [word] }).readings.has("着"), false);
+  assert.equal(deriveContinuativeReadings(jmdict({ words: [word] })).readings.has("着"), false);
 });
 
 test("multi-kanji and kana-prefixed forms cannot supply single-character readings", () => {
@@ -84,13 +91,16 @@ test("multi-kanji and kana-prefixed forms cannot supply single-character reading
     entry("1000002", "ひき取る", "ひきとる", "v5r"),
     entry("1000003", "𠮟る", "しかる", "v5r"),
   ];
-  assert.deepEqual([...deriveContinuativeReadings({ words }).readings], [["𠮟", ["しかり"]]]);
+  assert.deepEqual(
+    [...deriveContinuativeReadings(jmdict({ words })).readings],
+    [["𠮟", ["しかり"]]],
+  );
 });
 
 test("a compound's kana spelling is rejected when its reading also applies to a multi-kanji spelling", () => {
   const word = entry("1000000", "受けとる", "うけとる", "v5r");
   word.kanji.push({ text: "受け取る", tags: [] });
-  assert.equal(deriveContinuativeReadings({ words: [word] }).readings.size, 0);
+  assert.equal(deriveContinuativeReadings(jmdict({ words: [word] })).readings.size, 0);
 });
 
 test("attested verb components also identify a compound whose second verb is written only in kana", () => {
@@ -99,7 +109,7 @@ test("attested verb components also identify a compound whose second verb is wri
     entry("1000001", "除ける", "のける", "v1"),
     entry("1000002", "押しのける", "おしのける", "v1"),
   ];
-  const { readings, witnesses } = deriveContinuativeReadings({ words });
+  const { readings, witnesses } = deriveContinuativeReadings(jmdict({ words }));
   assert.deepEqual(readings.get("押"), ["おし"]);
   assert.equal(
     witnesses.some((witness) => witness.spelling === "押しのける"),
@@ -113,7 +123,7 @@ test("written okurigana and verb endings must agree with the reading and class",
     entry("1000001", "書く", "かく", "v5r"),
     entry("1000002", "食べる", "べる", "v1"),
   ];
-  assert.equal(deriveContinuativeReadings({ words }).readings.size, 0);
+  assert.equal(deriveContinuativeReadings(jmdict({ words })).readings.size, 0);
 });
 
 test("normalized stems retain exact source witnesses and deduplicate equivalent spellings", () => {
@@ -121,7 +131,7 @@ test("normalized stems retain exact source witnesses and deduplicate equivalent 
     entry("1000000", "植エル", "ウエル", "v1"),
     entry("1000001", "植える", "うえる", "v1"),
   ];
-  const { readings, witnesses } = deriveContinuativeReadings({ words });
+  const { readings, witnesses } = deriveContinuativeReadings(jmdict({ words }));
   assert.deepEqual(readings.get("植"), ["うえ"]);
   assert.equal(witnesses.length, 2);
   assert.ok(

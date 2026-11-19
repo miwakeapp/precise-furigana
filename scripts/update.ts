@@ -21,6 +21,26 @@ import {
   reviewReasons,
   summarizeChanges,
 } from "./lib/update-report.ts";
+import type { SynthesizedPair } from "../src/pairings.ts";
+import type { Change, DictionaryPin, StepResult, Update } from "./lib/update-report.ts";
+
+/** The parts of `data/sources.lock.json` that say what it pins. */
+interface PinnedLock {
+  release: { tag: string; url: string };
+  sources: { jmdict: { dictDate: string } };
+}
+
+/** A build's result, and whether it wrote the database. */
+interface BuildResult extends StepResult {
+  wrote: boolean;
+}
+
+/** What a phase reports to the workflow that ran it. */
+interface Outputs {
+  changed: boolean;
+  clean: boolean;
+  reasons: string[];
+}
 
 const directory = ".cache/update";
 const baseDirectory = join(directory, "base");
@@ -36,7 +56,7 @@ const { positionals, values } = parseArgs({
 });
 const phase = positionals[0];
 
-function run(script, args = []) {
+function run(script: string, args: string[] = []): StepResult {
   console.log(`\n> npm run ${script}${args.length ? ` -- ${args.join(" ")}` : ""}`);
   const result = spawnSync("npm", ["run", script, "--", ...args], {
     encoding: "utf8",
@@ -52,21 +72,22 @@ function run(script, args = []) {
 }
 
 /** Build the database. A build that only reports problems still writes it, so say whether it did. */
-function build(args = []) {
+function build(args: string[] = []): BuildResult {
   const started = Date.now();
   const result = run("build", args);
   const wrote = existsSync(afterDatabase) && statSync(afterDatabase).mtimeMs >= started;
   return { ...result, wrote };
 }
 
-const readJSON = async (path) => JSON.parse(await readFile(path, "utf8"));
-const pin = (lock) => ({
+const readJSON = async <Value>(path: string): Promise<Value> =>
+  JSON.parse(await readFile(path, "utf8")) as Value;
+const pin = (lock: PinnedLock): DictionaryPin => ({
   tag: lock.release.tag,
   url: lock.release.url,
   date: lock.sources.jmdict.dictDate,
 });
 
-async function setOutputs(outputs) {
+async function setOutputs(outputs: Outputs): Promise<void> {
   await writeFile(join(directory, "status.json"), JSON.stringify(outputs, undefined, 2) + "\n");
   if (process.env.GITHUB_OUTPUT) {
     await appendFile(
@@ -80,15 +101,15 @@ async function setOutputs(outputs) {
 }
 
 /** The data files a dictionary update may need to touch, by name. */
-async function dataFiles() {
+async function dataFiles(): Promise<[name: string, path: string][]> {
   const names = (await readdir("data")).filter((name) => name.endsWith(".json"));
   return [
-    ...names.map((name) => [name, join("data", name)]),
+    ...names.map((name): [string, string] => [name, join("data", name)]),
     ["gold.json", "test/fixtures/gold.json"],
   ];
 }
 
-async function baseline() {
+async function baseline(): Promise<void> {
   await rm(directory, { recursive: true, force: true });
   await mkdir(baseDirectory, { recursive: true });
   if (!run("fetch").passed) throw new Error("Could not restore the locked inputs");
@@ -98,9 +119,9 @@ async function baseline() {
   for (const [name, path] of await dataFiles()) await cp(path, join(baseDirectory, name));
 }
 
-async function report(build) {
+async function report(build: BuildResult): Promise<void> {
   const validate = build.passed ? run("validate") : { passed: false, output: "" };
-  let changes = [];
+  let changes: Change[] = [];
   if (build.wrote) {
     const changesPath = join(directory, "changes.jsonl");
     const compared = run("compare", [beforeDatabase, afterDatabase, "--output", changesPath]);
@@ -108,9 +129,9 @@ async function report(build) {
     changes = (await readFile(changesPath, "utf8"))
       .split("\n")
       .filter(Boolean)
-      .map((line) => JSON.parse(line));
+      .map((line) => JSON.parse(line) as Change);
   }
-  const otherDataChanges = [];
+  const otherDataChanges: string[] = [];
   for (const [name, path] of await dataFiles()) {
     if (name === lockName || name === synthesizedName) continue;
     if ((await readFile(path, "utf8")) !== (await readFile(join(baseDirectory, name), "utf8"))) {
@@ -118,13 +139,13 @@ async function report(build) {
     }
   }
   const reviewNotesPath = join(directory, "review.md");
-  const update = {
-    before: pin(await readJSON(join(baseDirectory, lockName))),
-    after: pin(await readJSON(join("data", lockName))),
+  const update: Update = {
+    before: pin(await readJSON<PinnedLock>(join(baseDirectory, lockName))),
+    after: pin(await readJSON<PinnedLock>(join("data", lockName))),
     ...summarizeChanges(changes),
     synthesized: diffSynthesizedPairs(
-      await readJSON(join(baseDirectory, synthesizedName)),
-      await readJSON(join("data", synthesizedName)),
+      await readJSON<SynthesizedPair[]>(join(baseDirectory, synthesizedName)),
+      await readJSON<SynthesizedPair[]>(join("data", synthesizedName)),
     ),
     otherDataChanges,
     compared: build.wrote,
@@ -139,14 +160,14 @@ async function report(build) {
   console.log(`\n${reasons.length === 0 ? "Clean." : `Needs review:\n- ${reasons.join("\n- ")}`}`);
 }
 
-async function update() {
-  const previous = (await readJSON(join("data", lockName))).release.tag;
+async function update(): Promise<void> {
+  const previous = (await readJSON<PinnedLock>(join("data", lockName))).release.tag;
   const fetched = run("fetch", [
     "--update",
     ...(values.release ? ["--release", values.release] : []),
   ]);
   if (!fetched.passed) throw new Error("Could not move the dictionary pin");
-  if ((await readJSON(join("data", lockName))).release.tag === previous) {
+  if ((await readJSON<PinnedLock>(join("data", lockName))).release.tag === previous) {
     console.log(`\nAlready at ${previous}; nothing to update.`);
     await setOutputs({ changed: false, clean: true, reasons: [] });
     return;

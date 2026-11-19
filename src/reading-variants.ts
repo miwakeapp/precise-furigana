@@ -1,20 +1,36 @@
 import { enumeratePairs } from "./sources.ts";
 import { getKanaVowels, isKana, kanaPronunciation, normalizeKana, splitGraphemes } from "./kana.ts";
 import { boundaries, pairKey, segmentReading, segmentText, validateAlignment } from "./segments.ts";
+import type { Aligner, Alignment, JMdict, PassResult, Segment, WordAlignments } from "./types.ts";
 
-function soundKey(reading) {
+export interface ReadingVariantOptions {
+  /** Alignments already established for target pairs. A transfer must keep their boundaries. */
+  targetAlignments?: WordAlignments;
+  /** Also transfer between readings that differ by one kana. */
+  nearVariants?: boolean;
+}
+
+export interface ReadingVariantWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  /** The reading whose alignment was carried over. */
+  from: string;
+}
+
+function soundKey(reading: string): string {
   return kanaPronunciation(reading).replaceAll("ー", "");
 }
 
-function transferReadings(source, targetReading) {
+function transferReadings(source: Alignment, targetReading: string): Segment[] | undefined {
   const target = splitGraphemes(targetReading);
-  let paths = [{ end: 0, segments: [] }];
+  let paths: { end: number; segments: Segment[] }[] = [{ end: 0, segments: [] }];
   for (const segment of source.segments) {
     const spelling = segmentText(segment);
     const reading = segmentReading(segment);
     const literal = normalizeKana(spelling) === normalizeKana(reading);
     const key = soundKey(reading);
-    const next = [];
+    const next: typeof paths = [];
     for (const path of paths) {
       for (let end = path.end + 1; end <= target.length; ++end) {
         const candidate = target.slice(path.end, end).join("");
@@ -43,13 +59,13 @@ function transferReadings(source, targetReading) {
 const dependentKana = /^[ぁぃぅぇぉゃゅょゎっんー]$/u;
 // Kana that are written differently but stand for the same kana in another orthography.
 const writtenAs = new Map(
-  [..."ぁあぃいぅうぇえぉおゃやゅゆょよゎわっつづずぢじをおゑえゐい"].flatMap((kana, index, all) =>
-    index % 2 === 0 ? [[kana, all[index + 1]]] : [],
+  [..."ぁあぃいぅうぇえぉおゃやゅゆょよゎわっつづずぢじをおゑえゐい"].flatMap(
+    (kana, index, all): [string, string][] => (index % 2 === 0 ? [[kana, all[index + 1]]] : []),
   ),
 );
-const written = (kana) => writtenAs.get(kana) ?? kana;
+const written = (kana: string): string => writtenAs.get(kana) ?? kana;
 /** Whether a kana only extends the one before it, by lengthening its vowel or by being unable to stand alone. */
-const extendsKana = (previous, kana) =>
+const extendsKana = (previous: string | undefined, kana: string): boolean =>
   previous !== undefined &&
   (dependentKana.test(kana) || (getKanaVowels(previous) ?? []).includes(kana));
 
@@ -62,7 +78,7 @@ const extendsKana = (previous, kana) =>
  * only extends the kana before it. A respelling can leave a segment starting inside a syllable,
  * as しょう from しよう leaves 仕[し] 様[ょう]: the contracted sound stays with its character.
  */
-function transferNearReading(source, targetReading) {
+function transferNearReading(source: Alignment, targetReading: string): Segment[] | undefined {
   const from = source.segments.flatMap((segment, index) =>
     splitGraphemes(segmentReading(segment)).map((kana) => ({ kana: normalizeKana(kana), index })),
   );
@@ -74,7 +90,7 @@ function transferNearReading(source, targetReading) {
   while (
     suffix < from.length - prefix &&
     suffix < to.length - prefix &&
-    from.at(-1 - suffix).kana === to.at(-1 - suffix)
+    from.at(-1 - suffix)!.kana === to.at(-1 - suffix)
   )
     ++suffix;
   const removed = from.length - prefix - suffix,
@@ -96,7 +112,7 @@ function transferNearReading(source, targetReading) {
       --sizes[index];
     }
   }
-  const segments = [];
+  const segments: Segment[] = [];
   let offset = 0;
   for (const [index, segment] of source.segments.entries()) {
     const spelling = segmentText(segment);
@@ -110,10 +126,15 @@ function transferNearReading(source, targetReading) {
   return segments;
 }
 
-function normalizedBoundaries(segments) {
+function normalizedBoundaries(segments: Segment[]): string[] {
   return boundaries(
     segments.map((segment) => [segmentText(segment), normalizeKana(segmentReading(segment))]),
   );
+}
+
+/** A witness together with the segments it proposes for its pair. */
+interface ReadingVariantCandidate extends ReadingVariantWitness {
+  segments: Segment[];
 }
 
 /**
@@ -121,12 +142,12 @@ function normalizedBoundaries(segments) {
  * readings must sound alike apart from vowel length, or, with `nearVariants`, differ by one kana.
  */
 export function deriveReadingVariantAlignments(
-  jmdict,
-  align,
-  { targetAlignments = new Map(), nearVariants = false } = {},
-) {
+  jmdict: JMdict,
+  align: Aligner,
+  { targetAlignments = new Map(), nearVariants = false }: ReadingVariantOptions = {},
+): PassResult<ReadingVariantWitness> {
   if (!(targetAlignments instanceof Map)) throw new TypeError("targetAlignments must be a Map");
-  const constraints = new Map();
+  const constraints = new Map<string, Set<string>>();
   for (const [spelling, readings] of targetAlignments) {
     if (typeof spelling !== "string" || !(readings instanceof Map))
       throw new TypeError("Target alignments require spelling and reading maps");
@@ -141,10 +162,10 @@ export function deriveReadingVariantAlignments(
       );
     }
   }
-  const cache = new Map();
-  const candidates = new Map();
+  const cache = new Map<string, Alignment>();
+  const candidates = new Map<string, ReadingVariantCandidate[]>();
   for (const word of jmdict.words) {
-    const spellings = new Map();
+    const spellings = new Map<string, Set<string>>();
     for (const pair of enumeratePairs({ words: [word] })) {
       if (pair.kind !== "kanji" || !isKana(pair.reading)) continue;
       const readings = spellings.get(pair.spelling) ?? new Set();
@@ -197,8 +218,8 @@ export function deriveReadingVariantAlignments(
       }
     }
   }
-  const wordAlignments = new Map();
-  const witnesses = [];
+  const wordAlignments: WordAlignments = new Map();
+  const witnesses: ReadingVariantWitness[] = [];
   for (const values of candidates.values()) {
     const candidate = values.find((value) => {
       const available = new Set(boundaries(value.segments));

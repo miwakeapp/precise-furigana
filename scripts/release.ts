@@ -5,7 +5,9 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs, isDeepStrictEqual } from "node:util";
 import { defaultConfiguration, digest, generatorDigest } from "../src/dataset.ts";
+import type { EvaluationProvenance } from "../src/dataset.ts";
 import { defaultLockPath } from "../src/sources.ts";
+import type { SourceLock } from "../src/sources.ts";
 import {
   databaseFile,
   databaseVersion,
@@ -13,15 +15,52 @@ import {
   releaseFiles,
   stampVersion,
 } from "./lib/database-files.ts";
+import type { Manifest } from "./lib/database-files.ts";
+import type { Evaluation, EvaluationResult, GoldExample } from "./lib/evaluation.ts";
+
+/** The parts of a manifest that a release's description states. */
+export interface DescribedManifest {
+  version: string;
+  counts: Pick<Manifest["counts"], "entries" | "pairs">;
+  files: Record<string, { sha256: string }>;
+}
+
+export interface ReleaseDescriptor {
+  tag: string;
+  title: string;
+  notes: string;
+}
+
+/** The parts of an evaluation that a release checks. */
+export interface CheckedEvaluation {
+  provenance: EvaluationProvenance;
+  summary: Pick<Evaluation["summary"], "examples" | "passed">;
+  results: (GoldExample & Pick<EvaluationResult, "actual" | "pass">)[];
+}
+
+/** A tag, as GitHub's matching-refs API lists it. */
+export interface GitHubRef {
+  ref: string;
+}
+
+/** A release, as GitHub's API describes it. */
+export interface GitHubRelease {
+  draft: boolean;
+  body?: string | null;
+  assets: { name: string; state: string }[];
+}
 
 /** The line of a release's notes that identifies its database, whatever compressed it. */
-const checksumLine = (manifest) =>
+const checksumLine = (manifest: Pick<DescribedManifest, "files">) =>
   `\`${databaseFile}\` SHA-256: \`${manifest.files[databaseFile].sha256}\``;
 
-export function releaseDescriptor(manifest, lock) {
+export function releaseDescriptor(
+  manifest: DescribedManifest,
+  lock: Pick<SourceLock, "release">,
+): ReleaseDescriptor {
   const { counts, version } = manifest;
   const { jmdictDate } = parseDatabaseVersion(version);
-  const count = (value) => value.toLocaleString("en-US");
+  const count = (value: number) => value.toLocaleString("en-US");
   return {
     tag: `v${version}`,
     title: `Precise Furigana ${version}`,
@@ -37,7 +76,7 @@ export function releaseDescriptor(manifest, lock) {
 }
 
 /** The revisions already released for a version's schema and dictionary date, from its tags. */
-export function releasedRevisions(refs, jmdictDate) {
+export function releasedRevisions(refs: GitHubRef[], jmdictDate: string): number[] {
   const prefix = `refs/tags/v${databaseVersion(jmdictDate, "")}`;
   return refs
     .map(({ ref }) => ref)
@@ -47,7 +86,11 @@ export function releasedRevisions(refs, jmdictDate) {
 }
 
 /** Bind the regression results to the inputs being released. */
-export function verifyEvaluation(evaluation, goldText, current) {
+export function verifyEvaluation(
+  evaluation: CheckedEvaluation,
+  goldText: string | Buffer,
+  current: Pick<EvaluationProvenance, "generatorSHA256" | "sourcesSHA256" | "annotationsSHA256">,
+): void {
   const { provenance } = evaluation;
   assert.deepEqual(
     provenance.configuration,
@@ -58,7 +101,8 @@ export function verifyEvaluation(evaluation, goldText, current) {
   assert.equal(provenance.sourcesSHA256, current.sourcesSHA256);
   assert.equal(provenance.annotationsSHA256, current.annotationsSHA256);
   assert.equal(provenance.goldSHA256, digest(goldText));
-  const gold = JSON.parse(goldText);
+  // `JSON.parse()` converts bytes to a string itself; its declaration only admits a string.
+  const gold: GoldExample[] = JSON.parse(goldText as string);
   assert.ok(gold.length > 0);
   assert.equal(evaluation.results.length, gold.length);
   for (const [index, example] of gold.entries()) {
@@ -81,7 +125,7 @@ export function verifyEvaluation(evaluation, goldText, current) {
  * Check that a release which already holds this database finished uploading. The files are not
  * compared byte for byte: a newer compressor can pack the same database differently.
  */
-export function verifyExistingRelease(release, names) {
+export function verifyExistingRelease(release: GitHubRelease, names: string[]): void {
   assert.equal(
     release.draft,
     false,
@@ -94,7 +138,7 @@ export function verifyExistingRelease(release, names) {
   }
 }
 
-async function github(path, { missing } = {}) {
+async function github(path: string, { missing }: { missing?: boolean } = {}): Promise<unknown> {
   const response = await fetch(
     `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/${path}`,
     {
@@ -114,14 +158,18 @@ async function github(path, { missing } = {}) {
  * Give the built database the next unreleased revision for its dictionary date. Returns false,
  * leaving the latest release's version on it, when that release already holds the same data.
  */
-async function stamp(directory, jmdictDate) {
-  const refs = await github(`git/matching-refs/tags/v${databaseVersion(jmdictDate, "")}`);
+async function stamp(directory: string, jmdictDate: string): Promise<boolean> {
+  const refs = (await github(
+    `git/matching-refs/tags/v${databaseVersion(jmdictDate, "")}`,
+  )) as GitHubRef[];
   const latest = releasedRevisions(refs, jmdictDate).at(-1);
   if (latest !== undefined) {
     // Stamped with the latest revision, an unchanged database has the checksum that release's
     // notes record.
     const manifest = await stampVersion(directory, databaseVersion(jmdictDate, latest));
-    const release = await github(`releases/tags/v${manifest.version}`, { missing: true });
+    const release = (await github(`releases/tags/v${manifest.version}`, { missing: true })) as
+      | GitHubRelease
+      | undefined;
     if (release?.body?.includes(checksumLine(manifest))) {
       verifyExistingRelease(release, releaseFiles);
       console.log(`Release v${manifest.version} already holds this database; nothing to publish.`);
@@ -133,7 +181,7 @@ async function stamp(directory, jmdictDate) {
   return true;
 }
 
-async function main() {
+async function main(): Promise<void> {
   const { values } = parseArgs({
     options: {
       stamp: { type: "boolean", default: false },
@@ -149,19 +197,23 @@ async function main() {
     );
     assert.ok(process.env.GH_TOKEN, "Set GH_TOKEN");
   }
-  const lock = JSON.parse(await readFile(defaultLockPath, "utf8"));
+  const lock: SourceLock = JSON.parse(await readFile(defaultLockPath, "utf8"));
   if (values.stamp) {
-    const publish = await stamp(values.directory, lock.sources.jmdict.dictDate);
+    const publish = await stamp(values.directory, lock.sources.jmdict.dictDate!);
     if (process.env.GITHUB_OUTPUT)
       await appendFile(process.env.GITHUB_OUTPUT, `publish=${publish}\n`);
     return;
   }
-  const manifest = JSON.parse(await readFile(join(values.directory, "manifest.json"), "utf8"));
+  const manifest: Manifest = JSON.parse(
+    await readFile(join(values.directory, "manifest.json"), "utf8"),
+  );
   for (const [name, expected] of Object.entries(manifest.files)) {
     const bytes = await readFile(join(values.directory, name));
     assert.equal(digest(bytes), expected.sha256, `${name}: SHA256`);
   }
-  const evaluation = JSON.parse(await readFile(join(values.directory, "evaluation.json"), "utf8"));
+  const evaluation: Evaluation = JSON.parse(
+    await readFile(join(values.directory, "evaluation.json"), "utf8"),
+  );
   assert.ok(manifest.files["evaluation.json"], "Run build with matching inputs before release");
   verifyEvaluation(
     evaluation,
@@ -194,9 +246,9 @@ async function main() {
       "create",
       descriptor.tag,
       "--repo",
-      process.env.GITHUB_REPOSITORY,
+      process.env.GITHUB_REPOSITORY!,
       "--target",
-      revision,
+      revision!,
       "--title",
       descriptor.title,
       "--notes-file",

@@ -1,11 +1,52 @@
 import { isDeepStrictEqual } from "node:util";
 import { evaluationProvenance } from "../../src/dataset.ts";
+import type { Dataset, EvaluationProvenance } from "../../src/dataset.ts";
 import { boundaries, validateAlignment } from "../../src/segments.ts";
+import type { AlignmentStatus, Segment } from "../../src/types.ts";
 
-export async function evaluateDataset(dataset, goldText) {
+/** An example in `test/fixtures/gold.json`: a pair, and the segments it should divide into. */
+export interface GoldExample {
+  spelling: string;
+  reading: string;
+  segments: Segment[];
+  /** What else the example records, such as its category. Results carry these through. */
+  [field: string]: unknown;
+}
+
+export interface EvaluationResult extends GoldExample {
+  /** The segments the generator produced. */
+  actual: Segment[];
+  status: AlignmentStatus;
+  pass: boolean;
+}
+
+export interface EvaluationSummary {
+  note: string;
+  examples: number;
+  passed: number;
+  boundaryPrecision: number;
+  boundaryRecall: number;
+  truePositive: number;
+  falsePositive: number;
+  falseNegative: number;
+}
+
+export interface Evaluation {
+  provenance: EvaluationProvenance;
+  summary: EvaluationSummary;
+  results: EvaluationResult[];
+}
+
+/** What an evaluation needs of a dataset: its provenance, and its aligner without annotations. */
+export type EvaluatedDataset = Parameters<typeof evaluationProvenance>[0] & Pick<Dataset, "align">;
+
+export async function evaluateDataset(
+  dataset: EvaluatedDataset,
+  goldText: string,
+): Promise<Evaluation> {
   const provenance = await evaluationProvenance(dataset, goldText);
-  const gold = JSON.parse(goldText);
-  const results = [];
+  const gold: GoldExample[] = JSON.parse(goldText);
+  const results: EvaluationResult[] = [];
   let truePositive = 0;
   let falsePositive = 0;
   let falseNegative = 0;
@@ -30,7 +71,7 @@ export async function evaluateDataset(dataset, goldText) {
       pass: isDeepStrictEqual(example.segments, actual.segments),
     });
   }
-  const summary = {
+  const summary: EvaluationSummary = {
     note: "Hand-authored regression set, not an estimate of corpus accuracy. An aligned status indicates algorithmic support, not human verification.",
     examples: results.length,
     passed: results.filter((result) => result.pass).length,

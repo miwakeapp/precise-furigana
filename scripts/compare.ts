@@ -4,6 +4,8 @@ import { once } from "node:events";
 import { dirname } from "node:path";
 import { parseArgs, isDeepStrictEqual } from "node:util";
 import { recordKey, segmentText } from "../src/segments.ts";
+import type { Database, Segment } from "../src/types.ts";
+import type { Change, ChangedRecord } from "./lib/update-report.ts";
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,
@@ -14,14 +16,17 @@ if (positionals.length !== 2) {
 }
 // Release segments partition the spelling; plain text can be silent, so only
 // spelling positions identify a boundary.
-function boundaries(segments) {
+function boundaries(segments: Segment[]): number[] {
   let offset = 0;
   return segments.slice(0, -1).map((segment) => (offset += [...segmentText(segment)].length));
 }
-function records(database) {
+function records(database: Database): Map<string, ChangedRecord> {
   return new Map(
     Object.entries(database.entries).flatMap(([id, pairs]) =>
-      pairs.map((pair) => [recordKey(id, pair.spelling, pair.reading), { id, ...pair }]),
+      pairs.map((pair): [string, ChangedRecord] => [
+        recordKey(id, pair.spelling, pair.reading),
+        { id, ...pair },
+      ]),
     ),
   );
 }
@@ -38,7 +43,7 @@ const counts = {
   incompatible: 0,
   ruby: 0,
 };
-async function write(value) {
+async function write(value: Change): Promise<void> {
   if (!output.write(JSON.stringify(value) + "\n")) await once(output, "drain");
 }
 for (const [key, record] of after) {

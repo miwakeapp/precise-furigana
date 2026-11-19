@@ -14,12 +14,14 @@ import {
   makeWordReadings,
   sha256,
 } from "../src/sources.ts";
+import type { LockedSource, SourceLock } from "../src/sources.ts";
+import * as fixture from "./support/dictionaries.ts";
 
-function kanji(text, tags = []) {
+function kanji(text: string, tags: string[] = []) {
   return { text, tags, common: false };
 }
 
-function kana(text, appliesToKanji = ["*"], tags = []) {
+function kana(text: string, appliesToKanji: string[] = ["*"], tags: string[] = []) {
   return { text, appliesToKanji, tags, common: false };
 }
 
@@ -31,7 +33,7 @@ test("reading restrictions prevent an invalid Cartesian product", () => {
       kana: [kana("おとな", ["大人"], ["gikun"]), kana("せいじん", ["成人"]), kana("せいにん")],
     },
   ];
-  const pairs = [...enumeratePairs({ words })];
+  const pairs = [...enumeratePairs(fixture.jmdict({ words }))];
   assert.deepEqual(
     pairs.map((pair) => [pair.spelling, pair.reading]),
     [
@@ -52,7 +54,7 @@ test("no-kanji readings remain separate even inside an entry with written forms"
     { id: "1234567", kanji: [kanji("珈琲")], kana: [kana("コーヒー"), kana("カフェ", [])] },
     { id: "1234568", kanji: [], kana: [kana("ありがとう")] },
   ];
-  const pairs = [...enumeratePairs({ words })];
+  const pairs = [...enumeratePairs(fixture.jmdict({ words }))];
   assert.deepEqual(
     pairs.map((pair) => [pair.spelling, pair.reading, pair.kind]),
     [
@@ -67,40 +69,46 @@ test("no-kanji readings remain separate even inside an entry with written forms"
 
 test("unknown spelling restrictions and missing restrictions fail instead of inventing pairs", () => {
   const word = { id: "1234567", kanji: [kanji("日")], kana: [kana("ひ", ["月"])] };
-  assert.throws(() => [...enumeratePairs({ words: [word] })], /Unknown restricted spelling/u);
+  assert.throws(
+    () => [...enumeratePairs(fixture.jmdict({ words: [word] }))],
+    /Unknown restricted spelling/u,
+  );
+  // @ts-expect-error A reading without its restrictions is what the check must reject.
   delete word.kana[0].appliesToKanji;
-  assert.throws(() => [...enumeratePairs({ words: [word] })], /Missing reading restrictions/u);
-});
-
-test("character evidence preserves okurigana and affix annotations, excluding name and non-Japanese readings", () => {
-  const characters = [
-    {
-      literal: "食",
-      readingMeaning: {
-        groups: [
-          {
-            readings: [
-              { type: "ja_on", value: "ショク" },
-              { type: "ja_kun", value: "た.べる" },
-              { type: "ja_kun", value: "-ぐ.い" },
-              { type: "pinyin", value: "shi2" },
-              { type: "ja_on", value: "ショク" },
-            ],
-          },
-        ],
-        nanori: ["け"],
-      },
-    },
-    { literal: "𠮟", readingMeaning: null },
-  ];
-  assert.deepEqual(
-    [...makeCharacterReadings({ characters })],
-    [["食", ["ショク", "た.べる", "-ぐ.い"]]],
+  assert.throws(
+    () => [...enumeratePairs(fixture.jmdict({ words: [word] }))],
+    /Missing reading restrictions/u,
   );
 });
 
+test("character evidence preserves okurigana and affix annotations, excluding name and non-Japanese readings", () => {
+  const kanjidic = fixture.kanjidic({
+    characters: [
+      {
+        literal: "食",
+        readingMeaning: {
+          groups: [
+            {
+              readings: [
+                { type: "ja_on", value: "ショク" },
+                { type: "ja_kun", value: "た.べる" },
+                { type: "ja_kun", value: "-ぐ.い" },
+                { type: "pinyin", value: "shi2" },
+                { type: "ja_on", value: "ショク" },
+              ],
+            },
+          ],
+          nanori: ["け"],
+        },
+      },
+      { literal: "𠮟", readingMeaning: null },
+    ],
+  });
+  assert.deepEqual([...makeCharacterReadings(kanjidic)], [["食", ["ショク", "た.べる", "-ぐ.い"]]]);
+});
+
 test("name readings remain separate from ordinary character readings and deduplicate exactly", () => {
-  const kanjidic = {
+  const kanjidic = fixture.kanjidic({
     characters: [
       {
         literal: "井",
@@ -118,7 +126,7 @@ test("name readings remain separate from ordinary character readings and dedupli
       },
       { literal: "𠮟", readingMeaning: null },
     ],
-  };
+  });
   assert.deepEqual([...makeNanoriReadings(kanjidic)], [["井", ["いの", "さい"]]]);
   assert.deepEqual(
     [...makeCharacterReadings(kanjidic)],
@@ -135,7 +143,10 @@ test("word evidence deduplicates valid pairs without guessing readings for indiv
     { id: "1234568", kanji: [kanji("大人")], kana: [kana("おとな"), kana("たいじん")] },
     { id: "1234569", kanji: [], kana: [kana("ありがとう")] },
   ];
-  assert.deepEqual([...makeWordReadings({ words })], [["大人", ["おとな", "たいじん"]]]);
+  assert.deepEqual(
+    [...makeWordReadings(fixture.jmdict({ words }))],
+    [["大人", ["おとな", "たいじん"]]],
+  );
 });
 
 test("irregular word evidence respects both pair restrictions and spelling-specific ateji tags", () => {
@@ -154,7 +165,7 @@ test("irregular word evidence respects both pair restrictions and spelling-speci
     { id: "1234570", kanji: [kanji("昨日")], kana: [kana("きのう", [], ["gikun"])] },
   ];
   assert.deepEqual(
-    [...makeIrregularWordReadings({ words })],
+    [...makeIrregularWordReadings(fixture.jmdict({ words }))],
     [
       ["明日", ["あす"]],
       ["阿房", ["あほ"]],
@@ -162,8 +173,8 @@ test("irregular word evidence respects both pair restrictions and spelling-speci
   );
 });
 
-function makeTGZ(files) {
-  const chunks = [];
+function makeTGZ(files: Record<string, string>) {
+  const chunks: Buffer[] = [];
   for (const [name, contents] of Object.entries(files)) {
     const bytes = Buffer.from(contents);
     const header = Buffer.alloc(512);
@@ -197,7 +208,11 @@ test("locked acquisition and loading verify archives and JSON independently", as
   const directory = await mkdtemp(join(tmpdir(), "precise-furigana-sources-"));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const lockPath = join(directory, "sources.lock.json");
-  const lock = { schemaVersion: 1, sources: {} };
+  const lock: {
+    schemaVersion: number;
+    sources: Record<string, LockedSource>;
+    lexicalSources?: SourceLock["lexicalSources"];
+  } = { schemaVersion: 1, sources: {} };
   for (const [name, dictionary] of Object.entries({
     jmdict: { commonOnly: false, words: [], version: "3.6.2", dictDate: "2026-01-01" },
     kanjidic: { characters: [], version: "3.6.2", dictDate: "2026-01-01" },

@@ -1,12 +1,16 @@
 const graphemeSegmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
 const kanaVowels = new Map(
-  [
-    ["あかがさざただなはばぱまゃやらゎわぁ", ["あ"]],
-    ["いきぎしじちぢにひびぴみりゐぃ", ["い"]],
-    ["うくぐすずつづぬふぶぷむゅゆるぅゔ", ["う"]],
-    ["えけげせぜてでねへべぺめれゑぇ", ["え", "い"]],
-    ["おこごそぞとどのほぼぽもょよろをぉ", ["お", "う"]],
-  ].flatMap(([characters, vowels]) => Array.from(characters, (character) => [character, vowels])),
+  (
+    [
+      ["あかがさざただなはばぱまゃやらゎわぁ", ["あ"]],
+      ["いきぎしじちぢにひびぴみりゐぃ", ["い"]],
+      ["うくぐすずつづぬふぶぷむゅゆるぅゔ", ["う"]],
+      ["えけげせぜてでねへべぺめれゑぇ", ["え", "い"]],
+      ["おこごそぞとどのほぼぽもょよろをぉ", ["お", "う"]],
+    ] satisfies [string, string[]][]
+  ).flatMap(([characters, vowels]) =>
+    Array.from(characters, (character): [string, string[]] => [character, vowels]),
+  ),
 );
 
 // Characters that can join a neighbor into one grapheme cluster: extending characters such as the
@@ -21,12 +25,12 @@ const mayJoin =
  * symbol that is read aloud is never silent: ％ is パーセント, ＆ is アンド, and a wave dash can
  * be から.
  */
-export function isSilentPunctuation(unit) {
+export function isSilentPunctuation(unit: string): boolean {
   return /^(\p{P}|[＝=])$/u.test(unit) && !/^[〜～％%＆&＠@＃#＊*]$/u.test(unit);
 }
 
 /** Split text without separating a combining mark from its base character. */
-export function splitGraphemes(text) {
+export function splitGraphemes(text: string): string[] {
   if (!mayJoin.test(text)) return Array.from(text);
   return Array.from(graphemeSegmenter.segment(text), (part) => part.segment);
 }
@@ -35,24 +39,24 @@ export function splitGraphemes(text) {
 const alreadyNormal = /^[\u3041-\u3096\u30fc\u3005\u3400-\u4dbf\u4e00-\u9fff]*$/u;
 
 /** Normalize only for comparison; callers retain the original text for output. */
-export function normalizeKana(text) {
+export function normalizeKana(text: string): string {
   if (alreadyNormal.test(text)) return text;
   return text
     .normalize("NFKC")
     .replace(/[\u30a1-\u30f6]/gu, (character) =>
-      String.fromCodePoint(character.codePointAt(0) - 0x60),
+      String.fromCodePoint(character.codePointAt(0)! - 0x60),
     )
     .normalize("NFC");
 }
 
-export function getKanaVowels(text) {
+export function getKanaVowels(text: string): string[] | undefined {
   return kanaVowels.get(normalizeKana(text));
 }
 
 /** Comparison key for standard long-vowel notation, not a phonetic transcription. */
-export function kanaPronunciation(text) {
+export function kanaPronunciation(text: string): string {
   let result = "";
-  let precedingVowels;
+  let precedingVowels: string[] | undefined;
   for (const character of Array.from(normalizeKana(text))) {
     if (character === "ー" || precedingVowels?.includes(character)) {
       result += "ー";
@@ -64,20 +68,30 @@ export function kanaPronunciation(text) {
   return result;
 }
 
+/** One kana with the long-vowel units that extend it. */
+interface KanaBlock {
+  character: string;
+  unit: string;
+  long: string[];
+}
+
 /**
  * Preserve kana boundaries inside a shared pronunciation skeleton.
  * A caller must separately establish that any vowel-length change is licensed.
  */
-export function alignKanaPronunciations(spelling, reading) {
-  const blocks = (text) => {
-    const result = [];
-    let precedingVowels;
+export function alignKanaPronunciations(
+  spelling: string,
+  reading: string,
+): [string, string][] | undefined {
+  const blocks = (text: string): KanaBlock[] | undefined => {
+    const result: KanaBlock[] = [];
+    let precedingVowels: string[] | undefined;
     for (const unit of splitGraphemes(text)) {
       const character = normalizeKana(unit);
       if (Array.from(character).length !== 1) return undefined;
       if (character === "ー" || precedingVowels?.includes(character)) {
         if (!result.length) return undefined;
-        result.at(-1).long.push(unit);
+        result.at(-1)!.long.push(unit);
       } else {
         result.push({ character, unit, long: [] });
         precedingVowels = getKanaVowels(character);
@@ -94,7 +108,7 @@ export function alignKanaPronunciations(spelling, reading) {
     left.some((block, index) => block.character !== right[index].character)
   )
     return undefined;
-  const result = [];
+  const result: [string, string][] = [];
   for (let index = 0; index < left.length; ++index) {
     const source = left[index];
     const target = right[index];
@@ -103,14 +117,17 @@ export function alignKanaPronunciations(spelling, reading) {
       for (let longIndex = 0; longIndex < source.long.length; ++longIndex)
         result.push([source.long[longIndex], target.long[longIndex]]);
     } else {
-      const pair = [source.unit + source.long.join(""), target.unit + target.long.join("")];
+      const pair: [string, string] = [
+        source.unit + source.long.join(""),
+        target.unit + target.long.join(""),
+      ];
       if (
         /^[ゃゅょぁぃぅぇぉゎ]$/u.test(source.character) &&
         index > 0 &&
         left[index - 1].long.length === 0 &&
         right[index - 1].long.length === 0
       ) {
-        const previous = result.pop();
+        const previous = result.pop()!;
         pair[0] = previous[0] + pair[0];
         pair[1] = previous[1] + pair[1];
       }
@@ -120,15 +137,15 @@ export function alignKanaPronunciations(spelling, reading) {
   return result;
 }
 
-export function isKana(text) {
+export function isKana(text: string): boolean {
   return /^[\p{Script=Hiragana}\p{Script=Katakana}ー\u3099\u309a]+$/u.test(text.normalize("NFKC"));
 }
 
-export function isIdeograph(text) {
+export function isIdeograph(text: string): boolean {
   return /^(?:\p{Unified_Ideograph}|々|〆|〇)[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]*$/u.test(text);
 }
 
 /** KANJIDIC dots separate the written kanji's reading from its okurigana. */
-export function readingStem(reading) {
+export function readingStem(reading: string): string {
   return normalizeKana(reading.replace(/^-|-$/gu, "").split(".")[0]);
 }

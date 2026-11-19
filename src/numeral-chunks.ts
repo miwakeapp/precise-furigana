@@ -1,5 +1,6 @@
 import { normalizeKana, splitGraphemes } from "./kana.ts";
 import { segmentReading, segmentText } from "./segments.ts";
+import type { Aligner, Evidence, Segment } from "./types.ts";
 
 // A positional numeral is divided at each nonzero digit. A chunk is a digit with the zeros after
 // it, and it carries the digit's sound, its place word, and any myriad word spoken at that point:
@@ -7,16 +8,16 @@ import { segmentReading, segmentText } from "./segments.ts";
 // A zero never has a sound of its own, so １００ and 三〇 are single chunks.
 
 const digitValues = new Map(
-  [..."０１２３４５６７８９"].flatMap((digit, value) => [
+  [..."０１２３４５６７８９"].flatMap((digit, value): [string, number][] => [
     [digit, value],
     [String(value), value],
     ["〇一二三四五六七八九"[value], value],
   ]),
 );
-const isDigit = (unit) => digitValues.has(unit);
+const isDigit = (unit: string): boolean => digitValues.has(unit);
 
 // How each digit can sound, including the forms it takes before a place word or a counter.
-const digitSounds = [
+const digitSounds: string[][] = [
   [],
   ["いち", "いっ"],
   ["に"],
@@ -29,30 +30,36 @@ const digitSounds = [
   ["きゅう", "く"],
 ];
 // The place word for tens, hundreds, and thousands, with its sound changes.
-const placeSounds = [
+const placeSounds: string[][] = [
   [""],
   ["じゅう", "じゅっ", "じっ"],
   ["ひゃく", "びゃく", "ぴゃく", "ひゃっ", "びゃっ", "ぴゃっ"],
   ["せん", "ぜん"],
 ];
 const myriadSounds = ["", "まん", "おく", "ちょう", "けい"];
-const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-const alternatives = (sounds) => `(?:${sounds.map(escape).join("|")})`;
+const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+const alternatives = (sounds: string[]): string => `(?:${sounds.map(escape).join("|")})`;
+
+/** A nonzero digit with the zeros after it, and where it starts in the numeral. */
+interface Chunk {
+  start: number;
+  digits: string[];
+}
 
 /** The chunks of a digit run: each nonzero digit with the zeros that follow it. */
-function chunks(digits) {
-  const result = [];
+function chunks(digits: string[]): Chunk[] {
+  const result: Chunk[] = [];
   for (const [index, digit] of digits.entries()) {
     if (digitValues.get(digit) !== 0 || result.length === 0) {
       result.push({ start: index, digits: [digit] });
-    } else result.at(-1).digits.push(digit);
+    } else result.at(-1)!.digits.push(digit);
   }
   return result;
 }
 
 /** A pattern for the sounds one chunk can carry, given where it stands in the numeral. */
-function chunkPattern(chunk, length) {
-  const value = digitValues.get(chunk.digits[0]);
+function chunkPattern(chunk: Chunk, length: number): string {
+  const value = digitValues.get(chunk.digits[0])!;
   const position = length - 1 - chunk.start; // The digit's place, counting from the right.
   const lowest = position - (chunk.digits.length - 1); // The chunk's last place.
   const place = position % 4;
@@ -73,7 +80,7 @@ function chunkPattern(chunk, length) {
  * Divide a numeral's reading among its chunks, or return undefined when the reading is not the
  * positional one, as when digits are read one by one, or when it could divide in two ways.
  */
-export function chunkNumeral(spelling, reading) {
+export function chunkNumeral(spelling: string, reading: string): [string, string][] | undefined {
   const digits = splitGraphemes(spelling);
   if (digits.length < 2 || !digits.every(isDigit) || digitValues.get(digits[0]) === 0) {
     return undefined;
@@ -85,9 +92,9 @@ export function chunkNumeral(spelling, reading) {
   if (normalized.some((sound) => splitGraphemes(sound).length !== 1)) return undefined;
   const patterns = parts.map((part) => new RegExp(`^${chunkPattern(part, digits.length)}$`, "u"));
   // Count the ways to reach each position of the reading, keeping one way to rebuild it.
-  let reachable = new Map([[0, { count: 1, cuts: [] }]]);
+  let reachable = new Map<number, { count: number; cuts: number[] }>([[0, { count: 1, cuts: [] }]]);
   for (const pattern of patterns) {
-    const next = new Map();
+    const next: typeof reachable = new Map();
     for (const [start, state] of reachable) {
       for (let end = start + 1; end <= sounds.length; ++end) {
         if (!pattern.test(normalized.slice(start, end).join(""))) continue;
@@ -102,7 +109,7 @@ export function chunkNumeral(spelling, reading) {
   }
   const whole = reachable.get(sounds.length);
   if (whole === undefined || whole.count !== 1) return undefined;
-  return parts.map((part, index) => [
+  return parts.map((part, index): [string, string] => [
     part.digits.join(""),
     sounds.slice(whole.cuts[index - 1] ?? 0, whole.cuts[index]).join(""),
   ]);
@@ -113,14 +120,14 @@ export function chunkNumeral(spelling, reading) {
  * as one numeral, so a division that an earlier stage made differently is replaced; where the
  * reading is not positional, the segments are left exactly as they were.
  */
-export function chunkNumerals(align) {
-  const digitsOnly = (segment) =>
+export function chunkNumerals(align: Aligner): Aligner {
+  const digitsOnly = (segment: Segment): boolean =>
     typeof segment !== "string" && splitGraphemes(segment[0]).every(isDigit);
   return (spelling, reading) => {
     const result = align(spelling, reading);
     if (!result.segments.some(digitsOnly)) return result;
-    const segments = [],
-      evidence = [];
+    const segments: Segment[] = [],
+      evidence: Evidence[] = [];
     let changed = false;
     for (let index = 0; index < result.segments.length;) {
       let end = index;

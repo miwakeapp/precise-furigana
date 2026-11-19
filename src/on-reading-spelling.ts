@@ -10,9 +10,121 @@ import {
   splitGraphemes,
 } from "./kana.ts";
 import { pairKey, segmentReading, segmentText, validateAlignment } from "./segments.ts";
+import type {
+  CharacterReadingBundle,
+  CharacterReadingRecord,
+  CharacterReadingSource,
+} from "./character-readings.ts";
+import type {
+  Aligner,
+  JMdict,
+  Kanjidic2,
+  Kanjidic2Reading,
+  PassResult,
+  ReadingMap,
+  Segment,
+  SourceIdentity,
+  WordAlignments,
+} from "./types.ts";
 
-function makeInventory(kanjidic, bundles, kanjidicSource) {
-  const primary = [];
+export interface OnReadingSpellingOptions {
+  characterReadingBundle?: CharacterReadingBundle;
+  englishCharacterReadingBundle?: CharacterReadingBundle;
+  kanjidicSource?: SourceIdentity;
+}
+
+/** A source's listing of a reading for a character. */
+export interface OnReadingClaim {
+  source: string;
+  field: string;
+  /** The supplied identity of the source, or a fingerprint of its records when none was supplied. */
+  sourceIdentity: SourceIdentity | CharacterReadingSource;
+  /** The source's own record of the reading. */
+  form: Kanjidic2Reading | CharacterReadingRecord;
+  /** Where KANJIDIC lists the reading; absent for a bundle's reading. */
+  groupIndex?: number;
+  readingIndex?: number;
+  /** The reading as the source writes it. */
+  value: string;
+  kind: "on" | "kun";
+}
+
+/** A claim as used for one character, with the notation rules that matching it needed. */
+export interface OnReadingEvidence extends OnReadingClaim {
+  rules: string[];
+}
+
+export interface OnReadingCharacter {
+  character: string;
+  spelling: string;
+  reading: string;
+  codepoint: string;
+  evidence: OnReadingEvidence[];
+}
+
+/** One opaque span of the earlier alignment, as divided among its characters. */
+export interface OnReadingSpan {
+  spelling: string;
+  reading: string;
+  segments: Segment[];
+  characters: OnReadingCharacter[];
+}
+
+export interface OnReadingSpellingWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  interpretation: string;
+  spans: OnReadingSpan[];
+}
+
+/** A KANJIDIC Japanese reading with its place in the character's record. */
+interface PrimaryReading {
+  character: string;
+  form: Kanjidic2Reading;
+  groupIndex: number;
+  readingIndex: number;
+}
+
+interface InventoryEntry {
+  /** The reading in normalized kana. */
+  exact: string;
+  /** The long-vowel comparison key; on readings only. */
+  pronunciation: string | undefined;
+  primary: boolean;
+  /** Whether a final sokuon needs a following voiceless obstruent. */
+  finalSokuonGuard: boolean;
+  claim: OnReadingClaim;
+}
+
+type Inventory = Map<string, InventoryEntry[]>;
+
+interface InventoryEntryOptions {
+  primary?: boolean;
+  /** Whether the value carries KANJIDIC's okurigana and affix marks. */
+  annotated?: boolean;
+  finalSokuonGuard?: boolean;
+}
+
+/** A stretch of the word that an irregular reading covers, in graphemes. */
+interface IrregularRange {
+  start: number;
+  end: number;
+  readStart: number;
+  readEnd: number;
+}
+
+interface SpanSolution {
+  segments: Segment[];
+  characters: OnReadingCharacter[];
+}
+
+function makeInventory(
+  kanjidic: Kanjidic2,
+  bundles: (CharacterReadingBundle | undefined)[],
+  kanjidicSource: SourceIdentity | undefined,
+): Inventory {
+  const primary: PrimaryReading[] = [];
   for (const character of kanjidic.characters) {
     for (const [groupIndex, group] of (character.readingMeaning?.groups ?? []).entries()) {
       for (const [readingIndex, form] of group.readings.entries()) {
@@ -33,21 +145,21 @@ function makeInventory(kanjidic, bundles, kanjidicSource) {
       }
     }
   }
-  const sourceIdentity =
+  const sourceIdentity: SourceIdentity =
     kanjidicSource === undefined
       ? {
           name: "Supplied KANJIDIC Japanese reading records",
           readingsSHA256: createHash("sha256").update(JSON.stringify(primary)).digest("hex"),
         }
       : structuredClone(kanjidicSource);
-  const inventory = new Map();
+  const inventory: Inventory = new Map();
   function add(
-    character,
-    value,
-    kind,
-    claim,
-    { primary = false, annotated = false, finalSokuonGuard = false } = {},
-  ) {
+    character: string,
+    value: string,
+    kind: "on" | "kun",
+    claim: Omit<OnReadingClaim, "value" | "kind">,
+    { primary = false, annotated = false, finalSokuonGuard = false }: InventoryEntryOptions = {},
+  ): void {
     const entries = inventory.get(character) ?? [];
     const exact = annotated ? readingStem(value) : normalizeKana(value);
     entries.push({
@@ -95,8 +207,12 @@ function makeInventory(kanjidic, bundles, kanjidicSource) {
   return inventory;
 }
 
-function findIrregularRanges(spelling, reading, irregularWords) {
-  const ranges = [];
+function findIrregularRanges(
+  spelling: string[],
+  reading: string[],
+  irregularWords: ReadingMap,
+): IrregularRange[] {
+  const ranges: IrregularRange[] = [];
   for (let start = 0; start < spelling.length; ++start) {
     for (let end = start + 1; end <= spelling.length; ++end) {
       const values = irregularWords.get(spelling.slice(start, end).join(""));
@@ -117,15 +233,15 @@ function findIrregularRanges(spelling, reading, irregularWords) {
 }
 
 function splitSpan(
-  spelling,
-  reading,
-  inventory,
-  ranges,
-  spellingOffset,
-  readingOffset,
-  fullSpelling,
-  fullReading,
-) {
+  spelling: string,
+  reading: string,
+  inventory: Inventory,
+  ranges: IrregularRange[],
+  spellingOffset: number,
+  readingOffset: number,
+  fullSpelling: string[],
+  fullReading: string[],
+): SpanSolution | undefined {
   const characters = splitGraphemes(spelling);
   const kana = splitGraphemes(reading);
   if (
@@ -135,14 +251,14 @@ function splitSpan(
     characters.includes("々")
   )
     return undefined;
-  const memo = new Map();
-  function visit(index, offset) {
+  const memo = new Map<string, SpanSolution[]>();
+  function visit(index: number, offset: number): SpanSolution[] {
     if (index === characters.length)
       return offset === kana.length ? [{ segments: [], characters: [] }] : [];
     const key = `${index}:${offset}`;
-    if (memo.has(key)) return memo.get(key);
+    if (memo.has(key)) return memo.get(key)!;
     const candidates = inventory.get(characters[index]) ?? [];
-    const solutions = [];
+    const solutions: SpanSolution[] = [];
     for (let end = offset + 1; end <= kana.length - (characters.length - index - 1); ++end) {
       const piece = kana.slice(offset, end).join("");
       const normalized = normalizeKana(piece);
@@ -155,7 +271,7 @@ function splitSpan(
           range.readStart <= readingOffset + offset &&
           readingOffset + end <= range.readEnd,
       );
-      const evidence = candidates.flatMap((candidate) => {
+      const evidence = candidates.flatMap((candidate): OnReadingEvidence[] => {
         const exact = candidate.exact === normalized;
         if (!exact && candidate.pronunciation !== pronunciation) return [];
         // As in the supplemental character allocator, direct primary readings
@@ -173,11 +289,11 @@ function splitSpan(
         return [{ ...candidate.claim, rules: exact ? [] : ["on-long-vowel-notation-equivalence"] }];
       });
       if (!evidence.length) continue;
-      const character = {
+      const character: OnReadingCharacter = {
         character: characters[index],
         spelling: characters[index],
         reading: piece,
-        codepoint: `U+${characters[index].codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`,
+        codepoint: `U+${characters[index].codePointAt(0)!.toString(16).toUpperCase().padStart(4, "0")}`,
         evidence,
       };
       for (const suffix of visit(index + 1, end)) {
@@ -207,11 +323,15 @@ function splitSpan(
 
 /** Refine attested opaque spans using exact on-reading long-vowel notation. */
 export function deriveOnReadingSpellingAlignments(
-  jmdict,
-  kanjidic,
-  align,
-  { characterReadingBundle, englishCharacterReadingBundle, kanjidicSource } = {},
-) {
+  jmdict: JMdict,
+  kanjidic: Kanjidic2,
+  align: Aligner,
+  {
+    characterReadingBundle,
+    englishCharacterReadingBundle,
+    kanjidicSource,
+  }: OnReadingSpellingOptions = {},
+): PassResult<OnReadingSpellingWitness> {
   if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
     throw new TypeError("JMdict and KANJIDIC arrays are required");
   if (typeof align !== "function") throw new TypeError("An aligner is required");
@@ -236,9 +356,9 @@ export function deriveOnReadingSpellingAlignments(
       readings.map(normalizeKana),
     ]),
   );
-  const wordAlignments = new Map(),
-    witnesses = [],
-    seen = new Set();
+  const wordAlignments: WordAlignments = new Map(),
+    witnesses: OnReadingSpellingWitness[] = [],
+    seen = new Set<string>();
   for (const pair of enumeratePairs(jmdict)) {
     if (pair.kind !== "kanji") continue;
     const key = pairKey(pair.spelling, pair.reading);
@@ -261,7 +381,7 @@ export function deriveOnReadingSpellingAlignments(
     const spellingUnits = splitGraphemes(pair.spelling);
     const readUnits = splitGraphemes(pair.reading);
     const ranges = findIrregularRanges(spellingUnits, readUnits, irregularWords);
-    const spans = [];
+    const spans: OnReadingSpan[] = [];
     let spellingOffset = 0;
     let readingOffset = 0;
     const segments = original.segments.flatMap((segment) => {
@@ -285,7 +405,7 @@ export function deriveOnReadingSpellingAlignments(
     });
     if (!spans.length) continue;
     validateAlignment(pair.spelling, pair.reading, segments);
-    const readings = wordAlignments.get(pair.spelling) ?? new Map();
+    const readings = wordAlignments.get(pair.spelling) ?? new Map<string, Segment[]>();
     readings.set(pair.reading, segments);
     wordAlignments.set(pair.spelling, readings);
     witnesses.push({

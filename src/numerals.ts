@@ -1,10 +1,47 @@
 import { enumeratePairs } from "./sources.ts";
 import { splitGraphemes } from "./kana.ts";
 import { boundaries, segmentReading, segmentText, validateAlignment } from "./segments.ts";
+import type {
+  Aligner,
+  Alignment,
+  JMdict,
+  JMdictSense,
+  PassResult,
+  ReadingMap,
+  Segment,
+  WordAlignments,
+} from "./types.ts";
+
+export interface NumeralReadingWitness {
+  id: string;
+  /** The number in decimal digits. */
+  spelling: string;
+  reading: string;
+  /** The English number word that the entry is defined as. */
+  definition: string;
+}
+
+export interface NumeralReadings {
+  readings: ReadingMap;
+  witnesses: NumeralReadingWitness[];
+}
+
+export interface NumeralAlignmentOptions {
+  /** An aligner that knows the foreign number words, used for decimal digits. */
+  foreignAlign?: Aligner;
+}
+
+export interface NumeralAlignmentWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  /** The equivalent spelling whose alignment was carried over, or a description of the source. */
+  from: string;
+}
 
 const digits = "〇一二三四五六七八九";
 const largeUnits = ["", "万", "億", "兆", "京"];
-const numberNames = new Map([
+const numberNames = new Map<string, string>([
   ...[
     "zero",
     "one",
@@ -27,7 +64,7 @@ const numberNames = new Map([
     "eighteen",
     "nineteen",
     "twenty",
-  ].map((name, index) => [name, String(index)]),
+  ].map((name, index): [string, string] => [name, String(index)]),
   ["thirty", "30"],
   ["forty", "40"],
   ["fifty", "50"],
@@ -42,9 +79,9 @@ const numberNames = new Map([
 ]);
 
 /** Derive numeral sounds from exact dictionary definitions of number words. */
-export function deriveNumeralReadings(jmdict, wordReadings) {
+export function deriveNumeralReadings(jmdict: JMdict, wordReadings: ReadingMap): NumeralReadings {
   const readings = new Map([...wordReadings].map(([spelling, values]) => [spelling, [...values]]));
-  const witnesses = [];
+  const witnesses: NumeralReadingWitness[] = [];
   for (const word of jmdict.words) {
     // Written numeral entries already supply their readings. This layer
     // covers standalone kana number words, not incidental translations of
@@ -54,9 +91,9 @@ export function deriveNumeralReadings(jmdict, wordReadings) {
       const definitions =
         sense.gloss?.filter((gloss) => gloss.lang === "eng" && numberNames.has(gloss.text)) ?? [];
       for (const definition of definitions) {
-        const spelling = numberNames.get(definition.text);
+        const spelling = numberNames.get(definition.text)!;
         const fullwidth = spelling.replace(/[0-9]/gu, (digit) =>
-          String.fromCodePoint(digit.codePointAt(0) + 0xfee0),
+          String.fromCodePoint(digit.codePointAt(0)! + 0xfee0),
         );
         for (const kana of word.kana) {
           if (
@@ -82,11 +119,11 @@ export function deriveNumeralReadings(jmdict, wordReadings) {
   return { readings, witnesses };
 }
 
-function cardinalSpelling(text) {
+function cardinalSpelling(text: string): string | undefined {
   if (text.length > largeUnits.length * 4) return undefined;
   const stripped = text.replace(/^0+/u, "") || "0";
   if (stripped === "0") return "零";
-  const groups = [];
+  const groups: string[] = [];
   for (let end = stripped.length, unit = 0; end > 0; end -= 4, ++unit) {
     const part = stripped.slice(Math.max(0, end - 4), end).padStart(4, "0");
     let group = "";
@@ -101,14 +138,25 @@ function cardinalSpelling(text) {
   return groups.join("");
 }
 
-function transform(spelling, style) {
+type NumeralStyle = "width" | "cardinal" | "digits";
+
+/** A spelling with its numerals rewritten, and how its offsets map back to the original. */
+interface Transformation {
+  spelling: string;
+  /** The graphemes of the original spelling. */
+  original: string[];
+  /** Grapheme offset in the rewritten spelling to the matching offset in the original. */
+  offsets: Map<number, number>;
+}
+
+function transform(spelling: string, style: NumeralStyle): Transformation | undefined {
   const units = splitGraphemes(spelling);
-  const offsets = new Map([[0, 0]]);
-  const parts = [];
+  const offsets = new Map<number, number>([[0, 0]]);
+  const parts: string[] = [];
   let sourceOffset = 0;
   for (let index = 0; index < units.length;) {
     let end = index + 1;
-    let replacement;
+    let replacement: string | undefined;
     if (/^[0-9０-９]$/u.test(units[index])) {
       while (end < units.length && /^[0-9０-９]$/u.test(units[end])) ++end;
       const decimal = units.slice(index, end).join("").normalize("NFKC");
@@ -134,9 +182,13 @@ function transform(spelling, style) {
   return { spelling: parts.join(""), original: units, offsets };
 }
 
-function transfer(transformation, reading, result) {
+function transfer(
+  transformation: Transformation,
+  reading: string,
+  result: Alignment,
+): Segment[] | undefined {
   if (result.status !== "aligned") return undefined;
-  const segments = [];
+  const segments: Segment[] = [];
   let sourceOffset = 0;
   let originalOffset = 0;
   let pendingReading = "";
@@ -159,13 +211,17 @@ function transfer(transformation, reading, result) {
 }
 
 /** Transfer sound boundaries through equivalent decimal and fullwidth spellings. */
-export function deriveNumeralAlignments(jmdict, align, { foreignAlign } = {}) {
-  const wordAlignments = new Map();
-  const witnesses = [];
+export function deriveNumeralAlignments(
+  jmdict: JMdict,
+  align: Aligner,
+  { foreignAlign }: NumeralAlignmentOptions = {},
+): PassResult<NumeralAlignmentWitness> {
+  const wordAlignments: WordAlignments = new Map();
+  const witnesses: NumeralAlignmentWitness[] = [];
   for (const pair of enumeratePairs(jmdict)) {
     if (pair.kind !== "kanji" || !/[0-9\uFF01-\uFF60]/u.test(pair.spelling)) continue;
-    const alternatives = [];
-    for (const style of ["width", "cardinal", "digits"]) {
+    const alternatives: { segments: Segment[]; from: string }[] = [];
+    for (const style of ["width", "cardinal", "digits"] as const) {
       const transformation = transform(pair.spelling, style);
       if (transformation === undefined || transformation.spelling === pair.spelling) continue;
       const segments = transfer(

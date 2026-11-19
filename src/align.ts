@@ -8,27 +8,110 @@ import {
   readingStem,
   splitGraphemes,
 } from "./kana.ts";
+import type { Alignment, Evidence, ReadingMap, Segment, WordAlignments } from "./types.ts";
 
-const voicedInitials = new Map(
+export interface AlignerOptions {
+  /** Each character's readings in KANJIDIC notation. */
+  characterReadings: ReadingMap;
+  wordReadings?: ReadingMap;
+  wordAlignments?: WordAlignments;
+  /** Spelling, then reading, to the rules recorded for that word alignment. */
+  wordAlignmentRules?: Map<string, Map<string, string[]>>;
+  continuativeReadings?: ReadingMap;
+  weakCharacterReadings?: ReadingMap;
+  irregularWordReadings?: ReadingMap;
+  phonologicalAlternations?: boolean;
+  terminalContraction?: boolean;
+  compoundVoicing?: boolean;
+  kanaRunCorrespondence?: boolean;
+  internalKanaAnchors?: boolean;
+  dictionaryUnvoicing?: boolean;
+  dictionaryRenjo?: boolean;
+  dictionaryNasalLoss?: boolean;
+  dictionaryInitialVoicing?: boolean;
+}
+
+/** What an aligner from `createAligner()` returns: an alignment with every detail present. */
+export type DetailedAlignment = Required<Alignment>;
+
+type Score = DetailedAlignment["score"];
+
+/** One segment of a supplied word alignment, prepared for matching. */
+interface CompiledPart {
+  spellingLength: number;
+  reading: string;
+  literal: boolean;
+}
+
+/** One reading of a supplied word alignment, prepared for matching. */
+interface CompiledVariant {
+  reading: string;
+  rules: string[];
+  parts: CompiledPart[];
+}
+
+interface AlignmentCandidate extends CompiledVariant {
+  cost: number;
+  phonologicalRules: string[];
+}
+
+/** A span of the spelling, in graphemes, and the span of the reading it is matched with. */
+interface MatchedRange {
+  start: number;
+  end: number;
+  readStart: number;
+  readEnd: number;
+}
+
+/** A group of characters that a word supports reading together, from a given starting point. */
+interface DictionaryEdge {
+  end: number;
+  readEnd: number;
+  rules: string[];
+  cost: number;
+  type: string | undefined;
+}
+
+/** A reading one character could take at one position. */
+interface CharacterCandidate {
+  text: string;
+  cost: number;
+  rules: string[];
+  type?: string;
+}
+
+interface PathEdge {
+  sourceId: number;
+  destinationId: number;
+  type: string;
+  rules: string[];
+}
+
+/** The best score found for reaching one position, and every edge that achieves it. */
+interface PathNode extends Score {
+  incoming: PathEdge[];
+}
+
+const voicedInitials = new Map<string, string>(
   Array.from("かきくけこさしすせそたちつてとはひふへほ").map((character, index) => [
     character,
     Array.from("がぎぐげござじずぜぞだぢづでどばびぶべぼ")[index],
   ]),
 );
-const plosiveInitials = new Map(
+const plosiveInitials = new Map<string, string>(
   Array.from("はひふへほ").map((character, index) => [character, Array.from("ぱぴぷぺぽ")[index]]),
 );
-const unvoicedInitials = new Map(
+const unvoicedInitials = new Map<string, string>(
   [...voicedInitials].map(([unvoiced, voiced]) => [voiced, unvoiced]),
 );
-const nasalInitials = new Map(
+const nasalInitials = new Map<string, string>(
   Array.from("あいうえお").map((character, index) => [character, Array.from("なにぬねの")[index]]),
 );
 const geminateInitials = /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u;
 const removableFinals = /[ちつ]$/u;
 const sokuonFinals = /[くきちつう]$/u;
 
-function assertReadingMap(map, name) {
+function assertReadingMap(map: unknown, name: string): void {
   if (!(map instanceof Map)) {
     throw new TypeError(`${name} must be a Map`);
   }
@@ -43,15 +126,18 @@ function assertReadingMap(map, name) {
   }
 }
 
-function compareScore(left, right) {
+function compareScore(left: Score, right: Score): number {
   return left.unknownCharacters - right.unknownCharacters || left.cost - right.cost;
 }
 
-function dictionaryEdgeCost(spellingLength) {
+function dictionaryEdgeCost(spellingLength: number): number {
   return spellingLength === 1 ? 1 : 20 * (spellingLength - 1);
 }
 
-function compileWordAlignments(wordAlignments, wordAlignmentRules) {
+function compileWordAlignments(
+  wordAlignments: WordAlignments,
+  wordAlignmentRules: Map<string, Map<string, string[]>>,
+): Map<string, CompiledVariant[]> {
   if (!(wordAlignments instanceof Map)) throw new TypeError("wordAlignments must be a Map");
   if (!(wordAlignmentRules instanceof Map)) throw new TypeError("wordAlignmentRules must be a Map");
   for (const [spelling, readings] of wordAlignmentRules) {
@@ -59,12 +145,12 @@ function compileWordAlignments(wordAlignments, wordAlignmentRules) {
       throw new TypeError("wordAlignmentRules keys must be strings");
     assertReadingMap(readings, "wordAlignmentRules reading rules");
   }
-  const compiled = new Map();
+  const compiled = new Map<string, CompiledVariant[]>();
   for (const [spelling, readings] of wordAlignments) {
     if (typeof spelling !== "string" || !(readings instanceof Map)) {
       throw new TypeError("wordAlignments must map strings to reading Maps");
     }
-    const variants = [];
+    const variants: CompiledVariant[] = [];
     for (const [reading, segments] of readings) {
       if (typeof reading !== "string" || !Array.isArray(segments)) {
         throw new TypeError("wordAlignments reading Maps must map strings to segment arrays");
@@ -96,7 +182,7 @@ function compileWordAlignments(wordAlignments, wordAlignmentRules) {
         rules:
           wordAlignmentRules.get(spelling)?.get(reading) === undefined
             ? ["alternate-spelling"]
-            : [...wordAlignmentRules.get(spelling).get(reading)],
+            : [...wordAlignmentRules.get(spelling)!.get(reading)!],
         parts: parts.map((part) => ({
           spellingLength: splitGraphemes(part.spelling).length,
           reading: normalizeKana(part.reading),
@@ -109,7 +195,7 @@ function compileWordAlignments(wordAlignments, wordAlignmentRules) {
   return compiled;
 }
 
-function readingIndex(reading) {
+function readingIndex(reading: string) {
   const units = splitGraphemes(reading);
   const offsets = [0];
   let normalized = "";
@@ -122,12 +208,12 @@ function readingIndex(reading) {
     units,
     normalized,
     offsets,
-    match(start, candidate) {
+    match(start: number, candidate: string): number | undefined {
       const offset = offsets[start];
       if (!normalized.startsWith(candidate, offset)) return undefined;
       return ends.get(offset + candidate.length);
     },
-    matchEnd(end, candidate) {
+    matchEnd(end: number, candidate: string): number | undefined {
       const offset = offsets[end] - candidate.length;
       if (offset < 0 || !normalized.startsWith(candidate, offset)) return undefined;
       return ends.get(offset);
@@ -135,13 +221,13 @@ function readingIndex(reading) {
   };
 }
 
-function stripVariationSelectors(text) {
+function stripVariationSelectors(text: string): string {
   return text.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu, "");
 }
 
-function mergeOutput(parts) {
-  const segments = [];
-  const evidence = [];
+function mergeOutput(parts: Evidence[]): { segments: Segment[]; evidence: Evidence[] } {
+  const segments: Segment[] = [];
+  const evidence: Evidence[] = [];
   for (const part of parts) {
     const plain = part.spelling === part.reading;
     const previous = evidence.at(-1);
@@ -177,52 +263,54 @@ function mergeOutput(parts) {
  * `aligned` describes support from this model, not a certification of correctness.
  * Equal-cost paths retain only boundaries shared by every best alignment.
  */
-export function createAligner({
-  characterReadings,
-  wordReadings = new Map(),
-  wordAlignments = new Map(),
-  wordAlignmentRules = new Map(),
-  continuativeReadings = new Map(),
-  weakCharacterReadings = new Map(),
-  irregularWordReadings = new Map(),
-  phonologicalAlternations = true,
-  terminalContraction = true,
-  compoundVoicing = true,
-  kanaRunCorrespondence = true,
-  internalKanaAnchors = true,
-  dictionaryUnvoicing = false,
-  dictionaryRenjo = false,
-  dictionaryNasalLoss = false,
-  dictionaryInitialVoicing = false,
-} = {}) {
+export function createAligner(
+  {
+    characterReadings,
+    wordReadings = new Map(),
+    wordAlignments = new Map(),
+    wordAlignmentRules = new Map(),
+    continuativeReadings = new Map(),
+    weakCharacterReadings = new Map(),
+    irregularWordReadings = new Map(),
+    phonologicalAlternations = true,
+    terminalContraction = true,
+    compoundVoicing = true,
+    kanaRunCorrespondence = true,
+    internalKanaAnchors = true,
+    dictionaryUnvoicing = false,
+    dictionaryRenjo = false,
+    dictionaryNasalLoss = false,
+    dictionaryInitialVoicing = false,
+  }: AlignerOptions = {} as AlignerOptions,
+): (spelling: string, reading: string) => DetailedAlignment {
   assertReadingMap(characterReadings, "characterReadings");
   assertReadingMap(wordReadings, "wordReadings");
   assertReadingMap(continuativeReadings, "continuativeReadings");
   assertReadingMap(weakCharacterReadings, "weakCharacterReadings");
   assertReadingMap(irregularWordReadings, "irregularWordReadings");
   const alignedWords = compileWordAlignments(wordAlignments, wordAlignmentRules);
-  const continuatives = new Map(
+  const continuatives = new Map<string, string[]>(
     [...continuativeReadings].map(([spelling, readings]) => [
       spelling,
       [...new Set(readings.map(normalizeKana).filter(Boolean))],
     ]),
   );
-  const weakCharacters = new Map(
+  const weakCharacters = new Map<string, string[]>(
     [...weakCharacterReadings].map(([spelling, readings]) => [
       spelling,
       [...new Set(readings.map(normalizeKana).filter(Boolean))],
     ]),
   );
-  const irregularWords = new Map(
+  const irregularWords = new Map<string, string[]>(
     [...irregularWordReadings].map(([spelling, readings]) => [
       spelling,
       [...new Set(readings.map(normalizeKana).filter(Boolean))],
     ]),
   );
 
-  const characters = new Map();
-  const onCharacters = new Map();
-  const dottedReadings = new Map();
+  const characters = new Map<string, string[]>();
+  const onCharacters = new Map<string, string[]>();
+  const dottedReadings = new Map<string, { stem: string; suffix: string[] }[]>();
   for (const [spelling, readings] of characterReadings) {
     characters.set(spelling, [...new Set(readings.map(readingStem).filter(Boolean))]);
     onCharacters.set(spelling, [
@@ -246,7 +334,7 @@ export function createAligner({
       }),
     );
   }
-  const words = new Map();
+  const words = new Map<string, string[]>();
   let longestWord = 0;
   for (const [spelling, readings] of wordReadings) {
     if (!spelling) continue;
@@ -257,27 +345,27 @@ export function createAligner({
     longestWord = Math.max(longestWord, splitGraphemes(spelling).length);
   for (const spelling of irregularWords.keys())
     longestWord = Math.max(longestWord, splitGraphemes(spelling).length);
-  const lexicalKanaVariants = new Map();
+  const lexicalKanaVariants = new Map<string, Set<string>>();
   if (kanaRunCorrespondence) {
     for (const readings of words.values()) {
       if (readings.length < 2) continue;
-      const groups = new Map();
+      const groups = new Map<string, string[]>();
       for (const reading of readings) {
         const key = kanaPronunciation(reading).replaceAll("ー", "");
         if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(reading);
+        groups.get(key)!.push(reading);
       }
       for (const group of groups.values()) {
         if (group.length < 2) continue;
         for (const reading of group) {
           if (!lexicalKanaVariants.has(reading)) lexicalKanaVariants.set(reading, new Set());
-          for (const alternative of group) lexicalKanaVariants.get(reading).add(alternative);
+          for (const alternative of group) lexicalKanaVariants.get(reading)!.add(alternative);
         }
       }
     }
   }
 
-  const hasLexicalKanaVariant = (spelling, reading) => {
+  const hasLexicalKanaVariant = (spelling: string, reading: string): boolean => {
     if (lexicalKanaVariants.get(spelling)?.has(reading)) return true;
     const units = splitGraphemes(spelling);
     for (let start = 0; start < units.length; ++start) {
@@ -292,7 +380,7 @@ export function createAligner({
     return false;
   };
 
-  return function align(spelling, reading) {
+  return function align(spelling: string, reading: string): DetailedAlignment {
     if (typeof spelling !== "string" || typeof reading !== "string") {
       throw new TypeError("spelling and reading must be strings");
     }
@@ -311,19 +399,20 @@ export function createAligner({
     const readingUnits = readingData.units;
     const width = readingUnits.length + 1;
     const finalId = spellingUnits.length * width + readingUnits.length;
-    const idFor = (spellingIndex, readIndex) => spellingIndex * width + readIndex;
-    const dictionaryByStart = new Map();
-    const attestedRanges = [];
-    const irregularRanges = [];
+    const idFor = (spellingIndex: number, readIndex: number): number =>
+      spellingIndex * width + readIndex;
+    const dictionaryByStart = new Map<number, DictionaryEdge[]>();
+    const attestedRanges: MatchedRange[] = [];
+    const irregularRanges: MatchedRange[] = [];
     const ambiguousAnchorParticle = (
-      start,
-      end,
-      wordReadStart,
-      wordReading,
-      innerStart,
-      innerEnd,
-      readStart,
-      readEnd,
+      start: number,
+      end: number,
+      wordReadStart: number,
+      wordReading: string,
+      innerStart: number,
+      innerEnd: number,
+      readStart: number,
+      readEnd: number,
     ) => {
       if (innerEnd !== innerStart + 1 || !isIdeograph(spellingUnits[innerStart])) return undefined;
       const character = stripVariationSelectors(spellingUnits[innerStart]);
@@ -338,7 +427,7 @@ export function createAligner({
       if (known.has(residual)) return undefined;
       const particles = Array.from("のをがはにへとでも");
       const word = spellingUnits.slice(start, end).join("");
-      const corroborated = (particle, spellingPosition, readPosition) => {
+      const corroborated = (particle: string, spellingPosition: number, readPosition: number) => {
         const explicit =
           spellingUnits.slice(start, spellingPosition).join("") +
           particle +
@@ -365,15 +454,15 @@ export function createAligner({
       return leading || trailing ? { leading, trailing } : undefined;
     };
     const hasAmbiguousAnchorVowel = (
-      start,
-      end,
-      innerStart,
-      innerEnd,
-      readStart,
-      readEnd,
+      start: number,
+      end: number,
+      innerStart: number,
+      innerEnd: number,
+      readStart: number,
+      readEnd: number,
       checkLeading = true,
       checkTrailing = true,
-    ) => {
+    ): boolean => {
       if (innerEnd !== innerStart + 1 || !isIdeograph(spellingUnits[innerStart])) return false;
       const character = stripVariationSelectors(spellingUnits[innerStart]);
       const known = new Set([
@@ -406,41 +495,50 @@ export function createAligner({
       }
       return false;
     };
-    const internalAnchorBoundaries = (start, end, readStart, readEnd) => {
-      const parts = [];
+    const internalAnchorBoundaries = (
+      start: number,
+      end: number,
+      readStart: number,
+      readEnd: number,
+    ) => {
+      const parts: { start: number; end: number; kana: boolean }[] = [];
       for (let index = start; index < end; ++index) {
         const kana = isKana(spellingUnits[index]);
-        if (!parts.length || parts.at(-1).kana !== kana)
+        if (!parts.length || parts.at(-1)!.kana !== kana)
           parts.push({ start: index, end: index + 1, kana });
-        else parts.at(-1).end = index + 1;
+        else parts.at(-1)!.end = index + 1;
       }
       if (!parts.some((part, index) => part.kana && index > 0 && index < parts.length - 1))
         return undefined;
       const forward = [new Set([readStart])];
       for (const part of parts) {
-        const next = new Set();
+        const next = new Set<number>();
         if (part.kana) {
           const literal = normalizeKana(spellingUnits.slice(part.start, part.end).join(""));
-          for (const position of forward.at(-1)) {
+          for (const position of forward.at(-1)!) {
             const match = readingData.match(position, literal);
             if (match !== undefined && match <= readEnd) next.add(match);
           }
-        } else if (forward.at(-1).size) {
-          const first = Math.min(...forward.at(-1)) + 1;
+        } else if (forward.at(-1)!.size) {
+          const first = Math.min(...forward.at(-1)!) + 1;
           for (let position = first; position <= readEnd; ++position) next.add(position);
         }
         forward.push(next);
       }
-      if (!forward.at(-1).has(readEnd)) return undefined;
-      const backward = new Array(parts.length + 1);
+      if (!forward.at(-1)!.has(readEnd)) return undefined;
+      const backward = new Array<Set<number>>(parts.length + 1);
       backward[parts.length] = new Set([readEnd]);
       for (let index = parts.length - 1; index >= 0; --index) {
         const part = parts[index];
-        const previous = new Set();
+        const previous = new Set<number>();
         if (part.kana) {
           const literal = normalizeKana(spellingUnits.slice(part.start, part.end).join(""));
           for (let position = readStart; position < readEnd; ++position) {
-            if (backward[index + 1].has(readingData.match(position, literal)))
+            if (
+              (backward[index + 1] as ReadonlySet<number | undefined>).has(
+                readingData.match(position, literal),
+              )
+            )
               previous.add(position);
           }
         } else if (backward[index + 1].size) {
@@ -449,7 +547,7 @@ export function createAligner({
         }
         backward[index] = previous;
       }
-      const boundaries = [];
+      const boundaries: { spellingIndex: number; readIndex: number }[] = [];
       for (let index = 0; index <= parts.length; ++index) {
         const positions = [...forward[index]].filter((position) => backward[index].has(position));
         if (positions.length === 1)
@@ -460,10 +558,18 @@ export function createAligner({
       }
       return { parts, boundaries };
     };
-    const addDictionaryEdge = (start, readStart, end, readEnd, rules = [], suppliedCost, type) => {
+    const addDictionaryEdge = (
+      start: number,
+      readStart: number,
+      end: number,
+      readEnd: number,
+      rules: string[] = [],
+      suppliedCost?: number,
+      type?: string,
+    ) => {
       const id = idFor(start, readStart);
       if (!dictionaryByStart.has(id)) dictionaryByStart.set(id, []);
-      const edges = dictionaryByStart.get(id);
+      const edges = dictionaryByStart.get(id)!;
       const cost = suppliedCost === undefined ? dictionaryEdgeCost(end - start) : suppliedCost;
       const existing = edges.find((edge) => edge.end === end && edge.readEnd === readEnd);
       if (!existing) edges.push({ end, readEnd, rules, cost, type });
@@ -485,7 +591,7 @@ export function createAligner({
         const leadingKana = normalizeKana(spellingUnits.slice(start, kanaRunEnd).join(""));
         const leadingPronunciation = kanaPronunciation(leadingKana);
         const leadingShortPronunciation = leadingPronunciation.replaceAll("ー", "");
-        const readingCandidates = [];
+        const readingCandidates: { text: string; cost: number; rules: string[] }[] = [];
         for (const candidate of candidates ?? []) {
           readingCandidates.push({ text: candidate, cost: 0, rules: [] });
           if (
@@ -504,7 +610,7 @@ export function createAligner({
             }
           }
         }
-        const alignmentCandidates = [];
+        const alignmentCandidates: AlignmentCandidate[] = [];
         for (const variant of variants ?? []) {
           alignmentCandidates.push({ ...variant, cost: 0, phonologicalRules: [] });
           const first = Array.from(variant.reading)[0];
@@ -655,7 +761,7 @@ export function createAligner({
                   leadingKana + candidate.text.slice(readPrefix.length);
                 const licensedDurationChange =
                   kanaRunEnd - start >= 2 &&
-                  (candidates.includes(alternativeWordReading) ||
+                  (candidates!.includes(alternativeWordReading) ||
                     hasLexicalKanaVariant(leadingKana, readPrefix));
                 if (samePronunciation || licensedDurationChange) {
                   const rules = [
@@ -681,7 +787,7 @@ export function createAligner({
                     let partReadStart = readStart;
                     for (const [base, ruby] of kanaParts) {
                       const partEnd = partStart + splitGraphemes(base).length;
-                      const partReadEnd = readingData.match(partReadStart, normalizeKana(ruby));
+                      const partReadEnd = readingData.match(partReadStart, normalizeKana(ruby))!;
                       if (normalizeKana(base) !== normalizeKana(ruby)) {
                         addDictionaryEdge(
                           partStart,
@@ -761,7 +867,7 @@ export function createAligner({
             if (variant.cost === 0) attestedRanges.push({ start, end, readStart, readEnd });
             let partStart = start;
             let partReadStart = readStart;
-            const edges = [];
+            const edges: [number, number, number, number, string[], number][] = [];
             for (const part of variant.parts) {
               const partEnd = partStart + part.spellingLength;
               const partReadEnd = readingData.match(partReadStart, part.reading);
@@ -799,7 +905,7 @@ export function createAligner({
       }
     }
 
-    function candidatesFor(spellingIndex, readIndex) {
+    function candidatesFor(spellingIndex: number, readIndex: number): CharacterCandidate[] {
       const character = spellingUnits[spellingIndex];
       let lookup = stripVariationSelectors(character);
       if (lookup === "々") {
@@ -810,8 +916,8 @@ export function createAligner({
       }
       const stems = characters.get(lookup) ?? [];
       const iterationRules = stripVariationSelectors(character) === "々" ? ["iteration"] : [];
-      const candidates = new Map();
-      const add = (text, cost, rules, type) => {
+      const candidates = new Map<string, CharacterCandidate>();
+      const add = (text: string, cost: number, rules: string[], type?: string) => {
         if (!text) return;
         const current = candidates.get(text);
         if (!current || cost < current.cost) candidates.set(text, { text, cost, rules, type });
@@ -848,7 +954,7 @@ export function createAligner({
             !isIdeograph(spellingUnits[spellingIndex + 1])
           )
             continue;
-          const nextAfter = (text) => {
+          const nextAfter = (text: string) => {
             const end = readingData.match(readIndex, text);
             return end === undefined ? "" : normalizeKana(readingUnits[end] ?? "");
           };
@@ -1095,19 +1201,19 @@ export function createAligner({
       return [...candidates.values()];
     }
 
-    function solve(allowFallback) {
-      const nodes = new Array((spellingUnits.length + 1) * width);
+    function solve(allowFallback: boolean): (PathNode | undefined)[] | undefined {
+      const nodes = new Array<PathNode | undefined>((spellingUnits.length + 1) * width);
       nodes[0] = { unknownCharacters: 0, cost: 0, incoming: [] };
       const addEdge = (
-        sourceId,
-        spellingIndex,
-        readIndex,
-        type,
+        sourceId: number,
+        spellingIndex: number,
+        readIndex: number,
+        type: string,
         cost = 0,
-        rules = [],
+        rules: string[] = [],
         unknownCharacters = 0,
       ) => {
-        const source = nodes[sourceId];
+        const source = nodes[sourceId]!;
         const destinationId = idFor(spellingIndex, readIndex);
         const score = {
           unknownCharacters: source.unknownCharacters + unknownCharacters,
@@ -1116,12 +1222,12 @@ export function createAligner({
         let destination = nodes[destinationId];
         const comparison = destination ? compareScore(score, destination) : -1;
         if (comparison > 0) return;
-        const edge = { sourceId, destinationId, type, rules };
+        const edge: PathEdge = { sourceId, destinationId, type, rules };
         if (comparison < 0) {
           destination = { ...score, incoming: [edge] };
           nodes[destinationId] = destination;
-        } else if (!destination.incoming.some((previous) => previous.sourceId === sourceId)) {
-          destination.incoming.push(edge);
+        } else if (!destination!.incoming.some((previous) => previous.sourceId === sourceId)) {
+          destination!.incoming.push(edge);
         }
       };
 
@@ -1224,7 +1330,7 @@ export function createAligner({
       return nodes[finalId] ? nodes : undefined;
     }
 
-    function render(nodes) {
+    function render(nodes: (PathNode | undefined)[] | undefined): DetailedAlignment {
       if (!nodes) {
         return {
           segments: [[spelling, reading]],
@@ -1238,8 +1344,8 @@ export function createAligner({
       const ancestors = new Set([finalId]);
       const pending = [finalId];
       while (pending.length) {
-        const id = pending.pop();
-        for (const edge of nodes[id].incoming) {
+        const id = pending.pop()!;
+        for (const edge of nodes[id]!.incoming) {
           if (!ancestors.has(edge.sourceId)) {
             ancestors.add(edge.sourceId);
             pending.push(edge.sourceId);
@@ -1252,30 +1358,33 @@ export function createAligner({
         if (id === 0) continue;
         forwardCounts.set(
           id,
-          nodes[id].incoming.reduce((count, edge) => count + forwardCounts.get(edge.sourceId), 0n),
+          nodes[id]!.incoming.reduce(
+            (count, edge) => count + forwardCounts.get(edge.sourceId)!,
+            0n,
+          ),
         );
       }
       const backwardCounts = new Map([[finalId, 1n]]);
       for (const id of ordered.toReversed()) {
-        for (const edge of nodes[id].incoming) {
+        for (const edge of nodes[id]!.incoming) {
           backwardCounts.set(
             edge.sourceId,
-            (backwardCounts.get(edge.sourceId) ?? 0n) + backwardCounts.get(id),
+            (backwardCounts.get(edge.sourceId) ?? 0n) + backwardCounts.get(id)!,
           );
         }
       }
-      const pathCount = forwardCounts.get(finalId);
+      const pathCount = forwardCounts.get(finalId)!;
       const boundaries = ordered.filter(
-        (id) => forwardCounts.get(id) * backwardCounts.get(id) === pathCount,
+        (id) => forwardCounts.get(id)! * backwardCounts.get(id)! === pathCount,
       );
-      const parts = [];
+      const parts: Evidence[] = [];
       for (let index = 1; index < boundaries.length; ++index) {
         const startId = boundaries[index - 1];
         const endId = boundaries[index];
         const localEdges = ordered
           .filter((id) => id > startId && id <= endId)
-          .flatMap((id) => nodes[id].incoming);
-        const ambiguous = forwardCounts.get(endId) > forwardCounts.get(startId);
+          .flatMap((id) => nodes[id]!.incoming);
+        const ambiguous = forwardCounts.get(endId)! > forwardCounts.get(startId)!;
         const fallback = localEdges.some((edge) => edge.type === "fallback");
         parts.push({
           spelling: spellingUnits
@@ -1288,8 +1397,8 @@ export function createAligner({
       }
       const result = mergeOutput(parts);
       const score = {
-        unknownCharacters: nodes[finalId].unknownCharacters,
-        cost: nodes[finalId].cost,
+        unknownCharacters: nodes[finalId]!.unknownCharacters,
+        cost: nodes[finalId]!.cost,
       };
       return {
         ...result,

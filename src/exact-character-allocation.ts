@@ -1,7 +1,27 @@
 import { isKana, normalizeKana, readingStem, splitGraphemes } from "./kana.ts";
 import { validateAlignment } from "./segments.ts";
+import type { ReadingMap, Segment } from "./types.ts";
 
-export function uniqueExactCharacterAlignment(spelling, reading, primary) {
+/** One character of a spelling with the part of the reading it accounts for. */
+export interface CharacterAllocation {
+  spelling: string;
+  reading: string;
+  /** Whether the character is kana standing for itself. */
+  literal: boolean;
+  /** The listed readings, as written in the source, whose sound matched. */
+  rawForms: string[];
+}
+
+export interface ExactCharacterAlignment {
+  segments: Segment[];
+  allocations: CharacterAllocation[];
+}
+
+export function uniqueExactCharacterAlignment(
+  spelling: string,
+  reading: string,
+  primary: ReadingMap,
+): ExactCharacterAlignment | undefined {
   const spellingUnits = splitGraphemes(spelling),
     readingUnits = splitGraphemes(reading);
   const offsets = [0];
@@ -10,14 +30,14 @@ export function uniqueExactCharacterAlignment(spelling, reading, primary) {
     normalized += normalizeKana(unit);
     offsets.push(normalized.length);
   }
-  const ends = new Map(offsets.map((offset, index) => [offset, index])),
-    memo = new Map();
-  function visit(index, offset) {
+  const ends = new Map(offsets.map((offset, index): [number, number] => [offset, index])),
+    memo = new Map<string, CharacterAllocation[][]>();
+  function visit(index: number, offset: number): CharacterAllocation[][] {
     if (index === spellingUnits.length) return offset === readingUnits.length ? [[]] : [];
     const key = `${index}:${offset}`;
-    if (memo.has(key)) return memo.get(key);
+    if (memo.has(key)) return memo.get(key)!;
     const character = spellingUnits[index],
-      candidates = new Map();
+      candidates = new Map<string, Pick<CharacterAllocation, "literal" | "rawForms">>();
     if (isKana(character))
       candidates.set(normalizeKana(character), { literal: true, rawForms: [] });
     for (const value of primary.get(character) ?? []) {
@@ -27,7 +47,7 @@ export function uniqueExactCharacterAlignment(spelling, reading, primary) {
       claim.rawForms.push(value);
       candidates.set(sound, claim);
     }
-    const solutions = [];
+    const solutions: CharacterAllocation[][] = [];
     for (const [sound, claim] of candidates) {
       if (!normalized.startsWith(sound, offsets[offset])) continue;
       const end = ends.get(offsets[offset] + sound.length);
@@ -46,14 +66,14 @@ export function uniqueExactCharacterAlignment(spelling, reading, primary) {
   }
   const solutions = visit(0, 0);
   if (solutions.length !== 1) return undefined;
-  const parts = [];
+  const parts: CharacterAllocation[] = [];
   for (const allocation of solutions[0]) {
     if (allocation.literal && parts.at(-1)?.literal) {
-      parts.at(-1).spelling += allocation.spelling;
-      parts.at(-1).reading += allocation.reading;
+      parts.at(-1)!.spelling += allocation.spelling;
+      parts.at(-1)!.reading += allocation.reading;
     } else parts.push({ ...allocation });
   }
-  const segments = parts.map((part) =>
+  const segments = parts.map((part): Segment =>
     part.spelling === part.reading ? part.spelling : [part.spelling, part.reading],
   );
   validateAlignment(spelling, reading, segments);

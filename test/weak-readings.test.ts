@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveWeakReadings, refineAlignment } from "../src/weak-readings.ts";
+import * as fixture from "./support/dictionaries.ts";
+import type { Alignment } from "../src/types.ts";
 
-function word(id, spelling, reading) {
+function word(id: string, spelling: string, reading: string) {
   return {
     id,
     kanji: [{ text: spelling, tags: [] }],
@@ -12,8 +14,10 @@ function word(id, spelling, reading) {
 
 test("supplementary evidence keeps nanori and complete kun readings separate from primary readings", () => {
   const result = deriveWeakReadings(
-    { words: [] },
-    { characters: [{ literal: "時", readingMeaning: { nanori: ["と"] } }] },
+    fixture.jmdict({ words: [] }),
+    fixture.kanjidic({
+      characters: [{ literal: "時", readingMeaning: { groups: [], nanori: ["と"] } }],
+    }),
     new Map([["三", ["み.つ"]]]),
   );
   assert.deepEqual(result.readings.get("時"), ["と"]);
@@ -22,15 +26,15 @@ test("supplementary evidence keeps nanori and complete kun readings separate fro
 });
 
 test("a leading kana vowel cannot become an inferred character reading", () => {
-  const jmdict = {
+  const jmdict = fixture.jmdict({
     words: [word("1", "あいそ笑い", "あいそうわらい"), word("2", "笑い", "わらい")],
-  };
-  const result = deriveWeakReadings(jmdict, { characters: [] }, new Map());
+  });
+  const result = deriveWeakReadings(jmdict, fixture.kanjidic({ characters: [] }), new Map());
   assert.deepEqual(result.readings.get("笑"), ["わら"]);
 });
 
 test("weak readings cannot move boundaries justified by stronger evidence", () => {
-  const strong = {
+  const strong: Alignment = {
     segments: [
       ["細小", "いささ"],
       ["小", "お"],
@@ -38,7 +42,7 @@ test("weak readings cannot move boundaries justified by stronger evidence", () =
     ],
     status: "aligned",
   };
-  const wrong = {
+  const wrong: Alignment = {
     segments: [
       ["細", "いささ"],
       ["小", "お"],
@@ -48,7 +52,7 @@ test("weak readings cannot move boundaries justified by stronger evidence", () =
     status: "aligned",
   };
   assert.equal(refineAlignment(strong, wrong), strong);
-  const finer = {
+  const finer: Alignment = {
     segments: [
       ["細", "い"],
       ["小", "ささ"],

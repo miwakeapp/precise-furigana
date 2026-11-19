@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { displaySegments, validateDisplayAlignment } from "../src/display.ts";
+import type { Segment } from "../src/types.ts";
 
-function display(spelling, reading, segments) {
+function display(spelling: string, reading: string, segments: Segment[]) {
   const result = displaySegments(segments);
   validateDisplayAlignment(spelling, reading, result);
   return result;

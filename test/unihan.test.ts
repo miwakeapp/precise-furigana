@@ -2,15 +2,25 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveUnihanAlignments, parseUnihanReadings } from "../src/unihan.ts";
 import { boundaries, validateAlignment } from "../src/segments.ts";
+import type { Aligner, JMdictWord, Segment } from "../src/types.ts";
+import * as fixtures from "./support/dictionaries.ts";
 
-function entry(id, spelling, reading, { readingTags = [], spellingTags = [] } = {}) {
-  return {
+function entry(
+  id: string,
+  spelling: string,
+  reading: string,
+  { readingTags = [], spellingTags = [] }: { readingTags?: string[]; spellingTags?: string[] } = {},
+): JMdictWord {
+  return fixtures.jmdictWord({
     id,
     kanji: [{ text: spelling, tags: spellingTags }],
     kana: [{ text: reading, tags: readingTags, appliesToKanji: ["*"] }],
-  };
+  });
 }
-const grouped = (spelling, reading) => ({ status: "aligned", segments: [[spelling, reading]] });
+const grouped: Aligner = (spelling, reading) => ({
+  status: "aligned",
+  segments: [[spelling, reading]],
+});
 
 test("parses only kJapanese and preserves original exact readings and supplementary codepoints", () => {
   const parsed = parseUnihanReadings(
@@ -28,7 +38,7 @@ test("parses only kJapanese and preserves original exact readings and supplement
 });
 
 test("exact additional readings refine a whole opaque span with source provenance", () => {
-  const jmdict = { words: [entry("1", "口腔", "コウクウ")] };
+  const jmdict = fixtures.jmdict({ words: [entry("1", "口腔", "コウクウ")] });
   const result = deriveUnihanAlignments(
     jmdict,
     new Map([
@@ -38,7 +48,7 @@ test("exact additional readings refine a whole opaque span with source provenanc
     new Map([["腔", ["クウ"]]]),
     grouped,
   );
-  assert.deepEqual(result.wordAlignments.get("口腔").get("コウクウ"), [
+  assert.deepEqual(result.wordAlignments.get("口腔")!.get("コウクウ"), [
     ["口", "コウ"],
     ["腔", "クウ"],
   ]);
@@ -55,13 +65,13 @@ test("exact additional readings refine a whole opaque span with source provenanc
 });
 
 test("supplemental readings cannot displace an existing boundary or manufacture an inflection", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "前口腔", "ぜんこうくう"),
       entry("2", "心地", "ここち"),
       entry("3", "口腔", "こうぐう"),
     ],
-  };
+  });
   const primary = new Map([
     ["前", ["ゼン"]],
     ["口", ["コウ"]],
@@ -72,7 +82,7 @@ test("supplemental readings cannot displace an existing boundary or manufacture 
     ["腔", ["クウ"]],
     ["心", ["こころ"]],
   ]);
-  const align = (spelling, reading) =>
+  const align: Aligner = (spelling, reading) =>
     spelling === "前口腔"
       ? {
           status: "aligned",
@@ -83,7 +93,7 @@ test("supplemental readings cannot displace an existing boundary or manufacture 
         }
       : grouped(spelling, reading);
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, align);
-  const segments = result.wordAlignments.get("前口腔").get("ぜんこうくう");
+  const segments = result.wordAlignments.get("前口腔")!.get("ぜんこうくう")!;
   assert.deepEqual(segments, [
     ["前", "ぜん"],
     ["口", "こう"],
@@ -95,7 +105,7 @@ test("supplemental readings cannot displace an existing boundary or manufacture 
 });
 
 test("any competing complete allocation defeats a supplemental split", () => {
-  const jmdict = { words: [entry("1", "甲乙", "あいき")] };
+  const jmdict = fixtures.jmdict({ words: [entry("1", "甲乙", "あいき")] });
   const primary = new Map([
     ["甲", ["あい"]],
     ["乙", ["き"]],
@@ -111,12 +121,12 @@ test("any competing complete allocation defeats a supplemental split", () => {
 });
 
 test("irregular readings block supplemental edges inside the exact containing word", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "明日", "あす", { readingTags: ["gikun"] }),
       entry("2", "今明日", "こんあす"),
     ],
-  };
+  });
   const primary = new Map([
     ["今", ["コン"]],
     ["明", ["メイ"]],
@@ -130,12 +140,12 @@ test("irregular readings block supplemental edges inside the exact containing wo
     deriveUnihanAlignments(jmdict, primary, supplemental, grouped).wordAlignments.size,
     0,
   );
-  const ateji = {
+  const ateji = fixtures.jmdict({
     words: [entry("3", "明日", "あす", { readingTags: ["gikun"], spellingTags: ["ateji"] })],
-  };
+  });
   assert.deepEqual(
     deriveUnihanAlignments(ateji, primary, supplemental, grouped)
-      .wordAlignments.get("明日")
+      .wordAlignments.get("明日")!
       .get("あす"),
     [
       ["明", "あ"],
@@ -145,7 +155,7 @@ test("irregular readings block supplemental edges inside the exact containing wo
 });
 
 test("ambiguous baselines and wholly primary readings do not create new Unihan witnesses", () => {
-  const jmdict = { words: [entry("1", "口腔", "こうくう")] };
+  const jmdict = fixtures.jmdict({ words: [entry("1", "口腔", "こうくう")] });
   const primary = new Map([
     ["口", ["コウ"]],
     ["腔", ["クウ"]],
@@ -155,7 +165,7 @@ test("ambiguous baselines and wholly primary readings do not create new Unihan w
     deriveUnihanAlignments(jmdict, primary, supplemental, grouped).wordAlignments.size,
     0,
   );
-  const ambiguous = (spelling, reading) => ({
+  const ambiguous: Aligner = (spelling, reading) => ({
     status: "ambiguous",
     segments: [[spelling, reading]],
   });
@@ -167,7 +177,9 @@ test("ambiguous baselines and wholly primary readings do not create new Unihan w
 });
 
 test("weak companions can complete a split only when Unihan contributes a genuinely new reading", () => {
-  const jmdict = { words: [entry("1", "露西亜", "ロシヤ"), entry("2", "益々", "ますます")] };
+  const jmdict = fixtures.jmdict({
+    words: [entry("1", "露西亜", "ロシヤ"), entry("2", "益々", "ますます")],
+  });
   const primary = new Map([
     ["露", ["ロ"]],
     ["西", ["セイ"]],
@@ -185,7 +197,7 @@ test("weak companions can complete a split only when Unihan contributes a genuin
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     weakCharacterReadings,
   });
-  assert.deepEqual(result.wordAlignments.get("露西亜").get("ロシヤ"), [
+  assert.deepEqual(result.wordAlignments.get("露西亜")!.get("ロシヤ"), [
     ["露", "ロ"],
     ["西", "シ"],
     ["亜", "ヤ"],
@@ -204,12 +216,12 @@ test("weak companions can complete a split only when Unihan contributes a genuin
 });
 
 test("weak companions obey irregular ranges even when a different character has new Unihan evidence", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "明日", "あす", { readingTags: ["gikun"] }),
       entry("2", "甲明日", "こうあす"),
     ],
-  };
+  });
   const primary = new Map([
     ["甲", ["か"]],
     ["明", ["メイ"]],
@@ -228,7 +240,7 @@ test("weak companions obey irregular ranges even when a different character has 
     weakCharacterReadings,
     irregularWordReadings: new Map(),
   });
-  assert.deepEqual(unguarded.wordAlignments.get("甲明日").get("こうあす"), [
+  assert.deepEqual(unguarded.wordAlignments.get("甲明日")!.get("こうあす"), [
     ["甲", "こう"],
     ["明", "あ"],
     ["日", "す"],
@@ -236,14 +248,14 @@ test("weak companions obey irregular ranges even when a different character has 
 });
 
 test("an exact additional reading applies to an iteration mark without learning a new global reading", () => {
-  const jmdict = { words: [entry("1", "甲々", "きき")] };
+  const jmdict = fixtures.jmdict({ words: [entry("1", "甲々", "きき")] });
   const result = deriveUnihanAlignments(
     jmdict,
     new Map([["甲", ["コウ"]]]),
     new Map([["甲", ["き"]]]),
     grouped,
   );
-  const segments = result.wordAlignments.get("甲々").get("きき");
+  const segments = result.wordAlignments.get("甲々")!.get("きき")!;
   assert.deepEqual(segments, [
     ["甲", "き"],
     ["々", "き"],
@@ -253,13 +265,13 @@ test("an exact additional reading applies to an iteration mark without learning 
 });
 
 test("supplemental voicing preserves modern voiced spelling and original kana script", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "饅頭", "まんじゅう"),
       entry("2", "北京", "ペキン"),
       entry("3", "喇叭", "らっぱ"),
     ],
-  };
+  });
   const primary = new Map([
     ["饅", ["マン"]],
     ["頭", ["トウ"]],
@@ -279,15 +291,15 @@ test("supplemental voicing preserves modern voiced spelling and original kana sc
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     supplementalVoicing: true,
   });
-  assert.deepEqual(result.wordAlignments.get("饅頭").get("まんじゅう"), [
+  assert.deepEqual(result.wordAlignments.get("饅頭")!.get("まんじゅう"), [
     ["饅", "まん"],
     ["頭", "じゅう"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("北京").get("ペキン"), [
+  assert.deepEqual(result.wordAlignments.get("北京")!.get("ペキン"), [
     ["北", "ペ"],
     ["京", "キン"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("喇叭").get("らっぱ"), [
+  assert.deepEqual(result.wordAlignments.get("喇叭")!.get("らっぱ"), [
     ["喇", "らっ"],
     ["叭", "ぱ"],
   ]);
@@ -297,14 +309,14 @@ test("supplemental voicing preserves modern voiced spelling and original kana sc
 });
 
 test("voicing cannot alter native or long katakana readings, existing weak readings, or literal kana", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "甲乙", "がき"),
       entry("2", "甲丙", "ぜんちめーとるき"),
       entry("3", "頭乙", "じゅうき"),
       entry("4", "カ乙", "ガキ"),
     ],
-  };
+  });
   const primary = new Map([
     ["乙", ["キ"]],
     ["丙", ["キ"]],
@@ -321,19 +333,20 @@ test("voicing cannot alter native or long katakana readings, existing weak readi
   assert.equal(result.wordAlignments.size, 0);
   assert.throws(
     () =>
+      // @ts-expect-error: a null option must be rejected, not treated as the default.
       deriveUnihanAlignments(jmdict, primary, supplemental, grouped, { supplementalVoicing: null }),
     /booleans/u,
   );
 });
 
 test("gemination needs a following obstruent and retains each source derivation separately", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "服忌", "ぶっき"),
       entry("2", "甲乙", "しっな"),
       entry("3", "丙甲", "かしっ"),
     ],
-  };
+  });
   const primary = new Map([
     ["忌", ["キ"]],
     ["乙", ["ナ"]],
@@ -346,7 +359,7 @@ test("gemination needs a following obstruent and retains each source derivation 
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     supplementalVoicing: true,
   });
-  assert.deepEqual(result.wordAlignments.get("服忌").get("ぶっき"), [
+  assert.deepEqual(result.wordAlignments.get("服忌")!.get("ぶっき"), [
     ["服", "ぶっ"],
     ["忌", "き"],
   ]);
@@ -359,7 +372,7 @@ test("gemination needs a following obstruent and retains each source derivation 
 });
 
 test("yoon simplification preserves vowel and consonant row without enabling other edits", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "余所", "よそ"),
       entry("2", "修羅", "すら"),
@@ -369,7 +382,7 @@ test("yoon simplification preserves vowel and consonant row without enabling oth
       entry("6", "丁乙", "そこき"),
       entry("7", "戊乙", "そうき"),
     ],
-  };
+  });
   const primary = new Map([
     ["余", ["ヨ"]],
     ["羅", ["ラ"]],
@@ -388,15 +401,15 @@ test("yoon simplification preserves vowel and consonant row without enabling oth
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     yoonSimplification: true,
   });
-  assert.deepEqual(result.wordAlignments.get("余所").get("よそ"), [
+  assert.deepEqual(result.wordAlignments.get("余所")!.get("よそ"), [
     ["余", "よ"],
     ["所", "そ"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("修羅").get("すら"), [
+  assert.deepEqual(result.wordAlignments.get("修羅")!.get("すら"), [
     ["修", "す"],
     ["羅", "ら"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("受領").get("ずろう"), [
+  assert.deepEqual(result.wordAlignments.get("受領")!.get("ずろう"), [
     ["受", "ず"],
     ["領", "ろう"],
   ]);
@@ -411,14 +424,14 @@ test("yoon simplification preserves vowel and consonant row without enabling oth
 });
 
 test("new competing phonological allocations cannot erase exact Unihan boundaries", () => {
-  const jmdict = { words: [entry("1", "甲乙", "そうき")] };
+  const jmdict = fixtures.jmdict({ words: [entry("1", "甲乙", "そうき")] });
   const primary = new Map([["乙", ["ウキ", "キ"]]]);
   const supplemental = new Map([["甲", ["ソ", "ショウ"]]]);
   const exact = deriveUnihanAlignments(jmdict, primary, supplemental, grouped);
   const extended = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     yoonSimplification: true,
   });
-  assert.deepEqual(exact.wordAlignments.get("甲乙").get("そうき"), [
+  assert.deepEqual(exact.wordAlignments.get("甲乙")!.get("そうき"), [
     ["甲", "そ"],
     ["乙", "うき"],
   ]);
@@ -432,13 +445,13 @@ test("new competing phonological allocations cannot erase exact Unihan boundarie
 });
 
 test("phonological evidence remains local, irregular-gated, and cannot cross existing boundaries", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "饅頭", "まんじゅう", { readingTags: ["gikun"] }),
       entry("2", "前饅頭", "ぜんまんじゅう"),
       entry("3", "前余所", "ぜんよそ"),
     ],
-  };
+  });
   const primary = new Map([
     ["前", ["ゼン"]],
     ["饅", ["マン"]],
@@ -448,7 +461,7 @@ test("phonological evidence remains local, irregular-gated, and cannot cross exi
     ["頭", ["チュウ"]],
     ["所", ["ショ"]],
   ]);
-  const align = (spelling, reading) =>
+  const align: Aligner = (spelling, reading) =>
     spelling === "前余所"
       ? {
           status: "aligned",
@@ -464,18 +477,18 @@ test("phonological evidence remains local, irregular-gated, and cannot cross exi
   });
   assert.equal(result.wordAlignments.has("饅頭"), false);
   assert.equal(result.wordAlignments.has("前饅頭"), false);
-  assert.deepEqual(result.wordAlignments.get("前余所").get("ぜんよそ"), [
+  assert.deepEqual(result.wordAlignments.get("前余所")!.get("ぜんよそ"), [
     ["前", "ぜん"],
     ["余", "よ"],
     ["所", "そ"],
   ]);
-  const ateji = {
+  const ateji = fixtures.jmdict({
     words: [entry("4", "饅頭", "まんじゅう", { readingTags: ["gikun"], spellingTags: ["ateji"] })],
-  };
+  });
   const allowed = deriveUnihanAlignments(ateji, primary, supplemental, grouped, {
     supplementalVoicing: true,
   });
-  assert.deepEqual(allowed.wordAlignments.get("饅頭").get("まんじゅう"), [
+  assert.deepEqual(allowed.wordAlignments.get("饅頭")!.get("まんじゅう"), [
     ["饅", "まん"],
     ["頭", "じゅう"],
   ]);
@@ -483,7 +496,9 @@ test("phonological evidence remains local, irregular-gated, and cannot cross exi
 });
 
 test("one-mora on lengthening is opt-in, source-backed, and keeps the original kana script", () => {
-  const jmdict = { words: [entry("1", "口腔", "コウクウ"), entry("2", "贔屓", "ひいき")] };
+  const jmdict = fixtures.jmdict({
+    words: [entry("1", "口腔", "コウクウ"), entry("2", "贔屓", "ひいき")],
+  });
   const primary = new Map([
     ["口", ["コウ"]],
     ["屓", ["キ"]],
@@ -499,11 +514,11 @@ test("one-mora on lengthening is opt-in, source-backed, and keeps the original k
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, grouped, {
     onLengthening: true,
   });
-  assert.deepEqual(result.wordAlignments.get("口腔").get("コウクウ"), [
+  assert.deepEqual(result.wordAlignments.get("口腔")!.get("コウクウ"), [
     ["口", "コウ"],
     ["腔", "クウ"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("贔屓").get("ひいき"), [
+  assert.deepEqual(result.wordAlignments.get("贔屓")!.get("ひいき"), [
     ["贔", "ひい"],
     ["屓", "き"],
   ]);
@@ -511,13 +526,14 @@ test("one-mora on lengthening is opt-in, source-backed, and keeps the original k
     { value: "ク", rules: ["single-mora-vowel-extension"] },
   ]);
   assert.throws(
+    // @ts-expect-error: a null option must be rejected, not treated as the default.
     () => deriveUnihanAlignments(jmdict, primary, supplemental, grouped, { onLengthening: null }),
     /booleans/u,
   );
 });
 
 test("lengthening preserves allocations from the exact and yoon stages when a new path competes", () => {
-  const exactWords = { words: [entry("1", "甲乙", "そうき")] };
+  const exactWords = fixtures.jmdict({ words: [entry("1", "甲乙", "そうき")] });
   const primary = new Map([["乙", ["ウキ", "キ"]]]);
   const supplemental = new Map([["甲", ["ソ"]]]);
   const exact = deriveUnihanAlignments(exactWords, primary, supplemental, grouped);
@@ -526,7 +542,7 @@ test("lengthening preserves allocations from the exact and yoon stages when a ne
     exact,
   );
 
-  const phonologicalWords = { words: [entry("2", "甲乙", "きいそ")] };
+  const phonologicalWords = fixtures.jmdict({ words: [entry("2", "甲乙", "きいそ")] });
   const phonologicalSource = new Map([
     ["甲", ["キ"]],
     ["乙", ["イショ", "ソ"]],
@@ -538,7 +554,7 @@ test("lengthening preserves allocations from the exact and yoon stages when a ne
     grouped,
     { yoonSimplification: true },
   );
-  assert.deepEqual(earlier.wordAlignments.get("甲乙").get("きいそ"), [
+  assert.deepEqual(earlier.wordAlignments.get("甲乙")!.get("きいそ"), [
     ["甲", "き"],
     ["乙", "いそ"],
   ]);
@@ -553,7 +569,7 @@ test("lengthening preserves allocations from the exact and yoon stages when a ne
     deriveUnihanAlignments(phonologicalWords, new Map(), phonologicalSource, grouped, {
       onLengthening: true,
     })
-      .wordAlignments.get("甲乙")
+      .wordAlignments.get("甲乙")!
       .get("きいそ"),
     [
       ["甲", "きい"],
@@ -563,7 +579,7 @@ test("lengthening preserves allocations from the exact and yoon stages when a ne
 });
 
 test("an iteration mark inherits actual sound length while allowing voicing and equivalent vowel notation", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "戸々", "ここう"),
       entry("2", "図々しい", "ずうずうしい"),
@@ -571,7 +587,7 @@ test("an iteration mark inherits actual sound length while allowing voicing and 
       entry("4", "甲々", "カーガー"),
       entry("5", "御御様", "おごうさま"),
     ],
-  };
+  });
   const primary = new Map([
     ["戸", ["コ"]],
     ["御", ["お"]],
@@ -583,7 +599,7 @@ test("an iteration mark inherits actual sound length while allowing voicing and 
     ["甲", ["カ", "ガ"]],
     ["御", ["ゴ"]],
   ]);
-  const align = (spelling, reading) =>
+  const align: Aligner = (spelling, reading) =>
     spelling === "図々しい"
       ? {
           status: "aligned",
@@ -594,21 +610,21 @@ test("an iteration mark inherits actual sound length while allowing voicing and 
     onLengthening: true,
   });
   assert.equal(result.wordAlignments.has("戸々"), false);
-  assert.deepEqual(result.wordAlignments.get("図々しい").get("ずうずうしい"), [
+  assert.deepEqual(result.wordAlignments.get("図々しい")!.get("ずうずうしい"), [
     ["図", "ずう"],
     ["々", "ずう"],
     "しい",
   ]);
-  assert.deepEqual(result.wordAlignments.get("図々しい").get("ずうずーしい"), [
+  assert.deepEqual(result.wordAlignments.get("図々しい")!.get("ずうずーしい"), [
     ["図", "ずう"],
     ["々", "ずー"],
     "しい",
   ]);
-  assert.deepEqual(result.wordAlignments.get("甲々").get("カーガー"), [
+  assert.deepEqual(result.wordAlignments.get("甲々")!.get("カーガー"), [
     ["甲", "カー"],
     ["々", "ガー"],
   ]);
-  assert.deepEqual(result.wordAlignments.get("御御様").get("おごうさま"), [
+  assert.deepEqual(result.wordAlignments.get("御御様")!.get("おごうさま"), [
     ["御", "お"],
     ["御", "ごう"],
     ["様", "さま"],
@@ -616,13 +632,13 @@ test("an iteration mark inherits actual sound length while allowing voicing and 
 });
 
 test("iteration inheritance checks the retained allocations on both sides of an opaque span", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "図々体", "ずうずうたい"),
       entry("2", "戸々体", "ここうたい"),
       entry("3", "甲図々", "かずうず"),
     ],
-  };
+  });
   const primary = new Map([
     ["体", ["タイ"]],
     ["甲", ["カ"]],
@@ -631,27 +647,29 @@ test("iteration inheritance checks the retained allocations on both sides of an 
     ["図", ["ズ"]],
     ["戸", ["コ"]],
   ]);
-  const align = (spelling, reading) => ({
+  const align: Aligner = (spelling, reading) => ({
     status: "aligned",
-    segments: {
-      図々体: [
-        ["図", "ずう"],
-        ["々体", "ずうたい"],
-      ],
-      戸々体: [
-        ["戸", "こ"],
-        ["々体", "こうたい"],
-      ],
-      甲図々: [
-        ["甲図", "かずう"],
-        ["々", "ず"],
-      ],
-    }[spelling],
+    segments: (
+      {
+        図々体: [
+          ["図", "ずう"],
+          ["々体", "ずうたい"],
+        ],
+        戸々体: [
+          ["戸", "こ"],
+          ["々体", "こうたい"],
+        ],
+        甲図々: [
+          ["甲図", "かずう"],
+          ["々", "ず"],
+        ],
+      } as Record<string, Segment[]>
+    )[spelling],
   });
   const result = deriveUnihanAlignments(jmdict, primary, supplemental, align, {
     onLengthening: true,
   });
-  assert.deepEqual(result.wordAlignments.get("図々体").get("ずうずうたい"), [
+  assert.deepEqual(result.wordAlignments.get("図々体")!.get("ずうずうたい"), [
     ["図", "ずう"],
     ["々", "ずう"],
     ["体", "たい"],
@@ -661,7 +679,7 @@ test("iteration inheritance checks the retained allocations on both sides of an 
 });
 
 test("lengthening cannot combine with new voicing or yoon, alter native or long readings, or enter irregular spans", () => {
-  const jmdict = {
+  const jmdict = fixtures.jmdict({
     words: [
       entry("1", "腔頭", "くうじゅう"),
       entry("2", "腔所", "くうそ"),
@@ -669,7 +687,7 @@ test("lengthening cannot combine with new voicing or yoon, alter native or long 
       entry("4", "丙乙", "こううき"),
       entry("5", "口腔", "こうくう", { readingTags: ["gikun"] }),
     ],
-  };
+  });
   const primary = new Map([
     ["口", ["コウ"]],
     ["乙", ["キ"]],
@@ -692,7 +710,9 @@ test("lengthening cannot combine with new voicing or yoon, alter native or long 
 });
 
 test("competing lengthened allocations remain grouped while exact weak companions can complete a unique split", () => {
-  const jmdict = { words: [entry("1", "甲乙丙", "かああき"), entry("2", "贔屓", "ひいき")] };
+  const jmdict = fixtures.jmdict({
+    words: [entry("1", "甲乙丙", "かああき"), entry("2", "贔屓", "ひいき")],
+  });
   const primary = new Map([["丙", ["キ"]]]);
   const supplemental = new Map([
     ["甲", ["カ"]],
@@ -704,7 +724,7 @@ test("competing lengthened allocations remain grouped while exact weak companion
     weakCharacterReadings: new Map([["屓", ["き"]]]),
   });
   assert.equal(result.wordAlignments.has("甲乙丙"), false);
-  assert.deepEqual(result.wordAlignments.get("贔屓").get("ひいき"), [
+  assert.deepEqual(result.wordAlignments.get("贔屓")!.get("ひいき"), [
     ["贔", "ひい"],
     ["屓", "き"],
   ]);

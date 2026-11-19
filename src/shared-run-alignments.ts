@@ -13,6 +13,112 @@ import {
   refineWithLexicalEvidence,
   makeLexicalContextChecker,
 } from "./lexical-evidence.ts";
+import type { CompiledLexicalFact, LexicalFact } from "./lexical-evidence.ts";
+import type {
+  Aligner,
+  Alignment,
+  AlignmentStatus,
+  Evidence,
+  JMdict,
+  Kanjidic2,
+  Pair,
+  PassResult,
+  Segment,
+  SourceIdentity,
+  WordAlignments,
+} from "./types.ts";
+
+/** The sound switches forwarded to the aligner that checks a source spelling on its own. */
+export interface RawAlignerOptions {
+  phonologicalAlternations?: boolean;
+  terminalContraction?: boolean;
+  compoundVoicing?: boolean;
+  kanaRunCorrespondence?: boolean;
+  internalKanaAnchors?: boolean;
+}
+
+export interface SharedRunOptions {
+  /** Reviewed facts whose boundaries a transfer may not contradict. */
+  reviewedFacts?: CompiledLexicalFact[];
+  jmdictSource?: SourceIdentity;
+  kanjidicSource?: SourceIdentity;
+  rawAlignerOptions?: RawAlignerOptions;
+}
+
+/** A pinned source's identity, or a hash standing in for a dictionary supplied without one. */
+export type SharedRunSourceIdentity = SourceIdentity | { name: string; inputSHA256: string };
+
+/** One kana that differs between a source spelling and the target spelling at the same position. */
+export interface KanaCorrespondence {
+  spellingIndex: number;
+  source: string;
+  target: string;
+  rule: string;
+  readingIndex?: number;
+  reading?: string;
+  sourceRule?: string;
+  targetRule?: string;
+}
+
+/** The division a source spelling lends to part or all of a target spelling. */
+export interface SharedRunFact extends LexicalFact {
+  id: string;
+}
+
+/** One fact used to refine a target, with everything that supported it. */
+export interface SharedRunUnit {
+  fact: SharedRunFact;
+  sourcePair: { id: string; spelling: string; reading: string };
+  sourceAttestation: Pair;
+  sourceSegments: Segment[];
+  sourceEvidence: Evidence[] | undefined;
+  sourceIdentities: { jmdict: SharedRunSourceIdentity; kanjidic: SharedRunSourceIdentity };
+  rawAlignerOptions: RawAlignerOptions;
+  rawCharacterReadings: Record<string, string[]>;
+  /** The source's segments the fact covers, as a start index and an end index. */
+  sourceSegmentRange: [start: number, end: number];
+  kanaCorrespondences?: KanaCorrespondence[];
+}
+
+export interface SharedRunWitness {
+  targetPair: { id: string; spelling: string; reading: string };
+  targetAttestation: Pair;
+  units: SharedRunUnit[];
+}
+
+export interface SharedRunCounts {
+  targetPairs: number;
+  targetWithOpaqueSpan: number;
+  potentialSourceRelations: number;
+  rawAlignedSources: number;
+  acceptedSourceAgreement: number;
+  proposedUnits: number;
+  conflictingUnits: number;
+  changed: number;
+  kanaCorrespondenceUnits: number;
+  rejectedPairConflicts: number;
+  emittedPairs: number;
+}
+
+export interface SharedRunResult extends PassResult<SharedRunWitness> {
+  counts: SharedRunCounts;
+}
+
+/** A target pair whose division changed, before entries sharing the pair are reconciled. */
+interface SharedRunRecord extends Pair {
+  before: Segment[];
+  after: Segment[];
+  status: AlignmentStatus;
+  original: Alignment;
+  refined: Alignment;
+}
+
+interface SharedRunProposal {
+  record: SharedRunRecord;
+  points: Set<string>;
+  witnesses: SharedRunWitness[];
+  conflict: boolean;
+}
 
 const rawOptionNames = new Set([
   "phonologicalAlternations",
@@ -22,7 +128,11 @@ const rawOptionNames = new Set([
   "internalKanaAnchors",
 ]);
 
-function sourceIdentity(supplied, dictionary, name) {
+function sourceIdentity(
+  supplied: SourceIdentity | undefined,
+  dictionary: unknown,
+  name: string,
+): SharedRunSourceIdentity {
   if (supplied === undefined)
     return {
       name: `Supplied ${name} input`,
@@ -39,22 +149,22 @@ function sourceIdentity(supplied, dictionary, name) {
   return structuredClone(supplied);
 }
 
-function validateRawOptions(options) {
+function validateRawOptions(options: RawAlignerOptions): RawAlignerOptions {
   if (options === null || typeof options !== "object" || Array.isArray(options))
     throw new TypeError("Raw aligner options must be an object");
-  const result = {};
+  const result: RawAlignerOptions = {};
   for (const [name, value] of Object.entries(options)) {
     if (!rawOptionNames.has(name)) throw new TypeError(`Unsupported raw aligner option: ${name}`);
     if (value === undefined) continue;
     if (typeof value !== "boolean")
       throw new TypeError(`Raw aligner option ${name} must be a boolean`);
-    result[name] = value;
+    result[name as keyof RawAlignerOptions] = value;
   }
   return result;
 }
 
-function uniqueOccurrence(text, needle) {
-  const matches = [];
+function uniqueOccurrence(text: string[], needle: string[]): boolean {
+  const matches: number[] = [];
   for (let start = 0; start <= text.length - needle.length; ++start) {
     if (needle.every((value, offset) => value === text[start + offset])) matches.push(start);
   }
@@ -69,7 +179,13 @@ const voicedKana = new Map(
   ]),
 );
 
-function kanaCorrespondence(spelling, reading, previousSpelling, previousReading, soundOptions) {
+function kanaCorrespondence(
+  spelling: string,
+  reading: string,
+  previousSpelling: string | undefined,
+  previousReading: string | undefined,
+  soundOptions: RawAlignerOptions,
+): string | undefined {
   const a = normalizeKana(spelling),
     b = normalizeKana(reading);
   if (a === b) return "kana-script";
@@ -84,22 +200,28 @@ function kanaCorrespondence(spelling, reading, previousSpelling, previousReading
   ) {
     const vowel = a === "ー" ? b : a;
     if (
-      getKanaVowels(previousSpelling)?.includes(vowel) &&
-      getKanaVowels(previousReading)?.includes(vowel)
+      getKanaVowels(previousSpelling!)?.includes(vowel) &&
+      getKanaVowels(previousReading!)?.includes(vowel)
     )
       return "long-vowel-notation";
   }
   return undefined;
 }
 
-function projectCorrespondingKana(source, target, reading, result, soundOptions) {
+function projectCorrespondingKana(
+  source: string[],
+  target: string[],
+  reading: string,
+  result: Alignment,
+  soundOptions: RawAlignerOptions,
+): { segments: Segment[]; changes: KanaCorrespondence[] } | undefined {
   if (
     soundOptions.kanaRunCorrespondence === false ||
     source.length !== target.length ||
     !source.some(isIdeograph)
   )
     return undefined;
-  const changes = [];
+  const changes: KanaCorrespondence[] = [];
   for (let index = 0; index < source.length; ++index) {
     if (source[index] === target[index]) continue;
     if (!isKana(source[index]) || !isKana(target[index])) return undefined;
@@ -115,7 +237,7 @@ function projectCorrespondingKana(source, target, reading, result, soundOptions)
   }
   if (
     !changes.length ||
-    result.evidence.some(
+    result.evidence!.some(
       (edge) =>
         edge.type === "fallback" ||
         edge.type === "ambiguous" ||
@@ -132,7 +254,13 @@ function projectCorrespondingKana(source, target, reading, result, soundOptions)
     return undefined;
   const readingUnits = splitGraphemes(reading),
     points = new Map([[0, 0]]),
-    spans = [];
+    spans: {
+      start: number;
+      end: number;
+      readStart: number;
+      readEnd: number;
+      literalKana: boolean;
+    }[] = [];
   let x = 0,
     y = 0;
   for (const segment of result.segments) {
@@ -180,8 +308,8 @@ function projectCorrespondingKana(source, target, reading, result, soundOptions)
     if (sourceRule === undefined || targetRule === undefined) return undefined;
     Object.assign(change, { readingIndex: readStart, reading: sound, sourceRule, targetRule });
   }
-  const segments = [];
-  const append = (text, sound) => {
+  const segments: Segment[] = [];
+  const append = (text: string, sound: string) => {
     const previous = segments.at(-1);
     if (
       previous !== undefined &&
@@ -210,11 +338,16 @@ function projectCorrespondingKana(source, target, reading, result, soundOptions)
 }
 
 export function deriveSharedRunAlignments(
-  jmdict,
-  kanjidic,
-  align,
-  { reviewedFacts = [], jmdictSource, kanjidicSource, rawAlignerOptions = {} } = {},
-) {
+  jmdict: JMdict,
+  kanjidic: Kanjidic2,
+  align: Aligner,
+  {
+    reviewedFacts = [],
+    jmdictSource,
+    kanjidicSource,
+    rawAlignerOptions = {},
+  }: SharedRunOptions = {},
+): SharedRunResult {
   if (!Array.isArray(jmdict?.words) || !Array.isArray(kanjidic?.characters))
     throw new TypeError("JMdict and KANJIDIC arrays are required");
   if (typeof align !== "function") throw new TypeError("An earlier alignment function is required");
@@ -235,14 +368,20 @@ export function deriveSharedRunAlignments(
     dictionaryNasalLoss: false,
     dictionaryInitialVoicing: false,
   });
-  const rawCache = new Map(),
-    existingCache = new Map();
-  function cached(cache, callback, spelling, reading) {
+  const rawCache = new Map<string, Alignment>(),
+    existingCache = new Map<string, Alignment>();
+  function cached(
+    cache: Map<string, Alignment>,
+    callback: Aligner,
+    spelling: string,
+    reading: string,
+  ): Alignment {
     const key = pairKey(spelling, reading);
     if (!cache.has(key)) cache.set(key, callback(spelling, reading));
-    return cache.get(key);
+    return cache.get(key)!;
   }
-  const counts = {
+  const counts: Omit<SharedRunCounts, "rejectedPairConflicts" | "emittedPairs"> &
+    Partial<SharedRunCounts> = {
     targetPairs: 0,
     targetWithOpaqueSpan: 0,
     potentialSourceRelations: 0,
@@ -253,13 +392,13 @@ export function deriveSharedRunAlignments(
     changed: 0,
     kanaCorrespondenceUnits: 0,
   };
-  const records = [],
-    witnesses = [],
-    seen = new Set();
+  const records: SharedRunRecord[] = [],
+    witnesses: SharedRunWitness[] = [],
+    seen = new Set<string>();
   for (const word of jmdict.words) {
     const pairs = [...enumeratePairs({ words: [word] })].filter((pair) => pair.kind === "kanji");
     if (new Set(pairs.map((pair) => pair.spelling)).size < 2) continue;
-    const byReading = new Map();
+    const byReading = new Map<string, Pair[]>();
     for (const pair of pairs) {
       const group = byReading.get(pair.reading) ?? [];
       group.push(pair);
@@ -280,20 +419,20 @@ export function deriveSharedRunAlignments(
         continue;
       ++counts.targetWithOpaqueSpan;
       const targetUnits = splitGraphemes(target.spelling),
-        facts = new Map(),
-        provenance = new Map(),
-        conflicts = new Set();
+        facts = new Map<string, SharedRunFact>(),
+        provenance = new Map<string, SharedRunUnit>(),
+        conflicts = new Set<string>();
       let factSequence = 0;
       function addFact(
-        spelling,
-        reading,
-        parts,
-        source,
-        independentlyAligned,
-        sourceUnits,
-        sourceSegmentRange,
-        kanaCorrespondences,
-      ) {
+        spelling: string,
+        reading: string,
+        parts: Segment[],
+        source: Pair,
+        independentlyAligned: Alignment,
+        sourceUnits: string[],
+        sourceSegmentRange: [start: number, end: number],
+        kanaCorrespondences?: KanaCorrespondence[],
+      ): void {
         const factKey = pairKey(spelling, normalizeKana(reading)),
           id = `shared-run-${factSequence++}`;
         if (conflicts.has(factKey)) return;
@@ -335,14 +474,14 @@ export function deriveSharedRunAlignments(
           rawCharacterReadings: Object.fromEntries(
             [...new Set(sourceUnits)]
               .filter((character) => primary.has(character))
-              .map((character) => [character, [...primary.get(character)]]),
+              .map((character) => [character, [...primary.get(character)!]]),
           ),
           sourceSegmentRange,
           ...(kanaCorrespondences ? { kanaCorrespondences } : {}),
         });
         ++counts.proposedUnits;
       }
-      for (const source of byReading.get(target.reading)) {
+      for (const source of byReading.get(target.reading)!) {
         if (source.spelling === target.spelling) continue;
         const sourceUnits = splitGraphemes(source.spelling);
         const hasSharedRun = sourceUnits.some(
@@ -429,7 +568,7 @@ export function deriveSharedRunAlignments(
       if (!facts.size) continue;
       const contexts = reviewedFacts.filter((fact) => target.spelling.includes(fact.spelling));
       const sharedFacts = [...facts]
-        .filter(([key]) => provenance.get(key).kanaCorrespondences === undefined)
+        .filter(([key]) => provenance.get(key)!.kanaCorrespondences === undefined)
         .map(([, fact]) => fact);
       // Preserve shared-run interior cuts before a whole-spelling kana
       // projection can disqualify that run's unused outer endpoint.
@@ -442,7 +581,9 @@ export function deriveSharedRunAlignments(
         ...compileLexicalEvidence([...facts.values()]),
       ]);
       if (refined === original) continue;
-      const usedIds = new Set(refined.evidence.flatMap((edge) => edge.facts ?? []));
+      const usedIds = new Set(
+        refined.evidence!.flatMap((edge) => (edge.facts as string[] | undefined) ?? []),
+      );
       const used = [...provenance.values()].filter((value) => usedIds.has(value.fact.id));
       if (!used.length) continue;
       ++counts.changed;
@@ -464,7 +605,7 @@ export function deriveSharedRunAlignments(
   // A spelling/reading lookup can be shared by multiple entries. Keep a
   // consistently finer proposal; incomparable entry-specific proposals must
   // not depend on dictionary order.
-  const proposals = new Map();
+  const proposals = new Map<string, SharedRunProposal>();
   for (const [index, record] of records.entries()) {
     const key = pairKey(record.spelling, record.reading),
       previous = proposals.get(key);
@@ -480,8 +621,8 @@ export function deriveSharedRunAlignments(
       previous.conflict = true;
     }
   }
-  const wordAlignments = new Map(),
-    selectedWitnesses = [];
+  const wordAlignments: WordAlignments = new Map(),
+    selectedWitnesses: SharedRunWitness[] = [];
   for (const proposal of proposals.values()) {
     if (proposal.conflict) continue;
     const { record } = proposal,
@@ -497,5 +638,5 @@ export function deriveSharedRunAlignments(
     (total, readings) => total + readings.size,
     0,
   );
-  return { wordAlignments, witnesses: selectedWitnesses, counts };
+  return { wordAlignments, witnesses: selectedWitnesses, counts: counts as SharedRunCounts };
 }

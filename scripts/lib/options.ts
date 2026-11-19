@@ -1,4 +1,5 @@
 import { parseArgs } from "node:util";
+import type { Configuration } from "../../src/dataset.ts";
 
 // Keep build and standalone evaluation on the same configuration.
 const switches = {
@@ -37,22 +38,33 @@ const switches = {
   "no-on-reading-spelling": "onReadingSpelling",
   "no-shared-run-transfers": "sharedRunTransfers",
   "no-late-sibling-transfers": "lateSiblingTransfers",
-};
+} as const;
 
-export function parseGeneratorOptions(defaultOutput, args = process.argv.slice(2)) {
+type Switch = keyof typeof switches;
+
+export interface GeneratorOptions {
+  output: string;
+  configuration: Configuration;
+  updateSynthesizedPairs: boolean;
+}
+
+export function parseGeneratorOptions(
+  defaultOutput: string,
+  args: string[] = process.argv.slice(2),
+): GeneratorOptions {
   const { values } = parseArgs({
     args,
     options: {
       output: { type: "string", default: defaultOutput },
       "update-synthesized-pairs": { type: "boolean", default: false },
-      ...Object.fromEntries(
+      ...(Object.fromEntries(
         Object.keys(switches).map((name) => [name, { type: "boolean", default: false }]),
-      ),
+      ) as Record<Switch, { type: "boolean"; default: false }>),
     },
   });
   const configuration = Object.fromEntries(
-    Object.entries(switches).map(([flag, name]) => [name, !values[flag]]),
-  );
+    Object.entries(switches).map(([flag, name]) => [name, !values[flag as Switch]]),
+  ) as Configuration;
   configuration.compoundVoicing &&= configuration.phonologicalAlternations;
   return {
     output: values.output,

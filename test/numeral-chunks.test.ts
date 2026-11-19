@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chunkNumeral, chunkNumerals } from "../src/numeral-chunks.ts";
+import type { Segment } from "../src/types.ts";
 
 test("a numeral divides at each nonzero digit, which carries its place word", () => {
   assert.deepEqual(chunkNumeral("１１", "じゅういち"), [
@@ -71,7 +72,7 @@ test("a single chunk, a digit-by-digit reading, or an irregular reading is left 
 });
 
 test("an alignment's digit segments are read as one numeral and divided again", () => {
-  const known = {
+  const known: Record<string, Segment[]> = {
     // A grouped numeral is divided, and its neighbors are kept.
     "２４日": [
       ["２４", "にじゅうよっ"],

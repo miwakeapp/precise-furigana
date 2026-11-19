@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { defaultConfiguration } from "../src/dataset.ts";
+import type { Dataset } from "../src/dataset.ts";
+import type { Segment } from "../src/types.ts";
 import { evaluateDataset } from "../scripts/lib/evaluation.ts";
+import type { EvaluatedDataset } from "../scripts/lib/evaluation.ts";
 import { parseGeneratorOptions } from "../scripts/lib/options.ts";
 
 test("build and evaluation defaults match the release configuration", () => {
@@ -20,12 +23,12 @@ test("build and evaluation defaults match the release configuration", () => {
 });
 
 test("regressions exercise the generator without exact annotations masking errors", async () => {
-  const segments = [
+  const segments: Segment[] = [
     ["日", "に"],
     ["本", "ほん"],
   ];
   const goldText = JSON.stringify([{ spelling: "日本", reading: "にほん", segments }]);
-  const dataset = {
+  const dataset: EvaluatedDataset & Pick<Dataset, "alignPair"> = {
     lock: {},
     configuration: defaultConfiguration,
     annotationsSHA256: "annotations",

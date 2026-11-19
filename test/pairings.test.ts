@@ -7,6 +7,8 @@ import {
   contradictionKind,
   planSynthesizedPairs,
 } from "../src/pairings.ts";
+import type { PairingRecord } from "../src/pairings.ts";
+import type { Segment } from "../src/types.ts";
 
 test("a reading fits a spelling when the spelling's kana appear in it in order", () => {
   assert.ok(fitsSpelling("気持ちいい", "きもちいい"));
@@ -44,7 +46,7 @@ test("a reading fits a spelling when the spelling's kana appear in it in order",
 });
 
 test("a contradicting pair is phonetic when its reading gives a sound the spelling's kana do not", () => {
-  const kind = (spelling, reading, segments, siblings = [reading]) =>
+  const kind = (spelling: string, reading: string, segments: Segment[], siblings = [reading]) =>
     contradictionKind(spelling, reading, undefined, segments, siblings);
   // Historical kana, the particle は, and full-size kana for small ones.
   assert.equal(
@@ -148,7 +150,7 @@ test("the implied reading keeps contradicted kana as written and removes an omit
 });
 
 test("only spellings without a fitting pair need a synthesized one, and the reviewed list must match", () => {
-  const records = [
+  const records: PairingRecord[] = [
     {
       id: "1",
       spelling: "気持ちよい",

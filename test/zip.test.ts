@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { crc32, deflateRawSync } from "node:zlib";
 import { createZIP, extractZIPMember } from "../scripts/lib/zip.ts";
+import type { ZIPMember } from "../scripts/lib/zip.ts";
 
-function zip(files) {
-  const localParts = [],
-    directoryParts = [];
+function zip(files: [name: string, text: string][]): Buffer {
+  const localParts: Buffer[] = [],
+    directoryParts: Buffer[] = [];
   let offset = 0;
   for (const [name, text] of files) {
     const nameBytes = Buffer.from(name);
@@ -72,7 +73,7 @@ test("rejects missing, duplicated, truncated, and checksum-invalid ZIP input", (
 });
 
 test("a written archive reads back and is the same for the same members and date", () => {
-  const members = [
+  const members: ZIPMember[] = [
     ["database.json", Buffer.from(JSON.stringify({ entries: { 1: "日本" } }))],
     ["NOTICE.md", Buffer.from("# Notices\n")],
   ];

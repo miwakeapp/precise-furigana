@@ -1,9 +1,70 @@
 // Pure helpers for `scripts/update.ts`: what a dictionary update changed, whether it
 // needs a person, and the pull request text that says so.
+import type { SynthesizedPair } from "../../src/pairings.ts";
+import type { DatabaseRecord, Segment } from "../../src/types.ts";
+
+/** A database record with the ID of its entry. */
+export interface ChangedRecord extends DatabaseRecord {
+  id: string;
+}
+
+/** A record present in both databases whose segments differ. */
+export interface SegmentationChange {
+  change: "finer" | "coarser" | "incompatible" | "ruby";
+  before: ChangedRecord;
+  after: ChangedRecord;
+}
+
+/** One line of what `scripts/compare.ts` writes. */
+export type Change =
+  | { change: "added"; after: ChangedRecord }
+  | { change: "removed"; before: ChangedRecord }
+  | SegmentationChange;
+
+export type ChangeCounts = Record<Change["change"], number>;
+export type ListedChanges = Record<SegmentationChange["change"], SegmentationChange[]>;
+
+export interface ChangeSummary {
+  counts: ChangeCounts;
+  listed: ListedChanges;
+}
+
+export interface SynthesizedPairChanges {
+  removed: SynthesizedPair[];
+  added: SynthesizedPair[];
+  unreviewed: SynthesizedPair[];
+}
+
+/** Whether a build or validation run passed, and the end of what it printed. */
+export interface StepResult {
+  passed: boolean;
+  output: string;
+}
+
+/** The jmdict-simplified release a lock pins, and its dictionary date. */
+export interface DictionaryPin {
+  tag: string;
+  url: string;
+  date: string;
+}
+
+/** Everything a dictionary update's report says. */
+export interface Update extends ChangeSummary {
+  before: DictionaryPin;
+  after: DictionaryPin;
+  synthesized: SynthesizedPairChanges;
+  /** The names of the data files, other than the lock and the synthesized pairs, that changed. */
+  otherDataChanges: string[];
+  /** Whether the build wrote a database to compare. */
+  compared: boolean;
+  build: StepResult;
+  validate: StepResult;
+  reviewNotes: string;
+}
 
 const listLimit = 30;
-const escapeHTML = (text) => text.replace(/[&<>]/gu, (unit) => `&#${unit.codePointAt(0)};`);
-const ruby = (segments) =>
+const escapeHTML = (text: string) => text.replace(/[&<>]/gu, (unit) => `&#${unit.codePointAt(0)};`);
+const ruby = (segments: Segment[]) =>
   segments
     .map((segment) =>
       typeof segment === "string"
@@ -11,11 +72,14 @@ const ruby = (segments) =>
         : `<ruby>${escapeHTML(segment[0])}<rt>${escapeHTML(segment[1])}</rt></ruby>`,
     )
     .join("");
-const pairKey = (item) => `${item.id}\t${item.spelling}\t${item.reading}`;
-const plural = (count, noun) => `${count} ${noun}${count === 1 ? "" : "s"}`;
+const pairKey = (item: SynthesizedPair) => `${item.id}\t${item.spelling}\t${item.reading}`;
+const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
 /** Compare the synthesized pairs before and after an update. */
-export function diffSynthesizedPairs(before, after) {
+export function diffSynthesizedPairs(
+  before: SynthesizedPair[],
+  after: SynthesizedPair[],
+): SynthesizedPairChanges {
   const old = new Set(before.map(pairKey));
   const current = new Set(after.map(pairKey));
   return {
@@ -26,12 +90,22 @@ export function diffSynthesizedPairs(before, after) {
 }
 
 /** Count the changes `scripts/compare.ts` wrote, and keep the ones to list. */
-export function summarizeChanges(changes) {
-  const counts = { added: 0, removed: 0, finer: 0, coarser: 0, incompatible: 0, ruby: 0 };
-  const listed = { finer: [], coarser: [], incompatible: [], ruby: [] };
+export function summarizeChanges(changes: Change[]): ChangeSummary {
+  const counts: ChangeCounts = {
+    added: 0,
+    removed: 0,
+    finer: 0,
+    coarser: 0,
+    incompatible: 0,
+    ruby: 0,
+  };
+  const listed: ListedChanges = { finer: [], coarser: [], incompatible: [], ruby: [] };
   for (const item of changes) {
     ++counts[item.change];
-    listed[item.change]?.push(item);
+    // Only the kinds that `listed` names have a list; those are the segmentation changes.
+    (listed as Partial<Record<Change["change"], SegmentationChange[]>>)[item.change]?.push(
+      item as SegmentationChange,
+    );
   }
   return { counts, listed };
 }
@@ -41,8 +115,14 @@ export function summarizeChanges(changes) {
  * dictionary pin and drops synthesized pairs that JMdict now has, and it makes no existing
  * segmentation coarser or incompatible.
  */
-export function reviewReasons({ build, validate, synthesized, otherDataChanges, counts }) {
-  const reasons = [];
+export function reviewReasons({
+  build,
+  validate,
+  synthesized,
+  otherDataChanges,
+  counts,
+}: Pick<Update, "build" | "validate" | "synthesized" | "otherDataChanges" | "counts">): string[] {
+  const reasons: string[] = [];
   if (!build.passed) reasons.push("The build fails.");
   else if (!validate.passed) reasons.push("Validation fails.");
   if (synthesized.unreviewed.length > 0) {
@@ -65,7 +145,7 @@ export function reviewReasons({ build, validate, synthesized, otherDataChanges, 
   return reasons;
 }
 
-function changeList(title, items) {
+function changeList(title: string, items: SegmentationChange[]): string[] {
   if (items.length === 0) return [];
   const rows = items
     .slice(0, listLimit)
@@ -77,7 +157,7 @@ function changeList(title, items) {
   return [`### ${title} (${items.length})`, "", ...rows, ""];
 }
 
-function synthesizedList(title, items) {
+function synthesizedList(title: string, items: SynthesizedPair[]): string[] {
   if (items.length === 0) return [];
   const rows = items
     .slice(0, listLimit)
@@ -90,7 +170,7 @@ function synthesizedList(title, items) {
 }
 
 /** The pull request description for an update. */
-export function renderReport(update) {
+export function renderReport(update: Update): string {
   const { before, after, counts, listed, synthesized, compared, build, validate, reviewNotes } =
     update;
   const reasons = reviewReasons(update);
@@ -133,7 +213,7 @@ export function renderReport(update) {
   for (const [title, step] of [
     ["Build output", build],
     ["Validation output", validate],
-  ]) {
+  ] as const) {
     if (!step.passed && step.output)
       lines.push(`## ${title}`, "", "```text", step.output.trim(), "```", "");
   }
@@ -141,7 +221,11 @@ export function renderReport(update) {
 }
 
 /** The commit message for an update, which is also the pull request's title and merge message. */
-export function renderCommitMessage({ before, after, synthesized }) {
+export function renderCommitMessage({
+  before,
+  after,
+  synthesized,
+}: Pick<Update, "before" | "after" | "synthesized">): string {
   const body = [`Moves the dictionary pin from jmdict-simplified ${before.tag} to ${after.tag}.`];
   if (synthesized.removed.length > 0) {
     body.push(

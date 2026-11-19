@@ -1,7 +1,7 @@
 import { crc32, deflateRawSync, inflateRawSync } from "node:zlib";
 
 /** Read one named ZIP member in memory, without extracting paths or links. */
-export function extractZIPMember(archive, memberName) {
+export function extractZIPMember(archive: Buffer, memberName: string): Buffer {
   let trailer = -1;
   for (let offset = archive.length - 22; offset >= Math.max(0, archive.length - 65_557); --offset) {
     if (
@@ -25,7 +25,7 @@ export function extractZIPMember(archive, memberName) {
   ) {
     throw new Error("Unsupported multipart or ZIP64 archive");
   }
-  let result;
+  let result: Buffer | undefined;
   for (let index = 0; index < count; ++index) {
     if (offset + 46 > trailer || archive.readUInt32LE(offset) !== 0x02014b50)
       throw new Error("Invalid ZIP directory entry");
@@ -74,15 +74,18 @@ export function extractZIPMember(archive, memberName) {
   return result;
 }
 
+/** A file to put in an archive: its name, then its contents. */
+export type ZIPMember = readonly [name: string, bytes: Buffer];
+
 /**
  * Build a ZIP archive from `[name, bytes]` members, all stamped with `date` (a `YYYY-MM-DD`
  * string) so that the same members always produce the same archive.
  */
-export function createZIP(members, date) {
+export function createZIP(members: readonly ZIPMember[], date: string): Buffer {
   const [year, month, day] = date.split("-").map(Number);
   const dosDate = ((year - 1980) << 9) | (month << 5) | day;
-  const locals = [],
-    directory = [];
+  const locals: Buffer[] = [],
+    directory: Buffer[] = [];
   let offset = 0;
   for (const [name, bytes] of members) {
     const nameBytes = Buffer.from(name);

@@ -16,6 +16,7 @@ import { pairKey, recordKey } from "../src/segments.ts";
 import { deriveOmittedParticles } from "../src/variants.ts";
 import { validateDisplayAlignment } from "../src/display.ts";
 import { contradictionKind, contradictsSpelling } from "../src/pairings.ts";
+import type { SynthesizedPair } from "../src/pairings.ts";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.ts";
 import { isSilentPunctuation, splitGraphemes } from "../src/kana.ts";
 import {
@@ -24,14 +25,20 @@ import {
   parseDatabaseVersion,
   releaseFiles,
 } from "./lib/database-files.ts";
+import type { Database } from "../src/types.ts";
+import type { Manifest } from "./lib/database-files.ts";
+import type { Evaluation } from "./lib/evaluation.ts";
 import { extractZIPMember } from "./lib/zip.ts";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
 const bytes = await readFile(join(values.directory, databaseFile));
-const output = JSON.parse(bytes);
-const matchesSchema = addFormats(new Ajv()).compile(
-  JSON.parse(await readFile(new URL("../schema.json", import.meta.url), "utf8")),
-);
+// `JSON.parse()` converts the bytes to a string itself; its declaration only admits a string.
+const output: Database = JSON.parse(bytes as unknown as string);
+// Node gives a CommonJS module's `module.exports` as its default import. For these two packages
+// that is the class and the function themselves, but their declarations only describe `default`.
+const matchesSchema = (addFormats as unknown as typeof addFormats.default)(
+  new (Ajv as unknown as typeof Ajv.default)(),
+).compile(JSON.parse(await readFile(new URL("../schema.json", import.meta.url), "utf8")));
 assert.ok(
   matchesSchema(output),
   `Output does not match schema.json: ${JSON.stringify(matchesSchema.errors?.slice(0, 3))}`,
@@ -52,7 +59,9 @@ assert.deepEqual(
   zstdDecompressSync(await readFile(join(values.directory, releaseFiles[1]))),
   bytes,
 );
-const manifest = JSON.parse(await readFile(join(values.directory, "manifest.json"), "utf8"));
+const manifest: Manifest = JSON.parse(
+  await readFile(join(values.directory, "manifest.json"), "utf8"),
+);
 for (const [name, expected] of Object.entries(manifest.files)) {
   const contents = await readFile(join(values.directory, name));
   assert.equal(contents.length, expected.bytes, `${name}: size`);
@@ -66,9 +75,14 @@ const annotationsText = await readFile(
   "utf8",
 );
 const synthesized = new Map(
-  JSON.parse(
-    await readFile(new URL("../data/synthesized-pairs.json", import.meta.url), "utf8"),
-  ).map((item) => [recordKey(item.id, item.spelling, item.reading), item]),
+  (
+    JSON.parse(
+      await readFile(new URL("../data/synthesized-pairs.json", import.meta.url), "utf8"),
+    ) as SynthesizedPair[]
+  ).map((item): [string, SynthesizedPair] => [
+    recordKey(item.id, item.spelling, item.reading),
+    item,
+  ]),
 );
 const annotations = compileAnnotations(JSON.parse(annotationsText));
 assert.deepEqual(Object.keys(output), ["version", "schemaVersion", "jmdictDate", "entries"]);
@@ -86,7 +100,7 @@ assert.deepEqual(
 // The manifest binds the evaluation to this database; its provenance records the build inputs.
 const { provenance } = JSON.parse(
   await readFile(join(values.directory, "evaluation.json"), "utf8"),
-);
+) as Evaluation;
 assert.ok(manifest.files["evaluation.json"], "The manifest covers the evaluation");
 assert.equal(
   provenance.generatorSHA256,
@@ -121,13 +135,13 @@ for (const key of annotations.keys())
   );
 let count = 0,
   synthesizedCount = 0;
-const fitting = new Set(),
-  spellings = new Set(),
-  keys = new Set();
+const fitting = new Set<string>(),
+  spellings = new Set<string>(),
+  keys = new Set<string>();
 // The position of each spelling's latest record: its JMdict reading index, or Infinity once synthesized.
-const lastPosition = new Map();
+const lastPosition = new Map<string, number | undefined>();
 // A pair that several entries share has the same segments in each, so consumers can look one up without an ID.
-const pairSegments = new Map();
+const pairSegments = new Map<string, string>();
 for (const [id, records] of Object.entries(output.entries)) {
   assert.ok(/^\d+$/u.test(id));
   assert.ok(records.length > 0);
@@ -157,7 +171,9 @@ for (const [id, records] of Object.entries(output.entries)) {
     const position =
       record.pairing === "synthesized" ? Infinity : jmdictPairs.get(key)?.readingIndex;
     assert.ok(
-      !(position < lastPosition.get(`${id}\t${record.spelling}`)),
+      // A record that JMdict lacks has no position, and a spelling's first record has none before
+      // it. Either way the comparison is false.
+      !(position! < lastPosition.get(`${id}\t${record.spelling}`)!),
       `Records for a spelling are out of JMdict reading order: ${key}`,
     );
     lastPosition.set(`${id}\t${record.spelling}`, position);

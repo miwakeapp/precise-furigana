@@ -18,6 +18,8 @@ import {
   verifyEvaluation,
   verifyExistingRelease,
 } from "../scripts/release.ts";
+import type { GoldExample } from "../scripts/lib/evaluation.ts";
+import type { Database } from "../src/types.ts";
 
 function fixture() {
   const goldText = JSON.stringify([
@@ -42,7 +44,7 @@ function fixture() {
       goldSHA256: digest(goldText),
     },
     summary: { examples: 1, passed: 1 },
-    results: JSON.parse(goldText).map((example) => ({
+    results: (JSON.parse(goldText) as GoldExample[]).map((example) => ({
       ...example,
       actual: example.segments,
       pass: true,
@@ -54,7 +56,12 @@ function fixture() {
 test("release evaluation is bound to source, generator, configuration, and gold fixtures", () => {
   const { current, evaluation, goldText } = fixture();
   verifyEvaluation(evaluation, goldText, current);
-  for (const key of ["generatorSHA256", "annotationsSHA256", "sourcesSHA256", "goldSHA256"]) {
+  for (const key of [
+    "generatorSHA256",
+    "annotationsSHA256",
+    "sourcesSHA256",
+    "goldSHA256",
+  ] as const) {
     const stale = structuredClone(evaluation);
     stale.provenance[key] = "stale";
     assert.throws(() => verifyEvaluation(stale, goldText, current));
@@ -99,7 +106,10 @@ test("a version is the schema version, the dictionary date, and a revision", asy
     assert.throws(() => parseDatabaseVersion(invalid));
   }
   // The package is private; its major only restates the schema version.
-  const { version } = JSON.parse(await readFile(new URL("../package.json", import.meta.url)));
+  const { version } = JSON.parse(
+    // `JSON.parse()` converts the bytes to a string itself; its declaration only admits a string.
+    (await readFile(new URL("../package.json", import.meta.url))) as unknown as string,
+  );
   assert.equal(Number(version.split(".")[0]), schemaVersion);
 });
 
@@ -118,7 +128,7 @@ test("released revisions are read from tags for the same schema and date", () =>
 test("stamping a version rewrites the database, its published files, and the manifest", async () => {
   const directory = await mkdtemp(join(tmpdir(), "precise-furigana-"));
   try {
-    const database = {
+    const database: Database = {
       version: "1.20261116.0-dev",
       schemaVersion: 1,
       jmdictDate: "2026-11-16",
@@ -133,8 +143,11 @@ test("stamping a version rewrites the database, its published files, and the man
     assert.equal(manifest.version, "1.20261116.4");
     assert.deepEqual(manifest.files["evaluation.json"], {});
     const json = await readFile(join(directory, "precise-furigana.json"));
-    assert.deepEqual(JSON.parse(json), { ...database, version: "1.20261116.4" });
-    assert.deepEqual(Object.keys(JSON.parse(json)), Object.keys(database));
+    assert.deepEqual(JSON.parse(json as unknown as string), {
+      ...database,
+      version: "1.20261116.4",
+    });
+    assert.deepEqual(Object.keys(JSON.parse(json as unknown as string)), Object.keys(database));
     const archive = await readFile(join(directory, "precise-furigana.zip"));
     assert.deepEqual(extractZIPMember(archive, "precise-furigana.json"), json);
     for (const name of ["schema.json", "NOTICE.md", "LICENSE.md"]) {

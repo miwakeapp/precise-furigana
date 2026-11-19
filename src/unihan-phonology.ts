@@ -1,5 +1,24 @@
 import { getKanaVowels, kanaPronunciation, normalizeKana } from "./kana.ts";
 
+/** How a contextual sound was reached from a listed value. */
+export interface UnihanDerivation {
+  /** The listed reading, as the source writes it. */
+  value: string;
+  rules: string[];
+  /** Whether the sound is only possible before a voiceless obstruent in the next character. */
+  requiresFollowingObstruent?: boolean;
+}
+
+/** A contextual sound for a character, in normalized kana. */
+export interface UnihanReadingVariant extends UnihanDerivation {
+  reading: string;
+}
+
+export interface UnihanReadingVariantOptions {
+  supplementalVoicing?: boolean;
+  yoonSimplification?: boolean;
+}
+
 const voicedInitials = new Map(
   Array.from("かきくけこさしすせそたちつてとはひふへほ").map((value, index) => [
     value,
@@ -14,7 +33,7 @@ const modernVoicedInitials = new Map([
   ["ち", "じ"],
   ["つ", "ず"],
 ]);
-const plainSyllables = new Map();
+const plainSyllables = new Map<string, string>();
 for (const [bases, outputs] of [
   ["きぎ", ["かくこ", "がぐご"]],
   ["しじ", ["さすそ", "ざずぞ"]],
@@ -23,7 +42,7 @@ for (const [bases, outputs] of [
   ["ひびぴ", ["はふほ", "ばぶぼ", "ぱぷぽ"]],
   ["み", ["まむも"]],
   ["り", ["らるろ"]],
-]) {
+] as const) {
   for (const [index, base] of Array.from(bases).entries()) {
     for (const [position, ending] of Array.from("ゃゅょ").entries())
       plainSyllables.set(base + ending, outputs[index][position]);
@@ -36,11 +55,11 @@ for (const [bases, outputs] of [
  * short-reading bound excludes long native and non-Sino loan transcriptions.
  */
 export function deriveUnihanReadingVariants(
-  values,
-  knownReadings,
-  { supplementalVoicing = false, yoonSimplification = false } = {},
-) {
-  const variants = [];
+  values: string[],
+  knownReadings: Set<string>,
+  { supplementalVoicing = false, yoonSimplification = false }: UnihanReadingVariantOptions = {},
+): UnihanReadingVariant[] {
+  const variants: UnihanReadingVariant[] = [];
   for (const value of values) {
     if (!/^[\p{Script=Katakana}ー]+$/u.test(value)) continue;
     const reading = normalizeKana(value);
@@ -53,7 +72,7 @@ export function deriveUnihanReadingVariants(
         plosiveInitials.get(unvoicedInitials.get(reading[0]) ?? reading[0]),
         modernVoicedInitials.get(reading[0]),
       ]);
-      const onsets = [{ reading, rules: [] }];
+      const onsets: { reading: string; rules: string[] }[] = [{ reading, rules: [] }];
       for (const initial of initials) {
         if (initial !== undefined && initial !== reading[0])
           onsets.push({ reading: initial + reading.slice(1), rules: ["initial-voicing"] });
@@ -92,8 +111,8 @@ export function deriveUnihanReadingVariants(
 }
 
 /** Extend only a listed one-mora katakana sound, without other sound changes. */
-export function deriveUnihanOnLengthenings(values) {
-  const variants = [];
+export function deriveUnihanOnLengthenings(values: string[]): UnihanReadingVariant[] {
+  const variants: UnihanReadingVariant[] = [];
   for (const value of values) {
     if (!/^[\p{Script=Katakana}]+$/u.test(value)) continue;
     const reading = normalizeKana(value);
@@ -102,7 +121,7 @@ export function deriveUnihanOnLengthenings(values) {
       /^[ぁぃぅぇぉゃゅょゎっん]/u.test(reading)
     )
       continue;
-    const vowels = getKanaVowels(reading.at(-1));
+    const vowels = getKanaVowels(reading.at(-1)!);
     if (vowels === undefined) continue;
     for (const vowel of [...vowels, "ー"]) {
       variants.push({ value, reading: reading + vowel, rules: ["single-mora-vowel-extension"] });
@@ -112,7 +131,7 @@ export function deriveUnihanOnLengthenings(values) {
 }
 
 /** An iteration mark repeats its actual predecessor, with optional voicing. */
-export function matchesIterationReading(previous, current) {
+export function matchesIterationReading(previous: string | undefined, current: string): boolean {
   if (previous === undefined) return false;
   const source = normalizeKana(previous);
   const target = kanaPronunciation(current);

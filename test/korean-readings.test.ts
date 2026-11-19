@@ -2,11 +2,39 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveKoreanAlignments } from "../src/korean-readings.ts";
 import { compileAlignmentPipeline, defaultConfiguration } from "../src/dataset.ts";
+import type { KoreanAlignmentOptions } from "../src/korean-readings.ts";
+import type { Alignment, Kanjidic2, Kanjidic2Reading } from "../src/types.ts";
+import * as fixture from "./support/dictionaries.ts";
+
+interface EntryOptions {
+  tagged?: boolean;
+  wasei?: boolean;
+  language?: string;
+  appliesToKanji?: string[];
+  appliesToKana?: string[];
+  readingTags?: string[];
+}
+
+/** A KANJIDIC reading with the extra raw fields these tests add to check that they are kept. */
+interface RawReading extends Partial<Kanjidic2Reading> {
+  sourceNote?: string;
+  marker?: string;
+}
+
+/**
+ * A character dictionary whose characters all have readings. The second half lets a test add
+ * partial characters and `RawReading`s to it.
+ */
+type Inventory = Kanjidic2 & {
+  characters: { literal: string; readingMeaning: { groups: { readings: RawReading[] }[] } }[];
+};
+
+type Forms = [literal: string, values: string[]][];
 
 function entry(
-  id,
-  spelling,
-  reading,
+  id: string,
+  spelling: string,
+  reading: string,
   {
     tagged = true,
     wasei = false,
@@ -14,7 +42,7 @@ function entry(
     appliesToKanji = ["*"],
     appliesToKana = ["*"],
     readingTags = [],
-  } = {},
+  }: EntryOptions = {},
 ) {
   return {
     id,
@@ -32,22 +60,32 @@ function entry(
   };
 }
 
-const source = (forms) => ({
-  characters: forms.map(([literal, values]) => ({
-    literal,
-    readingMeaning: {
-      groups: [{ readings: values.map((value) => ({ type: "korean_h", value })) }],
-    },
-  })),
+const source = (forms: Forms) =>
+  fixture.kanjidic({
+    characters: forms.map(([literal, values]) => ({
+      literal,
+      readingMeaning: {
+        groups: [{ readings: values.map((value) => ({ type: "korean_h", value })) }],
+      },
+    })),
+  }) as Inventory;
+const grouped = (spelling: string, reading: string): Alignment => ({
+  segments: [[spelling, reading]],
+  status: "aligned",
 });
-const grouped = (spelling, reading) => ({ segments: [[spelling, reading]], status: "aligned" });
 const juche = source([
   ["主", ["주"]],
   ["体", ["체"]],
 ]);
-const run = (spelling, reading, forms, options = {}, entryOptions = {}) =>
+const run = (
+  spelling: string,
+  reading: string,
+  forms: Forms,
+  options: KoreanAlignmentOptions = {},
+  entryOptions: EntryOptions = {},
+) =>
   deriveKoreanAlignments(
-    { words: [entry("1", spelling, reading, entryOptions)] },
+    fixture.jmdict({ words: [entry("1", spelling, reading, entryOptions)] }),
     source(forms),
     grouped,
     options,
@@ -63,12 +101,12 @@ test("Korean allocation preserves full raw records, target eligibility and trans
     url: "https://example.test/kanjidic.json",
   };
   const result = deriveKoreanAlignments(
-    { words: [entry("1", "主体", "チュチェ")] },
+    fixture.jmdict({ words: [entry("1", "主体", "チュチェ")] }),
     kanjidic,
     grouped,
     { kanjidicSource: identity },
   );
-  assert.deepEqual(result.wordAlignments.get("主体").get("チュチェ"), [
+  assert.deepEqual(result.wordAlignments.get("主体")!.get("チュチェ"), [
     ["主", "チュ"],
     ["体", "チェ"],
   ]);
@@ -90,7 +128,7 @@ test("medial voicing and codas retain source-syllable ownership", () => {
     ["温", ["온"]],
     ["突", ["돌"]],
   ]);
-  assert.deepEqual(result.wordAlignments.get("温突").get("オンドル"), [
+  assert.deepEqual(result.wordAlignments.get("温突")!.get("オンドル"), [
     ["温", "オン"],
     ["突", "ドル"],
   ]);
@@ -106,7 +144,7 @@ test("different listed forms may support the same unique allocation without disc
     ["大", ["대", "태"]],
     ["韓", ["한"]],
   ]);
-  assert.deepEqual(result.wordAlignments.get("大韓").get("テハン"), [
+  assert.deepEqual(result.wordAlignments.get("大韓")!.get("テハン"), [
     ["大", "テ"],
     ["韓", "ハン"],
   ]);
@@ -119,40 +157,48 @@ test("different listed forms may support the same unique allocation without disc
     readings: [{ type: "korean_h", value: "주", marker: "second claim" }],
   });
   const claims = deriveKoreanAlignments(
-    { words: [entry("1", "主体", "チュチェ")] },
+    fixture.jmdict({ words: [entry("1", "主体", "チュチェ")] }),
     duplicate,
     grouped,
   ).witnesses[0].sourcePaths[0][0].evidence;
   assert.equal(claims.length, 2);
   assert.equal(claims[1].groupIndex, 1);
-  assert.equal(claims[1].form.marker, "second claim");
+  assert.equal((claims[1].form as RawReading).marker, "second claim");
 });
 
 test("every character needs Korean evidence and Japanese companions cannot fill a missing syllable", () => {
   const missing = structuredClone(juche);
-  missing.characters[1].readingMeaning.groups[0].readings = [{ type: "ja_on", value: "チェ" }];
+  missing.characters[1].readingMeaning.groups[0].readings = [
+    fixture.kanjidicReading({ type: "ja_on", value: "チェ" }),
+  ];
   assert.equal(
-    deriveKoreanAlignments({ words: [entry("1", "主体", "チュチェ")] }, missing, grouped)
-      .wordAlignments.size,
+    deriveKoreanAlignments(
+      fixture.jmdict({ words: [entry("1", "主体", "チュチェ")] }),
+      missing,
+      grouped,
+    ).wordAlignments.size,
     0,
   );
   for (const reading of ["チューチェ", "チュチエ", "チュチェア"]) {
     assert.equal(
-      deriveKoreanAlignments({ words: [entry("1", "主体", reading)] }, juche, grouped)
-        .wordAlignments.size,
+      deriveKoreanAlignments(
+        fixture.jmdict({ words: [entry("1", "主体", reading)] }),
+        juche,
+        grouped,
+      ).wordAlignments.size,
       0,
     );
   }
 });
 
 test("competing complete allocations stay grouped even when one would preserve old boundaries", () => {
-  const words = { words: [entry("1", "甲乙", "カクク")] };
+  const words = fixture.jmdict({ words: [entry("1", "甲乙", "カクク")] });
   const inventory = source([
     ["甲", ["가", "각"]],
     ["乙", ["쿡", "쿠"]],
   ]);
   assert.equal(deriveKoreanAlignments(words, inventory, grouped).wordAlignments.size, 0);
-  const prior = () => ({
+  const prior = (): Alignment => ({
     status: "aligned",
     segments: [
       ["甲", "カ"],
@@ -163,12 +209,12 @@ test("competing complete allocations stay grouped even when one would preserve o
 });
 
 test("existing boundaries, nonaligned statuses and original Unicode remain intact", () => {
-  const words = { words: [entry("1", "甲乙", "カクク")] },
+  const words = fixture.jmdict({ words: [entry("1", "甲乙", "カクク")] }),
     inventory = source([
       ["甲", ["가"]],
       ["乙", ["쿡"]],
     ]);
-  const conflicting = () => ({
+  const conflicting = (): Alignment => ({
     status: "aligned",
     segments: [
       ["甲", "カク"],
@@ -176,7 +222,7 @@ test("existing boundaries, nonaligned statuses and original Unicode remain intac
     ],
   });
   assert.equal(deriveKoreanAlignments(words, inventory, conflicting).wordAlignments.size, 0);
-  for (const status of ["ambiguous", "fallback", "reviewed"]) {
+  for (const status of ["ambiguous", "fallback", "reviewed"] as const) {
     assert.equal(
       deriveKoreanAlignments(words, inventory, (spelling, reading) => ({
         ...grouped(spelling, reading),
@@ -189,7 +235,7 @@ test("existing boundaries, nonaligned statuses and original Unicode remain intac
     ["𠮷", ["주"]],
     ["体", ["체"]],
   ]);
-  assert.deepEqual(supplementary.wordAlignments.get("𠮷体").get("ちゅちぇ"), [
+  assert.deepEqual(supplementary.wordAlignments.get("𠮷体")!.get("ちゅちぇ"), [
     ["𠮷", "ちゅ"],
     ["体", "ちぇ"],
   ]);
@@ -206,15 +252,20 @@ test("language-source gates obey sense restrictions, wasei and reading tags", ()
     { readingTags: ["sk"] },
   ]) {
     assert.equal(
-      deriveKoreanAlignments({ words: [entry("1", "主体", "チュチェ", options)] }, juche, grouped, {
-        untaggedKatakana: false,
-      }).wordAlignments.size,
+      deriveKoreanAlignments(
+        fixture.jmdict({ words: [entry("1", "主体", "チュチェ", options)] }),
+        juche,
+        grouped,
+        {
+          untaggedKatakana: false,
+        },
+      ).wordAlignments.size,
       0,
     );
   }
   assert.equal(
     deriveKoreanAlignments(
-      { words: [entry("1", "主体", "チュチェ", { tagged: false })] },
+      fixture.jmdict({ words: [entry("1", "主体", "チュチェ", { tagged: false })] }),
       juche,
       grouped,
     ).witnesses[0].eligibility,
@@ -222,7 +273,7 @@ test("language-source gates obey sense restrictions, wasei and reading tags", ()
   );
   assert.equal(
     deriveKoreanAlignments(
-      { words: [entry("1", "主体", "ちゅちぇ", { tagged: false })] },
+      fixture.jmdict({ words: [entry("1", "主体", "ちゅちぇ", { tagged: false })] }),
       juche,
       grouped,
     ).wordAlignments.size,
@@ -232,7 +283,7 @@ test("language-source gates obey sense restrictions, wasei and reading tags", ()
 });
 
 test("liaison, assimilation, aspiration and omitted syllable classes fail closed", () => {
-  const cases = [
+  const cases: [spelling: string, reading: string, forms: Forms][] = [
     [
       "国亜",
       "ククア",
@@ -303,8 +354,8 @@ test("liaison, assimilation, aspiration and omitted syllable classes fail closed
 });
 
 test("source fingerprints distinguish standalone inventories and malformed options are rejected", () => {
-  const words = { words: [entry("1", "主体", "チュチェ")] };
-  const fingerprint = (inventory) =>
+  const words = fixture.jmdict({ words: [entry("1", "主体", "チュチェ")] });
+  const fingerprint = (inventory: Inventory) =>
     deriveKoreanAlignments(words, inventory, grouped).witnesses[0].sourcePaths[0][0].evidence[0]
       .sourceIdentity.readingsSHA256;
   const changed = structuredClone(juche);
@@ -315,10 +366,14 @@ test("source fingerprints distinguish standalone inventories and malformed optio
     { kanjidicSource: null },
     { kanjidicSource: { version: "1", jsonSHA256: "bad" } },
   ]) {
+    // @ts-expect-error: each of these holds a malformed option
     assert.throws(() => deriveKoreanAlignments(words, juche, grouped, options), TypeError);
   }
+  // @ts-expect-error: the dictionary is missing
   assert.throws(() => deriveKoreanAlignments(undefined, juche, grouped), TypeError);
+  // @ts-expect-error: the character dictionary has no characters
   assert.throws(() => deriveKoreanAlignments(words, {}, grouped), TypeError);
+  // @ts-expect-error: the aligner is missing
   assert.throws(() => deriveKoreanAlignments(words, juche, undefined), TypeError);
   assert.equal(
     deriveKoreanAlignments(words, juche, grouped, { untaggedKatakana: undefined }).wordAlignments
@@ -328,7 +383,7 @@ test("source fingerprints distinguish standalone inventories and malformed optio
 });
 
 test("the final pipeline honors Korean controls and omits the pass from protected construction", () => {
-  const jmdict = { words: [entry("1", "主体", "チュチェ", { tagged: false })] };
+  const jmdict = fixture.jmdict({ words: [entry("1", "主体", "チュチェ", { tagged: false })] });
   const options = {
     ...Object.fromEntries(Object.keys(defaultConfiguration).map((name) => [name, false])),
     dictionaryNasalLoss: true,
@@ -341,7 +396,7 @@ test("the final pipeline honors Korean controls and omits the pass from protecte
     ["主", "チュ"],
     ["体", "チェ"],
   ]);
-  assert.deepEqual(pipeline.align("主体", "チュチェ").evidence[0].rules, [
+  assert.deepEqual(pipeline.align("主体", "チュチェ").evidence![0].rules, [
     "listed-korean-sound-compatibility",
   ]);
   for (const disabled of [{ koreanReadings: false }, { untaggedKatakanaKorean: false }]) {
@@ -352,7 +407,9 @@ test("the final pipeline honors Korean controls and omits the pass from protecte
 });
 
 test("pooled Korean sounds refine attested mixtures without creating readings for unattested pairs", () => {
-  const jmdict = { words: [entry("1", "主体", "チュチェ"), entry("2", "主体阿", "チュチェア")] };
+  const jmdict = fixture.jmdict({
+    words: [entry("1", "主体", "チュチェ"), entry("2", "主体阿", "チュチェア")],
+  });
   const kanjidic = structuredClone(juche);
   kanjidic.characters.push({
     literal: "阿",

@@ -8,8 +8,184 @@ import { transliteratePinyin } from "./loan-readings.ts";
 import { decodeHangul, transcribeHangul } from "./korean-readings.ts";
 import { makeLexicalContextChecker } from "./lexical-evidence.ts";
 import { boundaries, pairKey, segmentText, segmentReading, validateAlignment } from "./segments.ts";
+import type {
+  CharacterReadingBundle,
+  CharacterReadingRecord,
+  CharacterReadingSource,
+} from "./character-readings.ts";
+import type { HangulSyllable, TranscribedHangul } from "./korean-readings.ts";
+import type { CompiledLexicalFact, LexicalContext, LexicalSource } from "./lexical-evidence.ts";
+import type { LockedSource } from "./sources.ts";
+import type { WeakReadingWitness } from "./weak-readings.ts";
+import type {
+  Aligner,
+  JMdict,
+  Kanjidic2,
+  Kanjidic2Reading,
+  PassResult,
+  ReadingMap,
+  Segment,
+  SourceIdentity,
+} from "./types.ts";
 
-function validateReadingMap(map, name, annotated = false) {
+export interface ListedPhonologyOptions {
+  weakCharacterReadings?: ReadingMap;
+  unihanReadings?: ReadingMap;
+  characterReadingBundle?: CharacterReadingBundle;
+  englishCharacterReadingBundle?: CharacterReadingBundle;
+  unihanSource?: LockedSource;
+  /** Supplying KANJIDIC also pools every source's exact sounds to divide the spans still grouped. */
+  kanjidic?: Kanjidic2;
+  kanjidicSource?: SourceIdentity;
+  jmdictSource?: SourceIdentity;
+  weakWitnesses?: WeakReadingWitness[];
+  lexicalFacts?: CompiledLexicalFact[];
+  loanReadings?: boolean;
+  koreanReadings?: boolean;
+  supplementalVoicing?: boolean;
+  yoonSimplification?: boolean;
+  onLengthening?: boolean;
+}
+
+/** A source's listing of one sound for a character. */
+export interface ListedClaim {
+  source: string;
+  field: string;
+  /** The supplied identity of the source, or a fingerprint of its readings when none was supplied. */
+  sourceIdentity: LockedSource | CharacterReadingSource;
+  /** The reading as the source writes it. */
+  value: string;
+  /** The bundle's record of the reading; absent for Unihan, which lists only the value. */
+  form?: CharacterReadingRecord;
+}
+
+/** A listing as used for one character, with the sound changes that matching it needed. */
+export interface ListedEvidence extends ListedClaim {
+  rules: string[];
+  /** Never present, which tells this evidence apart from a pooled sound's `PathClaim`. */
+  category?: undefined;
+}
+
+/** A word that listed readings and their bounded sound changes divided. */
+export interface ListedReadingWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  interpretation: string;
+  characters: {
+    character: string;
+    spelling: string;
+    reading: string;
+    codepoint: string;
+    evidence: ListedEvidence[];
+  }[];
+}
+
+/** A listing whose sound is used exactly as listed. */
+export interface ExactListedClaim extends ListedClaim {
+  category: `${string} exact`;
+}
+
+/** A KANJIDIC reading: a Japanese stem, or the kana transcription of a Mandarin or Korean one. */
+export interface KanjidicSoundClaim {
+  category: "KANJIDIC ordinary stem" | "Mandarin transcription" | "Korean transcription";
+  source: "KANJIDIC2";
+  sourceIdentity: SourceIdentity;
+  groupIndex: number;
+  readingIndex: number;
+  form: Kanjidic2Reading;
+}
+
+/** A Korean reading as transcribed after the syllable that precedes it in the word. */
+export interface TranscribedKoreanClaim extends KanjidicSoundClaim {
+  rules: string[];
+  transcription: TranscribedHangul["transcription"];
+}
+
+type WeakSoundClaimFor<Witness extends WeakReadingWitness> = Witness extends WeakReadingWitness
+  ? {
+      category: Witness["source"];
+      source: Witness["source"];
+      sourceIdentity: SourceIdentity;
+      witness: Witness;
+    }
+  : never;
+
+/** A weak reading, with the witness that its kind of source records. */
+export type WeakSoundClaim = WeakSoundClaimFor<WeakReadingWitness>;
+
+/** A sound that a reviewed fact about another word allows other words to reuse. */
+export interface ReusableSoundClaim {
+  category: "Reviewed reusable sound";
+  source: "Reviewed lexical evidence";
+  factId: string | undefined;
+  segmentIndex: number;
+  sourceIdentity: { factSHA256: string };
+  witness: { spelling: string; reading: string; segments: Segment[] };
+  /** The JMdict entries the fact was drawn from, whose words it cannot corroborate. */
+  sourceFamilyIds: string[];
+  sources: LexicalSource[];
+  reason: string;
+}
+
+/** A source's support for one exact sound of a character. */
+export type SoundClaim =
+  | ExactListedClaim
+  | KanjidicSoundClaim
+  | WeakSoundClaim
+  | ReusableSoundClaim;
+
+/** Stands for a part that the division leaves as it was. */
+export interface UnchangedClaim {
+  category: "literal" | "unchanged opaque span";
+}
+
+/** What supports one part of a division, given the parts before it. */
+export type PathClaim = SoundClaim | TranscribedKoreanClaim | UnchangedClaim;
+
+/** A word whose grouped span the pooled exact sounds divided in only one way. */
+export interface PooledSoundWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  interpretation: string;
+  reviewedContexts: LexicalContext[];
+  characters: {
+    character: string;
+    spelling: string;
+    reading: string;
+    newlyAllocated: boolean;
+    evidence: PathClaim[];
+  }[];
+}
+
+export type ListedPhonologyWitness = ListedReadingWitness | PooledSoundWitness;
+
+/** The options that the pooled stage reads, with their defaults applied. */
+type PooledSoundOptions = Required<
+  Pick<ListedPhonologyOptions, "weakWitnesses" | "lexicalFacts" | "loanReadings" | "koreanReadings">
+> &
+  Pick<ListedPhonologyOptions, "kanjidicSource" | "jmdictSource">;
+
+/** One part of a proposed division: a character given a sound, literal kana, or a span kept whole. */
+interface SoundPart {
+  spelling: string;
+  reading: string;
+  literal?: boolean;
+  /** Whether the part stays as it was with no single pooled sound to account for it. */
+  opaque?: boolean;
+}
+
+/** The Hangul syllable a part was transcribed from, "opaque", or undefined for neither. */
+type PathState = string | undefined;
+
+interface PathEdge {
+  start: PathState;
+  end: PathState;
+  claim: PathClaim;
+}
+
+function validateReadingMap(map: ReadingMap, name: string, annotated = false): void {
   if (!(map instanceof Map)) throw new TypeError(`${name} must be a Map`);
   for (const [character, values] of map) {
     if (
@@ -25,8 +201,8 @@ function validateReadingMap(map, name, annotated = false) {
   }
 }
 
-function mapFingerprint(readings) {
-  const entries = [...readings].map(([character, values]) => [
+function mapFingerprint(readings: ReadingMap): string {
+  const entries = [...readings].map(([character, values]): [string, string[]] => [
     character,
     [...new Set(values)].sort(),
   ]);
@@ -39,9 +215,9 @@ function mapFingerprint(readings) {
  * These witnesses document phonetic allocations, not historical derivations.
  */
 export function deriveListedPhonologyAlignments(
-  jmdict,
-  primary,
-  align,
+  jmdict: JMdict,
+  primary: ReadingMap,
+  align: Aligner,
   {
     weakCharacterReadings = new Map(),
     unihanReadings = new Map(),
@@ -58,8 +234,8 @@ export function deriveListedPhonologyAlignments(
     supplementalVoicing = true,
     yoonSimplification = true,
     onLengthening = true,
-  } = {},
-) {
+  }: ListedPhonologyOptions = {},
+): PassResult<ListedPhonologyWitness> {
   if (!Array.isArray(jmdict?.words)) throw new TypeError("JMdict must contain a words array");
   if (typeof align !== "function") throw new TypeError("align must be a function");
   validateReadingMap(primary, "primary", true);
@@ -83,9 +259,9 @@ export function deriveListedPhonologyAlignments(
   ) {
     throw new TypeError("Unihan source identity requires a version and SHA256");
   }
-  const readings = new Map(),
-    sources = new Map();
-  const add = (character, value, source) => {
+  const readings: ReadingMap = new Map(),
+    sources = new Map<string, ListedClaim[]>();
+  const add = (character: string, value: string, source: ListedClaim): void => {
     const values = readings.get(character) ?? [];
     if (!values.includes(value)) values.push(value);
     readings.set(character, values);
@@ -94,7 +270,7 @@ export function deriveListedPhonologyAlignments(
     claims.push(source);
     sources.set(key, claims);
   };
-  const unihanIdentity = unihanSource ?? {
+  const unihanIdentity: LockedSource = unihanSource ?? {
     name: "Supplied Unihan kJapanese reading map",
     readingsSHA256: mapFingerprint(unihanReadings),
   };
@@ -110,7 +286,7 @@ export function deriveListedPhonologyAlignments(
   for (const [bundle, defaultPublisher] of [
     [characterReadingBundle, "Japanese Wiktionary"],
     [englishCharacterReadingBundle, "English Wiktionary"],
-  ]) {
+  ] as const) {
     if (bundle === undefined) continue;
     validateCharacterReadingBundle(bundle);
     for (const record of bundle.readings)
@@ -136,9 +312,9 @@ export function deriveListedPhonologyAlignments(
         isIdeograph(followingSpelling) &&
         /^[かきくけこさしすせそたちつてとぱぴぷぺぽ]/u.test(normalizeKana(followingReading))),
   });
-  const output = {
+  const output: PassResult<ListedPhonologyWitness> = {
     wordAlignments: result.wordAlignments,
-    witnesses: result.witnesses.map((witness) => ({
+    witnesses: result.witnesses.map((witness): ListedReadingWitness => ({
       id: witness.id,
       spelling: witness.spelling,
       reading: witness.reading,
@@ -146,7 +322,11 @@ export function deriveListedPhonologyAlignments(
         "Exact listed readings or finite contextual sound correspondences; not an etymological claim",
       characters: witness.characters.map((character) => {
         const allocations =
-          character.derivations ?? character.values.map((value) => ({ value, rules: [] }));
+          character.derivations ??
+          character.values.map((value): { value: string; rules: string[] } => ({
+            value,
+            rules: [],
+          }));
         const evidence = allocations.flatMap((allocation) => {
           const claims = sources.get(JSON.stringify([character.character, allocation.value]));
           if (claims === undefined) throw new Error("Missing listed-reading source provenance");
@@ -177,13 +357,20 @@ export function deriveListedPhonologyAlignments(
 // The static union is deliberately conservative: contextual Korean support is
 // checked only after a complete allocation has unique character boundaries.
 function refineExactSounds(
-  jmdict,
-  kanjidic,
-  align,
-  output,
-  listedSources,
-  { kanjidicSource, jmdictSource, weakWitnesses, lexicalFacts, loanReadings, koreanReadings },
-) {
+  jmdict: JMdict,
+  kanjidic: Kanjidic2,
+  align: Aligner,
+  output: PassResult<ListedPhonologyWitness>,
+  listedSources: Map<string, ListedClaim[]>,
+  {
+    kanjidicSource,
+    jmdictSource,
+    weakWitnesses,
+    lexicalFacts,
+    loanReadings,
+    koreanReadings,
+  }: PooledSoundOptions,
+): void {
   if (!Array.isArray(kanjidic?.characters) || !Array.isArray(weakWitnesses))
     throw new TypeError("KANJIDIC characters and weak witnesses must be arrays");
   for (const supplied of [kanjidicSource, jmdictSource]) {
@@ -217,36 +404,41 @@ function refineExactSounds(
   ) {
     throw new TypeError("Weak sounds require an identifiable character-reading witness");
   }
-  const identity = (supplied, name, records) =>
+  const identity = (
+    supplied: SourceIdentity | undefined,
+    name: string,
+    records: unknown,
+  ): SourceIdentity =>
     supplied ?? {
       name,
       readingsSHA256: createHash("sha256").update(JSON.stringify(records)).digest("hex"),
     };
   const kanjidicIdentity = identity(kanjidicSource, "Supplied KANJIDIC records", kanjidic);
   const jmdictIdentity = identity(jmdictSource, "Supplied JMdict records", jmdict);
-  const pool = new Map(),
-    koreanForms = new Map();
-  const foreign = (claim) =>
+  const pool = new Map<string, Map<string, SoundClaim[]>>(),
+    koreanForms = new Map<string, HangulSyllable>();
+  const foreign = (claim: SoundClaim): boolean =>
     ["Mandarin transcription", "Korean transcription"].includes(claim.category);
-  const badOnset = (sound) => /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizeKana(sound));
-  const add = (character, value, claim) => {
+  const badOnset = (sound: string): boolean =>
+    /^[ぁぃぅぇぉゃゅょゎっんー]/u.test(normalizeKana(sound));
+  const add = (character: string, value: string, claim: SoundClaim): void => {
     const reading = normalizeKana(value);
     if (!reading || !isKana(reading) || (foreign(claim) && badOnset(reading))) return;
-    const sounds = pool.get(character) ?? new Map(),
+    const sounds = pool.get(character) ?? new Map<string, SoundClaim[]>(),
       claims = sounds.get(reading) ?? [];
     claims.push(claim);
     sounds.set(reading, claims);
     pool.set(character, sounds);
   };
   for (const [key, claims] of listedSources) {
-    const [character, value] = JSON.parse(key);
+    const [character, value]: [string, string] = JSON.parse(key);
     for (const claim of claims)
       add(character, value, { category: `${claim.source} exact`, ...claim });
   }
   for (const character of kanjidic.characters)
     for (const [groupIndex, group] of (character.readingMeaning?.groups ?? []).entries()) {
       for (const [readingIndex, form] of group.readings.entries()) {
-        const proof = {
+        const proof: Omit<KanjidicSoundClaim, "category"> = {
           source: "KANJIDIC2",
           sourceIdentity: kanjidicIdentity,
           groupIndex,
@@ -262,7 +454,7 @@ function refineExactSounds(
           for (const reading of transliteratePinyin(form.value))
             add(character.literal, reading, { category: "Mandarin transcription", ...proof });
         if (koreanReadings && form.type === "korean_h" && decodeHangul(form.value)) {
-          koreanForms.set(form.value, decodeHangul(form.value));
+          koreanForms.set(form.value, decodeHangul(form.value)!);
           for (const mapped of [
             transcribeHangul(form.value),
             transcribeHangul(form.value, { coda: 0 }),
@@ -277,19 +469,20 @@ function refineExactSounds(
       }
     }
   for (const witness of weakWitnesses)
+    // The cast pairs the category with the witness whose source it is.
     add(witness.spelling, witness.reading, {
       category: witness.source,
       source: witness.source,
       sourceIdentity: witness.source.startsWith("JMdict") ? jmdictIdentity : kanjidicIdentity,
       witness: structuredClone(witness),
-    });
+    } as WeakSoundClaim);
   const reusable = lexicalFacts.filter((fact) => fact.reusableSegments?.length),
-    familyByPair = new Map();
+    familyByPair = new Map<string, Set<string>>();
   if (reusable.length) {
     const knownIds = new Set(jmdict.words.map((word) => word.id));
     for (const pair of enumeratePairs(jmdict)) {
       const key = pairKey(pair.spelling, normalizeKana(pair.reading)),
-        ids = familyByPair.get(key) ?? new Set();
+        ids = familyByPair.get(key) ?? new Set<string>();
       ids.add(pair.id);
       familyByPair.set(key, ids);
     }
@@ -302,7 +495,7 @@ function refineExactSounds(
       // An opt-in asserts independently reusable exact Japanese sound evidence.
       // Context-bound or raw foreign-transcription-only claims remain local;
       // this category must not replace their existing transcription checks.
-      for (const segmentIndex of fact.reusableSegments) {
+      for (const segmentIndex of fact.reusableSegments!) {
         const segment = fact.segments[segmentIndex];
         add(segmentText(segment), segmentReading(segment), {
           category: "Reviewed reusable sound",
@@ -324,7 +517,7 @@ function refineExactSounds(
       }
     }
   }
-  const eligible = (claim, target) =>
+  const eligible = (claim: SoundClaim, target: { spelling: string; reading: string }): boolean =>
     claim.category === "Reviewed reusable sound"
       ? pairKey(claim.witness.spelling, normalizeKana(claim.witness.reading)) !==
           pairKey(target.spelling, normalizeKana(target.reading)) &&
@@ -337,12 +530,16 @@ function refineExactSounds(
             pairKey(target.spelling, normalizeKana(target.reading)));
   // Keep source Hangul states, not just their equal kana strings: n/ng codas
   // can map to the same kana but license different following syllables.
-  function supportPath(parts, target, foreignAllowed) {
-    let previous = new Set([undefined]);
-    const layers = [];
+  function supportPath(
+    parts: SoundPart[],
+    target: { spelling: string; reading: string },
+    foreignAllowed: boolean,
+  ): PathClaim[][] | undefined {
+    let previous = new Set<PathState>([undefined]);
+    const layers: PathEdge[][] = [];
     for (const part of parts) {
-      const next = new Set(),
-        edges = [];
+      const next = new Set<PathState>(),
+        edges: PathEdge[] = [];
       if (part.literal || part.opaque) {
         for (const state of previous) {
           if (part.opaque && state !== undefined && state !== "opaque") continue;
@@ -383,7 +580,7 @@ function refineExactSounds(
       layers.push(edges);
       previous = next;
     }
-    const result = [];
+    const result: PathClaim[][] = [];
     for (let index = layers.length - 1; index >= 0; --index) {
       const edges = layers[index].filter((edge) => previous.has(edge.end));
       result[index] = [
@@ -394,7 +591,7 @@ function refineExactSounds(
     return result;
   }
   const checkLexical = makeLexicalContextChecker(lexicalFacts),
-    seen = new Set();
+    seen = new Set<string>();
   for (const pair of enumeratePairs(jmdict)) {
     const key = pairKey(pair.spelling, pair.reading);
     if (seen.has(key)) continue;
@@ -412,18 +609,18 @@ function refineExactSounds(
     )
       continue;
     const foreignAllowed = !pair.readingTags.some((tag) => ["ik", "sk"].includes(tag)),
-      readings = new Map();
+      readings: ReadingMap = new Map();
     for (const character of new Set(splitGraphemes(pair.spelling))) {
-      const values = [...(pool.get(character) ?? new Map())]
+      const values = [...(pool.get(character) ?? new Map<string, SoundClaim[]>())]
         .filter(([, claims]) =>
           claims.some((claim) => eligible(claim, pair) && (foreignAllowed || !foreign(claim))),
         )
         .map(([reading]) => reading);
       if (values.length) readings.set(character, values);
     }
-    const parts = [],
-      segments = [],
-      changed = new Set();
+    const parts: SoundPart[] = [],
+      segments: Segment[] = [],
+      changed = new Set<number>();
     for (const segment of original.segments) {
       const spelling = segmentText(segment),
         reading = segmentReading(segment),
@@ -462,7 +659,7 @@ function refineExactSounds(
     if (proposed.size <= previous.size || [...previous].some((point) => !proposed.has(point)))
       continue;
     validateAlignment(pair.spelling, pair.reading, segments);
-    const values = output.wordAlignments.get(pair.spelling) ?? new Map();
+    const values = output.wordAlignments.get(pair.spelling) ?? new Map<string, Segment[]>();
     values.set(pair.reading, segments);
     output.wordAlignments.set(pair.spelling, values);
     output.witnesses.push({

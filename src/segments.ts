@@ -1,12 +1,14 @@
-export function segmentText(segment) {
+import type { Segment } from "./types.ts";
+
+export function segmentText(segment: Segment): string {
   return typeof segment === "string" ? segment : segment[0];
 }
 
-export function segmentReading(segment) {
+export function segmentReading(segment: Segment): string {
   return typeof segment === "string" ? segment : segment[1];
 }
 
-export function validateAlignment(spelling, reading, segments) {
+export function validateAlignment(spelling: string, reading: string, segments: Segment[]): void {
   if (!Array.isArray(segments) || segments.length === 0) {
     throw new Error(`Missing alignment: ${spelling}/${reading}`);
   }
@@ -32,7 +34,7 @@ export function validateAlignment(spelling, reading, segments) {
 }
 
 // Boundaries use Unicode code points, so supplementary-plane kanji occupy one position.
-export function boundaries(segments) {
+export function boundaries(segments: Segment[]): string[] {
   let spellingOffset = 0;
   let readingOffset = 0;
   return segments.slice(0, -1).map((segment) => {
@@ -44,7 +46,7 @@ export function boundaries(segments) {
 
 // Independent evidence can refine different parts of the same word. Keep both
 // sets of boundaries only when their union still forms a strictly ordered path.
-export function combineAlignments(previous, candidate) {
+export function combineAlignments(previous: Segment[], candidate: Segment[]): Segment[] {
   const spelling = previous.map(segmentText).join("");
   const reading = previous.map(segmentReading).join("");
   validateAlignment(spelling, reading, candidate);
@@ -59,7 +61,7 @@ export function combineAlignments(previous, candidate) {
   );
   points.push([0, 0], [spellingUnits.length, readingUnits.length]);
   points.sort(([leftX, leftY], [rightX, rightY]) => leftX - rightX || leftY - rightY);
-  const segments = [];
+  const segments: Segment[] = [];
   for (let index = 1; index < points.length; ++index) {
     const [startX, startY] = points[index - 1];
     const [endX, endY] = points[index];
@@ -71,10 +73,10 @@ export function combineAlignments(previous, candidate) {
   return segments;
 }
 
-export function pairKey(spelling, reading) {
+export function pairKey(spelling: string, reading: string): string {
   return JSON.stringify([spelling, reading]);
 }
 
-export function recordKey(id, spelling, reading) {
+export function recordKey(id: string, spelling: string, reading: string): string {
   return JSON.stringify([String(id), spelling, reading]);
 }

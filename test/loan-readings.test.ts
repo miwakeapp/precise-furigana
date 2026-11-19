@@ -3,8 +3,18 @@ import test from "node:test";
 import { deriveLoanAlignments, transliteratePinyin } from "../src/loan-readings.ts";
 import { boundaries, validateAlignment } from "../src/segments.ts";
 import { createAligner } from "../src/align.ts";
+import type { JMdictLanguageSource } from "../src/types.ts";
+import type { Alignment, Kanjidic2, Kanjidic2Reading } from "../src/types.ts";
+import * as fixture from "./support/dictionaries.ts";
 
-function entry(id, spelling, reading, options = {}) {
+interface EntryOptions {
+  tags?: string[];
+  appliesToKanji?: string[];
+  appliesToKana?: string[];
+  languageSource?: Partial<JMdictLanguageSource>[];
+}
+
+function entry(id: string, spelling: string, reading: string, options: EntryOptions = {}) {
   return {
     id,
     kanji: [{ text: spelling, tags: [] }],
@@ -21,13 +31,15 @@ function entry(id, spelling, reading, options = {}) {
   };
 }
 
-function characters(specification) {
-  return {
+function characters(
+  specification: Record<string, [type: Kanjidic2Reading["type"], value: string][]>,
+): Kanjidic2 {
+  return fixture.kanjidic({
     characters: Object.entries(specification).map(([literal, values]) => ({
       literal,
       readingMeaning: { groups: [{ readings: values.map(([type, value]) => ({ type, value })) }] },
     })),
-  };
+  });
 }
 
 const source = characters({
@@ -52,7 +64,10 @@ const source = characters({
   前: [["ja_on", "ゼン"]],
   清: [["pinyin", "qing1"]],
 });
-const grouped = (spelling, reading) => ({ segments: [[spelling, reading]], status: "aligned" });
+const grouped = (spelling: string, reading: string): Alignment => ({
+  segments: [[spelling, reading]],
+  status: "aligned",
+});
 
 test("transcribes attested Mandarin syllable families without using neighboring residuals", () => {
   for (const [pinyin, kana] of [
@@ -100,9 +115,9 @@ test("whole wei and neutral de5 retain old alternatives without widening ui or o
 });
 
 test("refines a language-tagged loan using each character's pinyin and preserves the original reading script", () => {
-  const jmdict = { words: [entry("1", "小籠包", "ショーロンポー")] };
+  const jmdict = fixture.jmdict({ words: [entry("1", "小籠包", "ショーロンポー")] });
   const result = deriveLoanAlignments(jmdict, source, grouped);
-  assert.deepEqual(result.wordAlignments.get("小籠包").get("ショーロンポー"), [
+  assert.deepEqual(result.wordAlignments.get("小籠包")!.get("ショーロンポー"), [
     ["小", "ショー"],
     ["籠", "ロン"],
     ["包", "ポー"],
@@ -112,11 +127,11 @@ test("refines a language-tagged loan using each character's pinyin and preserves
 
 test("allows independently listed Japanese on-readings inside historical hybrid loans", () => {
   const result = deriveLoanAlignments(
-    { words: [entry("1", "門前清", "メンゼンチン")] },
+    fixture.jmdict({ words: [entry("1", "門前清", "メンゼンチン")] }),
     source,
     grouped,
   );
-  assert.deepEqual(result.wordAlignments.get("門前清").get("メンゼンチン"), [
+  assert.deepEqual(result.wordAlignments.get("門前清")!.get("メンゼンチン"), [
     ["門", "メン"],
     ["前", "ゼン"],
     ["清", "チン"],
@@ -129,7 +144,10 @@ test("does not infer Chinese provenance from an all-katakana reading", () => {
     entry("1", "小籠包", "ショーロンポー", { languageSource: [] }),
     entry("2", "小籠包", "ショーロンポー", { languageSource: [{ lang: "kor", wasei: false }] }),
   ];
-  assert.equal(deriveLoanAlignments({ words }, source, grouped).wordAlignments.size, 0);
+  assert.equal(
+    deriveLoanAlignments(fixture.jmdict({ words }), source, grouped).wordAlignments.size,
+    0,
+  );
 });
 
 test("respects sense restrictions, reading tags, and Japanese-coined source metadata", () => {
@@ -142,7 +160,7 @@ test("respects sense restrictions, reading tags, and Japanese-coined source meta
   ]) {
     assert.equal(
       deriveLoanAlignments(
-        { words: [entry("1", "小籠包", "ショーロンポー", options)] },
+        fixture.jmdict({ words: [entry("1", "小籠包", "ショーロンポー", options)] }),
         source,
         grouped,
       ).wordAlignments.size,
@@ -153,7 +171,7 @@ test("respects sense restrictions, reading tags, and Japanese-coined source meta
 
 test("requires every character to have independent sound evidence", () => {
   const result = deriveLoanAlignments(
-    { words: [entry("1", "小謎包", "ショーロンポー")] },
+    fixture.jmdict({ words: [entry("1", "小謎包", "ショーロンポー")] }),
     source,
     grouped,
   );
@@ -163,7 +181,7 @@ test("requires every character to have independent sound evidence", () => {
 test("withholds different valid allocations of a vowel between characters", () => {
   const ambiguous = characters({ 麻: [["pinyin", "ma2"]], 阿: [["pinyin", "a1"]] });
   const result = deriveLoanAlignments(
-    { words: [entry("1", "麻阿", "まああ")] },
+    fixture.jmdict({ words: [entry("1", "麻阿", "まああ")] }),
     ambiguous,
     grouped,
   );
@@ -171,7 +189,7 @@ test("withholds different valid allocations of a vowel between characters", () =
 });
 
 test("refines each baseline segment separately and never shifts an accepted boundary", () => {
-  const baseline = () => ({
+  const baseline = (): Alignment => ({
     segments: [
       ["青", "チン"],
       ["小籠包", "ショーロンポー"],
@@ -179,11 +197,11 @@ test("refines each baseline segment separately and never shifts an accepted boun
     status: "aligned",
   });
   const result = deriveLoanAlignments(
-    { words: [entry("1", "青小籠包", "チンショーロンポー")] },
+    fixture.jmdict({ words: [entry("1", "青小籠包", "チンショーロンポー")] }),
     source,
     baseline,
   );
-  const segments = result.wordAlignments.get("青小籠包").get("チンショーロンポー");
+  const segments = result.wordAlignments.get("青小籠包")!.get("チンショーロンポー")!;
   assert.ok(boundaries(segments).includes(boundaries(baseline().segments)[0]));
   validateAlignment("青小籠包", "チンショーロンポー", segments);
 });
@@ -195,10 +213,12 @@ test("optional untagged eligibility requires complete katakana and pinyin suppor
     entry("2", "門前清", "メンゼンチン", options),
     entry("3", "小籠包", "しゃおろんぱお", options),
   ];
-  const result = deriveLoanAlignments({ words }, source, grouped, { untaggedKatakana: true });
+  const result = deriveLoanAlignments(fixture.jmdict({ words }), source, grouped, {
+    untaggedKatakana: true,
+  });
   assert.equal(result.witnesses.length, 1);
   assert.equal(result.witnesses[0].eligibility, "pinyin-only-katakana");
-  assert.deepEqual(result.wordAlignments.get("小籠包").get("シャオロンパオ"), [
+  assert.deepEqual(result.wordAlignments.get("小籠包")!.get("シャオロンパオ"), [
     ["小", "シャオ"],
     ["籠", "ロン"],
     ["包", "パオ"],
@@ -207,22 +227,23 @@ test("optional untagged eligibility requires complete katakana and pinyin suppor
 
 test("untagged Mandarin proof cannot move a baseline boundary", () => {
   const words = [entry("1", "小籠包", "シャオロンパオ", { languageSource: [] })];
-  const baseline = () => ({
-    segments: [
-      ["小", "シャ"],
-      ["籠包", "オロンパオ"],
-    ],
-  });
+  const baseline = () =>
+    ({
+      segments: [
+        ["小", "シャ"],
+        ["籠包", "オロンパオ"],
+      ],
+    }) as Alignment;
   assert.equal(
-    deriveLoanAlignments({ words }, source, baseline, { untaggedKatakana: true }).wordAlignments
-      .size,
+    deriveLoanAlignments(fixture.jmdict({ words }), source, baseline, { untaggedKatakana: true })
+      .wordAlignments.size,
     0,
   );
 });
 
 test("the engine can reuse a supported whole loan in longer compounds without learning free character readings", () => {
   const result = deriveLoanAlignments(
-    { words: [entry("1", "小籠包", "ショーロンポー")] },
+    fixture.jmdict({ words: [entry("1", "小籠包", "ショーロンポー")] }),
     source,
     grouped,
   );

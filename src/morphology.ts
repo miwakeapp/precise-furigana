@@ -1,10 +1,31 @@
 import { isKana, normalizeKana, splitGraphemes } from "./kana.ts";
 import { enumeratePairs } from "./sources.ts";
+import type { JMdict, JMdictSense, ReadingMap } from "./types.ts";
+
+/** A regular verb whose continuative form gives its kanji the reading `stem`. */
+export interface ContinuativeWitness {
+  id: string;
+  spelling: string;
+  reading: string;
+  stem: string;
+}
+
+export interface ContinuativeReadings {
+  readings: ReadingMap;
+  witnesses: ContinuativeWitness[];
+}
+
+interface ContinuativeCandidate extends ContinuativeWitness {
+  character: string;
+  normalizedSpelling: string;
+  normalizedReading: string;
+  spellingStem: string;
+}
 
 const hanGraphemePattern = /^\p{Unified_Ideograph}[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]*$/u;
 // Ordinary continuatives: https://a2.marugotoweb.jp/ja/grammar/reference/002.html
 // Special JMdict conjugation classes intentionally have no rule here.
-const regularEndings = new Map([
+const regularEndings = new Map<string, [ending: string, replacement: string]>([
   ["v1", ["る", ""]],
   ["v5b", ["ぶ", "び"]],
   ["v5g", ["ぐ", "ぎ"]],
@@ -17,26 +38,26 @@ const regularEndings = new Map([
   ["v5u", ["う", "い"]],
 ]);
 
-function allows(restrictions, text) {
+function allows(restrictions: string[], text: string): boolean {
   return restrictions.includes("*") || restrictions.includes(text);
 }
 
-function isVerbClass(partOfSpeech) {
+function isVerbClass(partOfSpeech: string): boolean {
   return /^v(?:[1-5]|[knrsz])/u.test(partOfSpeech);
 }
 
-function countIdeographs(text) {
+function countIdeographs(text: string): number {
   return splitGraphemes(text).filter((grapheme) => hanGraphemePattern.test(grapheme)).length;
 }
 
-function compareText(left, right) {
+function compareText(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
 /** Produce weak, dictionary-gated continuative candidates; these are not unrestricted character readings. */
-export function deriveContinuativeReadings(jmdict) {
-  const candidates = [];
-  const verbReadings = new Set();
+export function deriveContinuativeReadings(jmdict: JMdict): ContinuativeReadings {
+  const candidates: ContinuativeCandidate[] = [];
+  const verbReadings = new Set<string>();
 
   for (const word of jmdict.words) {
     const pairs = [...enumeratePairs({ words: [word] })];
@@ -75,7 +96,7 @@ export function deriveContinuativeReadings(jmdict) {
       const okurigana = normalizeKana(graphemes.slice(1).join(""));
       if (!normalizedReading.endsWith(okurigana) || normalizedReading.length <= okurigana.length)
         continue;
-      const [ending, replacement] = regularEndings.get(classes[0]);
+      const [ending, replacement] = regularEndings.get(classes[0])!;
       if (!okurigana.endsWith(ending) || !normalizedReading.endsWith(ending)) continue;
       const normalizedSpelling = graphemes[0] + okurigana;
       const stem = normalizedReading.slice(0, -ending.length) + replacement;
@@ -94,15 +115,15 @@ export function deriveContinuativeReadings(jmdict) {
     }
   }
 
-  const byCharacter = new Map();
+  const byCharacter = new Map<string, ContinuativeCandidate[]>();
   for (const candidate of candidates) {
     const existing = byCharacter.get(candidate.character);
     if (existing === undefined) byCharacter.set(candidate.character, [candidate]);
     else existing.push(candidate);
   }
-  const readings = new Map();
-  const witnesses = [];
-  const witnessed = new Set();
+  const readings: ReadingMap = new Map();
+  const witnesses: ContinuativeWitness[] = [];
+  const witnessed = new Set<string>();
   candidates.sort(
     (left, right) =>
       compareText(left.character, right.character) ||
@@ -111,7 +132,7 @@ export function deriveContinuativeReadings(jmdict) {
       compareText(left.spelling, right.spelling),
   );
   for (const candidate of candidates) {
-    const compound = byCharacter.get(candidate.character).some((base) => {
+    const compound = byCharacter.get(candidate.character)!.some((base) => {
       if (
         !candidate.normalizedSpelling.startsWith(base.spellingStem) ||
         !candidate.normalizedReading.startsWith(base.stem)

@@ -12,9 +12,9 @@ The input is a spelling and its complete reading. The generator divides the read
 
 ## Pipeline
 
-[src/align.mjs](../src/align.mjs) finds the cheapest path through a graph over positions in the spelling and reading. Edges are literal kana, character readings, attested whole words (so every pair has some path), and restricted sound changes such as voicing, gemination, and contraction. On and kun readings get different sound-change permissions; truncating arbitrary readings produces plausible wrong splits. Costs only rank alternatives within one word.
+[src/align.ts](../src/align.ts) finds the cheapest path through a graph over positions in the spelling and reading. Edges are literal kana, character readings, attested whole words (so every pair has some path), and restricted sound changes such as voicing, gemination, and contraction. On and kun readings get different sound-change permissions; truncating arbitrary readings produces plausible wrong splits. Costs only rank alternatives within one word.
 
-[src/dataset.mjs](../src/dataset.mjs) layers further evidence passes over that aligner. Each pass may refine an unresolved group but must not erase a boundary a stronger stage established. Each has its own module and tests because each has different permissions:
+[src/dataset.ts](../src/dataset.ts) layers further evidence passes over that aligner. Each pass may refine an unresolved group but must not erase a boundary a stronger stage established. Each has its own module and tests because each has different permissions:
 
 | Evidence                                                                                | Modules                                                       |
 | --------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
@@ -32,16 +32,16 @@ Constraints that apply across passes:
 
 - Transfers come only from restriction-valid source pairs. Conflicting or ambiguous witnesses are dropped, not resolved.
 - Omitted okurigana joins the preceding character: 行来 follows 行き来 as <ruby>行<rt>いき</rt></ruby><ruby>来<rt>き</rt></ruby>.
-- The sibling passes run twice. The first run feeds the aligner, so a transferred word can be found inside longer ones. The second runs after every other stage, because a split that a later stage establishes, such as a lexical fact's, would otherwise never reach the entry's other spellings and readings. The second run also carries boundaries between readings of one spelling that differ by a single kana, as バンコック does from バンコク; it requires that the changed kana could not have crossed a boundary ([src/reading-variants.mjs](../src/reading-variants.mjs)).
+- The sibling passes run twice. The first run feeds the aligner, so a transferred word can be found inside longer ones. The second runs after every other stage, because a split that a later stage establishes, such as a lexical fact's, would otherwise never reach the entry's other spellings and readings. The second run also carries boundaries between readings of one spelling that differ by a single kana, as バンコック does from バンコク; it requires that the changed kana could not have crossed a boundary ([src/reading-variants.ts](../src/reading-variants.ts)).
 - An omitted particle belongs to neither neighbor. Where a sibling spelling writes の, を, or が between two kanji that the reading pronounces, a final pass groups the two kanji: <ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>. It runs last because several earlier passes can independently cut beside the particle.
 - Silent punctuation is set aside while aligning, on either side, so Ｓ・Ｍ read エス・エム divides as ＳＭ read エスエム does, and the boundaries this finds are added to the direct alignment's. A mark both sides share becomes its own segment; a spelling's mark joins the segment before it and is shown plain; a reading's mark joins a neighboring ruby segment and makes the pair mispaired.
-- A positional numeral's reading is parsed into chunks, one per nonzero digit with its zeros ([src/numeral-chunks.mjs](../src/numeral-chunks.mjs)). A reading that does not parse that way, such as digits read one by one, keeps whatever division it had.
+- A positional numeral's reading is parsed into chunks, one per nonzero digit with its zeros ([src/numeral-chunks.ts](../src/numeral-chunks.ts)). A reading that does not parse that way, such as digits read one by one, keeps whatever division it had.
 - A lexical fact contributes only its internal cuts. Its outer edges are not transferred, so an unwritten particle between words cannot become part of a neighbor's reading.
 - Some passes run twice, with and without lexical refinement, and keep compatible cuts from both, so a coarse lexical fact cannot suppress an independently supported finer split. Adding or changing a fact can therefore affect other words; compare the whole corpus after any data change.
 - No pass feeds inferred readings back into the character inventories.
 
 ## After alignment
 
-- [src/display.mjs](../src/display.mjs) converts generator segments, which reconstruct both strings exactly, into release segments: kana the reading repeats becomes plain text, and silent punctuation leaves ruby. A ruby group containing a kanji only loses kana when its whole leading or trailing kana run matches, because a partial match can be coincidental (in 近からずとも遠からず read ちかからずとおからず, peeling と would leave 遠 with お). A kana-only group sheds any matching edge kana.
-- [src/pairings.mjs](../src/pairings.mjs) decides which pairs contradict their spelling, flags each as mispaired or phonetic, and plans synthesized pairs.
+- [src/display.ts](../src/display.ts) converts generator segments, which reconstruct both strings exactly, into release segments: kana the reading repeats becomes plain text, and silent punctuation leaves ruby. A ruby group containing a kanji only loses kana when its whole leading or trailing kana run matches, because a partial match can be coincidental (in 近からずとも遠からず read ちかからずとおからず, peeling と would leave 遠 with お). A kana-only group sheds any matching edge kana.
+- [src/pairings.ts](../src/pairings.ts) decides which pairs contradict their spelling, flags each as mispaired or phonetic, and plans synthesized pairs.
 - `data/annotations.json` replaces the complete result for one exact ID, spelling, and reading. Regression fixtures test the generator without annotations, so an annotation never hides a generator regression.

@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
 
       - name: Build the database as it stands
-        run: node scripts/update.mjs baseline
+        run: node scripts/update.ts baseline
 
       # An open pull request can hold review work, so this run continues on its branch.
       - name: Continue an open update, or start a new one
@@ -52,7 +52,7 @@ jobs:
 
       - name: Move the dictionary pin
         id: update
-        run: node scripts/update.mjs update
+        run: node scripts/update.ts update
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -74,7 +74,7 @@ jobs:
 
       - name: Rebuild after the review
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
-        run: node scripts/update.mjs recheck
+        run: node scripts/update.ts recheck
 
       - name: Open or update the pull request
         if: steps.update.outputs.changed == 'true'

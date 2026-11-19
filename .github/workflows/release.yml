@@ -34,13 +34,13 @@ jobs:
       - run: npm run build
       # Gives the database its release version, or reports that it is already released.
       - id: stamp
-        run: node scripts/release.mjs --stamp
+        run: node scripts/release.ts --stamp
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
       - run: npm run validate
       - if: steps.stamp.outputs.publish == 'true'
-        run: node scripts/release.mjs --publish
+        run: node scripts/release.ts --publish
         env:
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}

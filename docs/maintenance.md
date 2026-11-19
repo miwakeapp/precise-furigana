@@ -10,7 +10,7 @@ npm run fetch                # restore the exact locked inputs
 npm test                     # unit tests, seconds
 npm run build                # about two minutes
 npm run validate
-node scripts/release.mjs     # local dry run; writes dist/release-notes.md
+node scripts/release.ts     # local dry run; writes dist/release-notes.md
 ```
 
 `build` also evaluates the regression fixtures in `test/fixtures/gold.json` and fails if any regress; it writes `evaluation.json` and `manifest.json` next to the database for `validate` and the release script. `npm run evaluate` runs only the fixtures, but still compiles the whole pipeline.
@@ -49,7 +49,7 @@ Make the narrowest justified change:
 
 Add a regression fixture or unit test for any generator change, then build, validate, and compare the whole corpus: a fact can change other words.
 
-`scripts/lib/options.mjs` has switches for disabling individual passes, for experiments:
+`scripts/lib/options.ts` has switches for disabling individual passes, for experiments:
 
 ```sh
 npm run build -- --no-variants --output .cache/without-variants
@@ -70,12 +70,12 @@ This drops obsolete entries and adds new ones, with the reading the spelling's k
 
 ## Weekly update
 
-`.github/workflows/update.yml` runs every Tuesday at 03:17 UTC, and on manual dispatch. It drives `scripts/update.mjs`, which also runs locally:
+`.github/workflows/update.yml` runs every Tuesday at 03:17 UTC, and on manual dispatch. It drives `scripts/update.ts`, which also runs locally:
 
 ```sh
-node scripts/update.mjs baseline   # build the database as it stands
-node scripts/update.mjs update     # move the pin, repair synthesized pairs, rebuild, report
-node scripts/update.mjs recheck    # rebuild and report again after editing data
+node scripts/update.ts baseline   # build the database as it stands
+node scripts/update.ts update     # move the pin, repair synthesized pairs, rebuild, report
+node scripts/update.ts recheck    # rebuild and report again after editing data
 ```
 
 The report compares the database before and after, and is written with a commit message and a status file to `.cache/update/`. The workflow commits the changed data to the `update-dictionaries` branch and opens a pull request with the report as its description. If a pull request is already open, the run continues on its branch, so review work there is kept.
@@ -103,7 +103,7 @@ Afterwards run `npm run build` and `npm run validate` until both pass, then writ
 
 `.github/workflows/release.yml` runs on every push to the default branch, and on manual dispatch. It builds from that commit's pinned inputs, validates, and publishes the two database files. Every release therefore corresponds to exactly one commit, lockfile included.
 
-A build's database has the development version `<schema version>.<JMdict date>.0-dev`. `node scripts/release.mjs --stamp` replaces it with the next unreleased revision for that date, read from the repository's tags, and the workflow validates the stamped files before `--publish` creates the release, tagged `v<version>`. To avoid publishing a duplicate, `--stamp` first stamps the latest released revision: an unchanged database is then byte-identical to that release, whose digest GitHub records, and nothing is published. A generator or data change therefore publishes the next revision for the same dictionary date, and a push that leaves the database unchanged publishes nothing.
+A build's database has the development version `<schema version>.<JMdict date>.0-dev`. `node scripts/release.ts --stamp` replaces it with the next unreleased revision for that date, read from the repository's tags, and the workflow validates the stamped files before `--publish` creates the release, tagged `v<version>`. To avoid publishing a duplicate, `--stamp` first stamps the latest released revision: an unchanged database is then byte-identical to that release, whose digest GitHub records, and nothing is published. A generator or data change therefore publishes the next revision for the same dictionary date, and a push that leaves the database unchanged publishes nothing.
 
 Bump the schema version, and the major of the private `package.json` version with it, only when consumers' code must change. There is no separate generator version: a release's tag points at the commit that generated it. `--stamp` and `--publish` need `GITHUB_REPOSITORY` and `GH_TOKEN`; `--publish` also needs `GITHUB_SHA`.
 

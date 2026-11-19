@@ -18,6 +18,7 @@ import {
   validateAlignment,
 } from "./segments.mjs";
 import { isSilentPunctuation, splitGraphemes } from "./kana.mjs";
+import { chunkNumerals } from "./numeral-chunks.mjs";
 import {
   deriveOmittedParticles,
   deriveVariantAlignments,
@@ -141,9 +142,9 @@ export function compileAnnotations(annotations) {
 
 export function compileAlignmentPipeline(jmdict, kanjidic, options = {}, sources = {}) {
   const pipeline = compilePipeline(jmdict, kanjidic, options, sources);
-  // This applies to the finished pipeline only: the reduced copy that a pipeline compiles of
-  // itself must not see its boundaries.
-  return { ...pipeline, align: alignPastPunctuation(pipeline.align) };
+  // These apply to the finished pipeline only: the reduced copy that a pipeline compiles of
+  // itself must not see their boundaries.
+  return { ...pipeline, align: chunkNumerals(alignPastPunctuation(pipeline.align)) };
 }
 
 /**

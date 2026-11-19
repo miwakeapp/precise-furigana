@@ -36,6 +36,7 @@ Invariants, all checked by `npm run validate`:
 - Kana the reading contradicts is under ruby carrying the reading's kana: 宣ふ read のたまう is <ruby>宣<rt>のたま</rt></ruby><ruby>ふ<rt>う</rt></ruby>.
 - Adjacent strings are merged.
 - Punctuation is not grouped with characters. A mark the spelling writes is plain text: Ｓ・Ｍ read エス・エム is <ruby>Ｓ<rt>エス</rt></ruby>・<ruby>Ｍ<rt>エム</rt></ruby>. Outside a mismatched pair, ruby text holds no punctuation. A ruby base holds a mark only when the mark is itself read, as the dot of ２．５ is in にてんご, or when the group cannot be divided at it, as in <ruby>Ｗｉ-Ｆｉ<rt>ワイファイ</rt></ruby>. Symbols that are read aloud, such as ％ and ＆, are characters, not punctuation: <ruby>１００<rt>ひゃく</rt></ruby><ruby>％<rt>パーセント</rt></ruby>.
+- A positional numeral is divided at each nonzero digit, which carries its place word; the zeros after a digit stay with it: <ruby>１<rt>せん</rt></ruby><ruby>９<rt>きゅうひゃく</rt></ruby><ruby>８<rt>はちじゅう</rt></ruby><ruby>２<rt>に</rt></ruby>, <ruby>８<rt>はちまん</rt></ruby><ruby>４０００<rt>よんせん</rt></ruby>, <ruby>三〇<rt>さんじゅう</rt></ruby>. Digits read one by one are separate: <ruby>７<rt>しち</rt></ruby><ruby>５<rt>ご</rt></ruby><ruby>３<rt>さん</rt></ruby>.
 
 A multi-character ruby group means the characters' individual sounds are unresolved, or an unwritten particle sits between them (<ruby>五<rt>ご</rt></ruby><ruby>重塔<rt>じゅうのとう</rt></ruby>). Explicit evidence can give a small kana to its own character, as in <ruby>端<rt>はし</rt></ruby><ruby>折<rt>ょ</rt></ruby>る.
 

@@ -44,7 +44,7 @@ The facts were compiled from Wiktionary word tables, Kotobank and other dictiona
 A fact needs a source for each boundary it adds. Any of these counts:
 
 - a reading table that assigns the reading to the characters, as Wiktionary's does;
-- a dictionary's kana headword divided where the fact divides it, as in ながし‐め for 流眄, provided the dictionary does not mark the characters as a jukujikun unit. In Daijisen, ＝ between the characters marks a jukujikun and ‐ marks one from the Jōyō table's appendix, so neither is a division: おか‐ぼ【陸＝稲】 does not divide 陸稲;
+- a dictionary's kana headword divided where the fact divides it, as in おか‐ぼ for 陸稲, when the part on at least one side of the boundary is a listed reading of its character (おか for 陸). The other side then takes the rest, <ruby>稲<rt>ぼ</rt></ruby>, though no inventory lists it. A dictionary's jukujikun mark does not forbid this: in Daijisen, ＝ between the characters marks a jukujikun and ‐ marks one from the Jōyō table's appendix, but neither says where the reading divides. The fact is not made when neither side is listed, or when a source analyses the spelling another way, as Wiktionary does for 鴛鴦 (おし for both characters, with 鳥 unwritten);
 - a reading KANJIDIC2 lists for the character, after at most one ordinary sound change that the reason names.
 
 A character whose share nothing documents stays grouped with a neighbor, as 信楽 does in <ruby>信楽<rt>しがらき</rt></ruby><ruby>焼<rt>やき</rt></ruby>. It is never given the remainder by subtraction.

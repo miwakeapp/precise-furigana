@@ -421,11 +421,15 @@
     "reading": "ひきだし",
     "segments": [
       [
-        "抽斗",
-        "ひきだし"
+        "抽",
+        "ひき"
+      ],
+      [
+        "斗",
+        "だし"
       ]
     ],
-    "category": "reported regression"
+    "category": "dictionary division with one listed side"
   },
   {
     "spelling": "欠片",

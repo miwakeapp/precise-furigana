@@ -27060,6 +27060,250 @@
         {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/現代#Korean"},
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
       ]
+    },
+    {
+      "id": "SR-490",
+      "spelling": "甘薯",
+      "reading": "さつまいも",
+      "segments": [["甘","さつま"],["薯","いも"]],
+      "reason": "Daijisen's kana headword divides the reading as さつま‐いも (listed with the variant spelling 甘藷), and いも is a listed kun reading of 薯, leaving さつま on 甘.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/薩摩芋-511225"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-491",
+      "spelling": "甘藷",
+      "reading": "さつまいも",
+      "segments": [["甘","さつま"],["藷","いも"]],
+      "reason": "Daijisen's kana headword divides the reading as さつま‐いも【×薩摩芋／甘＝藷】, and いも is a listed kun reading of 藷, leaving さつま on 甘.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/薩摩芋-511225"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-492",
+      "spelling": "祝詞",
+      "reading": "のりと",
+      "segments": [["祝","のり"],["詞","と"]],
+      "reason": "Daijisen's kana headword divides the reading as のり‐と, and KANJIDIC2 lists のり as a name reading of 祝, leaving と on 詞. Note that Wiktionary shows 祝詞[のりと] undivided and calls the origin of と unclear.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/祝詞-112528"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-493",
+      "spelling": "落魄れる",
+      "reading": "おちぶれる",
+      "segments": [["落","おち"],["魄","ぶ"],"れる"],
+      "reason": "Daijisen's kana headword divides the reading as おち‐ぶ・れる【落ちぶれる／落＝魄れる】; おち is a listed reading of 落 (お.ちる), leaving ぶ on 魄.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/落ちぶれる-452957"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-494",
+      "spelling": "嘔吐く",
+      "reading": "えずく",
+      "segments": [["嘔","え"],["吐","ず"],"く"],
+      "reason": "Daijisen's kana headword divides the reading as え‐ず・く〔ゑづく〕【嘔＝吐く】; 吐 is the kun reading つ.く with rendaku, leaving え on 嘔.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/嘔吐く-444763"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-495",
+      "spelling": "嘔吐く",
+      "reading": "えづく",
+      "segments": [["嘔","え"],["吐","づ"],"く"],
+      "reason": "Daijisen's kana headword divides the reading as え‐ず・く〔ゑづく〕【嘔＝吐く】; 吐 is the kun reading つ.く with rendaku, leaving え on 嘔.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/嘔吐く-444763"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-496",
+      "spelling": "媒鳥",
+      "reading": "おとり",
+      "segments": [["媒","お"],["鳥","とり"]],
+      "reason": "Daijisen's kana headword divides the reading as お‐とり【×囮／媒＝鳥】 (perhaps from 招き鳥); とり is the kun reading of 鳥, leaving お on 媒.",
+      "sources": [
+        {"name":"Digital Daijisen (Kotobank)","url":"https://kotobank.jp/word/囮-453535"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-497",
+      "spelling": "瞽女",
+      "reading": "ごぜ",
+      "segments": [["瞽","ご"],["女","ぜ"]],
+      "reason": "Daijisen's headword is ご‐ぜ【瞽＝女】 and Nihon Kokugo Daijiten's is ご‐ぜ【瞽女・御前】, dividing the reading into ご and ぜ, which fall on the two characters in order; ご is also コ of 瞽 voiced.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/瞽女"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-498",
+      "spelling": "化粧",
+      "reading": "けわい",
+      "segments": [["化","け"],["粧","わい"]],
+      "reason": "Daijisen's headword is け‐わい〔‐はひ〕【化＝粧／仮＝粧】, dividing the reading into け and わい; け is the listed on reading of 化, as in けしょう.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/化粧"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-499",
+      "spelling": "仮粧",
+      "reading": "けわい",
+      "segments": [["仮","け"],["粧","わい"]],
+      "reason": "Daijisen's headword is け‐わい〔‐はひ〕【化＝粧／仮＝粧】, dividing the reading into け and わい; け is a listed on reading of 仮.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/化粧"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-500",
+      "spelling": "陸稲",
+      "reading": "おかぼ",
+      "segments": [["陸","おか"],["稲","ぼ"]],
+      "reason": "Daijisen's headword is おか‐ぼ〔をか‐〕【陸＝稲】, dividing the reading into おか and ぼ; おか is the listed kun reading of 陸, and ぼ (穂, per Nihon Kokugo Daijiten's 岡穂) falls on 稲.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/陸稲"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-501",
+      "spelling": "抽斗",
+      "reading": "ひきだし",
+      "segments": [["抽","ひき"],["斗","だし"]],
+      "reason": "Daijisen's headword is ひき‐だし【引（き）出し／▽抽き出し】, with 抽斗 noted as a spelling, and Nihon Kokugo Daijiten's is ひき‐だし【引出・抽出・抽斗】; ひき is a listed reading of 抽, so だし falls on 斗.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/引出し"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-502",
+      "spelling": "抽匣",
+      "reading": "ひきだし",
+      "segments": [["抽","ひき"],["匣","だし"]],
+      "reason": "The dictionaries divide the word as ひき‐だし and Daijisen gives ▽抽き出し, with ひき a listed reading of 抽, so だし falls on 匣; this particular spelling is not itself listed in the headword.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/引出し"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-503",
+      "spelling": "宿酔",
+      "reading": "ふつかよい",
+      "segments": [["宿","ふつか"],["酔","よい"]],
+      "reason": "Daijisen's headword is ふつか‐よい【二日酔い】 and it gives 宿酔 as the same word; よい is a listed reading of 酔, so ふつか falls on 宿. The 宿酔 spelling is not itself listed in that headword.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/二日酔い"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-504",
+      "spelling": "汗袗",
+      "reading": "あせとり",
+      "segments": [["汗","あせ"],["袗","とり"]],
+      "reason": "Daijisen's headword is あせ‐とり【汗取り】; あせ is the kun reading of 汗, so とり falls on 袗. The 汗袗 spelling is not itself listed in that headword.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/汗取り"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-505",
+      "spelling": "白楊",
+      "reading": "はこやなぎ",
+      "segments": [["白","はこ"],["楊","やなぎ"]],
+      "reason": "Nihon Kokugo Daijiten's headword is はこ‐やなぎ【箱柳・筺柳・白楊・筥柳】; やなぎ is the kun reading of 楊, so はこ falls on 白.",
+      "sources": [
+        {"name":"Kotobank (Nihon Kokugo Daijiten)","url":"https://kotobank.jp/word/箱柳"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-506",
+      "spelling": "白楊",
+      "reading": "どろやなぎ",
+      "segments": [["白","どろ"],["楊","やなぎ"]],
+      "reason": "Daijisen's headword is どろ‐やなぎ【泥柳／白＝楊】; やなぎ is the kun reading of 楊, so どろ falls on 白.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/泥柳"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-507",
+      "spelling": "産土神",
+      "reading": "うぶすながみ",
+      "segments": [["産","うぶ"],["土","すな"],["神","がみ"]],
+      "reason": "Nihon Kokugo Daijiten's headword is うぶ‐すな【産土・生土・産社・産神】, dividing the reading into うぶ and すな; うぶ is a listed kun reading of 産, so すな falls on 土. Daijisen and Wiktionary treat 産土 as one jukujikun unit.",
+      "sources": [
+        {"name":"Kotobank (Nihon Kokugo Daijiten)","url":"https://kotobank.jp/word/産土"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-508",
+      "spelling": "石女",
+      "reading": "うまずめ",
+      "segments": [["石","うまず"],["女","め"]],
+      "reason": "Daijisen's headword is うまず‐め【▽不▽生女／石＝女】 and Wiktionary's etymology is 生まず + 女 (め); め is the kun reading of 女, so うまず falls on 石.",
+      "sources": [
+        {"name":"Kotobank (Daijisen)","url":"https://kotobank.jp/word/不生女"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/石女#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-509",
+      "spelling": "黄葵",
+      "reading": "とろろあおい",
+      "segments": [["黄","とろろ"],["葵","あおい"]],
+      "reason": "Daijisen's kana headword とろろ‐あおい divides the reading, and Wiktionary's table for 黄蜀葵 gives あおい to 葵. あおい is 葵's kun, so in this two-character spelling とろろ falls on 黄.",
+      "sources": [
+        {"name":"Kotobank (デジタル大辞泉)","url":"https://kotobank.jp/word/黄蜀葵-449077"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/黄蜀葵#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-510",
+      "spelling": "土蜂",
+      "reading": "ゆするばち",
+      "segments": [["土","ゆする"],["蜂","ばち"]],
+      "reason": "The kana headword ゆする‐ばち (Daijisen, Nihon Kokugo Daijiten) divides the reading for this spelling; ばち is 蜂's kun はち with rendaku, so ゆする falls on 土.",
+      "sources": [
+        {"name":"Kotobank (デジタル大辞泉)","url":"https://kotobank.jp/word/土蜂-571808"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SR-511",
+      "spelling": "白面",
+      "reading": "しらふ",
+      "segments": [["白","しら"],["面","ふ"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word しら‐ふ【素＝面／白＝面】, and しら is a listed kun reading of 白.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/素面"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
     }
   ]
 }

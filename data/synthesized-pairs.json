@@ -80,8 +80,8 @@
     "id": "1147340",
     "spelling": "ロシヤ語",
     "reading": "ロシヤご",
-    "upstream": "propose",
-    "note": "Kana attached in the wrong place: the ア of ロシア was kept after ロシヤ; the literal reading is a dated kana variant not worth proposing."
+    "upstream": "none",
+    "note": "Loanword kana variant: ロシヤ, a dated form, for ロシア."
   },
   {
     "id": "1152830",
@@ -102,21 +102,21 @@
     "spelling": "一刻でも早く",
     "reading": "いっこくでもはやく",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading: 一刻 lost its く; the corrected reading is a real variant probably worth proposing."
+    "note": "Particle insertion: でも for the entry's も, a real variant."
   },
   {
     "id": "1166580",
     "spelling": "一泡吹かす",
     "reading": "ひとあわふかす",
     "upstream": "propose",
-    "note": "Kana doubled: か repeated; the corrected reading is a real alternate ending (godan 吹かす) worth proposing."
+    "note": "Different ending: 吹かす for the entry's 吹かせる, a real alternate verb."
   },
   {
     "id": "1188710",
     "spelling": "何故かいうと",
     "reading": "なぜかいうと",
     "upstream": "propose",
-    "note": "Kana doubled: か repeated; the corrected reading drops と colloquially and is plausibly worth proposing."
+    "note": "Particle drop: the spelling omits the と of なぜかというと, a colloquial form."
   },
   {
     "id": "1202230",
@@ -206,8 +206,8 @@
     "id": "1310950",
     "spelling": "ﾀﾋ亡",
     "reading": "ﾀﾋぼう",
-    "upstream": "propose",
-    "note": "Joke spelling (ﾀﾋ mimics 死): 亡 was given the whole word's reading; the literal rendering is ﾀﾋぼう, spoken しぼう; not worth proposing."
+    "upstream": "none",
+    "note": "Joke spelling: ﾀﾋ mimics the shape of 死; the word is said しぼう."
   },
   {
     "id": "1315700",
@@ -283,8 +283,8 @@
     "id": "1413660",
     "spelling": "大ちゅき",
     "reading": "だいちゅき",
-    "upstream": "propose",
-    "note": "Joke baby-talk spelling: 大 lost its い; the corrected reading is not worth proposing."
+    "upstream": "none",
+    "note": "Joke spelling: baby talk for 大好き, read as written."
   },
   {
     "id": "1416590",
@@ -361,14 +361,14 @@
     "spelling": "否めぬ",
     "reading": "いなめぬ",
     "upstream": "propose",
-    "note": "Kana doubled: め repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "1482930",
     "spelling": "否めん",
     "reading": "いなめん",
     "upstream": "propose",
-    "note": "Kana doubled: め repeated; the corrected reading is a colloquial ending worth proposing."
+    "note": "Ending: the contracted negative ん for ない, a real spoken form."
   },
   {
     "id": "1496340",
@@ -423,8 +423,8 @@
     "id": "1547420",
     "spelling": "ヨー素",
     "reading": "ヨーそ",
-    "upstream": "propose",
-    "note": "Kana attached in the wrong place: the う of よう was kept after ヨー; the corrected reading is just a kana variant, not worth proposing."
+    "upstream": "none",
+    "note": "Kana variant: ヨー for よう is a spelling, not a distinct pronunciation."
   },
   {
     "id": "1548970",
@@ -438,7 +438,7 @@
     "spelling": "カカァ天下",
     "reading": "カカァでんか",
     "upstream": "none",
-    "note": "Small ァ already lengthens カ but the あ of かかあ was added again; the corrected reading is a kana variant."
+    "note": "Kana variant: カカァ for かかあ is a spelling, not a distinct pronunciation."
   },
   {
     "id": "1573270",
@@ -529,7 +529,7 @@
     "spelling": "薄っ気味悪い",
     "reading": "うすっきみわるい",
     "upstream": "propose",
-    "note": "Small っ placed in the wrong spot: it follows 薄 (read うす), so the reading is うすっ, not うっす; the corrected reading is a real emphatic form worth proposing."
+    "note": "Emphatic gemination: っ after 薄, a real emphatic form of 薄気味悪い."
   },
   {
     "id": "1663790",
@@ -592,7 +592,7 @@
     "spelling": "飽き足らぬ",
     "reading": "あきたらぬ",
     "upstream": "propose",
-    "note": "Kana doubled: ら repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "1756510",
@@ -641,21 +641,21 @@
     "spelling": "立ち待ちの月",
     "reading": "たちまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "1838120",
     "spelling": "立待ちの月",
     "reading": "たちまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "1838120",
     "spelling": "立待の月",
     "reading": "たちまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "1849320",
@@ -752,8 +752,8 @@
     "id": "1925360",
     "spelling": "ワンウエー瓶",
     "reading": "ワンウエーびん",
-    "upstream": "propose",
-    "note": "Kana garbled: ェイ appended after ワンウエー; the corrected reading is a kana variant of the existing ワンウェーびん[sk], not worth proposing."
+    "upstream": "none",
+    "note": "Loanword kana variant: ウエー for ウェー is a spelling, not a distinct pronunciation."
   },
   {
     "id": "1957470",
@@ -780,8 +780,8 @@
     "id": "1963310",
     "spelling": "クラッシク音楽",
     "reading": "クラッシクおんがく",
-    "upstream": "propose",
-    "note": "Kana garbled: ック appended after クラッシク; the spelling is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: クラッシク for クラシック."
   },
   {
     "id": "1963310",
@@ -836,8 +836,8 @@
     "id": "1968260",
     "spelling": "ペルシア猫",
     "reading": "ペルシアねこ",
-    "upstream": "propose",
-    "note": "Kana garbled: ャ of ペルシャ appended; the corrected reading is a loanword kana variant, not worth proposing."
+    "upstream": "none",
+    "note": "Loanword kana variant: ペルシア for the entry's ペルシャ."
   },
   {
     "id": "1968980",
@@ -893,7 +893,7 @@
     "spelling": "早いもん勝ち",
     "reading": "はやいもんがち",
     "upstream": "propose",
-    "note": "Kana garbled: の inserted; the corrected reading is a colloquial もん form worth proposing."
+    "note": "Contraction: もん for もの, a real colloquial form."
   },
   {
     "id": "2027760",
@@ -935,7 +935,7 @@
     "spelling": "ロー付け",
     "reading": "ローづけ",
     "upstream": "none",
-    "note": "Kana attached in the wrong place: the う of ろう was kept after ロー; the corrected reading is a kana variant."
+    "note": "Kana variant: ロー for ろう is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2065430",
@@ -1053,15 +1053,15 @@
     "id": "2104640",
     "spelling": "ハイブリット車",
     "reading": "ハイブリットしゃ",
-    "upstream": "propose",
-    "note": "Kana garbled: ド of ハイブリッド appended; the spelling is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: ハイブリット for ハイブリッド."
   },
   {
     "id": "2105490",
     "spelling": "近からずとも遠からず",
     "reading": "ちかからずともとおからず",
     "upstream": "propose",
-    "note": "Kana lost: と of とおからず dropped; the corrected reading (with とも) is a real variant worth proposing."
+    "note": "Particle insertion: the spelling adds とも between the two halves, a real variant."
   },
   {
     "id": "2105490",
@@ -1082,7 +1082,7 @@
     "spelling": "ひと筋縄じゃ行かない",
     "reading": "ひとすじなわじゃいかない",
     "upstream": "propose",
-    "note": "Kana misplaced: じゃ was attached inside 筋 and では left in place; the corrected reading is the じゃ contraction worth proposing."
+    "note": "Contraction: じゃ for では, a real colloquial form."
   },
   {
     "id": "2111220",
@@ -1096,7 +1096,7 @@
     "spelling": "一筋縄じゃ行かない",
     "reading": "ひとすじなわじゃいかない",
     "upstream": "propose",
-    "note": "Kana misplaced: じゃ was attached inside 筋 and では left in place; the corrected reading is the じゃ contraction worth proposing."
+    "note": "Contraction: じゃ for では, a real colloquial form."
   },
   {
     "id": "2116150",
@@ -1117,21 +1117,21 @@
     "spelling": "割が合う",
     "reading": "わりがあう",
     "upstream": "propose",
-    "note": "Kana misplaced: が was put inside 割 and に kept; the corrected reading (が for に) is a real variant worth proposing."
+    "note": "Particle swap: が for the entry's に, a real variant."
   },
   {
     "id": "2119890",
     "spelling": "割りが合う",
     "reading": "わりがあう",
     "upstream": "propose",
-    "note": "Kana misplaced: が was put inside 割 and に kept; the corrected reading (が for に) is a real variant worth proposing."
+    "note": "Particle swap: が for the entry's に, a real variant."
   },
   {
     "id": "2120160",
     "spelling": "自己チュー",
     "reading": "じこチュー",
     "upstream": "restricted",
-    "note": "JMdict has ジコチュー, but restricted to ; search-only spellings take no restrictions."
+    "note": "JMdict has ジコチュー, but only as a kana form that applies to no kanji spelling; search-only spellings take no restrictions."
   },
   {
     "id": "2122840",
@@ -1179,8 +1179,8 @@
     "id": "2144130",
     "spelling": "光化学スモック注意報",
     "reading": "こうかがくスモックちゅういほう",
-    "upstream": "propose",
-    "note": "Kana garbled: グ of スモッグ appended; the spelling is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: スモック for スモッグ."
   },
   {
     "id": "2152910",
@@ -1192,9 +1192,9 @@
   {
     "id": "2153810",
     "spelling": "ケータイ番号",
-    "reading": "けータイばんごう",
-    "upstream": "propose",
-    "note": "Katakana ケ was converted to hiragana while ータイ was kept; the corrected reading is a kana variant (ケータイ for けいたい) not worth proposing."
+    "reading": "ケータイばんごう",
+    "upstream": "none",
+    "note": "Kana variant: ケータイ for けいたい is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2159000",
@@ -1221,8 +1221,8 @@
     "id": "2178460",
     "spelling": "言ふ方無し",
     "reading": "いふかたなし",
-    "upstream": "propose",
-    "note": "Kana doubled: う of いう appended after いふ; the corrected reading is historical kana, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: ふ is pronounced う."
   },
   {
     "id": "2180360",
@@ -1263,8 +1263,8 @@
     "id": "2196600",
     "spelling": "ニュルンベルグ裁判",
     "reading": "ニュルンベルグさいばん",
-    "upstream": "propose",
-    "note": "Kana garbled: ク of ニュルンベルク appended; the corrected reading is a loanword kana variant, not worth proposing."
+    "upstream": "none",
+    "note": "Loanword kana variant: ニュルンベルグ for ニュルンベルク."
   },
   {
     "id": "2197260",
@@ -1502,7 +1502,7 @@
     "spelling": "パラメタ空間",
     "reading": "パラメタくうかん",
     "upstream": "none",
-    "note": "Kana garbled: ータ of パラメータ appended after パラメタ; the corrected reading is a loanword kana variant."
+    "note": "Loanword kana variant: パラメタ for パラメータ is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2320500",
@@ -1516,14 +1516,14 @@
     "spelling": "パラメタ値",
     "reading": "パラメタち",
     "upstream": "none",
-    "note": "Kana garbled: ータ of パラメータ appended after パラメタ; the corrected reading is a loanword kana variant."
+    "note": "Loanword kana variant: パラメタ for パラメータ is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2322970",
     "spelling": "フーリェ変換",
     "reading": "フーリェへんかん",
     "upstream": "none",
-    "note": "Kana garbled: エ of フーリエ appended after フーリェ; the corrected reading is a misspelling."
+    "note": "Misspelling: フーリェ for フーリエ."
   },
   {
     "id": "2326170",
@@ -1537,7 +1537,7 @@
     "spelling": "ベジエ曲線",
     "reading": "ベジエきょくせん",
     "upstream": "none",
-    "note": "Kana garbled: ェ of ベジェ appended after ベジエ; the corrected reading is a loanword kana variant."
+    "note": "Loanword kana variant: ベジエ for ベジェ."
   },
   {
     "id": "2336160",
@@ -1600,7 +1600,7 @@
     "spelling": "サービス総合デジタル網",
     "reading": "サービスそうごうデジタルもう",
     "upstream": "propose",
-    "note": "Kana garbled: デ duplicated; the corrected reading uses デジタル, the dominant real pronunciation, and is probably worth proposing."
+    "note": "Loanword variant: デジタル, the dominant pronunciation, for the entry's ディジタル."
   },
   {
     "id": "2373400",
@@ -1677,7 +1677,7 @@
     "spelling": "口の減らん",
     "reading": "くちのへらん",
     "upstream": "propose",
-    "note": "Kana doubled: ら repeated; the corrected reading is the colloquial ん ending worth proposing."
+    "note": "Ending: the contracted negative ん for ない, a real spoken form."
   },
   {
     "id": "2402240",
@@ -1705,14 +1705,14 @@
     "spelling": "口からついて出る",
     "reading": "くちからついてでる",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading: 口 lost ち (and を was kept); the corrected reading (から for を) is a real variant worth proposing."
+    "note": "Particle swap: から for the entry's を, a real variant."
   },
   {
     "id": "2403990",
     "spelling": "口から突いて出る",
     "reading": "くちからついてでる",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading: 口 lost ち (and を was kept); the corrected reading (から for を) is a real variant worth proposing."
+    "note": "Particle swap: から for the entry's を, a real variant."
   },
   {
     "id": "2406570",
@@ -1726,7 +1726,7 @@
     "spelling": "捨てる神ありゃ拾う神あり",
     "reading": "すてるかみありゃひろうかみあり",
     "upstream": "propose",
-    "note": "Kana garbled: れば kept after ありゃ; the corrected reading is a real colloquial contraction worth proposing."
+    "note": "Contraction: ありゃ for あれば, a real colloquial form."
   },
   {
     "id": "2418480",
@@ -1740,7 +1740,7 @@
     "spelling": "くそもみそもも一緒",
     "reading": "くそもみそももいっしょ",
     "upstream": "none",
-    "note": "The spelling looks like a typo for くそもみそも一緒 (doubled も); its literal reading is not worth proposing, though the spelling itself may deserve a report."
+    "note": "Misspelling: a doubled も, probably a typo in JMdict for くそもみそも一緒."
   },
   {
     "id": "2421220",
@@ -1774,8 +1774,8 @@
     "id": "2436550",
     "spelling": "同じうする",
     "reading": "おなじうする",
-    "upstream": "propose",
-    "note": "Kana doubled: じ repeated; the corrected reading is a historical-style kana spelling of じゅう, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: じう for じゅう."
   },
   {
     "id": "2440920",
@@ -1816,8 +1816,8 @@
     "id": "2475950",
     "spelling": "伝え歩き",
     "reading": "つたえあるき",
-    "upstream": "propose",
-    "note": "Kana misplaced: え was put inside 伝 instead of after it; the spelling looks like a misspelling of 伝い歩き, so not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: 伝え歩き for 伝い歩き."
   },
   {
     "id": "2499150",
@@ -1837,8 +1837,8 @@
     "id": "2523160",
     "spelling": "彼は誰時",
     "reading": "かはたれどき",
-    "upstream": "propose",
-    "note": "Kana duplicated: は is the particle (pronounced わ) and わ was added again; the corrected reading is a historical-kana spelling, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: は is pronounced わ."
   },
   {
     "id": "2530430",
@@ -1866,7 +1866,7 @@
     "spelling": "幸運の女神には前髪しかない",
     "reading": "こううんのめがみにはまえがみしかない",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading: 女神 lost み; the corrected reading (には for は) is a real variant worth proposing."
+    "note": "Particle insertion: には for the entry's は, a real variant."
   },
   {
     "id": "2566710",
@@ -1922,7 +1922,7 @@
     "spelling": "ニュルンベルグ法",
     "reading": "ニュルンベルグほう",
     "upstream": "none",
-    "note": "Kana garbled: ク of ニュルンベルク appended; the corrected reading is a loanword kana variant."
+    "note": "Loanword kana variant: ニュルンベルグ for ニュルンベルク."
   },
   {
     "id": "2694010",
@@ -1964,42 +1964,42 @@
     "spelling": "寝待ちの月",
     "reading": "ねまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2699770",
     "spelling": "寝待の月",
     "reading": "ねまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2699810",
     "spelling": "臥し待ちの月",
     "reading": "ふしまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2699810",
     "spelling": "臥待の月",
     "reading": "ふしまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2700080",
     "spelling": "ガン泣き",
     "reading": "ガンなき",
     "upstream": "propose",
-    "note": "Kanji reading duplicated: ぎゃん kept after ガン; ガン泣き is its own colloquial word, and the corrected reading is probably worth proposing."
+    "note": "Different reading: ガン for the entry's ぎゃん; ガン泣き is a colloquial word in its own right."
   },
   {
     "id": "2700620",
     "spelling": "人聞きが悪い",
     "reading": "ひとぎきがわるい",
     "upstream": "propose",
-    "note": "Particle duplicated: の kept after が; the corrected reading (が for の) is a real variant worth proposing."
+    "note": "Particle swap: が for the entry's の, a real variant."
   },
   {
     "id": "2703780",
@@ -2019,15 +2019,15 @@
     "id": "2715480",
     "spelling": "替へ言葉",
     "reading": "かへことば",
-    "upstream": "propose",
-    "note": "Kana duplicated: え kept after へ; the corrected reading is historical kana, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: へ is pronounced え."
   },
   {
     "id": "2715480",
     "spelling": "替へ詞",
     "reading": "かへことば",
-    "upstream": "propose",
-    "note": "Kana duplicated: え kept after へ; the corrected reading is historical kana, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: へ is pronounced え."
   },
   {
     "id": "2717360",
@@ -2104,7 +2104,7 @@
     "spelling": "外堀から埋める",
     "reading": "そとぼりからうめる",
     "upstream": "propose",
-    "note": "Kana misplaced: から was put inside 外 and を kept; the corrected reading is a real variant worth proposing."
+    "note": "Particle swap: から for the entry's を, a real variant."
   },
   {
     "id": "2748640",
@@ -2125,7 +2125,7 @@
     "spelling": "恐るるに足りぬ",
     "reading": "おそるるにたりぬ",
     "upstream": "propose",
-    "note": "Kana doubled: り repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "2751670",
@@ -2139,14 +2139,14 @@
     "spelling": "白黒をつける",
     "reading": "しろくろをつける",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading and を was misplaced; the corrected reading (with を) is a real variant worth proposing."
+    "note": "Particle insertion: the spelling writes a を that the entry's reading omits, a real variant."
   },
   {
     "id": "2755600",
     "spelling": "白黒を付ける",
     "reading": "しろくろをつける",
     "upstream": "propose",
-    "note": "Kanji got the wrong part of the reading and を was misplaced; the corrected reading (with を) is a real variant worth proposing."
+    "note": "Particle insertion: the spelling writes a を that the entry's reading omits, a real variant."
   },
   {
     "id": "2756410",
@@ -2215,8 +2215,8 @@
     "id": "2803030",
     "spelling": "ごっご遊び",
     "reading": "ごっごあそび",
-    "upstream": "propose",
-    "note": "Kana garbled: こ of ごっこ appended; the spelling is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: ごっご for ごっこ."
   },
   {
     "id": "2808600",
@@ -2257,8 +2257,8 @@
     "id": "2817540",
     "spelling": "ストリー性",
     "reading": "ストリーせい",
-    "upstream": "propose",
-    "note": "Kana duplicated: リー repeated; the corrected reading is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: ストリー for ストーリー."
   },
   {
     "id": "2823350",
@@ -2299,8 +2299,8 @@
     "id": "2825915",
     "spelling": "能ふ限り",
     "reading": "あたふかぎり",
-    "upstream": "propose",
-    "note": "Kana misplaced: ふ was put after あ instead of after あた; the corrected reading is historical kana, not worth proposing."
+    "upstream": "none",
+    "note": "Historical kana: ふ is pronounced う."
   },
   {
     "id": "2826060",
@@ -2328,7 +2328,7 @@
     "spelling": "丹精を込める",
     "reading": "たんせいをこめる",
     "upstream": "propose",
-    "note": "Particle misplaced: を was put inside 丹 instead of after 丹精; the corrected reading is a real variant worth proposing."
+    "note": "Particle insertion: the spelling writes a を that the entry's reading omits, a real variant."
   },
   {
     "id": "2827084",
@@ -2454,7 +2454,7 @@
     "spelling": "持つべきは友",
     "reading": "もつべきはとも",
     "upstream": "propose",
-    "note": "Kana garbled: ものは kept after べきは; the corrected reading is a real variant worth proposing."
+    "note": "Different wording: the spelling omits the もの of 持つべきものは友, a real variant."
   },
   {
     "id": "2836229",
@@ -2468,21 +2468,21 @@
     "spelling": "べらんめぇ調",
     "reading": "べらんめぇちょう",
     "upstream": "none",
-    "note": "Kana duplicated: え kept after small ぇ; the corrected reading is a kana variant."
+    "note": "Kana variant: small ぇ for え is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2836251",
     "spelling": "べらんめぇ口調",
     "reading": "べらんめぇくちょう",
     "upstream": "none",
-    "note": "Kana duplicated: え kept after small ぇ; the corrected reading is a kana variant."
+    "note": "Kana variant: small ぇ for え is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2836555",
     "spelling": "ハイブリット戦争",
     "reading": "ハイブリットせんそう",
     "upstream": "none",
-    "note": "Kana garbled: ド of ハイブリッド appended; the spelling is a misspelling."
+    "note": "Misspelling: ハイブリット for ハイブリッド."
   },
   {
     "id": "2837535",
@@ -2580,14 +2580,14 @@
     "spelling": "ルクセンブルグ大公国",
     "reading": "ルクセンブルグたいこうこく",
     "upstream": "none",
-    "note": "Kana garbled: ク of ルクセンブルク appended; the corrected reading is a loanword kana variant."
+    "note": "Loanword kana variant: ルクセンブルグ for ルクセンブルク."
   },
   {
     "id": "2847609",
     "spelling": "持ってけドロボー",
     "reading": "もってけドロボー",
     "upstream": "restricted",
-    "note": "JMdict has もってけドロボー, but restricted to ; search-only spellings take no restrictions."
+    "note": "JMdict has もってけドロボー, but only as a kana form that applies to no kanji spelling; search-only spellings take no restrictions."
   },
   {
     "id": "2848041",
@@ -2650,7 +2650,7 @@
     "spelling": "魚ジラミ",
     "reading": "うおジラミ",
     "upstream": "restricted",
-    "note": "JMdict has ウオジラミ, but restricted to ; search-only spellings take no restrictions."
+    "note": "JMdict has ウオジラミ, but only as a kana form that applies to no kanji spelling; search-only spellings take no restrictions."
   },
   {
     "id": "2852394",
@@ -2768,15 +2768,15 @@
     "id": "2859599",
     "spelling": "ヴェネチア共和国",
     "reading": "ヴェネチアきょうわこく",
-    "upstream": "propose",
-    "note": "Kana garbled: ツィア of ヴェネツィア appended; the corrected reading is a loanword kana variant, leaning not worth proposing."
+    "upstream": "none",
+    "note": "Loanword variant: ヴェネチア for the entry's ヴェネツィア."
   },
   {
     "id": "2859599",
     "spelling": "ベネチア共和国",
     "reading": "ベネチアきょうわこく",
-    "upstream": "propose",
-    "note": "Kana garbled: ヴェネツィア appended after ベネチア; ベネチア is the common Japanese form, so the corrected reading might be worth proposing (unsure)."
+    "upstream": "none",
+    "note": "Loanword variant: ベネチア, a common form, for the entry's ヴェネツィア."
   },
   {
     "id": "2859710",
@@ -2811,7 +2811,7 @@
     "spelling": "もー無理",
     "reading": "もーむり",
     "upstream": "none",
-    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+    "note": "Kana variant: ー for う is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2861299",
@@ -2846,7 +2846,7 @@
     "spelling": "エンゼル投資家",
     "reading": "エンゼルとうしか",
     "upstream": "propose",
-    "note": "Kana garbled: ジェル appended after エンゼル; エンゼル is an established older loan form, so the corrected reading might be worth proposing (unsure)."
+    "note": "Loanword variant: エンゼル, an established older form, for the entry's エンジェル."
   },
   {
     "id": "2862224",
@@ -2965,14 +2965,14 @@
     "spelling": "居待ちの月",
     "reading": "いまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2863429",
     "spelling": "居待の月",
     "reading": "いまちのつき",
     "upstream": "propose",
-    "note": "Wrong rendaku: with の inserted, 月 is つき, not づき, and the kana must stay in place; the literal reading is a real variant worth proposing once corrected."
+    "note": "Particle insertion: the spelling writes の before 月, which is then read つき, not づき; a real variant."
   },
   {
     "id": "2863435",
@@ -3020,8 +3020,8 @@
     "id": "2864198",
     "spelling": "リビルド品",
     "reading": "リビルドひん",
-    "upstream": "propose",
-    "note": "Kana garbled: ト of リビルト appended; the spelling is a misspelling, not worth proposing."
+    "upstream": "none",
+    "note": "Misspelling: リビルド for リビルト."
   },
   {
     "id": "2864377",
@@ -3035,7 +3035,7 @@
     "spelling": "筋道が通った",
     "reading": "すじみちがとおった",
     "upstream": "propose",
-    "note": "Kana misplaced: が was put inside 筋 and の kept; the corrected reading (が for の) is a real variant worth proposing."
+    "note": "Particle swap: が for the entry's の, a real variant."
   },
   {
     "id": "2864701",
@@ -3084,7 +3084,7 @@
     "spelling": "ビア缶",
     "reading": "ビアかん",
     "upstream": "propose",
-    "note": "Kana garbled: ール of ビール appended; ビア is a real word form, so the corrected reading is probably worth proposing."
+    "note": "Loanword variant: ビア, a word form in its own right, for the entry's ビール."
   },
   {
     "id": "2865384",
@@ -3105,14 +3105,14 @@
     "spelling": "トー横",
     "reading": "トーよこ",
     "upstream": "none",
-    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+    "note": "Kana variant: ー for う is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2865907",
     "spelling": "トー横キッズ",
     "reading": "トーよこキッズ",
     "upstream": "none",
-    "note": "Kana duplicated: う kept after ー; the corrected reading is a kana variant."
+    "note": "Kana variant: ー for う is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2866028",
@@ -3175,21 +3175,21 @@
     "spelling": "選手層の厚い",
     "reading": "せんしゅそうのあつい",
     "upstream": "propose",
-    "note": "Kana misplaced: の was put inside 選 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+    "note": "Particle swap: の for the entry's が, a real variant."
   },
   {
     "id": "2868535",
     "spelling": "層の厚い",
     "reading": "そうのあつい",
     "upstream": "propose",
-    "note": "Kana misplaced: の was put inside 層 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+    "note": "Particle swap: の for the entry's が, a real variant."
   },
   {
     "id": "2868536",
     "spelling": "層の薄い",
     "reading": "そうのうすい",
     "upstream": "propose",
-    "note": "Kana misplaced: の was put inside 層 and が kept; the corrected reading (の for が) is a real variant worth proposing."
+    "note": "Particle swap: の for the entry's が, a real variant."
   },
   {
     "id": "2868676",
@@ -3230,22 +3230,22 @@
     "id": "2868911",
     "spelling": "オーケー牧場",
     "reading": "オーケーぼくじょう",
-    "upstream": "propose",
-    "note": "Kana garbled: ッ inserted after オー; the corrected reading is a kana variant (unsure whether worth proposing; see おーけー牧場)."
+    "upstream": "none",
+    "note": "Loanword kana variant: オーケー for the entry's オッケー."
   },
   {
     "id": "2868911",
     "spelling": "おっけい牧場",
     "reading": "おっけいぼくじょう",
     "upstream": "none",
-    "note": "Kana garbled: ー appended after い; the corrected reading is a kana variant of オッケー."
+    "note": "Kana variant: おっけい for オッケー is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2868911",
     "spelling": "オッケイ牧場",
     "reading": "オッケイぼくじょう",
     "upstream": "none",
-    "note": "Kana garbled: ー appended after イ; the corrected reading is a kana variant of オッケー."
+    "note": "Kana variant: オッケイ for オッケー is a spelling, not a distinct pronunciation."
   },
   {
     "id": "2869118",
@@ -3285,9 +3285,9 @@
   {
     "id": "2869699",
     "spelling": "ケンカするほど仲がよい",
-    "reading": "けンカするほどなかがよい",
+    "reading": "ケンカするほどなかがよい",
     "upstream": "propose",
-    "note": "Katakana partly converted: ケ became け while ンカ stayed katakana; the corrected reading is the よい variant worth proposing."
+    "note": "Different ending: よい for the entry's いい, a real variant."
   },
   {
     "id": "2869699",
@@ -3406,14 +3406,14 @@
     "spelling": "追随を許さず",
     "reading": "ついずいをゆるさず",
     "upstream": "propose",
-    "note": "Kana doubled: さ repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ず for ない, a real written form."
   },
   {
     "id": "2870927",
     "spelling": "追随を許さぬ",
     "reading": "ついずいをゆるさぬ",
     "upstream": "propose",
-    "note": "Kana doubled: さ repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "2871293",
@@ -3469,7 +3469,7 @@
     "spelling": "おさまりの悪い",
     "reading": "おさまりのわるい",
     "upstream": "propose",
-    "note": "Particle duplicated: が kept after の; the corrected reading (の for が) is a real variant worth proposing."
+    "note": "Particle swap: の for the entry's が, a real variant."
   },
   {
     "id": "2871810",
@@ -3483,7 +3483,7 @@
     "spelling": "収まりの悪い",
     "reading": "おさまりのわるい",
     "upstream": "propose",
-    "note": "Particle duplicated: が kept after の; the corrected reading (の for が) is a real variant worth proposing."
+    "note": "Particle swap: の for the entry's が, a real variant."
   },
   {
     "id": "2872436",
@@ -3497,7 +3497,7 @@
     "spelling": "引くに引けぬ",
     "reading": "ひくにひけぬ",
     "upstream": "propose",
-    "note": "Kana doubled: け repeated; the corrected reading is a real classical ending worth proposing."
+    "note": "Ending: the classical negative ぬ for ない, a real spoken and written form."
   },
   {
     "id": "2872436",

@@ -1,10 +1,18 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { gzipSync } from "node:zlib";
+import { constants, zstdCompressSync } from "node:zlib";
 import { digest, schemaVersion } from "../../src/dataset.mjs";
+import { createZIP } from "./zip.mjs";
 
-/** The published files. The build's other outputs verify a release but are not part of it. */
-export const databaseFiles = ["precise-furigana.json", "precise-furigana.json.gz"];
+/** The database itself. A build writes it, and a release publishes it inside the files below. */
+export const databaseFile = "precise-furigana.json";
+/**
+ * The published files. The archive is for people: it holds the database with its schema, notices
+ * and licence. The other is the database alone, as small as it gets, for programs to fetch.
+ */
+export const releaseFiles = ["precise-furigana.zip", "precise-furigana.json.zst"];
+/** What travels with the database in the archive, from the repository root. */
+export const companionFiles = ["schema.json", "NOTICE.md", "LICENSE.md"];
 
 /**
  * A database's version is `<schema version>.<JMdict date>.<revision>`: the major changes when
@@ -26,21 +34,34 @@ export function parseDatabaseVersion(version) {
   };
 }
 
-/** Write the database and its compressed copy, returning each file's size and checksum. */
+/** Write the database and its published forms, returning each file's size and checksum. */
 export async function writeDatabase(directory, database) {
   const json = Buffer.from(JSON.stringify(database) + "\n");
-  const contents = [json, gzipSync(json, { level: 9 })];
+  const companions = await Promise.all(
+    companionFiles.map(async (name) => [
+      name,
+      await readFile(new URL(`../../${name}`, import.meta.url)),
+    ]),
+  );
+  const contents = {
+    [databaseFile]: json,
+    [releaseFiles[0]]: createZIP([[databaseFile, json], ...companions], database.jmdictDate),
+    [releaseFiles[1]]: zstdCompressSync(json, {
+      params: { [constants.ZSTD_c_compressionLevel]: 22, [constants.ZSTD_c_checksumFlag]: 1 },
+      pledgedSrcSize: json.length,
+    }),
+  };
   const files = {};
-  for (const [index, name] of databaseFiles.entries()) {
-    await writeFile(join(directory, name), contents[index]);
-    files[name] = { bytes: contents[index].length, sha256: digest(contents[index]) };
+  for (const [name, bytes] of Object.entries(contents)) {
+    await writeFile(join(directory, name), bytes);
+    files[name] = { bytes: bytes.length, sha256: digest(bytes) };
   }
   return files;
 }
 
-/** Give a built database its release version, updating both files and the manifest. */
+/** Give a built database its release version, updating its files and the manifest. */
 export async function stampVersion(directory, version) {
-  const database = JSON.parse(await readFile(join(directory, databaseFiles[0]), "utf8"));
+  const database = JSON.parse(await readFile(join(directory, databaseFile), "utf8"));
   const manifestPath = join(directory, "manifest.json");
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   manifest.version = version;

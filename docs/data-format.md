@@ -1,6 +1,6 @@
 # Data format
 
-[schema.json](../schema.json) is the authoritative structure. The database is UTF-8 JSON; the `.gz` file holds the same bytes.
+[schema.json](../schema.json) is the authoritative structure, and validation checks the database against it. The database is UTF-8 JSON.
 
 <!-- oxfmt-ignore -->
 ```json
@@ -53,6 +53,6 @@ A multi-character ruby group means the characters' individual sounds are unresol
 
 ## Releases
 
-A release publishes only `precise-furigana.json` and `precise-furigana.json.gz`. Its tag is `v` followed by the database's `version`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE.md](../NOTICE.md) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
+A release publishes two files. `precise-furigana.zip` holds `precise-furigana.json` with `schema.json`, `NOTICE.md` and `LICENSE.md`. `precise-furigana.json.zst` is the database alone, compressed with Zstandard, for programs that fetch it. Both hold the same bytes, and the release notes give their SHA-256, which is also how a rerun recognizes a database that is already released. Its tag is `v` followed by the database's `version`. Its notes name the jmdict-simplified release used, and its tag points at the source commit, whose schema and [NOTICE.md](../NOTICE.md) apply. Builds are deterministic for the same inputs and Node.js version; compressed bytes can differ across zlib versions, so compare records, not files, across Node.js upgrades.
 
 `npm run inspect -- <spelling> <reading> --explain` shows how any record was derived; derivations are not part of the release.

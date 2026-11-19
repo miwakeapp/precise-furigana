@@ -1,4 +1,4 @@
-import { inflateRawSync, crc32 } from "node:zlib";
+import { crc32, deflateRawSync, inflateRawSync } from "node:zlib";
 
 /** Read one named ZIP member in memory, without extracting paths or links. */
 export function extractZIPMember(archive, memberName) {
@@ -72,4 +72,50 @@ export function extractZIPMember(archive, memberName) {
   if (offset !== trailer) throw new Error("ZIP directory size mismatch");
   if (result === undefined) throw new Error(`Missing ZIP member: ${memberName}`);
   return result;
+}
+
+/**
+ * Build a ZIP archive from `[name, bytes]` members, all stamped with `date` (a `YYYY-MM-DD`
+ * string) so that the same members always produce the same archive.
+ */
+export function createZIP(members, date) {
+  const [year, month, day] = date.split("-").map(Number);
+  const dosDate = ((year - 1980) << 9) | (month << 5) | day;
+  const locals = [],
+    directory = [];
+  let offset = 0;
+  for (const [name, bytes] of members) {
+    const nameBytes = Buffer.from(name);
+    const compressed = deflateRawSync(bytes, { level: 9 });
+    // Shared by the local header (from offset 4) and the directory entry (from offset 6):
+    // version needed, UTF-8 name flag, deflate, time, date, CRC, sizes, name length.
+    const fields = Buffer.alloc(24);
+    fields.writeUInt16LE(20, 0);
+    fields.writeUInt16LE(0x0800, 2);
+    fields.writeUInt16LE(8, 4);
+    fields.writeUInt16LE(dosDate, 8);
+    fields.writeUInt32LE(crc32(bytes), 10);
+    fields.writeUInt32LE(compressed.length, 14);
+    fields.writeUInt32LE(bytes.length, 18);
+    fields.writeUInt16LE(nameBytes.length, 22);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    fields.copy(local, 4);
+    const entry = Buffer.alloc(46);
+    entry.writeUInt32LE(0x02014b50, 0);
+    entry.writeUInt16LE(20, 4);
+    fields.copy(entry, 6);
+    entry.writeUInt32LE(offset, 42);
+    locals.push(local, nameBytes, compressed);
+    directory.push(entry, nameBytes);
+    offset += local.length + nameBytes.length + compressed.length;
+  }
+  const directoryBytes = Buffer.concat(directory);
+  const trailer = Buffer.alloc(22);
+  trailer.writeUInt32LE(0x06054b50, 0);
+  trailer.writeUInt16LE(members.length, 8);
+  trailer.writeUInt16LE(members.length, 10);
+  trailer.writeUInt32LE(directoryBytes.length, 12);
+  trailer.writeUInt32LE(offset, 16);
+  return Buffer.concat([...locals, directoryBytes, trailer]);
 }

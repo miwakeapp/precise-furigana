@@ -1,34 +1,22 @@
 # Notices
 
-The software in this repository is licensed under MIT; see [LICENSE.md](LICENSE.md). That license does not cover the data.
+The Precise Furigana database is distributed under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/), with the attributions below. So are the reviewed readings and word divisions it is built from, which are kept in the project's repository. None of the projects named here endorses this one.
 
-The generated database, its annotations, the reviewed evidence in `data/`, and the dictionary-derived test data are distributed under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/), with the attributions below. Source URLs, versions, dates, sizes, and SHA-256 digests of every input are recorded in [data/sources.lock.json](data/sources.lock.json).
+The project's software, including the database's JSON schema, is under the MIT license; see [LICENSE.md](LICENSE.md). That license does not cover the data.
 
-## JMdict and KANJIDIC2
+## JMdict, KANJIDIC2, and JMnedict
 
-The generated database uses [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) and [KANJIDIC2](https://www.edrdg.org/wiki/KANJIDIC_Project.html), which are copyright James William Breen and the Electronic Dictionary Research and Development Group (EDRDG), under the [EDRDG license statement](https://www.edrdg.org/edrdg/licence.html). The source JSON conversion is by [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases).
+The database is built from [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) and [KANJIDIC2](https://www.edrdg.org/wiki/KANJIDIC_Project.html), which are copyright James William Breen and the Electronic Dictionary Research and Development Group (EDRDG), under the [EDRDG license statement](https://www.edrdg.org/edrdg/licence.html). The JSON conversions used are by [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases). A few word divisions also rely on name readings from [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html), which is under the same license.
 
-A few lexical facts keep a place name or surname together on the evidence of [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html), which is under the same EDRDG license; JMnedict is not an input to the build.
-
-The generated database is an adaptation: this project selects permitted spelling/reading pairs and adds algorithmically inferred furigana boundaries and reviewed alignment annotations. No endorsement by EDRDG is implied.
+The database is an adaptation: it selects each entry's permitted spelling/reading pairs, adds a few readings that JMdict lacks, and divides every reading among the characters of its spelling.
 
 ## Wiktionary
 
-The bundled character readings and selected lexical facts include adapted material from [Japanese Wiktionary](https://ja.wiktionary.org/) and [English Wiktionary](https://en.wiktionary.org/) contributors, licensed under [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/); see [Wiktionary:Copyrights](https://en.wiktionary.org/wiki/Wiktionary:Copyrights).
-
-Japanese character readings were extracted by [Kaikki/wiktextract](https://kaikki.org/dictionary/rawdata.html). English character readings were extracted directly from pinned page revisions through the [MediaWiki API](https://en.wiktionary.org/w/api.php), following the [`ja-readings` template documentation](https://en.wiktionary.org/w/index.php?title=Template:ja-readings/documentation&oldid=89401685). This project filters, normalizes, and reviews their applicability: it retains literal on readings, explicitly complete kun readings, and documented character-reading prefixes; it withholds unmarked kun, nanori, and historical values and unsupported markup; and it infers no sound changes or inflections.
-
-Source titles, original forms, tags, revision or archive provenance, and modification details are retained in [data/character-readings.json](data/character-readings.json) and [data/english-character-readings.json](data/english-character-readings.json), and each lexical fact in [data/lexical-evidence.json](data/lexical-evidence.json) lists its source URLs.
+Some character readings and word divisions are adapted from [Japanese Wiktionary](https://ja.wiktionary.org/) and [English Wiktionary](https://en.wiktionary.org/) contributors, under the same Creative Commons license; see [Wiktionary:Copyrights](https://en.wiktionary.org/wiki/Wiktionary:Copyrights). Japanese Wiktionary's readings were extracted by [Kaikki/wiktextract](https://kaikki.org/dictionary/rawdata.html). This project selected, normalized, and reviewed what it uses.
 
 ## JmdictFurigana
 
-Reviewed alignment candidates also originated in [Doublevil/JmdictFurigana](https://github.com/Doublevil/JmdictFurigana) release 2.3.1+2026-09-25, whose generated data is distributed under the JMdict Creative Commons Attribution-ShareAlike license. Supported lexical units were selected and adapted after two AI reviews; no implementation code was imported. Each adopted unit's rationale and source URLs are retained in [data/lexical-evidence.json](data/lexical-evidence.json).
-
-No endorsement by these contributors or projects is implied.
-
-## Lorenzi's Jisho
-
-Lorenzi's furigana data and implementation are not inputs to the generator and are not included in the distributed data.
+Some word divisions originated as candidates in [Doublevil/JmdictFurigana](https://github.com/Doublevil/JmdictFurigana) release 2.3.1+2026-09-25, whose data is distributed under JMdict's Creative Commons Attribution-ShareAlike license. They were reviewed and adapted before use; no code was imported.
 
 ## Unihan
 

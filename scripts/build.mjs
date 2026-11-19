@@ -9,7 +9,12 @@ import {
   planSynthesizedPairs,
   withoutUnwrittenPunctuation,
 } from "../src/pairings.mjs";
-import { databaseFiles, databaseVersion, writeDatabase } from "./lib/database-files.mjs";
+import {
+  databaseFile,
+  databaseVersion,
+  releaseFiles,
+  writeDatabase,
+} from "./lib/database-files.mjs";
 import { evaluateDataset } from "./lib/evaluation.mjs";
 import { parseGeneratorOptions } from "./lib/options.mjs";
 
@@ -154,8 +159,9 @@ console.log(
   JSON.stringify(
     {
       ...counts,
-      bytes: files[databaseFiles[0]].bytes,
-      gzipBytes: files[databaseFiles[1]].bytes,
+      bytes: files[databaseFile].bytes,
+      zipBytes: files[releaseFiles[0]].bytes,
+      zstdBytes: files[releaseFiles[1]].bytes,
     },
     undefined,
     2,

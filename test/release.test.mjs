@@ -3,7 +3,7 @@ import test from "node:test";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { gunzipSync } from "node:zlib";
+import { zstdDecompressSync } from "node:zlib";
 import { defaultConfiguration, digest, schemaVersion } from "../src/dataset.mjs";
 import {
   databaseVersion,
@@ -11,6 +11,7 @@ import {
   stampVersion,
   writeDatabase,
 } from "../scripts/lib/database-files.mjs";
+import { extractZIPMember } from "../scripts/lib/zip.mjs";
 import {
   releaseDescriptor,
   releasedRevisions,
@@ -75,25 +76,13 @@ test("passing summary cannot conceal missing results or failed alignments", () =
 });
 
 test("release retries require complete published assets", () => {
-  const assets = { "database.json": { bytes: 3, sha256: "abc" } };
-  const release = {
-    draft: false,
-    assets: [{ name: "database.json", size: 3, state: "uploaded", digest: "sha256:abc" }],
-  };
-  verifyExistingRelease(release, assets);
-  assert.throws(() => verifyExistingRelease({ ...release, draft: true }, assets));
-  assert.throws(() => verifyExistingRelease({ ...release, assets: [] }, assets));
+  const names = ["database.zip"];
+  const release = { draft: false, assets: [{ name: "database.zip", state: "uploaded" }] };
+  verifyExistingRelease(release, names);
+  assert.throws(() => verifyExistingRelease({ ...release, draft: true }, names));
+  assert.throws(() => verifyExistingRelease({ ...release, assets: [] }, names));
   assert.throws(() =>
-    verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], size: 1 }] }, assets),
-  );
-  assert.throws(() =>
-    verifyExistingRelease(
-      { ...release, assets: [{ ...release.assets[0], digest: "sha256:def" }] },
-      assets,
-    ),
-  );
-  assert.throws(() =>
-    verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], digest: null }] }, assets),
+    verifyExistingRelease({ ...release, assets: [{ ...release.assets[0], state: "new" }] }, names),
   );
 });
 
@@ -126,10 +115,15 @@ test("released revisions are read from tags for the same schema and date", () =>
   assert.deepEqual(releasedRevisions([], "2026-11-16"), []);
 });
 
-test("stamping a version rewrites both files and the manifest consistently", async () => {
+test("stamping a version rewrites the database, its published files, and the manifest", async () => {
   const directory = await mkdtemp(join(tmpdir(), "precise-furigana-"));
   try {
-    const database = { version: "1.20261116.0-dev", schemaVersion: 1, entries: {} };
+    const database = {
+      version: "1.20261116.0-dev",
+      schemaVersion: 1,
+      jmdictDate: "2026-11-16",
+      entries: {},
+    };
     const files = await writeDatabase(directory, database);
     await writeFile(
       join(directory, "manifest.json"),
@@ -141,7 +135,18 @@ test("stamping a version rewrites both files and the manifest consistently", asy
     const json = await readFile(join(directory, "precise-furigana.json"));
     assert.deepEqual(JSON.parse(json), { ...database, version: "1.20261116.4" });
     assert.deepEqual(Object.keys(JSON.parse(json)), Object.keys(database));
-    assert.deepEqual(gunzipSync(await readFile(join(directory, "precise-furigana.json.gz"))), json);
+    const archive = await readFile(join(directory, "precise-furigana.zip"));
+    assert.deepEqual(extractZIPMember(archive, "precise-furigana.json"), json);
+    for (const name of ["schema.json", "NOTICE.md", "LICENSE.md"]) {
+      assert.deepEqual(
+        extractZIPMember(archive, name),
+        await readFile(new URL(`../${name}`, import.meta.url)),
+      );
+    }
+    assert.deepEqual(
+      zstdDecompressSync(await readFile(join(directory, "precise-furigana.json.zst"))),
+      json,
+    );
     assert.deepEqual(manifest.files["precise-furigana.json"], {
       bytes: json.length,
       sha256: digest(json),

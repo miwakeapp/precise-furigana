@@ -7,19 +7,32 @@ import { parseArgs, isDeepStrictEqual } from "node:util";
 import { defaultConfiguration, digest, generatorDigest } from "../src/dataset.mjs";
 import { defaultLockPath } from "../src/sources.mjs";
 import {
-  databaseFiles,
+  databaseFile,
   databaseVersion,
   parseDatabaseVersion,
+  releaseFiles,
   stampVersion,
 } from "./lib/database-files.mjs";
+
+/** The line of a release's notes that identifies its database, whatever compressed it. */
+const checksumLine = (manifest) =>
+  `\`${databaseFile}\` SHA-256: \`${manifest.files[databaseFile].sha256}\``;
 
 export function releaseDescriptor(manifest, lock) {
   const { counts, version } = manifest;
   const { jmdictDate } = parseDatabaseVersion(version);
+  const count = (value) => value.toLocaleString("en-US");
   return {
     tag: `v${version}`,
     title: `Precise Furigana ${version}`,
-    notes: `Furigana for ${counts.pairs.toLocaleString("en-US")} spelling/reading pairs across ${counts.entries.toLocaleString("en-US")} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).\n\nDownload \`precise-furigana.json.gz\`. Entries are indexed by JMdict ID, and each record has \`spelling\`, \`reading\`, and \`segments\`. Plain strings are shown without ruby; two-element arrays are \`[base, ruby]\` pairs.\n\n\`precise-furigana.json\` SHA-256: \`${manifest.files[databaseFiles[0]].sha256}\`\n\nDictionary-derived data: CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. \`NOTICE.md\` in the tagged source has full attribution.\n`,
+    notes: [
+      `Furigana for ${count(counts.pairs)} spelling/reading pairs across ${count(counts.entries)} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).`,
+      `- \`${releaseFiles[0]}\` holds \`${databaseFile}\` with its schema, notices and license.\n- \`${releaseFiles[1]}\` is \`${databaseFile}\` alone, compressed with Zstandard.`,
+      checksumLine(manifest),
+      "The data is under CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. `NOTICE.md` in the archive has full attribution.",
+    ]
+      .join("\n\n")
+      .concat("\n"),
   };
 }
 
@@ -64,18 +77,20 @@ export function verifyEvaluation(evaluation, goldText, current) {
   );
 }
 
-export function verifyExistingRelease(release, assets) {
+/**
+ * Check that a release which already holds this database finished uploading. The files are not
+ * compared byte for byte: a newer compressor can pack the same database differently.
+ */
+export function verifyExistingRelease(release, names) {
   assert.equal(
     release.draft,
     false,
     "An incomplete draft release exists; inspect it before retrying",
   );
-  for (const [name, expected] of Object.entries(assets)) {
+  for (const name of names) {
     const asset = release.assets.find((candidate) => candidate.name === name);
     assert.ok(asset, `Existing release is incomplete: missing ${name}`);
     assert.equal(asset.state, "uploaded", `${name} upload is incomplete`);
-    assert.equal(asset.size, expected.bytes, `${name} has an unexpected size`);
-    assert.equal(asset.digest, `sha256:${expected.sha256}`, `${name} checksum`);
   }
 }
 
@@ -103,15 +118,12 @@ async function stamp(directory, jmdictDate) {
   const refs = await github(`git/matching-refs/tags/v${databaseVersion(jmdictDate, "")}`);
   const latest = releasedRevisions(refs, jmdictDate).at(-1);
   if (latest !== undefined) {
-    // Stamped with the latest revision, an unchanged database is byte-identical to that release.
+    // Stamped with the latest revision, an unchanged database has the checksum that release's
+    // notes record.
     const manifest = await stampVersion(directory, databaseVersion(jmdictDate, latest));
     const release = await github(`releases/tags/v${manifest.version}`, { missing: true });
-    const published = release?.assets.find((asset) => asset.name === databaseFiles[0]);
-    if (published?.digest === `sha256:${manifest.files[databaseFiles[0]].sha256}`) {
-      verifyExistingRelease(
-        release,
-        Object.fromEntries(databaseFiles.map((name) => [name, manifest.files[name]])),
-      );
+    if (release?.body?.includes(checksumLine(manifest))) {
+      verifyExistingRelease(release, releaseFiles);
       console.log(`Release v${manifest.version} already holds this database; nothing to publish.`);
       return false;
     }
@@ -189,7 +201,7 @@ async function main() {
       descriptor.title,
       "--notes-file",
       notesPath,
-      ...databaseFiles.map((name) => join(values.directory, name)),
+      ...releaseFiles.map((name) => join(values.directory, name)),
     ],
     { stdio: "inherit" },
   );

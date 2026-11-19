@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 import { join } from "node:path";
-import { gunzipSync } from "node:zlib";
+import { zstdDecompressSync } from "node:zlib";
 import {
   compileAnnotations,
   defaultConfiguration,
@@ -18,10 +18,16 @@ import { validateDisplayAlignment } from "../src/display.mjs";
 import { contradictionKind, contradictsSpelling } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
 import { isSilentPunctuation, splitGraphemes } from "../src/kana.mjs";
-import { parseDatabaseVersion } from "./lib/database-files.mjs";
+import {
+  companionFiles,
+  databaseFile,
+  parseDatabaseVersion,
+  releaseFiles,
+} from "./lib/database-files.mjs";
+import { extractZIPMember } from "./lib/zip.mjs";
 
 const { values } = parseArgs({ options: { directory: { type: "string", default: "dist" } } });
-const bytes = await readFile(join(values.directory, "precise-furigana.json"));
+const bytes = await readFile(join(values.directory, databaseFile));
 const output = JSON.parse(bytes);
 const matchesSchema = addFormats(new Ajv()).compile(
   JSON.parse(await readFile(new URL("../schema.json", import.meta.url), "utf8")),
@@ -31,8 +37,19 @@ assert.ok(
   `Output does not match schema.json: ${JSON.stringify(matchesSchema.errors?.slice(0, 3))}`,
 );
 assert.equal(output.schemaVersion, schemaVersion);
+// Both published files hold exactly this database, and the archive holds its companions as they
+// are in the repository.
+const archive = await readFile(join(values.directory, releaseFiles[0]));
+assert.deepEqual(extractZIPMember(archive, databaseFile), bytes);
+for (const name of companionFiles) {
+  assert.deepEqual(
+    extractZIPMember(archive, name),
+    await readFile(new URL(`../${name}`, import.meta.url)),
+    `${name} in the archive`,
+  );
+}
 assert.deepEqual(
-  gunzipSync(await readFile(join(values.directory, "precise-furigana.json.gz"))),
+  zstdDecompressSync(await readFile(join(values.directory, releaseFiles[1]))),
   bytes,
 );
 const manifest = JSON.parse(await readFile(join(values.directory, "manifest.json"), "utf8"));
@@ -190,5 +207,5 @@ assert.equal(count, manifest.counts.pairs);
 assert.equal(synthesizedCount, manifest.counts.synthesized);
 assert.equal(Object.keys(output.entries).length, manifest.counts.entries);
 console.log(
-  `Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, gzip, and artifact checksums.`,
+  `Validated ${count} pairs across ${Object.keys(output.entries).length} JMdict entries, spelling reconstruction, reading coverage, input provenance, both published files, and artifact checksums.`,
 );

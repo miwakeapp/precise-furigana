@@ -17,7 +17,7 @@ With the Precise Furigana database, your software can display any word in JMdict
 
 ## Use the data
 
-The release artifacts are `precise-furigana.json` and its gzip-compressed equivalent, `precise-furigana.json.gz`. The corpus contains about 325,000 spelling/reading pairs; the compressed database is about 7 MB.
+Each [release](https://github.com/miwakeapp/precise-furigana/releases) has two files. `precise-furigana.zip` (about 7 MB) contains `precise-furigana.json` along with its schema and license notices. `precise-furigana.json.zst` (about 4.5 MB) is the same JSON file alone, compressed with [Zstandard](https://facebook.github.io/zstd/). The corpus contains about 325,000 spelling/reading pairs.
 
 The top-level JSON object's `entries` property contains an object mapping JMdict IDs to lists of spelling/reading/segmentation records. For example, `database.entries["2852392"]` is the following:
 

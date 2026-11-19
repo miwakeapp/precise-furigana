@@ -21575,6 +21575,215 @@
       "sources": [
         {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?oldid=87945681#Japanese"}
       ]
+    },
+    {
+      "id": "NC-1",
+      "spelling": "鰹節",
+      "reading": "かつぶし",
+      "segments": [["鰹","かつ"],["節","ぶし"]],
+      "reason": "鰹 is its kun reading かつお without the final お, as the entry's other reading かつおぶし shows, and 節 is ふし voiced.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NC-2",
+      "spelling": "諡号",
+      "reading": "おくりごう",
+      "segments": [["諡","おくり"],["号","ごう"]],
+      "reason": "諡 is its kun reading おくりな without the final な, and 号 is its on reading ごう.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NC-3",
+      "spelling": "眼裏",
+      "reading": "まなうら",
+      "segments": [["眼","まな"],["裏","うら"]],
+      "reason": "眼 is its kun reading まなこ without the final こ, and 裏 is its kun reading うら.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NC-4",
+      "spelling": "御厠",
+      "reading": "おかわ",
+      "segments": [["御","お"],["厠","かわ"]],
+      "reason": "御 is the prefix お, and 厠 is its kun reading かわや without the final や.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NC-5",
+      "spelling": "顎菫",
+      "reading": "あぎすみれ",
+      "segments": [["顎","あぎ"],["菫","すみれ"]],
+      "reason": "顎 is its kun reading あぎと without the final と, and 菫 is its kun reading すみれ.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-01",
+      "spelling": "禍津日神",
+      "reading": "まがつひのかみ",
+      "segments": [["禍","まが"],["津","つ"],["日神","ひのかみ"]],
+      "reason": "禍 まが and 津 つ are listed readings. 日 ひ and 神 かみ have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-02",
+      "spelling": "枉津日神",
+      "reading": "まがつひのかみ",
+      "segments": [["枉","まが"],["津","つ"],["日神","ひのかみ"]],
+      "reason": "枉 stands for 禍 まが in this spelling of 禍津日神, and 津 つ is a listed reading. 日 ひ and 神 かみ have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-03",
+      "spelling": "禍津日神",
+      "reading": "まがついのかみ",
+      "segments": [["禍","まが"],["津","つ"],["日神","いのかみ"]],
+      "reason": "As in まがつひのかみ, with ひ weakened to い.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-04",
+      "spelling": "大禍津日神",
+      "reading": "おおまがつひのかみ",
+      "segments": [["大","おお"],["禍","まが"],["津","つ"],["日神","ひのかみ"]],
+      "reason": "大 おお before 禍津日神, which divides as 禍 まが, 津 つ, and 日神 ひのかみ with an unwritten の.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-05",
+      "spelling": "八十禍津日神",
+      "reading": "やそまがつひのかみ",
+      "segments": [["八","や"],["十","そ"],["禍","まが"],["津","つ"],["日神","ひのかみ"]],
+      "reason": "八十 やそ before 禍津日神, which divides as 禍 まが, 津 つ, and 日神 ひのかみ with an unwritten の.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-06",
+      "spelling": "東漢氏",
+      "reading": "やまとのあやうじ",
+      "segments": [["東漢","やまとのあや"],["氏","うじ"]],
+      "reason": "氏 うじ is a listed reading; 東漢 is the clan name やまとのあや, which the entry's sibling spelling 倭漢 also writes.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-07",
+      "spelling": "倭漢氏",
+      "reading": "やまとのあやうじ",
+      "segments": [["倭漢","やまとのあや"],["氏","うじ"]],
+      "reason": "氏 うじ is a listed reading; 倭漢 is the clan name やまとのあや, with an unwritten の between 倭 やまと and 漢 あや.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-08",
+      "spelling": "伊邪那岐命",
+      "reading": "いざなぎのみこと",
+      "segments": [["伊","い"],["邪","ざ"],["那","な"],["岐命","ぎのみこと"]],
+      "reason": "伊 い, 邪 ざ, and 那 な are listed readings used phonetically. 岐 ぎ and 命 みこと have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-09",
+      "spelling": "伊邪那岐命",
+      "reading": "いざなきのみこと",
+      "segments": [["伊","い"],["邪","ざ"],["那","な"],["岐命","きのみこと"]],
+      "reason": "As in いざなぎのみこと, with unvoiced き.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-10",
+      "spelling": "伊邪那美命",
+      "reading": "いざなみのみこと",
+      "segments": [["伊","い"],["邪","ざ"],["那","な"],["美命","みのみこと"]],
+      "reason": "伊 い, 邪 ざ, and 那 な are listed readings used phonetically. 美 み and 命 みこと have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-11",
+      "spelling": "大宰帥",
+      "reading": "おおみこともちのかみ",
+      "segments": [["大","おお"],["宰帥","みこともちのかみ"]],
+      "reason": "大 おお is a listed reading. 宰 みこともち and 帥 かみ have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-12",
+      "spelling": "心中天網島",
+      "reading": "しんじゅうてんのあみじま",
+      "segments": [["心","しん"],["中","じゅう"],["天網","てんのあみ"],["島","じま"]],
+      "reason": "心中 is しんじゅう, 島 is しま voiced, and 天 てん and 網 あみ have an unwritten の between them, so they stay together.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-13",
+      "spelling": "尼崎歯科専門学校",
+      "reading": "あまがさきしかせんもんがっこう",
+      "segments": [["尼崎","あまがさき"],["歯","し"],["科","か"],["専","せん"],["門","もん"],["学","がっ"],["校","こう"]],
+      "reason": "尼 あま and 崎 さき have an unwritten が between them, so they stay together. The rest are listed on readings, with がく geminated before こう.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SU-14",
+      "spelling": "尼崎信用金庫",
+      "reading": "あまがさきしんようきんこ",
+      "segments": [["尼崎","あまがさき"],["信","しん"],["用","よう"],["金","きん"],["庫","こ"]],
+      "reason": "尼 あま and 崎 さき have an unwritten が between them, so they stay together. The rest are listed on readings.",
+      "sources": [
+        {"name":"JMdict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
     }
   ]
 }

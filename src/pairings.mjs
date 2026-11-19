@@ -45,7 +45,7 @@ const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
  * ＳＦ. JMdict punctuates some readings for legibility; the marks are not part of how the
  * spelling is read.
  */
-export function hasUnwrittenPunctuation(spelling, reading) {
+function hasUnwrittenPunctuation(spelling, reading) {
   const count = (text, mark) => splitGraphemes(text).filter((unit) => unit === mark).length;
   return [...new Set(splitGraphemes(reading).filter(isSilentPunctuation))].some(
     (mark) => count(reading, mark) > count(spelling, mark),

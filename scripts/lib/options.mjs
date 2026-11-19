@@ -30,13 +30,11 @@ const switches = {
   "no-listed-character-readings": "listedCharacterReadings",
   "no-reviewed-lexical-evidence": "reviewedLexicalEvidence",
   "no-unihan-on-lengthening": "unihanOnLengthening",
-  "no-native-compounds": "nativeCompounds",
   "no-english-character-readings": "englishCharacterReadings",
   "no-listed-phonology": "listedPhonology",
   "no-korean-readings": "koreanReadings",
   "no-untagged-katakana-korean": "untaggedKatakanaKorean",
   "no-on-reading-spelling": "onReadingSpelling",
-  "no-source-unit-transfers": "sourceUnitTransfers",
   "no-shared-run-transfers": "sharedRunTransfers",
   "no-late-sibling-transfers": "lateSiblingTransfers",
 };

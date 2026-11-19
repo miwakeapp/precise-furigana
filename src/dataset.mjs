@@ -34,11 +34,9 @@ import { deriveLoanAlignments } from "./loan-readings.mjs";
 import { deriveUnihanAlignments, parseUnihanReadings } from "./unihan.mjs";
 import { deriveCharacterBundleAlignments } from "./character-readings.mjs";
 import { compileLexicalEvidence, refineWithLexicalEvidence } from "./lexical-evidence.mjs";
-import { deriveNativeCompoundAlignments } from "./native-compounds.mjs";
 import { deriveListedPhonologyAlignments } from "./listed-phonology.mjs";
 import { deriveKoreanAlignments } from "./korean-readings.mjs";
 import { deriveOnReadingSpellingAlignments } from "./on-reading-spelling.mjs";
-import { deriveSourceUnitAlignments } from "./source-units.mjs";
 import { deriveSharedRunAlignments } from "./shared-run-alignments.mjs";
 
 export const schemaVersion = 1;
@@ -71,13 +69,11 @@ export const defaultConfiguration = {
   listedCharacterReadings: true,
   reviewedLexicalEvidence: true,
   unihanOnLengthening: true,
-  nativeCompounds: true,
   englishCharacterReadings: true,
   listedPhonology: true,
   koreanReadings: true,
   untaggedKatakanaKorean: true,
   onReadingSpelling: true,
-  sourceUnitTransfers: true,
   sharedRunTransfers: true,
   lateSiblingTransfers: true,
 };
@@ -748,28 +744,13 @@ function compilePipeline(
         lengthened.wordAlignments.get(spelling)?.get(reading),
         "unihan-final-character-evidence",
       );
-    const native = configuration.nativeCompounds
-      ? deriveNativeCompoundAlignments(jmdict, characterReadings, alignLengthened, {
-          weakCharacterReadings: weak.readings,
-          unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
-          characterReadingBundle: configuration.listedCharacterReadings
-            ? characterReadingBundle
-            : undefined,
-        })
-      : { wordAlignments: new Map(), witnesses: [] };
-    const alignNative = (spelling, reading) =>
-      applyRefinement(
-        alignLengthened(spelling, reading),
-        native.wordAlignments.get(spelling)?.get(reading),
-        "attested-native-final-mora-contraction",
-      );
     const english =
       configuration.englishCharacterReadings && englishCharacterReadingBundle !== undefined
         ? deriveCharacterBundleAlignments(
             jmdict,
             characterReadings,
             englishCharacterReadingBundle,
-            alignNative,
+            alignLengthened,
             {
               weakCharacterReadings: weak.readings,
               unihanReadings: englishCompanions,
@@ -778,7 +759,7 @@ function compilePipeline(
         : { wordAlignments: new Map(), witnesses: [] };
     const alignEnglish = (spelling, reading) =>
       applyRefinement(
-        alignNative(spelling, reading),
+        alignLengthened(spelling, reading),
         english.wordAlignments.get(spelling)?.get(reading),
         "english-listed-character-evidence",
       );
@@ -840,7 +821,7 @@ function compilePipeline(
         onSpelling.wordAlignments.get(spelling)?.get(reading),
         "on-long-vowel-notation-equivalence",
       );
-    return { lengthened, native, english, listedPhonology, korean, onSpelling, align };
+    return { lengthened, english, listedPhonology, korean, onSpelling, align };
   }
   // Both paths share the expensive base, source inventories and the same
   // reviewed variant-transfer veto. A new coarse lexical cut must not remove
@@ -855,41 +836,9 @@ function compilePipeline(
             independentLate.align(spelling, reading),
             integratedLate.align(spelling, reading),
           );
-  const sourceUnits = configuration.sourceUnitTransfers
-    ? deriveSourceUnitAlignments(jmdict, kanjidic, alignLate, {
-        unihanReadings: configuration.unihanReadings ? unihanReadings : new Map(),
-        unihanSource: configuration.unihanReadings ? unihanSource : undefined,
-        characterReadingBundle: configuration.listedCharacterReadings
-          ? characterReadingBundle
-          : undefined,
-        englishCharacterReadingBundle: configuration.englishCharacterReadings
-          ? englishCharacterReadingBundle
-          : undefined,
-        kanjidicSource,
-        lexicalEvidence: facts,
-        weakReadings: configuration.weakReadings,
-        listedPhonology: configuration.listedPhonology,
-        nativeCompounds: configuration.nativeCompounds,
-        koreanReadings: configuration.koreanReadings,
-        untaggedKatakanaKorean: configuration.untaggedKatakanaKorean,
-        onReadingSpelling: configuration.onReadingSpelling,
-        supplementalVoicing: configuration.unihanVoicing,
-        yoonSimplification: configuration.unihanYoon,
-        onLengthening: configuration.unihanOnLengthening,
-      })
-    : { wordAlignments: new Map(), witnesses: [] };
-  const alignUnits =
-    sourceUnits.wordAlignments.size === 0
-      ? alignLate
-      : (spelling, reading) =>
-          applyRefinement(
-            alignLate(spelling, reading),
-            sourceUnits.wordAlignments.get(spelling)?.get(reading),
-            "independently-supported-word-unit",
-          );
   const sharedRuns =
     configuration.variantTransfers && configuration.sharedRunTransfers
-      ? deriveSharedRunAlignments(jmdict, kanjidic, alignUnits, {
+      ? deriveSharedRunAlignments(jmdict, kanjidic, alignLate, {
           reviewedFacts: facts,
           jmdictSource,
           kanjidicSource,
@@ -904,10 +853,10 @@ function compilePipeline(
       : { wordAlignments: new Map(), witnesses: [] };
   const alignSharedRuns =
     sharedRuns.wordAlignments.size === 0
-      ? alignUnits
+      ? alignLate
       : (spelling, reading) =>
           applyRefinement(
-            alignUnits(spelling, reading),
+            alignLate(spelling, reading),
             sharedRuns.wordAlignments.get(spelling)?.get(reading),
             "same-entry-shared-run",
           );
@@ -972,12 +921,10 @@ function compilePipeline(
     listedCharacterReadings: listed.witnesses,
     lexicalEvidence: facts,
     unihanOnLengthening: lateWitnesses("lengthened"),
-    nativeCompounds: lateWitnesses("native"),
     englishCharacterReadings: lateWitnesses("english"),
     listedPhonology: lateWitnesses("listedPhonology"),
     koreanReadings: lateWitnesses("korean"),
     onReadingSpelling: lateWitnesses("onSpelling"),
-    sourceUnitTransfers: sourceUnits.witnesses,
     sharedRunTransfers: sharedRuns.witnesses,
     omittedParticles,
     align,

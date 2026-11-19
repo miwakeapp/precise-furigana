@@ -64,9 +64,8 @@ test("undefined pipeline options retain defaults while false disables a feature"
   assert.deepEqual(disabled.align("甲乙", "かこ").segments, [["甲乙", "かこ"]]);
 });
 
-test("final sound refinements are independently switchable and cannot propagate to unattested compounds", () => {
+test("final-character lengthening is switchable and cannot propagate to unattested compounds", () => {
   const pairs = [
-    ["心地", "ここち"],
     ["贔屓", "ひいき"],
     ["御御様", "おごうさま"],
   ];
@@ -80,7 +79,6 @@ test("final sound refinements are independently switchable and cannot propagate 
   };
   const readings = new Map([
     ["心", ["こころ"]],
-    ["地", ["チ"]],
     ["贔", ["ヒ"]],
     ["屓", ["キ"]],
     ["御", ["お"]],
@@ -110,30 +108,13 @@ test("final sound refinements are independently switchable and cannot propagate 
   const baseline = compileAlignmentPipeline(
     jmdict,
     kanjidic,
-    { nativeCompounds: false, unihanOnLengthening: false },
-    sources,
-  );
-  const refined = compileAlignmentPipeline(jmdict, kanjidic, {}, sources);
-  const nativeOnly = compileAlignmentPipeline(
-    jmdict,
-    kanjidic,
     { unihanOnLengthening: false },
     sources,
   );
-  const lengthenedOnly = compileAlignmentPipeline(
-    jmdict,
-    kanjidic,
-    { nativeCompounds: false },
-    sources,
-  );
-  assert.deepEqual(baseline.align("心地", "ここち").segments, [["心地", "ここち"]]);
+  const refined = compileAlignmentPipeline(jmdict, kanjidic, {}, sources);
   assert.deepEqual(baseline.align("御御様", "おごうさま").segments, [["御御様", "おごうさま"]]);
   assert.deepEqual(baseline.align("贔屓", "ひいき").segments, [["贔屓", "ひいき"]]);
   assert.equal(baseline.align("贔屓", "ひいき").status, "aligned");
-  assert.deepEqual(refined.align("心地", "ここち").segments, [
-    ["心", "ここ"],
-    ["地", "ち"],
-  ]);
   assert.deepEqual(refined.align("贔屓", "ひいき").segments, [
     ["贔", "ひい"],
     ["屓", "き"],
@@ -144,25 +125,9 @@ test("final sound refinements are independently switchable and cannot propagate 
     ["様", "さま"],
   ]);
   assert.deepEqual(
-    nativeOnly.align("贔屓", "ひいき").segments,
-    baseline.align("贔屓", "ひいき").segments,
+    refined.align("贔心", "ひいこころ").segments,
+    baseline.align("贔心", "ひいこころ").segments,
   );
-  assert.deepEqual(
-    lengthenedOnly.align("心地", "ここち").segments,
-    baseline.align("心地", "ここち").segments,
-  );
-  assert.equal(nativeOnly.align("贔屓", "ひいき").status, "aligned");
-  assert.equal(lengthenedOnly.align("心地", "ここち").status, "aligned");
-  for (const [spelling, reading] of [
-    ["心心", "ここここ"],
-    ["贔心", "ひいこころ"],
-  ]) {
-    assert.deepEqual(
-      refined.align(spelling, reading).segments,
-      baseline.align(spelling, reading).segments,
-    );
-  }
-  assert.equal(refined.nativeCompounds.length, 1);
   assert.equal(refined.unihanOnLengthening.length, 2);
 });
 
@@ -742,133 +707,6 @@ test("disabled sources cannot supply positive companion readings to another list
       [["甲乙", "かき"]],
     );
   }
-});
-
-test("disabled optional sources cannot affect native competing-reading guards", () => {
-  const { word, bundle } = lateEvidenceFixture();
-  const jmdict = { words: [word("1", "甲乙", ["あいえき"])] };
-  const kanjidic = {
-    characters: [
-      ["甲", ["あいう"]],
-      ["乙", ["エキ", "イエキ"]],
-    ].map(([literal, values]) => ({
-      literal,
-      readingMeaning: {
-        groups: [
-          {
-            readings: values.map((value) => ({
-              type: literal === "甲" ? "ja_kun" : "ja_on",
-              value,
-            })),
-          },
-        ],
-      },
-    })),
-  };
-  const options = {
-    ...Object.fromEntries(Object.keys(defaultConfiguration).map((name) => [name, false])),
-    nativeCompounds: true,
-  };
-  for (const [sources, flag] of [
-    [{ unihanReadings: new Map([["甲", ["あ"]]]) }, "unihanReadings"],
-    [
-      { characterReadingBundle: bundle("Japanese", [["甲", "あ", "kun"]]) },
-      "listedCharacterReadings",
-    ],
-  ]) {
-    assert.deepEqual(
-      compileAlignmentPipeline(jmdict, kanjidic, options, sources).align("甲乙", "あいえき")
-        .segments,
-      [
-        ["甲", "あい"],
-        ["乙", "えき"],
-      ],
-    );
-    const enabled = compileAlignmentPipeline(
-      jmdict,
-      kanjidic,
-      { ...options, [flag]: true },
-      sources,
-    );
-    assert.deepEqual(enabled.align("甲乙", "あいえき").segments, [
-      ["甲", "あ"],
-      ["乙", "いえき"],
-    ]);
-    assert.equal(enabled.nativeCompounds.length, 0);
-  }
-});
-
-test("source-unit transfers refine attested compounds and honor source switches", () => {
-  const jmdict = {
-    words: [
-      ["禍津日", "まがつひ"],
-      ["禍津日神", "まがつひのかみ"],
-    ].map(([spelling, reading], index) => ({
-      id: String(index),
-      kanji: [{ text: spelling, tags: [] }],
-      kana: [{ text: reading, tags: [], appliesToKanji: ["*"] }],
-      sense: [],
-    })),
-  };
-  const kanjidic = {
-    characters: [
-      ["津", "つ"],
-      ["日", "ひ"],
-      ["神", "かみ"],
-    ].map(([literal, value]) => ({
-      literal,
-      readingMeaning: { groups: [{ readings: [{ type: "ja_kun", value }] }] },
-    })),
-  };
-  const sources = {
-    characterReadingBundle: {
-      schemaVersion: 1,
-      source: {
-        name: "Japanese fixture",
-        publisher: "Japanese Wiktionary",
-        version: "fixture",
-        sha256: "a".repeat(64),
-        url: "https://example.test/readings",
-      },
-      readings: [
-        {
-          character: "禍",
-          reading: "まが",
-          kind: "kun",
-          originalForm: "まが",
-          tags: ["kun", "transliteration"],
-        },
-      ],
-    },
-  };
-  const enabled = compileAlignmentPipeline(jmdict, kanjidic, {}, sources);
-  const disabled = compileAlignmentPipeline(
-    jmdict,
-    kanjidic,
-    { sourceUnitTransfers: false },
-    sources,
-  );
-  assert.deepEqual(disabled.align("禍津日神", "まがつひのかみ").segments, [
-    ["禍津日神", "まがつひのかみ"],
-  ]);
-  assert.deepEqual(enabled.align("禍津日神", "まがつひのかみ").segments, [
-    ["禍", "まが"],
-    ["津", "つ"],
-    ["日神", "ひのかみ"],
-  ]);
-  assert.equal(enabled.sourceUnitTransfers.length, 1);
-  assert.ok(
-    enabled
-      .align("禍津日神", "まがつひのかみ")
-      .evidence.every((span) => span.rules.includes("independently-supported-word-unit")),
-  );
-  assert.deepEqual(
-    compileAlignmentPipeline(jmdict, kanjidic, { listedCharacterReadings: false }, sources).align(
-      "禍津日神",
-      "まがつひのかみ",
-    ).segments,
-    [["禍津日神", "まがつひのかみ"]],
-  );
 });
 
 test("shared runs recover supported internal cuts and honor both variant switches", () => {

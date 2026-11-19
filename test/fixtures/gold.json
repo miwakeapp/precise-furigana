@@ -1868,11 +1868,15 @@
     "reading": "しょうがない",
     "segments": [
       [
-        "仕様",
-        "しょう"
+        "仕",
+        "し"
+      ],
+      [
+        "様",
+        "ょう"
       ],
       "がない"
     ],
-    "category": "sibling reading that would start a segment mid-syllable"
+    "category": "sibling reading contracted across a boundary"
   }
 ]

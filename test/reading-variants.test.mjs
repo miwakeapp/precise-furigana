@@ -354,8 +354,8 @@ test("readings that differ by one kana share boundaries when the change cannot c
     undefined,
   );
   assert.equal(near("食べる", ["たべる", "たべろ"], [["食", "た"], "べる"]), undefined);
-  // No segment may come to start with a kana that belongs to the syllable before it.
-  assert.equal(
+  // A contracted sound stays with its character, even at the start of a segment.
+  assert.deepEqual(
     near(
       "仕様",
       ["しよう", "しょう"],
@@ -364,6 +364,9 @@ test("readings that differ by one kana share boundaries when the change cannot c
         ["様", "よう"],
       ],
     ),
-    undefined,
+    [
+      ["仕", "し"],
+      ["様", "ょう"],
+    ],
   );
 });

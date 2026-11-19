@@ -71,7 +71,8 @@ const extendsKana = (previous, kana) =>
  * so the change stays inside the segment it falls in. That is only certain when the changed
  * kana cannot have crossed a boundary: a replaced kana must leave its segment another kana,
  * or be the same kana in another orthography, and an added or dropped kana must be one that
- * only extends the kana before it. No segment may come to start with such a kana.
+ * only extends the kana before it. A respelling can leave a segment starting inside a syllable,
+ * as しょう from しよう leaves 仕[し] 様[ょう]: the contracted sound stays with its character.
  */
 function transferNearReading(source, targetReading) {
   const from = source.segments.flatMap((segment, index) =>
@@ -116,9 +117,6 @@ function transferNearReading(source, targetReading) {
     const reading = normalizeKana(segmentReading(segment));
     if (normalizeKana(spelling) === reading && normalizeKana(candidate) !== reading)
       return undefined;
-    // A respelling such as しよう to しょう would leave a segment starting inside a syllable.
-    const first = normalizeKana(target[offset - sizes[index]] ?? "");
-    if (dependentKana.test(first) && !reading.startsWith(first)) return undefined;
     segments.push(spelling === candidate ? spelling : [spelling, candidate]);
   }
   return segments;

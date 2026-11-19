@@ -13,7 +13,7 @@ import {
 import { pairKey, recordKey } from "../src/segments.mjs";
 import { deriveOmittedParticles } from "../src/variants.mjs";
 import { validateDisplayAlignment } from "../src/display.mjs";
-import { contradictsSpelling } from "../src/pairings.mjs";
+import { contradictsSpelling, isMismatched } from "../src/pairings.mjs";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.mjs";
 import { isSilentPunctuation, splitGraphemes } from "../src/kana.mjs";
 import { parseDatabaseVersion } from "./lib/database-files.mjs";
@@ -154,12 +154,7 @@ for (const [id, records] of Object.entries(output.entries)) {
     }
     assert.ok(expected.delete(key), `Unexpected or duplicated pair: ${key}`);
     const recordDrops = drops.get(pairKey(record.spelling, record.reading));
-    const mismatched = contradictsSpelling(
-      record.spelling,
-      record.reading,
-      recordDrops,
-      record.segments,
-    );
+    const mismatched = isMismatched(jmdictPairs.get(key), recordDrops, record.segments);
     assert.deepEqual(
       Object.keys(record),
       mismatched
@@ -167,7 +162,8 @@ for (const [id, records] of Object.entries(output.entries)) {
         : ["spelling", "reading", "segments"],
     );
     if (mismatched) assert.equal(record.pairing, "mismatched");
-    else fitting.add(`${id}\t${record.spelling}`);
+    if (!contradictsSpelling(record.spelling, record.reading, recordDrops, record.segments))
+      fitting.add(`${id}\t${record.spelling}`);
     ++count;
   }
 }

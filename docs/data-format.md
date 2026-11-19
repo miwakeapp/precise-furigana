@@ -44,12 +44,10 @@ A multi-character ruby group means the characters' individual sounds are unresol
 
 `pairing` is absent for an ordinary JMdict pair.
 
-- `"mismatched"`: a JMdict pair whose reading contradicts its spelling. A consumer choosing a reading for a spelling should avoid these records; every spelling has at least one record that is not mismatched. The reading contradicts the spelling when:
-  - the spelling's kana differ from the reading's. Usually one of the forms is search-only (`sK` or `sk`), which JMdict cannot restrict, as in 気持ちよい read きもちいい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い). Otherwise the two follow different kana conventions, as in historical 宣ふ read のたまう (<ruby>宣<rt>のたま</rt></ruby><ruby>ふ<rt>う</rt></ruby>) or 税金ドロボー read ぜいきんどろぼう. Such a pair gives the true pronunciation, but its ruby sits over kana.
-  - the reading fits only by giving a kanji a sound that belongs to the kana: けも耳 read けものみみ would need 耳 read のみみ, and is segmented け<ruby>も<rt>もの</rt></ruby><ruby>耳<rt>みみ</rt></ruby>.
-  - a search-only spelling omits a particle that the reading keeps, as in そっぽ向く read そっぽをむく.
-  - the reading has punctuation the spelling does not write: ＳＦ read エス・エフ is <ruby>Ｓ<rt>エス・</rt></ruby><ruby>Ｆ<rt>エフ</rt></ruby>, and the reading to use is エスエフ.
+- `"mismatched"`: a JMdict pair involving a search-only (`sK` or `sk`) form whose reading contradicts the spelling's kana, as in 気持ちよい read きもちいい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い). JMdict cannot restrict which readings go with search-only forms, so it permits such pairs. A reading also contradicts the spelling when it fits only by giving a kanji a sound that belongs to the kana: けも耳 read けものみみ would need 耳 read のみみ, and is segmented け<ruby>も<rt>もの</rt></ruby><ruby>耳<rt>みみ</rt></ruby>. A pair is also mismatched, whatever its tags, when its reading has punctuation the spelling does not write: ＳＦ read エス・エフ is <ruby>Ｓ<rt>エス・</rt></ruby><ruby>Ｆ<rt>エフ</rt></ruby>, and the reading to use is エスエフ.
 - `"synthesized"`: not a JMdict pair. Every spelling has at least one record whose reading fits its kana; where JMdict has none, the spelling's own reading is added from [data/synthesized-pairs.json](../data/synthesized-pairs.json), as in 気持ちよい read きもちよい (<ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ちよい).
+
+Visible (non-search-only) pairs whose kana differ only by convention, such as historical 宣ふ read のたまう, are not flagged. A consumer choosing a reading for a spelling should avoid `"mismatched"` records when another exists.
 
 ## Releases
 

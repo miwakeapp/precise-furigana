@@ -82,13 +82,8 @@ export function fitsSpelling(spelling, reading) {
  * keeps, as そっぽ向く does with そっぽをむく, or the segments put a reading over
  * kana that it does not fit. The last catches readings that fit only if a kanji
  * absorbs a sound that belongs to the kana, as けも耳 with けものみみ fits only
- * with 耳 read のみみ, and is segmented け も[もの] 耳[みみ].
- *
- * A JMdict pair that contradicts its spelling is released as mismatched, whatever
- * the reason: a search-only form that JMdict does not restrict, as with 気持ちよい
- * and きもちいい; a reading in modern kana for a spelling in historical kana, as
- * with 宣ふ and のたまう; or punctuation that only the reading has, as with ＳＦ and
- * エス・エフ. Every spelling needs at least one pair that does not contradict it.
+ * with 耳 read のみみ, and is segmented け も[もの] 耳[みみ]. Every spelling needs
+ * at least one pair that does not contradict it.
  */
 export function contradictsSpelling(spelling, reading, drops, segments = []) {
   if (kanaPuns.has(pairKey(spelling, reading))) return false;
@@ -96,6 +91,25 @@ export function contradictsSpelling(spelling, reading, drops, segments = []) {
     !fitsSpelling(spelling, reading) ||
     (drops?.length ?? 0) > 0 ||
     segments.some((segment) => typeof segment !== "string" && !fitsSpelling(segment[0], segment[1]))
+  );
+}
+
+/**
+ * A contradicting pair is flagged as mismatched when it involves a search-only
+ * spelling or reading: JMdict does not restrict search-only forms, so such pairs
+ * combine forms that do not belong together. A visible pair such as 宣ふ with
+ * のたまう contradicts its kana only by orthographic convention, and showing ふ
+ * read う is a legitimate display, so it is not flagged.
+ *
+ * A reading with punctuation the spelling lacks is flagged whatever its forms'
+ * tags: no display of ＳＦ should carry the dot of エス・エフ, and the reading
+ * without it, which JMdict or a synthesized pair supplies, is the one to use.
+ */
+export function isMismatched(pair, drops, segments) {
+  return (
+    hasUnwrittenPunctuation(pair.spelling, pair.reading) ||
+    ((pair.spellingTags.includes("sK") || pair.readingTags.includes("sk")) &&
+      contradictsSpelling(pair.spelling, pair.reading, drops, segments))
   );
 }
 

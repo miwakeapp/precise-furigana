@@ -4,6 +4,7 @@ import {
   contradictsSpelling,
   fitsSpelling,
   impliedReading,
+  isMismatched,
   planSynthesizedPairs,
 } from "../src/pairings.mjs";
 
@@ -42,12 +43,17 @@ test("a reading fits a spelling when the spelling's kana appear in it in order",
   );
 });
 
-test("a reading contradicts a spelling whatever the forms' tags", () => {
-  assert.ok(contradictsSpelling("気持ちよい", "きもちいい"));
-  assert.ok(contradictsSpelling("一日じゅう", "いちにちぢゅう"));
-  assert.ok(contradictsSpelling("宣ふ", "のたまう"));
-  assert.ok(contradictsSpelling("今日は", "こんにちわ"));
-  assert.ok(!contradictsSpelling("気持ちいい", "きもちいい"));
+test("only pairs with a search-only form are flagged as mismatched", () => {
+  const pair = (spelling, reading, spellingTags = [], readingTags = []) => ({
+    spelling,
+    reading,
+    spellingTags,
+    readingTags,
+  });
+  assert.ok(isMismatched(pair("気持ちよい", "きもちいい", ["sK"])));
+  assert.ok(isMismatched(pair("一日じゅう", "いちにちぢゅう", [], ["sk"])));
+  assert.ok(!isMismatched(pair("宣ふ", "のたまう")));
+  assert.ok(!isMismatched(pair("気持ちいい", "きもちいい", ["sK"])));
 });
 
 test("the implied reading keeps contradicted kana as written and removes an omitted particle", () => {

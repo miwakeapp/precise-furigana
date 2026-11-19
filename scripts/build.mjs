@@ -5,7 +5,7 @@ import { digest, loadDataset, schemaVersion } from "../src/dataset.mjs";
 import { pairKey, recordKey, validateAlignment } from "../src/segments.mjs";
 import { displaySegments } from "../src/display.mjs";
 import {
-  contradictsSpelling,
+  isMismatched,
   planSynthesizedPairs,
   withoutUnwrittenPunctuation,
 } from "../src/pairings.mjs";
@@ -54,8 +54,7 @@ for (const pair of dataset.pairs()) {
     segments,
     displaySegments: record.segments,
   });
-  const pairDrops = drops.get(pairKey(pair.spelling, pair.reading));
-  if (contradictsSpelling(pair.spelling, pair.reading, pairDrops, record.segments))
+  if (isMismatched(pair, drops.get(pairKey(pair.spelling, pair.reading)), record.segments))
     record.pairing = "mismatched";
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;

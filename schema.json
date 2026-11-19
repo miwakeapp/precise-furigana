@@ -1,11 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Precise furigana database, schema 1",
+  "title": "Precise Furigana database",
   "type": "object",
   "required": ["version", "schemaVersion", "jmdictDate", "license", "attribution", "entries"],
   "additionalProperties": false,
   "properties": {
-    "version": { "type": "string", "pattern": "^1\\.[0-9]{8}\\.(0-dev|0|[1-9][0-9]*)$" },
+    "version": {
+      "description": "<schema version>.<JMdict date as YYYYMMDD>.<revision>, for example 1.20261116.0",
+      "type": "string"
+    },
     "schemaVersion": { "const": 1 },
     "jmdictDate": { "type": "string", "format": "date" },
     "license": { "const": "CC-BY-SA-4.0" },
@@ -13,7 +16,7 @@
     "entries": {
       "type": "object",
       "patternProperties": {
-        "^[0-9]+$": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/pair" } }
+        "^[0-9]+$": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/record" } }
       },
       "additionalProperties": false
     }
@@ -32,7 +35,7 @@
         }
       ]
     },
-    "pair": {
+    "record": {
       "type": "object",
       "required": ["spelling", "reading", "segments"],
       "additionalProperties": false,

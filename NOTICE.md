@@ -8,6 +8,8 @@ The generated database, its annotations, the reviewed evidence in `data/`, and t
 
 The generated database uses [JMdict](https://www.edrdg.org/jmdict/j_jmdict.html) and [KANJIDIC2](https://www.edrdg.org/wiki/KANJIDIC_Project.html), which are copyright James William Breen and the Electronic Dictionary Research and Development Group (EDRDG), under the [EDRDG license statement](https://www.edrdg.org/edrdg/licence.html). The source JSON conversion is by [scriptin/jmdict-simplified](https://github.com/scriptin/jmdict-simplified/releases).
 
+A few lexical facts keep a place name or surname together on the evidence of [JMnedict](https://www.edrdg.org/enamdict/enamdict_doc.html), which is under the same EDRDG license; JMnedict is not an input to the build.
+
 The generated database is an adaptation: this project selects permitted spelling/reading pairs and adds algorithmically inferred furigana boundaries and reviewed alignment annotations. No endorsement by EDRDG is implied.
 
 ## Wiktionary

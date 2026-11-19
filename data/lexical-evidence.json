@@ -27304,6 +27304,204 @@
         {"name":"Kotobank","url":"https://kotobank.jp/word/素面"},
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
       ]
+    },
+    {
+      "id": "NE-01",
+      "spelling": "骨皮筋右衛門",
+      "reading": "ほねかわすじえもん",
+      "segments": [["骨","ほね"],["皮","かわ"],["筋","すじ"],["右衛門","えもん"]],
+      "reason": "JMnedict lists 右衛門 as a name read えもん, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-02",
+      "spelling": "下関条約",
+      "reading": "しものせきじょうやく",
+      "segments": [["下関","しものせき"],["条","じょう"],["約","やく"]],
+      "reason": "JMnedict lists 下関 as a name read しものせき, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-03",
+      "spelling": "松木鶸",
+      "reading": "まつのきひわ",
+      "segments": [["松木","まつのき"],["鶸","ひわ"]],
+      "reason": "JMnedict lists 松木 as a name read まつのき, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-04",
+      "spelling": "五右衛門風呂",
+      "reading": "ごえもんぶろ",
+      "segments": [["五右衛門","ごえもん"],["風","ぶ"],["呂","ろ"]],
+      "reason": "JMnedict lists 五右衛門 as a name read ごえもん, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-05",
+      "spelling": "木下石",
+      "reading": "きのしたせき",
+      "segments": [["木下","きのした"],["石","せき"]],
+      "reason": "JMnedict lists 木下 as a name read きのした, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-06",
+      "spelling": "木下雲母",
+      "reading": "きのしたうんも",
+      "segments": [["木下","きのした"],["雲","うん"],["母","も"]],
+      "reason": "JMnedict lists 木下 as a name read きのした, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-07",
+      "spelling": "武者小路千家",
+      "reading": "むしゃのこうじせんけ",
+      "segments": [["武者小路","むしゃのこうじ"],["千","せん"],["家","け"]],
+      "reason": "JMnedict lists 武者小路 as a name read むしゃのこうじ, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-08",
+      "spelling": "藪内流",
+      "reading": "やぶのうちりゅう",
+      "segments": [["藪内","やぶのうち"],["流","りゅう"]],
+      "reason": "JMnedict lists 藪内 as a name read やぶのうち, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-09",
+      "spelling": "下関戦争",
+      "reading": "しものせきせんそう",
+      "segments": [["下関","しものせき"],["戦","せん"],["争","そう"]],
+      "reason": "JMnedict lists 下関 as a name read しものせき, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-10",
+      "spelling": "下関市立大学",
+      "reading": "しものせきしりつだいがく",
+      "segments": [["下関","しものせき"],["市","し"],["立","りつ"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 下関 as a name read しものせき, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-11",
+      "spelling": "鹿屋体育大学",
+      "reading": "かのやたいいくだいがく",
+      "segments": [["鹿屋","かのや"],["体","たい"],["育","いく"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 鹿屋 as a name read かのや, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-12",
+      "spelling": "石巻専修大学",
+      "reading": "いしのまきせんしゅうだいがく",
+      "segments": [["石巻","いしのまき"],["専","せん"],["修","しゅう"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 石巻 as a name read いしのまき, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-13",
+      "spelling": "都城市立美術館",
+      "reading": "みやこのじょうしりつびじゅつかん",
+      "segments": [["都城","みやこのじょう"],["市","し"],["立","りつ"],["美","び"],["術","じゅつ"],["館","かん"]],
+      "reason": "JMnedict lists 都城 as a name read みやこのじょう, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-14",
+      "spelling": "八戸工業大学",
+      "reading": "はちのへこうぎょうだいがく",
+      "segments": [["八戸","はちのへ"],["工","こう"],["業","ぎょう"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 八戸 as a name read はちのへ, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-15",
+      "spelling": "八戸大学",
+      "reading": "はちのへだいがく",
+      "segments": [["八戸","はちのへ"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 八戸 as a name read はちのへ, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-16",
+      "spelling": "木下工務店",
+      "reading": "きのしたこうむてん",
+      "segments": [["木下","きのした"],["工","こう"],["務","む"],["店","てん"]],
+      "reason": "JMnedict lists 木下 as a name read きのした, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-17",
+      "spelling": "尾道市立大学",
+      "reading": "おのみちしりつだいがく",
+      "segments": [["尾道","おのみち"],["市","し"],["立","りつ"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 尾道 as a name read おのみち, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "NE-18",
+      "spelling": "八戸学院大学",
+      "reading": "はちのへがくいんだいがく",
+      "segments": [["八戸","はちのへ"],["学","がく"],["院","いん"],["大","だい"],["学","がく"]],
+      "reason": "JMnedict lists 八戸 as a name read はちのへ, so it stays one unit; the other characters have listed readings.",
+      "sources": [
+        {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
     }
   ]
 }

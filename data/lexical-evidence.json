@@ -8636,9 +8636,8 @@
       "id": "WG-074",
       "spelling": "如何様",
       "reading": "いかよう",
-      "segments": [["如","い"],["何","か"],["様","よう"]],
-      "reusableSegments": [0],
-      "reason": "The explicit 如何様 entry in the 様 compound list supplies 如い/何か/様よう. This is a local reading of the full expression, not a general 如い rule.",
+      "segments": [["如何","いか"],["様","よう"]],
+      "reason": "The explicit 如何様 entry in the 様 compound list supplies 様よう after いか. 如何 stays grouped, as in いかが and いかん: no source lists い as a reading of 如, and the list's 如い/何か division is local to this expression.",
       "sources": [
         {"name":"English Wiktionary: pinned explicit local reading allocation","url":"https://en.wiktionary.org/w/index.php?title=%E6%A7%98&oldid=92161686#Japanese"}
       ]
@@ -11977,10 +11976,8 @@
       "id": "HCF0065",
       "spelling": "平蜘蛛",
       "reading": "ひらたぐも",
-      "segments": [["平","ひらた"],["蜘","ぐ"],["蛛","も"]],
-      "reusableSegments": [1,2],
-      "jmdictEntries": ["1506900","2241820"],
-      "reason": "The pinned 猿 page explicitly allocates the spider noun as 蜘ぐ/蛛も in 猿蜘蛛. JMdict 平たい/ひらたい independently fixes the omitted-okurigana stem 平ひらた. These three supported components exhaust this attested compound.",
+      "segments": [["平","ひらた"],["蜘蛛","ぐも"]],
+      "reason": "JMdict 平たい/ひらたい fixes the omitted-okurigana stem 平ひらた. The spider noun stays grouped, as it does unvoiced: KANJIDIC2 gives くも as the reading of 蜘 alone and English Wiktionary gives it for 蛛 alone, so neither character owns half of it, and the 猿 page's 蜘ぐ/蛛も division in 猿蜘蛛 is the only source that splits it.",
       "sources": [
         {"url":"https://en.wiktionary.org/w/index.php?oldid=92935319"},
         {"url":"https://en.wiktionary.org/w/index.php?oldid=93444116"},

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { splitGraphemes } from "../src/kana.ts";
 import { deriveSharedRunAlignments } from "../src/shared-run-alignments.ts";
 import { compileLexicalEvidence } from "../src/lexical-evidence.ts";
 import { createAligner } from "../src/align.ts";
@@ -247,7 +248,10 @@ test("rejects incomparable proposals from entries sharing a target pair", () => 
     segments:
       spelling === target
         ? [[spelling, reading]]
-        : [...spelling].map((character, index) => [character, [...reading][index]]),
+        : splitGraphemes(spelling).map((character, index) => [
+            character,
+            splitGraphemes(reading)[index],
+          ]),
   });
   const result = deriveSharedRunAlignments(jmdict, kanjidic, align);
   assert.equal(result.counts.changed, 2);

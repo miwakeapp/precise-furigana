@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { enumeratePairs } from "./sources.ts";
-import { normalizeKana } from "./kana.ts";
+import { normalizeKana, splitGraphemes } from "./kana.ts";
 import { boundaries, pairKey, validateAlignment } from "./segments.ts";
 import type {
   Aligner,
@@ -248,11 +248,11 @@ function allocateKorean(
   reading: string,
   inventory: KoreanInventory,
 ): KoreanAllocation | undefined {
-  const characters = [...spelling],
+  const characters = splitGraphemes(spelling),
     normalized = normalizeKana(reading),
-    original = [...reading];
-  // Matching must preserve the original reading's code-point positions.
-  if ([...normalized].length !== original.length) return undefined;
+    original = splitGraphemes(reading);
+  // Matching must preserve the original reading's character positions.
+  if (splitGraphemes(normalized).length !== original.length) return undefined;
   const solutions = new Map<string, KoreanAllocation>();
   function visit(
     index: number,

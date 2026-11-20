@@ -8,7 +8,7 @@ import type { Aligner, Evidence, Segment } from "./types.ts";
 // A zero never has a sound of its own, so １００ and 三〇 are single chunks.
 
 const digitValues = new Map(
-  [..."０１２３４５６７８９"].flatMap((digit, value): [string, number][] => [
+  splitGraphemes("０１２３４５６７８９").flatMap((digit, value): [string, number][] => [
     [digit, value],
     [String(value), value],
     ["〇一二三四五六七八九"[value], value],

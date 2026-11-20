@@ -1,3 +1,4 @@
+import { splitGraphemes } from "./kana.ts";
 import type { Segment } from "./types.ts";
 
 export function segmentText(segment: Segment): string {
@@ -38,8 +39,8 @@ export function boundaries(segments: Segment[]): string[] {
   let spellingOffset = 0;
   let readingOffset = 0;
   return segments.slice(0, -1).map((segment) => {
-    spellingOffset += [...segmentText(segment)].length;
-    readingOffset += [...segmentReading(segment)].length;
+    spellingOffset += splitGraphemes(segmentText(segment)).length;
+    readingOffset += splitGraphemes(segmentReading(segment)).length;
     return `${spellingOffset}:${readingOffset}`;
   });
 }
@@ -54,8 +55,8 @@ export function combineAlignments(previous: Segment[], candidate: Segment[]): Se
   const candidatePoints = new Set(boundaries(candidate));
   if ([...candidatePoints].every((point) => priorPoints.has(point))) return previous;
   if ([...priorPoints].every((point) => candidatePoints.has(point))) return candidate;
-  const spellingUnits = [...spelling],
-    readingUnits = [...reading];
+  const spellingUnits = splitGraphemes(spelling),
+    readingUnits = splitGraphemes(reading);
   const points = [...new Set([...priorPoints, ...candidatePoints])].map((point) =>
     point.split(":").map(Number),
   );

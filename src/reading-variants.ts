@@ -59,7 +59,7 @@ function transferReadings(source: Alignment, targetReading: string): Segment[] |
 const dependentKana = /^[ぁぃぅぇぉゃゅょゎっんー]$/u;
 // Kana that are written differently but stand for the same kana in another orthography.
 const writtenAs = new Map(
-  [..."ぁあぃいぅうぇえぉおゃやゅゆょよゎわっつづずぢじをおゑえゐい"].flatMap(
+  splitGraphemes("ぁあぃいぅうぇえぉおゃやゅゆょよゎわっつづずぢじをおゑえゐい").flatMap(
     (kana, index, all): [string, string][] => (index % 2 === 0 ? [[kana, all[index + 1]]] : []),
   ),
 );

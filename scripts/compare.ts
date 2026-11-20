@@ -3,6 +3,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import { once } from "node:events";
 import { dirname } from "node:path";
 import { parseArgs, isDeepStrictEqual } from "node:util";
+import { splitGraphemes } from "../src/kana.ts";
 import { recordKey, segmentText } from "../src/segments.ts";
 import type { Database, Segment } from "../src/types.ts";
 import type { Change, ChangedRecord } from "./lib/update-report.ts";
@@ -18,7 +19,9 @@ if (positionals.length !== 2) {
 // spelling positions identify a boundary.
 function boundaries(segments: Segment[]): number[] {
   let offset = 0;
-  return segments.slice(0, -1).map((segment) => (offset += [...segmentText(segment)].length));
+  return segments
+    .slice(0, -1)
+    .map((segment) => (offset += splitGraphemes(segmentText(segment)).length));
 }
 function records(database: Database): Map<string, ChangedRecord> {
   return new Map(

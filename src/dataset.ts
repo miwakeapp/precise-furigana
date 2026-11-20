@@ -504,8 +504,8 @@ function mergeLateAlignments(independent: Alignment, integrated: Alignment): Ali
       readingOffset = 0,
       start = 0;
     for (const [index, segment] of parts.entries()) {
-      spellingOffset += [...segmentText(segment)].length;
-      readingOffset += [...segmentReading(segment)].length;
+      spellingOffset += splitGraphemes(segmentText(segment)).length;
+      readingOffset += splitGraphemes(segmentReading(segment)).length;
       if (shared.has(`${spellingOffset}:${readingOffset}`) || index === parts.length - 1) {
         result.push(parts.slice(start, index + 1));
         start = index + 1;
@@ -553,8 +553,8 @@ function mergeLateAlignments(independent: Alignment, integrated: Alignment): Ali
       const spelling = segmentText(segment),
         reading = segmentReading(segment);
       const span = { spellingStart: spellingOffset, readingStart: readingOffset };
-      spellingOffset += [...spelling].length;
-      readingOffset += [...reading].length;
+      spellingOffset += splitGraphemes(spelling).length;
+      readingOffset += splitGraphemes(reading).length;
       if (regionContexts[regionIndex].includes(context))
         supportingSpans.push({
           ...span,
@@ -579,8 +579,8 @@ function mergeLateAlignments(independent: Alignment, integrated: Alignment): Ali
   const evidence = segments.map((segment) => {
     const spelling = segmentText(segment),
       reading = segmentReading(segment);
-    const spellingEnd = spellingOffset + [...spelling].length,
-      readingEnd = readingOffset + [...reading].length;
+    const spellingEnd = spellingOffset + splitGraphemes(spelling).length,
+      readingEnd = readingOffset + splitGraphemes(reading).length;
     const supporting = supportingSpans
       .filter(
         (span) =>
@@ -813,8 +813,8 @@ function compilePipeline(
       const spelling = segmentText(segment),
         reading = segmentReading(segment);
       const start = `${spellingOffset}:${readingOffset}`;
-      spellingOffset += [...spelling].length;
-      readingOffset += [...reading].length;
+      spellingOffset += splitGraphemes(spelling).length;
+      readingOffset += splitGraphemes(reading).length;
       previous.set(
         `${start}:${spellingOffset}:${readingOffset}`,
         result.evidence?.[index] ?? {
@@ -834,8 +834,8 @@ function compilePipeline(
         const spelling = segmentText(segment),
           reading = segmentReading(segment);
         const start = `${spellingOffset}:${readingOffset}`;
-        spellingOffset += [...spelling].length;
-        readingOffset += [...reading].length;
+        spellingOffset += splitGraphemes(spelling).length;
+        readingOffset += splitGraphemes(reading).length;
         return (
           previous.get(`${start}:${spellingOffset}:${readingOffset}`) ?? {
             spelling,

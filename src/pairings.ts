@@ -260,7 +260,7 @@ export function contradictionKind(
  */
 function literalReading(spelling: string, reading: string): string | undefined {
   const runs = units(spelling),
-    sounds = [...reading];
+    sounds = splitGraphemes(reading);
   const width = sounds.length + 1,
     cost = new Float64Array((runs.length + 1) * width).fill(Infinity),
     from = new Int32Array(cost.length).fill(-1);

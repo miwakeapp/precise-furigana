@@ -70,7 +70,7 @@ jobs:
             docs/maintenance.md. The report is in .cache/update/report.md.
           claude_args: |
             --max-turns 100
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npx oxfmt:*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npm run fmt:*)"
 
       - name: Rebuild after the review
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'

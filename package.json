@@ -8,13 +8,12 @@
   "scripts": {
     "fetch": "node scripts/fetch-sources.ts",
     "build": "node --max-old-space-size=4096 scripts/build.ts",
-    "test": "node --test \"test/*.test.ts\"",
-    "typecheck": "tsc",
-    "evaluate": "node --max-old-space-size=4096 scripts/evaluate.ts",
+    "validate": "node scripts/validate.ts",
     "inspect": "node --max-old-space-size=4096 scripts/inspect.ts",
     "compare": "node scripts/compare.ts",
-    "validate": "node scripts/validate.ts",
-    "format": "oxfmt"
+    "test": "node --test \"test/*.test.ts\"",
+    "check": "oxfmt --check && tsc",
+    "fmt": "oxfmt"
   },
   "dependencies": {
     "ajv": "^8.20.0",

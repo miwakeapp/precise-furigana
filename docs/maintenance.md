@@ -8,7 +8,8 @@ Node.js 22.2 or later. The npm scripts set the 4 GiB heap the pipeline needs. No
 npm ci
 npm run fetch                # restore the exact locked inputs
 npm test                     # unit tests, seconds
-npm run typecheck            # TypeScript, strict; seconds
+npm run check                # formatting and types, seconds
+npm run fmt                  # reformat
 npm run build                # about two minutes
 npm run validate
 node scripts/release.ts     # local dry run; writes dist/release-notes.md

@@ -18,8 +18,7 @@ jobs:
         with:
           node-version: lts/*
       - run: npm ci
-      - run: npx oxfmt --check
-      - run: npm run typecheck
+      - run: npm run check
       - run: npm test
       - run: npm run fetch
       - run: npm run build

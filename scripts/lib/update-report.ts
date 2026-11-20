@@ -2,7 +2,8 @@
 // needs a person, and the pull request text that says so.
 import type { SynthesizedPair } from "../../src/pairings.ts";
 import type { Segment } from "../../src/types.ts";
-import type { Change, SegmentationChange } from "./compare.ts";
+import type { Change, ChangedRecord, SegmentationChange } from "./compare.ts";
+import { kanjiSharingFurigana } from "./release-notes.ts";
 
 export type ChangeCounts = Record<Change["change"], number>;
 export type ListedChanges = Record<SegmentationChange["change"], SegmentationChange[]>;
@@ -10,6 +11,11 @@ export type ListedChanges = Record<SegmentationChange["change"], SegmentationCha
 export interface ChangeSummary {
   counts: ChangeCounts;
   listed: ListedChanges;
+  /**
+   * New records whose kanji share furigana. The generator found nothing that divides them, so
+   * each is a word to look up: a split may be documented, and a reviewed fact can then record it.
+   */
+  grouped: ChangedRecord[];
 }
 
 export interface SynthesizedPairChanges {
@@ -83,18 +89,26 @@ export function summarizeChanges(changes: Change[]): ChangeSummary {
     ruby: 0,
   };
   const listed: ListedChanges = { finer: [], coarser: [], incompatible: [], ruby: [] };
+  const grouped: ChangedRecord[] = [];
   for (const item of changes) {
     ++counts[item.change];
     // Added and removed records are only counted; the segmentation changes are listed too.
     if (item.change !== "added" && item.change !== "removed") listed[item.change].push(item);
+    // A mispaired record's ruby says nothing about its spelling, so it is no candidate.
+    if (
+      item.change === "added" &&
+      item.after.pairing !== "mispaired" &&
+      kanjiSharingFurigana(item.after) > 0
+    )
+      grouped.push(item.after);
   }
-  return { counts, listed };
+  return { counts, listed, grouped };
 }
 
 /**
  * The reasons an update needs a person. An update with none is clean: it only moves the
- * dictionary pin and drops synthesized pairs that JMdict now has, and it makes no existing
- * segmentation coarser or incompatible.
+ * dictionary pin and drops synthesized pairs that JMdict now has, it makes no existing
+ * segmentation coarser or incompatible, and every new record's kanji have furigana of their own.
  */
 export function reviewReasons({
   build,
@@ -102,7 +116,11 @@ export function reviewReasons({
   synthesized,
   otherDataChanges,
   counts,
-}: Pick<Update, "build" | "validate" | "synthesized" | "otherDataChanges" | "counts">): string[] {
+  grouped,
+}: Pick<
+  Update,
+  "build" | "validate" | "synthesized" | "otherDataChanges" | "counts" | "grouped"
+>): string[] {
   const reasons: string[] = [];
   if (!build.passed) reasons.push("The build fails.");
   else if (!validate.passed) reasons.push("Validation fails.");
@@ -115,6 +133,11 @@ export function reviewReasons({
   if (reviewed.length > 0) {
     reasons.push(
       `${plural(reviewed.length, "new synthesized pair")} ${reviewed.length === 1 ? "was" : "were"} reviewed automatically; check ${reviewed.length === 1 ? "it" : "them"}.`,
+    );
+  }
+  if (grouped.length > 0) {
+    reasons.push(
+      `${plural(grouped.length, "new record")} ${grouped.length === 1 ? "has" : "have"} kanji sharing furigana; check whether a split is documented.`,
     );
   }
   for (const name of otherDataChanges) reasons.push(`\`${name}\` changed.`);
@@ -138,6 +161,18 @@ function changeList(title: string, items: SegmentationChange[]): string[] {
   return [`### ${title} (${items.length})`, "", ...rows, ""];
 }
 
+function groupedList(items: ChangedRecord[]): string[] {
+  if (items.length === 0) return [];
+  const rows = items
+    .slice(0, listLimit)
+    .map(
+      (item) =>
+        `- ${escapeHTML(item.spelling)} (${escapeHTML(item.reading)}, entry ${item.id}): ${ruby(item.segments)}`,
+    );
+  if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
+  return [`### New records with kanji sharing furigana (${items.length})`, "", ...rows, ""];
+}
+
 function synthesizedList(title: string, items: SynthesizedPair[]): string[] {
   if (items.length === 0) return [];
   const rows = items
@@ -152,8 +187,18 @@ function synthesizedList(title: string, items: SynthesizedPair[]): string[] {
 
 /** The pull request description for an update. */
 export function renderReport(update: Update): string {
-  const { before, after, counts, listed, synthesized, compared, build, validate, reviewNotes } =
-    update;
+  const {
+    before,
+    after,
+    counts,
+    listed,
+    grouped,
+    synthesized,
+    compared,
+    build,
+    validate,
+    reviewNotes,
+  } = update;
   const reasons = reviewReasons(update);
   const lines = [
     `Moves the dictionary pin from JMdict ${before.date} to ${after.date} ([jmdict-simplified ${after.tag}](${after.url})).`,
@@ -182,6 +227,7 @@ export function renderReport(update: Update): string {
       ...changeList("Coarser", listed.coarser),
       ...changeList("Finer", listed.finer),
       ...changeList("Ruby only", listed.ruby),
+      ...groupedList(grouped),
     );
   }
   const removed = synthesizedList(

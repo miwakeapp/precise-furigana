@@ -1,7 +1,7 @@
 // What a release's notes say: the database's statistics and, after the first release, what
 // changed since the one before.
 import type { SourceLock } from "../../src/sources.ts";
-import type { Database, Segment } from "../../src/types.ts";
+import type { Database, DatabaseRecord, Segment } from "../../src/types.ts";
 import { compareDatabases, type Change, type SegmentationChange } from "./compare.ts";
 
 export interface Statistics {
@@ -19,6 +19,17 @@ export interface Statistics {
 }
 
 const isKanji = (character: string) => /\p{Script=Han}/u.test(character);
+
+/** How many of a record's kanji sit under furigana that also covers another kanji. */
+export function kanjiSharingFurigana(record: Pick<DatabaseRecord, "segments">): number {
+  let sharing = 0;
+  for (const segment of record.segments) {
+    if (typeof segment === "string") continue;
+    const kanji = Array.from(segment[0]).filter(isKanji).length;
+    if (kanji > 1) sharing += kanji;
+  }
+  return sharing;
+}
 
 export function databaseStatistics(database: Pick<Database, "entries">): Statistics {
   const statistics: Statistics = {
@@ -38,17 +49,13 @@ export function databaseStatistics(database: Pick<Database, "entries">): Statist
       if (record.pairing !== undefined) ++statistics[record.pairing];
       // A mispaired record's ruby is not a statement about its spelling.
       if (record.pairing === "mispaired") continue;
-      let shares = false;
       for (const segment of record.segments) {
-        if (typeof segment === "string") continue;
-        const kanji = Array.from(segment[0]).filter(isKanji).length;
-        statistics.kanji += kanji;
-        if (kanji > 1) {
-          statistics.sharingKanji += kanji;
-          shares = true;
-        }
+        if (typeof segment !== "string")
+          statistics.kanji += Array.from(segment[0]).filter(isKanji).length;
       }
-      if (shares) ++statistics.sharingRecords;
+      const sharing = kanjiSharingFurigana(record);
+      statistics.sharingKanji += sharing;
+      if (sharing > 0) ++statistics.sharingRecords;
     }
   }
   return statistics;

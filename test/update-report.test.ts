@@ -45,7 +45,13 @@ function update(overrides: Partial<Update> = {}): Update {
 test("an update that only drops synthesized pairs and adds or refines records is clean", () => {
   const clean = update({
     ...summarizeChanges([
-      { change: "added", after: record([["山川", "やまかわ"]]) },
+      {
+        change: "added",
+        after: record([
+          ["山", "やま"],
+          ["川", "かわ"],
+        ]),
+      },
       { change: "removed", before: record([["山川", "やまかわ"]]) },
       {
         change: "finer",
@@ -95,6 +101,26 @@ test("anything a person should look at makes an update need review", () => {
     const synthesized = diffSynthesizedPairs([], [pair("気持ちよい", "きもちよい", unreviewed)]);
     assert.equal(reviewReasons(update({ synthesized })).length, 1);
   }
+});
+
+test("a new record whose kanji share furigana is listed for review", () => {
+  const grouped = record([["山川", "やまかわ"]]);
+  const summary = summarizeChanges([
+    { change: "added", after: grouped },
+    // A mispaired record's ruby is not a statement about its spelling.
+    { change: "added", after: { ...grouped, reading: "さんせん", pairing: "mispaired" } },
+    // Only new records are candidates; an old one was looked at when it arrived.
+    { change: "removed", before: grouped },
+  ]);
+  assert.deepEqual(summary.grouped, [grouped]);
+  const needsReview = update(summary);
+  assert.deepEqual(reviewReasons(needsReview), [
+    "1 new record has kanji sharing furigana; check whether a split is documented.",
+  ]);
+  assert.match(
+    renderReport(needsReview),
+    /### New records with kanji sharing furigana \(1\)\n\n- 山川 \(やまかわ, entry 1\): <ruby>山川<rt>やまかわ<\/rt><\/ruby>\n/u,
+  );
 });
 
 test("a failed build is reported with its output and without a comparison", () => {

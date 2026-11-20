@@ -83,7 +83,7 @@ node scripts/update.ts recheck    # rebuild and report again after editing data
 
 The report compares the database before and after, and is written with a commit message and a status file to `.cache/update/`. The workflow commits the changed data to the `update-dictionaries` branch and opens a pull request with the report as its description. If a pull request is already open, the run continues on its branch, so review work there is kept.
 
-An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has, and makes no existing segmentation coarser or incompatible. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
+An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has, makes no existing segmentation coarser or incompatible, and adds no record whose kanji share furigana. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
 
 ### Review a dictionary update
 
@@ -93,6 +93,7 @@ These are the instructions for whoever resolves an update that needs review, in 
 - A stale annotation, whose pair has left JMdict: remove it from `data/annotations.json`, or move it to the pair's new ID or spelling if the entry was only renumbered or respelled.
 - A segmentation that became coarser or incompatible: use `npm run inspect -- <spelling> <reading> --explain` to find out why. If the new result is wrong, fix it with a lexical fact or an annotation as in [Correct an alignment](#correct-an-alignment). If it is right, or you cannot tell, say so in the notes and change nothing.
 - A regression fixture that fails: investigate, but do not edit the fixture unless JMdict removed its pair.
+- New records with kanji sharing furigana: these are words the generator could not divide, and this review is the only time each is looked at. Look each one up, in Kotobank's dictionaries and Wiktionary first. Where a source documents how the reading divides, by the standard in [data sources](data-sources.md#lexical-facts), add a fact to `data/lexical-evidence.json` with the source's URL, giving it an `id` of `U<JMdict date>-<number>`. Leave the word grouped when nothing documents a split, when the group is a single unit such as a jukujikun or a name, or when an unwritten particle sits between the characters. Check a fact's effect with `npm run inspect`, and say in the notes what you decided for each word and why.
 
 Afterwards run `npm run build` and `npm run validate` until both pass, then write `.cache/update/review.md`: what you changed and why, and anything you were unsure of, for the person who will merge. Keep it short.
 

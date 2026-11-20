@@ -56,8 +56,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      # Claude edits files in the checkout only. It has no credentials for GitHub, and its
-      # changes always leave the pull request waiting for a person.
+      # Claude edits files in the checkout and reads the web, to look words up in dictionaries.
+      # What it reads is untrusted, so it has no credentials for GitHub, and its changes always
+      # leave the pull request waiting for a person.
       - name: Ask Claude to resolve what needs review
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
         continue-on-error: true
@@ -70,7 +71,7 @@ jobs:
             docs/maintenance.md. The report is in .cache/update/report.md.
           claude_args: |
             --max-turns 100
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npm run fmt:*)"
+            --allowedTools "Read,Edit,Write,Glob,Grep,WebSearch,WebFetch,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npm run fmt:*)"
 
       - name: Rebuild after the review
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'

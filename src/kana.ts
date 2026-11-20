@@ -18,6 +18,7 @@ const kanaVowels = new Map(
 // characters such as ZWJ, emoji modifiers, regional indicators, Hangul jamo, and CR. Text without them
 // splits into graphemes exactly at code points.
 const mayJoin =
+  // oxlint-disable-next-line no-misleading-character-class -- the marks are listed singly on purpose
   /[\p{Grapheme_Extend}\p{M}\p{Cf}\u0e33\u0eb3\u1100-\u11ff\ua960-\ua97f\ud7b0-\ud7ff\r\u{1f1e6}-\u{1f1ff}\u{1f3fb}-\u{1f3ff}]/u;
 
 /**
@@ -138,6 +139,7 @@ export function alignKanaPronunciations(
 }
 
 export function isKana(text: string): boolean {
+  // oxlint-disable-next-line no-misleading-character-class -- the combining dakuten are listed singly on purpose
   return /^[\p{Script=Hiragana}\p{Script=Katakana}ー\u3099\u309a]+$/u.test(text.normalize("NFKC"));
 }
 

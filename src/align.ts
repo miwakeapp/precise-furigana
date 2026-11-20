@@ -904,6 +904,8 @@ export function createAligner({
             add("っ" + stem, 5, [...iterationRules, "post-kana-gemination"]);
           }
         }
+        // A copy, because the loop adds candidates.
+        // oxlint-disable-next-line unicorn/no-useless-spread
         for (const candidate of [...candidates.values()]) {
           if (
             spellingIndex + 1 >= spellingUnits.length ||

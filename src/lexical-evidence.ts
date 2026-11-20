@@ -73,7 +73,7 @@ export function compileLexicalEvidence(facts: LexicalFact[]): CompiledLexicalFac
       !Array.isArray(fact.sources) ||
       fact.sources.length === 0 ||
       fact.sources.some(
-        (source) => typeof source.url !== "string" || !/^https:\/\//u.test(source.url),
+        (source) => typeof source.url !== "string" || !source.url.startsWith("https://"),
       )
     ) {
       throw new Error("Lexical evidence requires a rationale and source URLs");

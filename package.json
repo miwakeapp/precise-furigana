@@ -12,7 +12,8 @@
     "inspect": "node --max-old-space-size=4096 scripts/inspect.ts",
     "compare": "node scripts/compare.ts",
     "test": "node --test \"test/*.test.ts\"",
-    "check": "oxfmt --check && tsc",
+    "check": "oxfmt --check && oxlint && tsc",
+    "lint": "oxlint",
     "fmt": "oxfmt"
   },
   "dependencies": {
@@ -23,6 +24,8 @@
     "@scriptin/jmdict-simplified-types": "^3.6.1",
     "@types/node": "^26.6.6",
     "oxfmt": "^0.79.0",
+    "oxlint": "^1.94.0",
+    "oxlint-tsgolint": "^7.0.2007",
     "typescript": "^7.0.2"
   },
   "engines": {

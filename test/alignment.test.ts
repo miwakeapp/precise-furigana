@@ -3,7 +3,6 @@ import test from "node:test";
 import { createAligner } from "../src/align.ts";
 import type { AlignerOptions } from "../src/align.ts";
 import { normalizeKana, readingStem } from "../src/kana.ts";
-import { boundaries } from "../src/segments.ts";
 import type { AlignmentStatus, Segment } from "../src/types.ts";
 
 // These small fixtures describe linguistic cases; production data is supplied

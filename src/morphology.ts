@@ -1,6 +1,6 @@
 import { isKana, normalizeKana, splitGraphemes } from "./kana.ts";
 import { enumeratePairs } from "./sources.ts";
-import type { JMdict, JMdictSense, ReadingMap } from "./types.ts";
+import type { JMdict, ReadingMap } from "./types.ts";
 
 /** A regular verb whose continuative form gives its kanji the reading `stem`. */
 export interface ContinuativeWitness {

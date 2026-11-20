@@ -5,7 +5,6 @@ import type {
   Aligner,
   Alignment,
   JMdict,
-  JMdictSense,
   PassResult,
   ReadingMap,
   Segment,

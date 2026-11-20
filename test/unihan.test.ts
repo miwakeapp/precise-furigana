@@ -636,7 +636,7 @@ test("iteration inheritance checks the retained allocations on both sides of an 
     ["図", ["ズ"]],
     ["戸", ["コ"]],
   ]);
-  const align: Aligner = (spelling, reading) => ({
+  const align: Aligner = (spelling) => ({
     status: "aligned",
     segments: (
       {

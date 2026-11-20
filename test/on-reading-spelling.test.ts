@@ -296,7 +296,7 @@ test("typed final sokuon checks actual following sounds across existing segment 
     ["甲", ["コウ"]],
     ["丙", ["カ", "ア"]],
   ];
-  const align: Aligner = (spelling, reading) => ({
+  const align: Aligner = (_spelling, reading) => ({
     status: "aligned",
     segments: [
       ["甲乙", "こーかっ"],

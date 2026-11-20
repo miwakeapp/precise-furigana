@@ -8199,9 +8199,10 @@
       "id": "WG-027",
       "spelling": "新西蘭",
       "reading": "にゅーじーらんど",
-      "segments": [["新","にゅー"],["西蘭","じーらんど"]],
-      "reason": "Two source pages explicitly separate 新 and 西蘭 with matching ニュー and ジーランド word units. The latter remains grouped; no arbitrary division among its characters is inferred.",
+      "segments": [["新","にゅー"],["西","じー"],["蘭","らんど"]],
+      "reason": "Wiktionary's reading table for this word assigns 新 にゅー, 西 じー, 蘭 らんど.",
       "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%96%B0%E8%A5%BF%E8%98%AD&oldid=89768682#Japanese"},
         {"name":"English Wiktionary: pinned explicit local reading allocation","url":"https://en.wiktionary.org/w/index.php?title=%E6%96%B0&oldid=92200641#Japanese"}
       ]
     },
@@ -28774,9 +28775,10 @@
       "id": "SG-119",
       "spelling": "三毬杖",
       "reading": "さぎちょう",
-      "segments": [["三","さ"],["毬杖","ぎちょう"]],
-      "reason": "Daijisen and Nihon Kokugo Daijiten head the word さ‐ぎちょう and derive it from three 毬杖 (ぎっちょう); さ is listed for 三 in KANJIDIC2 as a name reading.",
+      "segments": [["三","さ"],["毬","ぎ"],["杖","ちょう"]],
+      "reason": "Wiktionary's reading table for this word assigns 三 さ, 毬 ぎ, 杖 ちょう. Daijisen and Nihon Kokugo Daijiten head the word さ‐ぎちょう and derive it from three 毬杖 (ぎっちょう).",
       "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E4%B8%89%E6%AF%AC%E6%9D%96&oldid=86457020#Japanese"},
         {"name":"Kotobank","url":"https://kotobank.jp/word/左義長"},
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
       ]
@@ -30157,6 +30159,276 @@
       "reason": "KANJIDIC2 lists ネン for 年. The digits are read as a number with unwritten 千, 百 and 十, so they stay together.",
       "sources": [
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "WT-01",
+      "spelling": "何方",
+      "reading": "どっち",
+      "segments": [["何","どっ"],["方","ち"]],
+      "reason": "Wiktionary's reading table for this word assigns 何 どっ, 方 ち.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E4%BD%95%E6%96%B9&oldid=92160166#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-02",
+      "spelling": "布哇",
+      "reading": "ハワイ",
+      "segments": [["布","ハ"],["哇","ワイ"]],
+      "reason": "Wiktionary's reading table for this word assigns 布 ハ, 哇 ワイ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E5%B8%83%E5%93%87&oldid=86468454#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-03",
+      "spelling": "胡坐",
+      "reading": "あぐら",
+      "segments": [["胡","あ"],["坐","ぐら"]],
+      "reason": "Wiktionary's reading table for this word assigns 胡 あ, 坐 ぐら.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E8%83%A1%E5%9D%90&oldid=88456393#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-04",
+      "spelling": "草鞋",
+      "reading": "わらじ",
+      "segments": [["草","わら"],["鞋","じ"]],
+      "reason": "Wiktionary's reading table for this word assigns 草 わら, 鞋 じ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E8%8D%89%E9%9E%8B&oldid=92250220#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-05",
+      "spelling": "浮腫み",
+      "reading": "むくみ",
+      "segments": [["浮","む"],["腫","く"],"み"],
+      "reason": "Wiktionary's reading table for this word assigns 浮 む, 腫 く.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%B5%AE%E8%85%AB%E3%81%BF&oldid=82832826#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-06",
+      "spelling": "浮腫む",
+      "reading": "むくむ",
+      "segments": [["浮","む"],["腫","く"],"む"],
+      "reason": "Wiktionary's reading table for this word assigns 浮 む, 腫 く.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%B5%AE%E8%85%AB%E3%82%80&oldid=92271313#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-07",
+      "spelling": "映日果",
+      "reading": "いちじく",
+      "segments": [["映","い"],["日","ちじ"],["果","く"]],
+      "reason": "Wiktionary's reading table for this word assigns 映 い, 日 ちじ, 果 く.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%98%A0%E6%97%A5%E6%9E%9C&oldid=92291947#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-08",
+      "spelling": "馬刀貝",
+      "reading": "まてがい",
+      "segments": [["馬","ま"],["刀","て"],["貝","がい"]],
+      "reason": "Wiktionary's reading table for this word assigns 馬 ま, 刀 て, 貝 がい.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%A6%AC%E5%88%80%E8%B2%9D&oldid=90002232#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-09",
+      "spelling": "馬蛤貝",
+      "reading": "まてがい",
+      "segments": [["馬","ま"],["蛤","て"],["貝","がい"]],
+      "reason": "Wiktionary's reading table for this word assigns 馬 ま, 蛤 て, 貝 がい.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%A6%AC%E8%9B%A4%E8%B2%9D&oldid=86474862#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-10",
+      "spelling": "口惜しい",
+      "reading": "くやしい",
+      "segments": [["口","く"],["惜","や"],"しい"],
+      "reason": "Wiktionary's reading table for this word assigns 口 く, 惜 や.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E5%8F%A3%E6%83%9C%E3%81%97%E3%81%84&oldid=86463877#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-11",
+      "spelling": "呆気者",
+      "reading": "うつけもの",
+      "segments": [["呆","うつ"],["気","け"],["者","もの"]],
+      "reason": "Wiktionary's reading table for this word assigns 呆 うつ, 気 け, 者 もの.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E5%91%86%E6%B0%97%E8%80%85&oldid=86471016#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-12",
+      "spelling": "獦子鳥",
+      "reading": "あとり",
+      "segments": [["獦子","あ"],["鳥","とり"]],
+      "reason": "Wiktionary's reading table for this word assigns 獦子 あ, 鳥 とり.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E7%8D%A6%E5%AD%90%E9%B3%A5&oldid=84229438#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-13",
+      "spelling": "針孔",
+      "reading": "めど",
+      "segments": [["針","め"],["孔","ど"]],
+      "reason": "Wiktionary's reading table for this word assigns 針 め, 孔 ど.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%87%9D%E5%AD%94&oldid=89136271#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-14",
+      "spelling": "針孔",
+      "reading": "みぞ",
+      "segments": [["針","み"],["孔","ぞ"]],
+      "reason": "Wiktionary's reading table for this word assigns 針 み, 孔 ぞ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%87%9D%E5%AD%94&oldid=89136271#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-15",
+      "spelling": "水黽",
+      "reading": "あめんぼ",
+      "segments": [["水","あめん"],["黽","ぼ"]],
+      "reason": "Wiktionary's reading table for this word assigns 水 あめん, 黽 ぼ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%B0%B4%E9%BB%BD&oldid=86459891#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-16",
+      "spelling": "檸檬色",
+      "reading": "レモンいろ",
+      "segments": [["檸","レ"],["檬","モン"],["色","いろ"]],
+      "reason": "Wiktionary's reading table for this word assigns 檸 レ, 檬 モン, 色 いろ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%AA%B8%E6%AA%AC%E8%89%B2&oldid=85149686#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-17",
+      "spelling": "天倪",
+      "reading": "あまがつ",
+      "segments": [["天","あま"],["倪","がつ"]],
+      "reason": "Wiktionary's reading table for this word assigns 天 あま, 倪 がつ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E5%A4%A9%E5%80%AA&oldid=86456108#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-18",
+      "spelling": "郁子",
+      "reading": "むべ",
+      "segments": [["郁","む"],["子","べ"]],
+      "reason": "Wiktionary's reading table for this word assigns 郁 む, 子 べ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%83%81%E5%AD%90&oldid=94584731#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-19",
+      "spelling": "郁子",
+      "reading": "うべ",
+      "segments": [["郁","う"],["子","べ"]],
+      "reason": "Wiktionary's reading table for this word assigns 郁 う, 子 べ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%83%81%E5%AD%90&oldid=94584731#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-20",
+      "spelling": "柘榴",
+      "reading": "ざくろ",
+      "segments": [["柘","ざく"],["榴","ろ"]],
+      "reason": "Wiktionary's reading table for this word assigns 柘 ざく, 榴 ろ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%9F%98%E6%A6%B4&oldid=86469754#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-21",
+      "spelling": "武尊",
+      "reading": "たける",
+      "segments": [["武","たけ"],["尊","る"]],
+      "reason": "Wiktionary's reading table for this word assigns 武 たけ, 尊 る.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%AD%A6%E5%B0%8A&oldid=55055040#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-22",
+      "spelling": "維納",
+      "reading": "ウィーン",
+      "segments": [["維","ウィー"],["納","ン"]],
+      "reason": "Wiktionary's reading table for this word assigns 維 ウィー, 納 ン.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E7%B6%AD%E7%B4%8D&oldid=87980331#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-23",
+      "spelling": "密営",
+      "reading": "ミリョン",
+      "segments": [["密","ミ"],["営","リョン"]],
+      "reason": "Wiktionary's reading table for this word assigns 密 ミ, 営 リョン.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E5%AF%86%E5%96%B6&oldid=92213931#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-24",
+      "spelling": "針孔",
+      "reading": "みず",
+      "segments": [["針","み"],["孔","ず"]],
+      "reason": "Wiktionary's reading table for this word assigns 針 み, 孔 ず.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E9%87%9D%E5%AD%94&oldid=89136271#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-25",
+      "spelling": "林檎",
+      "reading": "りゅうごう",
+      "segments": [["林","りゅう"],["檎","ごう"]],
+      "reason": "Wiktionary's reading table for this word assigns 林 りゅう, 檎 ごう.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%9E%97%E6%AA%8E&oldid=92288868#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-26",
+      "spelling": "悄悄",
+      "reading": "すごすご",
+      "segments": [["悄","すご"],["悄","すご"]],
+      "reason": "Wiktionary's reading table for this word assigns 悄 すご, 悄 すご.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E6%82%84%E6%82%84&oldid=93736836#Japanese"}
+      ]
+    },
+    {
+      "id": "WT-27",
+      "spelling": "五十集",
+      "reading": "いさば",
+      "segments": [["五十","い"],["集","さば"]],
+      "reason": "Wiktionary's reading table for this word assigns 五十 い, 集 さば.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/w/index.php?title=%E4%BA%94%E5%8D%81%E9%9B%86&oldid=86481743#Japanese"}
       ]
     }
   ]

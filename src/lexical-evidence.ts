@@ -260,12 +260,19 @@ export function refineWithLexicalEvidence(
       pointIndex === 0 || (x > allPoints[pointIndex - 1][0] && y > allPoints[pointIndex - 1][1]),
   );
   // Check whole placements for consistency, but emit only internal cuts.
-  // A unit's outer edge could assign an unwritten particle to its neighbor.
+  // A unit's outer edge could assign an unwritten particle to its neighbor. Where one unit ends
+  // exactly where another begins there is no room for a particle, so that edge is emitted too.
+  const starts = new Set(proposals.map((proposal) => proposal.points[0].join(":")));
+  const sharedEdges = proposals
+    .map((proposal) => proposal.points.at(-1)!)
+    .filter((point) => starts.has(point.join(":")));
   const points = [
     ...new Set(
-      [...originalPoints, ...proposals.flatMap((proposal) => proposal.points.slice(1, -1))].map(
-        (point) => point.join(":"),
-      ),
+      [
+        ...originalPoints,
+        ...proposals.flatMap((proposal) => proposal.points.slice(1, -1)),
+        ...sharedEdges,
+      ].map((point) => point.join(":")),
     ),
   ]
     .map((point) => point.split(":").map(Number))

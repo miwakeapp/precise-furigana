@@ -100,6 +100,37 @@ test("reviewed contractions remain local while exact-script projections are reta
   ]);
 });
 
+test("adjacent units keep the boundary between them, and a lone unit's edge stays unclaimed", () => {
+  const facts = compileLexicalEvidence([
+    fact("天照", "あまてらす", [
+      ["天", "あま"],
+      ["照", "てらす"],
+    ]),
+    fact("大神", "おおみかみ", [
+      ["大", "おおみ"],
+      ["神", "かみ"],
+    ]),
+  ]);
+  assert.deepEqual(
+    refineWithLexicalEvidence(original([["天照大神", "あまてらすおおみかみ"]]), facts).segments,
+    [
+      ["天", "あま"],
+      ["照", "てらす"],
+      ["大", "おおみ"],
+      ["神", "かみ"],
+    ],
+  );
+  // With a gap between the units, an unwritten particle could sit at either edge.
+  assert.deepEqual(
+    refineWithLexicalEvidence(original([["天照之大神", "あまてらすのおおみかみ"]]), facts).segments,
+    [
+      ["天", "あま"],
+      ["照之大", "てらすのおおみ"],
+      ["神", "かみ"],
+    ],
+  );
+});
+
 test("reviewed units cannot move existing boundaries or choose ambiguous placements", () => {
   const facts = compileLexicalEvidence([
     fact("甲乙", "かき", [

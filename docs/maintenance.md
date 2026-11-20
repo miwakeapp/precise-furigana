@@ -83,6 +83,8 @@ node scripts/update.ts recheck    # rebuild and report again after editing data
 
 The report compares the database before and after, and is written with a commit message and a status file to `.cache/update/`. The workflow commits the changed data to the `update-dictionaries` branch and opens a pull request with the report as its description. If a pull request is already open, the run continues on its branch, so review work there is kept.
 
+The workflow has two jobs. The first moves the pin and, when the update needs review, runs Claude. That job reads the web, so it holds no credential that can write to the repository. The second job receives only `data/`, `test/fixtures/`, the report and the commit message from the first, and commits them from a checkout of its own using `UPDATE_TOKEN`. Whether an update may merge itself is settled before the review runs, so nothing the review does can make it merge unattended.
+
 An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has, makes no existing segmentation coarser or incompatible, and adds no record whose kanji share furigana. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
 
 ### Review a dictionary update

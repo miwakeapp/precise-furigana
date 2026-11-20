@@ -16,16 +16,26 @@ env:
   BRANCH: update-dictionaries
 
 jobs:
+  # Moves the pin and reviews the result. This job reads the web, so it holds no credential that
+  # can write to the repository, and nothing it leaves on its runner is trusted afterwards.
   update:
     # Scheduled runs use the default branch; dispatches must do so too.
     if: github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      changed: ${{ steps.update.outputs.changed }}
+      # Whether the update was clean before any review. A reviewed update never merges itself.
+      clean: ${{ steps.update.outputs.clean }}
     steps:
-      # Credentials are not left in the checkout, so later steps cannot read them from it.
+      # The whole history, so that an open update's branch can be merged with the default branch.
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
@@ -34,20 +44,17 @@ jobs:
       - name: Build the database as it stands
         run: node scripts/update.ts baseline
 
-      # An open pull request can hold review work, so this run continues on its branch.
-      - name: Continue an open update, or start a new one
+      # An open pull request can hold review work, so this run continues from its branch.
+      - name: Continue an open update
         env:
-          GH_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
-            git fetch "$remote" "$BRANCH"
-            git checkout -B "$BRANCH" FETCH_HEAD
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git fetch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+            git checkout --detach FETCH_HEAD
             git merge --no-edit "$GITHUB_SHA"
-          else
-            git checkout -B "$BRANCH"
           fi
 
       - name: Move the dictionary pin
@@ -57,8 +64,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       # Claude edits files in the checkout and reads the web, to look words up in dictionaries.
-      # What it reads is untrusted, so it has no credentials for GitHub, and its changes always
-      # leave the pull request waiting for a person.
       - name: Ask Claude to resolve what needs review
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
         continue-on-error: true
@@ -77,25 +82,70 @@ jobs:
         if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
         run: node scripts/update.ts recheck
 
-      - name: Open or update the pull request
+      # Only data crosses to the next job: the files an update may change, and the report.
+      - name: Collect the update
         if: steps.update.outputs.changed == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/update"
+          cp -r data "$RUNNER_TEMP/update/data"
+          cp -r test/fixtures "$RUNNER_TEMP/update/fixtures"
+          cp .cache/update/report.md .cache/update/commit-message.txt "$RUNNER_TEMP/update/"
+      - if: steps.update.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: update
+          path: ${{ runner.temp }}/update
+          if-no-files-found: error
+          retention-days: 7
+
+  # Commits the update and opens its pull request, from a checkout of its own. The token that can
+  # write to the repository is used only here, where nothing from the job above runs.
+  propose:
+    needs: update
+    if: needs.update.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/download-artifact@v8
+        with:
+          name: update
+          path: ${{ runner.temp }}/update
+      - name: Open or update the pull request
         env:
           GH_TOKEN: ${{ secrets.UPDATE_TOKEN }}
+          CLEAN: ${{ needs.update.outputs.clean }}
         run: |
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          title="$(head -n 1 .cache/update/commit-message.txt)"
+          update="$RUNNER_TEMP/update"
+          title="$(head -n 1 "$update/commit-message.txt")"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The same branch and merge as the job above, with its data files laid over the result.
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            git fetch "$remote" "$BRANCH"
+            git checkout -B "$BRANCH" FETCH_HEAD
+            git merge --no-edit "$GITHUB_SHA"
+          else
+            git checkout -B "$BRANCH"
+          fi
+          rm -r data test/fixtures
+          cp -r "$update/data" data
+          cp -r "$update/fixtures" test/fixtures
           git add data test/fixtures
-          # Hooks are disabled because this step holds a token and the checkout was edited above.
-          git -c core.hooksPath=/dev/null commit --file .cache/update/commit-message.txt
+          git commit --file "$update/commit-message.txt"
           git push --force "$remote" "$BRANCH"
           if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
-            gh pr edit "$BRANCH" --title "$title" --body-file .cache/update/report.md
+            gh pr edit "$BRANCH" --title "$title" --body-file "$update/report.md"
           else
-            gh pr create --head "$BRANCH" --title "$title" --body-file .cache/update/report.md
+            gh pr create --head "$BRANCH" --title "$title" --body-file "$update/report.md"
           fi
-          if [ "$(jq .clean .cache/update/status.json)" = "true" ]; then
+          if [ "$CLEAN" = "true" ]; then
             gh pr merge "$BRANCH" --auto --squash --delete-branch \
-              --subject "$title" --body "$(tail -n +3 .cache/update/commit-message.txt)"
+              --subject "$title" --body "$(tail -n +3 "$update/commit-message.txt")"
           else
             gh pr merge "$BRANCH" --disable-auto || true
           fi

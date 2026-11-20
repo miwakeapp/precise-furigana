@@ -1,25 +1,8 @@
 // Pure helpers for `scripts/update.ts`: what a dictionary update changed, whether it
 // needs a person, and the pull request text that says so.
 import type { SynthesizedPair } from "../../src/pairings.ts";
-import type { DatabaseRecord, Segment } from "../../src/types.ts";
-
-/** A database record with the ID of its entry. */
-export interface ChangedRecord extends DatabaseRecord {
-  id: string;
-}
-
-/** A record present in both databases whose segments differ. */
-export interface SegmentationChange {
-  change: "finer" | "coarser" | "incompatible" | "ruby";
-  before: ChangedRecord;
-  after: ChangedRecord;
-}
-
-/** One line of what `scripts/compare.ts` writes. */
-export type Change =
-  | { change: "added"; after: ChangedRecord }
-  | { change: "removed"; before: ChangedRecord }
-  | SegmentationChange;
+import type { Segment } from "../../src/types.ts";
+import type { Change, SegmentationChange } from "./compare.ts";
 
 export type ChangeCounts = Record<Change["change"], number>;
 export type ListedChanges = Record<SegmentationChange["change"], SegmentationChange[]>;

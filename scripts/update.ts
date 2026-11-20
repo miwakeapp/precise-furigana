@@ -22,7 +22,8 @@ import {
   summarizeChanges,
 } from "./lib/update-report.ts";
 import type { SynthesizedPair } from "../src/pairings.ts";
-import type { Change, DictionaryPin, StepResult, Update } from "./lib/update-report.ts";
+import type { Change } from "./lib/compare.ts";
+import type { DictionaryPin, StepResult, Update } from "./lib/update-report.ts";
 
 /** The parts of `data/sources.lock.json` that say what it pins. */
 interface PinnedLock {

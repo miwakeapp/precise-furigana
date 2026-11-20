@@ -1,13 +1,16 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { appendFile, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { appendFile, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseArgs, isDeepStrictEqual } from "node:util";
+import { zstdDecompressSync } from "node:zlib";
 import { defaultConfiguration, digest, generatorDigest } from "../src/dataset.ts";
 import type { EvaluationProvenance } from "../src/dataset.ts";
 import { defaultLockPath } from "../src/sources.ts";
 import type { SourceLock } from "../src/sources.ts";
+import type { Database } from "../src/types.ts";
 import {
   databaseFile,
   databaseVersion,
@@ -17,13 +20,7 @@ import {
 } from "./lib/database-files.ts";
 import type { Manifest } from "./lib/database-files.ts";
 import type { Evaluation, EvaluationResult, GoldExample } from "./lib/evaluation.ts";
-
-/** The parts of a manifest that a release's description states. */
-export interface DescribedManifest {
-  version: string;
-  counts: Pick<Manifest["counts"], "entries" | "pairs">;
-  files: Record<string, { sha256: string }>;
-}
+import { renderReleaseNotes } from "./lib/release-notes.ts";
 
 export interface ReleaseDescriptor {
   tag: string;
@@ -45,33 +42,28 @@ export interface GitHubRef {
 
 /** A release, as GitHub's API describes it. */
 export interface GitHubRelease {
+  tag_name: string;
   draft: boolean;
-  body?: string | null;
-  assets: { name: string; state: string }[];
+  assets: { name: string; state: string; url: string }[];
 }
 
-/** The line of a release's notes that identifies its database, whatever compressed it. */
-const checksumLine = (manifest: Pick<DescribedManifest, "files">) =>
-  `\`${databaseFile}\` SHA-256: \`${manifest.files[databaseFile].sha256}\``;
+/** The file a stamping run leaves the previous release's database in, for the notes to compare. */
+const previousFile = "previous.json";
 
+/**
+ * A release's tag, title and notes. `previous` is the database of the release before it, and
+ * `previousURL` that release's page.
+ */
 export function releaseDescriptor(
-  manifest: DescribedManifest,
+  database: Database,
   lock: Pick<SourceLock, "release">,
+  previous?: Database,
+  previousURL?: string,
 ): ReleaseDescriptor {
-  const { counts, version } = manifest;
-  const { jmdictDate } = parseDatabaseVersion(version);
-  const count = (value: number) => value.toLocaleString("en-US");
   return {
-    tag: `v${version}`,
-    title: `Precise Furigana ${version}`,
-    notes: [
-      `Furigana for ${count(counts.pairs)} spelling/reading pairs across ${count(counts.entries)} JMdict entries, from JMdict ${jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).`,
-      `- \`${releaseFiles[0]}\` holds \`${databaseFile}\` with its schema, notices and license.\n- \`${releaseFiles[1]}\` is \`${databaseFile}\` alone, compressed with Zstandard.`,
-      checksumLine(manifest),
-      "The data is under CC BY-SA 4.0, based on JMdict and KANJIDIC2, copyright James William Breen and EDRDG. `NOTICE.md` in the archive has full attribution.",
-    ]
-      .join("\n\n")
-      .concat("\n"),
+    tag: `v${database.version}`,
+    title: `Precise Furigana ${database.version}`,
+    notes: renderReleaseNotes(database, lock, previous, previousURL),
   };
 }
 
@@ -156,28 +148,47 @@ async function github(path: string, { missing }: { missing?: boolean } = {}): Pr
   return response.json();
 }
 
+/** Download a release asset through the API, which also works for a private repository. */
+async function download(url: string): Promise<Buffer> {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${process.env.GH_TOKEN}`,
+      Accept: "application/octet-stream",
+    },
+    signal: AbortSignal.timeout(120_000),
+  });
+  if (!response.ok) throw new Error(`Download failed: HTTP ${response.status} for ${url}`);
+  return Buffer.from(await response.arrayBuffer());
+}
+
 /**
- * Give the built database the next unreleased revision for its dictionary date. Returns false,
- * leaving the latest release's version on it, when that release already holds the same data.
+ * Give the built database the next unreleased revision for its dictionary date, and leave the
+ * latest release's database beside it for the notes to compare. Returns false, leaving that
+ * release's version on the database, when the release already holds the same data.
  */
 async function stamp(directory: string, jmdictDate: string): Promise<boolean> {
+  const previousPath = join(directory, previousFile);
+  await rm(previousPath, { force: true });
+  const release = (await github("releases/latest", { missing: true })) as GitHubRelease | undefined;
+  if (release !== undefined) {
+    verifyExistingRelease(release, releaseFiles);
+    const asset = release.assets.find((candidate) => candidate.name === releaseFiles[1])!;
+    const previous = zstdDecompressSync(await download(asset.url)).toString("utf8");
+    await writeFile(previousPath, previous);
+    const version = release.tag_name.replace(/^v/u, "");
+    if (parseDatabaseVersion(version).jmdictDate === jmdictDate) {
+      // Stamped with that release's version, an unchanged database is the same text.
+      await stampVersion(directory, version);
+      if ((await readFile(join(directory, databaseFile), "utf8")) === previous) {
+        console.log(`Release ${release.tag_name} already holds this database; nothing to publish.`);
+        return false;
+      }
+    }
+  }
   const refs = (await github(
     `git/matching-refs/tags/v${databaseVersion(jmdictDate, "")}`,
   )) as GitHubRef[];
   const latest = releasedRevisions(refs, jmdictDate).at(-1);
-  if (latest !== undefined) {
-    // Stamped with the latest revision, an unchanged database has the checksum that release's
-    // notes record.
-    const manifest = await stampVersion(directory, databaseVersion(jmdictDate, latest));
-    const release = (await github(`releases/tags/v${manifest.version}`, { missing: true })) as
-      | GitHubRelease
-      | undefined;
-    if (release?.body?.includes(checksumLine(manifest))) {
-      verifyExistingRelease(release, releaseFiles);
-      console.log(`Release v${manifest.version} already holds this database; nothing to publish.`);
-      return false;
-    }
-  }
   const manifest = await stampVersion(directory, databaseVersion(jmdictDate, (latest ?? -1) + 1));
   console.log(`Stamped version ${manifest.version}.`);
   return true;
@@ -189,6 +200,8 @@ async function main(): Promise<void> {
       stamp: { type: "boolean", default: false },
       publish: { type: "boolean", default: false },
       directory: { type: "string", default: "dist" },
+      // The database to describe changes from; a stamping run leaves the latest release's here.
+      previous: { type: "string" },
     },
   });
   if (values.stamp || values.publish) {
@@ -228,10 +241,24 @@ async function main(): Promise<void> {
       ),
     },
   );
-  const descriptor = releaseDescriptor(manifest, lock);
+  const database: Database = JSON.parse(
+    await readFile(join(values.directory, databaseFile), "utf8"),
+  );
+  const previousPath = values.previous ?? join(values.directory, previousFile);
+  const previous: Database | undefined = existsSync(previousPath)
+    ? JSON.parse(await readFile(previousPath, "utf8"))
+    : undefined;
+  const descriptor = releaseDescriptor(
+    database,
+    lock,
+    previous,
+    previous && process.env.GITHUB_REPOSITORY
+      ? `https://github.com/${process.env.GITHUB_REPOSITORY}/releases/tag/v${previous.version}`
+      : undefined,
+  );
   const notesPath = join(values.directory, "release-notes.md");
   await writeFile(notesPath, descriptor.notes);
-  console.log(JSON.stringify(descriptor, undefined, 2));
+  console.log(`${descriptor.tag}: ${descriptor.title}\n\n${descriptor.notes}`);
   if (!values.publish) return;
 
   const revision = process.env.GITHUB_SHA;

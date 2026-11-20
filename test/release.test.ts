@@ -84,7 +84,11 @@ test("passing summary cannot conceal missing results or failed alignments", () =
 
 test("release retries require complete published assets", () => {
   const names = ["database.zip"];
-  const release = { draft: false, assets: [{ name: "database.zip", state: "uploaded" }] };
+  const release = {
+    tag_name: "v1.20261116.0",
+    draft: false,
+    assets: [{ name: "database.zip", state: "uploaded", url: "https://example.com/asset" }],
+  };
   verifyExistingRelease(release, names);
   assert.throws(() => verifyExistingRelease({ ...release, draft: true }, names));
   assert.throws(() => verifyExistingRelease({ ...release, assets: [] }, names));
@@ -172,14 +176,14 @@ test("stamping a version rewrites the database, its published files, and the man
 
 test("a release is tagged with its version", () => {
   const lock = { release: { tag: "source-tag", url: "https://example.com/release" } };
-  const manifest = {
+  const database = {
     version: "1.20261116.2",
-    counts: { entries: 1, pairs: 1 },
-    files: { "precise-furigana.json": { sha256: "1234567890abcdef" } },
+    schemaVersion: 1,
+    jmdictDate: "2026-11-16",
+    entries: {},
   };
-  const descriptor = releaseDescriptor(manifest, lock);
+  const descriptor = releaseDescriptor(database, lock);
   assert.equal(descriptor.tag, "v1.20261116.2");
   assert.equal(descriptor.title, "Precise Furigana 1.20261116.2");
   assert.match(descriptor.notes, /JMdict 2026-11-16/u);
-  assert.match(descriptor.notes, /1234567890abcdef/u);
 });

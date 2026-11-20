@@ -7,12 +7,8 @@ import {
   reviewReasons,
   summarizeChanges,
 } from "../scripts/lib/update-report.ts";
-import type {
-  ChangedRecord,
-  SegmentationChange,
-  StepResult,
-  Update,
-} from "../scripts/lib/update-report.ts";
+import type { ChangedRecord, SegmentationChange } from "../scripts/lib/compare.ts";
+import type { StepResult, Update } from "../scripts/lib/update-report.ts";
 import type { SynthesizedPair } from "../src/pairings.ts";
 import type { Segment } from "../src/types.ts";
 

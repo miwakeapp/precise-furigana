@@ -11,6 +11,9 @@ export type ListedChanges = Record<SegmentationChange["change"], SegmentationCha
 export interface ChangeSummary {
   counts: ChangeCounts;
   listed: ListedChanges;
+  /** The records only the new database has, and those only the old one had. */
+  added: ChangedRecord[];
+  removed: ChangedRecord[];
   /**
    * New records whose kanji share furigana. The generator found nothing that divides them, so
    * each is a word to look up: a split may be documented, and a reviewed fact can then record it.
@@ -52,6 +55,8 @@ export interface Update extends ChangeSummary {
 }
 
 const listLimit = 30;
+/** The most characters one folded list may take of the 65,536 a description can hold. */
+const foldedLimit = 20_000;
 const escapeHTML = (text: string) => text.replace(/[&<>]/gu, (unit) => `&#${unit.codePointAt(0)};`);
 const ruby = (segments: Segment[]) =>
   segments
@@ -90,8 +95,12 @@ export function summarizeChanges(changes: Change[]): ChangeSummary {
   };
   const listed: ListedChanges = { finer: [], coarser: [], incompatible: [], ruby: [] };
   const grouped: ChangedRecord[] = [];
+  const added: ChangedRecord[] = [],
+    removed: ChangedRecord[] = [];
   for (const item of changes) {
     ++counts[item.change];
+    if (item.change === "added") added.push(item.after);
+    else if (item.change === "removed") removed.push(item.before);
     // Added and removed records are only counted; the segmentation changes are listed too.
     if (item.change !== "added" && item.change !== "removed") listed[item.change].push(item);
     // A mispaired record's ruby says nothing about its spelling, so it is no candidate.
@@ -102,7 +111,7 @@ export function summarizeChanges(changes: Change[]): ChangeSummary {
     )
       grouped.push(item.after);
   }
-  return { counts, listed, grouped };
+  return { counts, listed, grouped, added, removed };
 }
 
 /**
@@ -161,6 +170,32 @@ function changeList(title: string, items: SegmentationChange[]): string[] {
   return [`### ${title} (${items.length})`, "", ...rows, ""];
 }
 
+/**
+ * Every record of one kind, folded away so that the description stays readable. GitHub limits a
+ * description's length, so a very long list is cut off with a count of the rest.
+ */
+function foldedList(title: string, items: ChangedRecord[]): string[] {
+  if (items.length === 0) return [];
+  const rows: string[] = [];
+  let length = 0;
+  for (const item of items) {
+    const row = `- ${ruby(item.segments)} (entry ${item.id})`;
+    if (length + row.length > foldedLimit) break;
+    rows.push(row);
+    length += row.length + 1;
+  }
+  if (rows.length < items.length) rows.push(`- …and ${items.length - rows.length} more.`);
+  return [
+    "<details>",
+    `<summary>${title} (${items.length})</summary>`,
+    "",
+    ...rows,
+    "",
+    "</details>",
+    "",
+  ];
+}
+
 function groupedList(items: ChangedRecord[]): string[] {
   if (items.length === 0) return [];
   const rows = items
@@ -193,6 +228,8 @@ export function renderReport(update: Update): string {
     counts,
     listed,
     grouped,
+    added: addedRecords,
+    removed: removedRecords,
     synthesized,
     compared,
     build,
@@ -228,6 +265,8 @@ export function renderReport(update: Update): string {
       ...changeList("Finer", listed.finer),
       ...changeList("Ruby only", listed.ruby),
       ...groupedList(grouped),
+      ...foldedList("Added records", addedRecords),
+      ...foldedList("Removed records", removedRecords),
     );
   }
   const removed = synthesizedList(

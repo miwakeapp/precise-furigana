@@ -73,6 +73,15 @@ test("an update that only drops synthesized pairs and adds or refines records is
     /<ruby>山川<rt>やまかわ<\/rt><\/ruby> → <ruby>山<rt>やま<\/rt><\/ruby><ruby>川<rt>かわ<\/rt><\/ruby>/u,
   );
   assert.match(report, /そっぽ向く read そっぽむく/u);
+  // Every added and removed record is listed, folded away.
+  assert.match(
+    report,
+    /<details>\n<summary>Added records \(1\)<\/summary>\n\n- <ruby>山<rt>やま<\/rt><\/ruby><ruby>川<rt>かわ<\/rt><\/ruby> \(entry 1\)\n\n<\/details>\n/u,
+  );
+  assert.match(
+    report,
+    /<summary>Removed records \(1\)<\/summary>\n\n- <ruby>山川<rt>やまかわ<\/rt><\/ruby> \(entry 1\)\n/u,
+  );
   assert.equal(
     renderCommitMessage(clean),
     "Update JMdict to 2026-10-12\n\nMoves the dictionary pin from jmdict-simplified 3.6.2+20261005 to 3.6.2+20261012. Removes 1 synthesized pair that JMdict now has or no longer needs.\n",

@@ -87,11 +87,11 @@ test("later notes give each statistic's change and what changed", () => {
   // A removed entry, two added ones, and the records they bring; a kana-only entry is no example.
   assert.match(
     notes,
-    /\*\*Dictionary\.\*\* 2 entries added and 1 removed; 3 records added and 1 removed\. New entries include <ruby>家<rt>や<\/ruby><ruby>捜<rt>さが<\/ruby>し and 1 more\.\n/u,
+    /\*\*Dictionary\.\*\* 2 entries added and 1 removed; 3 records added and 1 removed\. New entries include <span lang="ja"><ruby>家<rt>や<\/ruby><ruby>捜<rt>さが<\/ruby>し<\/span> and 1 more\.\n/u,
   );
   assert.match(
     notes,
-    /\*\*Segmentation\.\*\* 1 existing record is divided more finely and none more coarsely\.\n\n- <ruby>景色<rt>けしき<\/ruby> → <ruby>景<rt>け<\/ruby><ruby>色<rt>しき<\/ruby>\n/u,
+    /\*\*Segmentation\.\*\* 1 existing record is divided more finely and none more coarsely\.\n\n- <span lang="ja"><ruby>景色<rt>けしき<\/ruby><\/span> → <span lang="ja"><ruby>景<rt>け<\/ruby><ruby>色<rt>しき<\/ruby><\/span>\n/u,
   );
 });
 
@@ -99,7 +99,7 @@ test("a coarser division is named, and each kind is listed under its own heading
   const notes = renderReleaseNotes(first, lock, second);
   assert.match(
     notes,
-    /\*\*Segmentation\.\*\* 1 existing record is divided more coarsely\.\n\n- <ruby>景<rt>け<\/ruby><ruby>色<rt>しき<\/ruby> → <ruby>景色<rt>けしき<\/ruby>\n/u,
+    /\*\*Segmentation\.\*\* 1 existing record is divided more coarsely\.\n\n- <span lang="ja"><ruby>景<rt>け<\/ruby><ruby>色<rt>しき<\/ruby><\/span> → <span lang="ja"><ruby>景色<rt>けしき<\/ruby><\/span>\n/u,
   );
   assert.doesNotMatch(notes, /none more coarsely/u);
 });

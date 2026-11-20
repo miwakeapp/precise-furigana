@@ -27502,6 +27502,2662 @@
         {"name":"JMnedict","url":"https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322"},
         {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
       ]
+    },
+    {
+      "id": "SG-001",
+      "spelling": "刺亀虫",
+      "reading": "さしがめ",
+      "segments": [["刺","さし"],["亀虫","がめ"]],
+      "reason": "Daijisen heads the word さし‐がめ and writes it 刺亀＝虫, and さし is a listed kun reading of 刺; 亀虫 takes がめ (かめ with rendaku, 虫 unread).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/刺椿象"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-002",
+      "spelling": "目付",
+      "reading": "めっ",
+      "segments": [["目","め"],["付","っ"]],
+      "reason": "め is the kun reading of 目, and 付 is つ.ける with its つ reduced to the geminate っ (めつける → めっける), as in the sibling spellings 目っける and 見付ける.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/見付ける#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-003",
+      "spelling": "不貞不貞",
+      "reading": "ふてぶて",
+      "segments": [["不","ふ"],["貞","て"],["不","ぶ"],["貞","て"]],
+      "reason": "Wiktionary's reading tables for 不貞腐れる and 不貞寝 assign ふ to 不 and て to 貞 (ateji, テイ shortened); the repeated 不 is voiced to ぶ by rendaku, also a listed on reading.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/不貞腐れる#Japanese"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/不貞寝#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-004",
+      "spelling": "既知外",
+      "reading": "キチゲェ",
+      "segments": [["既","キ"],["知","チ"],["外","ゲェ"]],
+      "reason": "Ateji for 気違い in on readings: キ for 既, チ for 知, and ガイ for 外 with the colloquial vowel fusion ai → ē (がい → げぇ) that the reading キチゲェ shows.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-005",
+      "spelling": "水蛭子",
+      "reading": "ひるこ",
+      "segments": [["水蛭","ひる"],["子","こ"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word ひる‐こ with the spelling 水蛭子, and こ is the kun reading of 子; 水蛭 takes ひる.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/蛭子"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/蛭子#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-006",
+      "spelling": "稚海藻",
+      "reading": "わかめ",
+      "segments": [["稚","わか"],["海藻","め"]],
+      "reason": "Daijisen heads the word わか‐め and writes it ▽稚海＝藻, marking わか as a reading of 稚 (a listed name reading) and 海藻 as a jukujikun for め.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/若布"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-007",
+      "spelling": "食指",
+      "reading": "ひとさしゆび",
+      "segments": [["食","ひとさし"],["指","ゆび"]],
+      "reason": "Nihon Kokugo Daijiten heads the word ひとさし‐ゆび with the spellings 人差指・食指, and ゆび is the kun reading of 指; 食 takes ひとさし.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/人差し指"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-008",
+      "spelling": "頂戴",
+      "reading": "ちょーだい",
+      "segments": [["頂","ちょー"],["戴","だい"]],
+      "reason": "On readings チョウ and タイ: チョウ with its long vowel written ー, and タイ with rendaku, as in Wiktionary's table for ちょうだい.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/頂戴#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-009",
+      "spelling": "馬鹿々々",
+      "reading": "ばかばか",
+      "segments": [["馬","ば"],["鹿","か"],["々","ば"],["々","か"]],
+      "reason": "Wiktionary's reading table for 馬鹿馬鹿しい gives 馬[ば] 鹿[か] 馬[ば] 鹿[か] (バ and か are listed readings); each 々 repeats the character two places before it.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/馬鹿馬鹿しい#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-010",
+      "spelling": "流鏑馬",
+      "reading": "やぶさめ",
+      "segments": [["流鏑","やぶさ"],["馬","め"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word やぶさ‐め, and メ is a listed on reading of 馬; 流鏑 takes やぶさ.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/流鏑馬"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-011",
+      "spelling": "絆創膏",
+      "reading": "バンソーコ",
+      "segments": [["絆","バン"],["創","ソー"],["膏","コ"]],
+      "reason": "Wiktionary's reading table gives 絆[ばん] 創[そう] 膏[こう]; this variant writes そう's long vowel as ー and drops the final vowel of こう.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/絆創膏#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-012",
+      "spelling": "可愛",
+      "reading": "かわー",
+      "segments": [["可","か"],["愛","わー"]],
+      "reason": "Wiktionary's reading table for 可愛い gives 可[か] 愛[わい] (カ is the on reading of 可); in this drawled variant 愛's わい becomes わー, its い replaced by a lengthened vowel.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/可愛い#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-013",
+      "spelling": "天照皇大神",
+      "reading": "あまてらすおおみかみ",
+      "segments": [["天","あま"],["照","てらす"],["皇大神","おおみかみ"]],
+      "reason": "Wiktionary's reading table for 天照大神 assigns あま to 天 and てらす to 照 (both listed kun readings), and Daijisen heads the name あまてらす‐おおみかみ; 皇大神 keeps おおみかみ, whose み (御) is unwritten.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/天照大神#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/天照大神"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-014",
+      "spelling": "棒振",
+      "reading": "ボーフラ",
+      "segments": [["棒","ボー"],["振","フラ"]],
+      "reason": "Daijisen heads the word ぼう‐ふら and writes it 棒▽振, and ボウ is the on reading of 棒 (its long vowel written ー here); 振 takes ふら, shifted from ふり.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/孑孒"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-015",
+      "spelling": "甘苔",
+      "reading": "あまのり",
+      "segments": [["甘","あま"],["苔","のり"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word あま‐のり (written 甘海苔), and あま is the listed kun stem of 甘; 苔 takes のり.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/甘海苔"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-016",
+      "spelling": "馬鍬",
+      "reading": "まんが",
+      "segments": [["馬","まん"],["鍬","が"]],
+      "reason": "Wiktionary's reading table gives 馬[まん] 鍬[が], and Daijisen heads the word まん‐が, writing it ▽馬×鍬.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/馬鍬#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/馬鍬"}
+      ]
+    },
+    {
+      "id": "SG-017",
+      "spelling": "虱目魚",
+      "reading": "さばひい",
+      "segments": [["虱","さ"],["目","ば"],["魚","ひい"]],
+      "reason": "Wiktionary gives the word as borrowed from Hokkien 虱目魚 sat-ba̍k-hî, one syllable per character: sat → さ, ba̍k → ば, hî → ひい.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/虱目魚#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-018",
+      "spelling": "一昨昨年",
+      "reading": "さきおととし",
+      "segments": [["一昨昨","さきおと"],["年","とし"]],
+      "reason": "Daijisen heads the word さき‐おととし and おととし as おと‐とし, and Wiktionary's reading table for 一昨年 gives 一昨[おと] 年[とし]; とし is the kun reading of 年.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨昨年"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨年"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/一昨年#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-019",
+      "spelling": "千慮一得",
+      "reading": "せんりょのいっとく",
+      "segments": [["千","せん"],["慮一","りょのいっ"],["得","とく"]],
+      "reason": "On readings セン, リョ, イチ (geminated to いっ) and トク; the unwritten particle の between 慮 and 一 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/千慮の一得"}
+      ]
+    },
+    {
+      "id": "SG-020",
+      "spelling": "黄蜀葵",
+      "reading": "とろろあおい",
+      "segments": [["黄蜀","とろろ"],["葵","あおい"]],
+      "reason": "Wiktionary's reading table gives 黄蜀[とろろ] 葵[あおい], and Daijisen heads the word とろろ‐あおい; あおい is the kun reading of 葵.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/黄蜀葵#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/黄蜀葵"}
+      ]
+    },
+    {
+      "id": "SG-021",
+      "spelling": "三重塔",
+      "reading": "さんじゅうのとう",
+      "segments": [["三","さん"],["重塔","じゅうのとう"]],
+      "reason": "On readings サン, ジュウ and トウ; the unwritten particle の between 重 and 塔 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-022",
+      "spelling": "太政大臣",
+      "reading": "おおまつりごとのおおまえつぎみ",
+      "segments": [["太","おお"],["政大臣","まつりごとのおおまえつぎみ"]],
+      "reason": "Wiktionary's reading table gives 太[おお] 政[まつりごとの] 大臣[おおまえつぎみ]; the unwritten particle の keeps 政 and 大臣 together, and 大臣 is undivided there.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/太政大臣#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-023",
+      "spelling": "叩頭虫",
+      "reading": "ぬかずきむし",
+      "segments": [["叩頭","ぬかずき"],["虫","むし"]],
+      "reason": "Daijisen heads the word ぬかずき‐むし and writes it 叩＝頭虫, and むし is the kun reading of 虫; 叩頭 takes ぬかずき.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/叩頭虫"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-024",
+      "spelling": "天社蛾",
+      "reading": "しゃちほこが",
+      "segments": [["天社","しゃちほこ"],["蛾","が"]],
+      "reason": "Daijisen heads the word しゃちほこ‐が and writes it 天＝社×蛾, and ガ is a listed on reading of 蛾; 天社 takes しゃちほこ.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/鯱蛾"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-025",
+      "spelling": "大胡麻斑蝶",
+      "reading": "おおごまだら",
+      "segments": [["大","おお"],["胡","ご"],["麻","ま"],["斑蝶","だら"]],
+      "reason": "おお, ゴ and マ are listed readings of 大, 胡 and 麻, and Daijisen heads the related ごまだら‐ちょう, written 胡麻▽斑蝶, giving 斑 the reading だら; 蝶 is unread here and stays with 斑.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/胡麻斑蝶"}
+      ]
+    },
+    {
+      "id": "SG-026",
+      "spelling": "和布蕪",
+      "reading": "めかぶ",
+      "segments": [["和布","め"],["蕪","かぶ"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word め‐かぶ, and かぶ is a kun reading of 蕪; 和布 takes め.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/和布蕪"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-027",
+      "spelling": "叢雲剣",
+      "reading": "むらくものつるぎ",
+      "segments": [["叢","むら"],["雲剣","くものつるぎ"]],
+      "reason": "Kun readings むら, くも and つるぎ; the unwritten particle の between 雲 and 剣 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-028",
+      "spelling": "大八洲国",
+      "reading": "おおやしまのくに",
+      "segments": [["大","おお"],["八","や"],["洲国","しまのくに"]],
+      "reason": "Wiktionary's reading table for 大八洲 gives 大[おお] 八[や] 洲[しま], and くに is the kun reading of 国; the unwritten particle の keeps 洲 and 国 together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/大八洲#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-029",
+      "spelling": "八幡神",
+      "reading": "やわたのかみ",
+      "segments": [["八","や"],["幡神","わたのかみ"]],
+      "reason": "Listed readings や (八), わた (幡, a name reading) and かみ (神); the unwritten particle の between 幡 and 神 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-030",
+      "spelling": "治部省",
+      "reading": "おさむるつかさ",
+      "segments": [["治部","おさむる"],["省","つかさ"]],
+      "reason": "Wiktionary's reading table gives 治部[おさむる] 省[つかさ], and Daijisen heads the word おさむる‐つかさ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/治部省#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/治部省"}
+      ]
+    },
+    {
+      "id": "SG-031",
+      "spelling": "御津柏",
+      "reading": "みづのかしわ",
+      "segments": [["御","み"],["津柏","づのかしわ"]],
+      "reason": "Kun readings み (御), つ (津, voiced to づ) and かしわ (柏); the unwritten の between 津 and 柏 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-032",
+      "spelling": "直備神",
+      "reading": "なおびのかみ",
+      "segments": [["直","なお"],["備神","びのかみ"]],
+      "reason": "Listed readings なお (直), ビ (備) and かみ (神); the unwritten particle の between 備 and 神 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-033",
+      "spelling": "唾吐",
+      "reading": "つば",
+      "segments": [["唾","つ"],["吐","ば"]],
+      "reason": "Nihon Kokugo Daijiten heads the verb つ‐は・く (唾吐), and Wiktionary derives つばく from 唾 つ + 吐く はく; は.く is the kun reading of 吐, voiced here by rendaku.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/唾吐く"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/唾#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-034",
+      "spelling": "烏滸言",
+      "reading": "ちげん",
+      "segments": [["烏滸","ち"],["言","げん"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word ち‐げん (written 痴言), and ゲン is the on reading of 言; 烏滸 takes ち.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/痴言"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-035",
+      "spelling": "天一神",
+      "reading": "なかがみ",
+      "segments": [["天一","なか"],["神","がみ"]],
+      "reason": "Daijisen heads the word なか‐がみ with the spellings 天一神 and 中神, and がみ is the kun reading かみ of 神 with rendaku; 天一 takes なか.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/天一神"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-036",
+      "spelling": "伊奘再尊",
+      "reading": "いざなみのみこと",
+      "segments": [["伊","い"],["奘","ざ"],["再尊","なみのみこと"]],
+      "reason": "Wiktionary's reading table for 伊弉冉尊 assigns い to 伊 (its on reading) and ざ to 弉, of which 奘 is a variant form; Daijisen heads the name いざなみ‐の‐みこと, and the unwritten particle の keeps 再 and 尊 together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/伊弉冉尊#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/伊弉冉尊"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-037",
+      "spelling": "迦具土神",
+      "reading": "かぐつちのかみ",
+      "segments": [["迦","か"],["具","ぐ"],["土神","つちのかみ"]],
+      "reason": "Wiktionary's reading table for 迦具土 gives 迦[か] 具[ぐ] 土[つち], and かみ is the kun reading of 神; the unwritten particle の keeps 土 and 神 together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/迦具土#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-038",
+      "spelling": "火之夜芸速男神",
+      "reading": "ひのやぎはやおのかみ",
+      "segments": [["火","ひ"],["之","の"],["夜芸","やぎ"],["速","はや"],["男神","おのかみ"]],
+      "reason": "Listed readings ひ (火), の (之, the written particle), はや (速), お (男) and かみ (神); the unwritten particle の keeps 男 and 神 together, and 夜芸 stays grouped because ぎ is not a listed reading of 芸.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-039",
+      "spelling": "大国主神",
+      "reading": "おおくにぬしのかみ",
+      "segments": [["大","おお"],["国","くに"],["主神","ぬしのかみ"]],
+      "reason": "Wiktionary's reading table for 大国主 gives 大[おお] 国[くに] 主[ぬし], and かみ is the kun reading of 神; the unwritten particle の keeps 主 and 神 together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/大国主#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-040",
+      "spelling": "大汝神",
+      "reading": "おおなむちのかみ",
+      "segments": [["大","おお"],["汝神","なむちのかみ"]],
+      "reason": "Kun readings おお (大), なむち (汝) and かみ (神), and Daijisen heads the name おおなむち‐の‐かみ; the unwritten particle の keeps 汝 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大己貴神"}
+      ]
+    },
+    {
+      "id": "SG-041",
+      "spelling": "大穴牟遅命",
+      "reading": "おおあなむちのみこと",
+      "segments": [["大","おお"],["穴","あな"],["牟","む"],["遅命","ちのみこと"]],
+      "reason": "Listed readings おお (大), あな (穴), ム (牟) and チ (遅), as in Daijisen's おおあなむち‐の‐かみ; the unwritten particle の keeps 遅 and 命 (みこと) together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大己貴神"}
+      ]
+    },
+    {
+      "id": "SG-042",
+      "spelling": "香鳳蝶",
+      "reading": "こうあげは",
+      "segments": [["香","こう"],["鳳蝶","あげは"]],
+      "reason": "Daijisen heads the word じゃこう‐あげは, and コウ is the on reading of 香 (麝香 じゃこう); 鳳蝶 takes あげは.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/麝香揚羽"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-043",
+      "spelling": "霹靂神",
+      "reading": "はたたがみ",
+      "segments": [["霹靂","はたた"],["神","がみ"]],
+      "reason": "Daijisen heads the word はたた‐がみ and writes it 霹＝靂神, and がみ is the kun reading かみ of 神 with rendaku; 霹靂 takes はたた.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/霹靂神"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-044",
+      "spelling": "薯蕷粥",
+      "reading": "いもがゆ",
+      "segments": [["薯蕷","いも"],["粥","がゆ"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word いも‐がゆ, and がゆ is the kun reading かゆ of 粥 with rendaku; 薯蕷 takes いも (the kun reading of each of its characters).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/芋粥"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-045",
+      "spelling": "火明命",
+      "reading": "ほあかりのみこと",
+      "segments": [["火","ほ"],["明命","あかりのみこと"]],
+      "reason": "Kun readings ほ (火) and あかり (明); the unwritten particle の keeps 明 and 命 (みこと) together, as in Daijisen's ほのあかり‐の‐みこと.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/火明命"}
+      ]
+    },
+    {
+      "id": "SG-046",
+      "spelling": "漢倭奴国王印",
+      "reading": "かんのわのなのこくおういん",
+      "segments": [["漢倭奴国","かんのわのなのこく"],["王","おう"],["印","いん"]],
+      "reason": "On readings オウ and イン for 王 and 印 (and カン, ワ, コク in the rest); the unwritten particles の link 漢, 倭, 奴 and 国, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-047",
+      "spelling": "漢倭奴国王印",
+      "reading": "かんのわのなのこくおうのいん",
+      "segments": [["漢倭奴国","かんのわのなのこく"],["王印","おうのいん"]],
+      "reason": "On readings throughout (カン, ワ, コク, オウ, イン); unwritten particles の link 漢, 倭, 奴 and 国, and another links 王 and 印, so only the boundary between 国 and 王 is free.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-048",
+      "spelling": "縞曹以",
+      "reading": "しまぞい",
+      "segments": [["縞","しま"],["曹以","ぞい"]],
+      "reason": "Kotobank heads the word しま‐ぞい, and しま is the kun reading of 縞. 曹以 (そい, here with rendaku) is probably ateji in ソウ and イ, but no source divides it, so it stays together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/縞曹以"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-049",
+      "spelling": "淡色木間蝶",
+      "reading": "うすいろこのまちょう",
+      "segments": [["淡色","うすいろ"],["木間","このま"],["蝶","ちょう"]],
+      "reason": "Listed readings こ (木), ま (間) and チョウ (蝶), with the unwritten particle の keeping 木 and 間 together; 淡色 keeps うすいろ because うす is not a listed reading of 淡 (いろ is the kun reading of 色).",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-050",
+      "spelling": "虎眼石",
+      "reading": "とらのめいし",
+      "segments": [["虎眼","とらのめ"],["石","いし"]],
+      "reason": "Nihon Kokugo Daijiten heads the word とらのめ‐いし, and いし is the kun reading of 石; the unwritten particle の keeps 虎 (とら) and 眼 (め) together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/虎眼石"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-051",
+      "spelling": "沖縄",
+      "reading": "ウチナー",
+      "segments": [["沖","ウチ"],["縄","ナー"]],
+      "reason": "Wiktionary's etymology for 沖縄 gives the Okinawan cognate with ruby over each character, 沖(うち)縄(なー).",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/沖縄#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-052",
+      "spelling": "大宰帥",
+      "reading": "だざいのそつ",
+      "segments": [["大","だ"],["宰帥","ざいのそつ"]],
+      "reason": "On readings ダイ (shortened to だ, as in 大宰府 だざいふ) and サイ (with rendaku); the unwritten particle の keeps 宰 and 帥 together, as in Daijisen's だざい‐の‐そち.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大宰帥"}
+      ]
+    },
+    {
+      "id": "SG-053",
+      "spelling": "肥後守",
+      "reading": "ひごのかみ",
+      "segments": [["肥","ひ"],["後守","ごのかみ"]],
+      "reason": "Wiktionary's reading table gives 肥[ひ] 後[ごの] 守[かみ]; the particle の belongs to neither neighbour, so 後 and 守 stay together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/肥後守#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-054",
+      "spelling": "薬念",
+      "reading": "ヤンニョム",
+      "segments": [["薬","ヤン"],["念","ニョム"]],
+      "reason": "Korean 양념 yangnyeom, written 藥念: KANJIDIC2 lists the Korean readings yag (薬) and nyeom (念), and yag becomes yang before n by Korean nasal assimilation.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-055",
+      "spelling": "須佐之男命",
+      "reading": "すさのおのみこと",
+      "segments": [["須","す"],["佐","さ"],["之","の"],["男命","おのみこと"]],
+      "reason": "Wiktionary's reading table for 須佐之男 gives 須[す] 佐[さ] 之[の] 男[お]; the unwritten particle の keeps 男 and 命 (みこと) together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/須佐之男#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-056",
+      "spelling": "五瀬命",
+      "reading": "いつせのみこと",
+      "segments": [["五","いつ"],["瀬命","せのみこと"]],
+      "reason": "Kun readings いつ (五) and せ (瀬), and Kotobank heads the name いつせ‐の‐みこと; the unwritten particle の keeps 瀬 and 命 (みこと) together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/五瀬命"}
+      ]
+    },
+    {
+      "id": "SG-057",
+      "spelling": "四国艦隊下関砲撃事件",
+      "reading": "しこくかんたいしものせきほうげきじけん",
+      "segments": [["四","し"],["国","こく"],["艦","かん"],["隊","たい"],["下関","しものせき"],["砲","ほう"],["撃","げき"],["事","じ"],["件","けん"]],
+      "reason": "On readings throughout, except 下関 しものせき, which stays together around its unwritten particle の.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-058",
+      "spelling": "環頭太刀",
+      "reading": "かんとうのたち",
+      "segments": [["環","かん"],["頭太","とうのた"],["刀","ち"]],
+      "reason": "Listed readings カン (環), トウ (頭), タ (太) and ち (刀, a name reading, as in 太[た] 刀[ち]); the unwritten particle の between 頭 and 太 keeps those two together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-059",
+      "spelling": "呂宋",
+      "reading": "ルソン",
+      "segments": [["呂","ル"],["宋","ソン"]],
+      "reason": "Wiktionary gives 呂宋 as an orthographic borrowing from Chinese, from Hokkien Lū-sòng, and KANJIDIC2 lists the Mandarin readings lǚ and sòng: one syllable per character.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/呂宋#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-060",
+      "spelling": "和布蕪",
+      "reading": "めかぶら",
+      "segments": [["和布","め"],["蕪","かぶら"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word め‐かぶら, and かぶら is a kun reading of 蕪; 和布 takes め.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/和布蕪"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-061",
+      "spelling": "飛縁魔",
+      "reading": "ひのえんま",
+      "segments": [["飛縁","ひのえん"],["魔","ま"]],
+      "reason": "On readings ヒ, エン and マ; the の is unwritten between 飛 and 縁, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-062",
+      "spelling": "御義父",
+      "reading": "おとう",
+      "segments": [["御","お"],["義父","とう"]],
+      "reason": "Daijisen heads お父さん as お‐とう‐さん (written 御父さん), and お is the kun reading of 御; 義父 stands for 父 and takes とう.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/御父さん"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-063",
+      "spelling": "河貝子",
+      "reading": "かわにな",
+      "segments": [["河","かわ"],["貝子","にな"]],
+      "reason": "Daijisen heads the word かわ‐にな and writes it 川蜷／河貝＝子, and かわ is the kun reading of 河; 貝子 takes にな.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/川蜷"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-064",
+      "spelling": "稚児車",
+      "reading": "ちんぐるま",
+      "segments": [["稚児","ちん"],["車","ぐるま"]],
+      "reason": "Daijisen heads the word ちん‐ぐるま, and ぐるま is the kun reading くるま of 車 with rendaku; 稚児 takes ちん (from ちご).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/稚児車"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-065",
+      "spelling": "不分仕",
+      "reading": "わからずじ",
+      "segments": [["不分","わからず"],["仕","じ"]],
+      "reason": "Wiktionary's reading table for the suffix 仕舞い gives 仕[じ] 舞[ま]い (ジ is a listed on reading of 仕); 不分 writes わからず in kanbun order and stays together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/仕舞い#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-066",
+      "spelling": "御湯殿上日記",
+      "reading": "おゆどののうえのにっき",
+      "segments": [["御","お"],["湯","ゆ"],["殿上日","どののうえのにっ"],["記","き"]],
+      "reason": "Listed readings お (御), ゆ (湯), どの (殿), うえ (上), ニチ geminated to にっ (日) and キ (記); unwritten particles の link 殿, 上 and 日, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-067",
+      "spelling": "陸国風土記",
+      "reading": "ちのくにふどき",
+      "segments": [["陸国","ちのくに"],["風","ふ"],["土","ど"],["記","き"]],
+      "reason": "On readings フ, ド and キ for 風土記, and くに is the kun reading of 国; the unwritten particle の keeps 陸 (the ち of ひたち) and 国 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-068",
+      "spelling": "天御中主神",
+      "reading": "あめのみなかぬしのかみ",
+      "segments": [["天御","あめのみ"],["中","なか"],["主神","ぬしのかみ"]],
+      "reason": "Kun readings あめ (天), み (御), なか (中), ぬし (主) and かみ (神); unwritten particles の keep 天 with 御 and 主 with 神.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/天御中主神"}
+      ]
+    },
+    {
+      "id": "SG-069",
+      "spelling": "天之御中主神",
+      "reading": "あまのみなかぬしのかみ",
+      "segments": [["天","あま"],["之","の"],["御","み"],["中","なか"],["主神","ぬしのかみ"]],
+      "reason": "Kun readings あま (天), の (之, the written particle), み (御), なか (中), ぬし (主) and かみ (神); the unwritten particle の keeps 主 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/天御中主神"}
+      ]
+    },
+    {
+      "id": "SG-070",
+      "spelling": "豊後国風土記",
+      "reading": "ぶんごのくにふどき",
+      "segments": [["豊","ぶん"],["後国","ごのくに"],["風","ふ"],["土","ど"],["記","き"]],
+      "reason": "Listed readings ぶん (豊, as in 豊後 ぶんご), ゴ (後), くに (国), フ (風), ド (土) and キ (記); the unwritten particle の keeps 後 and 国 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-071",
+      "spelling": "天児屋命",
+      "reading": "あめのこやねのみこと",
+      "segments": [["天児","あめのこ"],["屋命","やねのみこと"]],
+      "reason": "Kun readings あめ (天), こ (児) and や (屋), and Daijisen heads the name あまのこやね‐の‐みこと (also written 天児屋根命); unwritten particles の keep 天 with 児 and 屋 with 命, the ね (根) being unwritten.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/天児屋命"}
+      ]
+    },
+    {
+      "id": "SG-072",
+      "spelling": "木瓜",
+      "reading": "ぼけ",
+      "segments": [["木","ぼ"],["瓜","け"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word ぼ‐け (a change of ぼっか or もけ); け is the on reading ケ of 瓜, so 木 takes ぼ, its ボク cut short.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/木瓜"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-073",
+      "spelling": "宇都宮",
+      "reading": "うつのみや",
+      "segments": [["宇","う"],["都宮","つのみや"]],
+      "reason": "う and つ are on readings of 宇 and 都, and みや is the kun reading of 宮. The unwritten の keeps 都 and 宮 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-074",
+      "spelling": "兵衛",
+      "reading": "べえ",
+      "segments": [["兵","べ"],["衛","え"]],
+      "reason": "Wiktionary's reading table for 飲兵衛 gives 兵=べ and 衛=え; え is an on reading of 衛.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/飲兵衛#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-075",
+      "spelling": "直毘神",
+      "reading": "なおびのかみ",
+      "segments": [["直","なお"],["毘神","びのかみ"]],
+      "reason": "なお is the kun stem of 直 and び an on reading of 毘; かみ is the kun reading of 神. The unwritten の keeps 毘 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-076",
+      "spelling": "零余子",
+      "reading": "ぬかご",
+      "segments": [["零余","ぬか"],["子","ご"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word ぬか‐ご; ご is the kun reading こ of 子 with rendaku, so 零余 takes ぬか.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/零余子"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-077",
+      "spelling": "鰥夫",
+      "reading": "やもお",
+      "segments": [["鰥","やも"],["夫","お"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word やも‐お (やも‐を, also written 寡男); お is listed for 夫 in KANJIDIC2 as a name reading, so 鰥 takes やも.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/鰥夫"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-078",
+      "spelling": "牛蒡",
+      "reading": "ごんぼ",
+      "segments": [["牛","ごん"],["蒡","ぼ"]],
+      "reason": "Nihon Kokugo Daijiten heads this ごん‐ぼ, beside ごん‐ぼう where ぼう is the on reading of 蒡; here that ぼう is shortened to ぼ.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/牛蒡"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-079",
+      "spelling": "香港",
+      "reading": "ホングコング",
+      "segments": [["香","ホング"],["港","コング"]],
+      "reason": "Wiktionary derives the reading from English Hong Kong, from Cantonese 香港 hoeng1 gong2: Hong is 香 and Kong is 港.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/香港#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-080",
+      "spelling": "一〇日",
+      "reading": "とおか",
+      "segments": [["一〇","とお"],["日","か"]],
+      "reason": "Wiktionary's reading table for 十日 gives 十=とお and 日=か; か is a kun reading of 日, and 一〇 writes 十.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/十日#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-081",
+      "spelling": "上回",
+      "reading": "うわま",
+      "segments": [["上","うわ"],["回","ま"]],
+      "reason": "Wiktionary's reading table for 上回る gives 上=うわ and 回=まわ; うわ is a kun reading of 上. This record is the search-only reading うわまる, which drops わ, so 回 keeps ま.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/上回る#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-082",
+      "spelling": "巨嘴鳥",
+      "reading": "おおはし",
+      "segments": [["巨","おお"],["嘴鳥","はし"]],
+      "reason": "Daijisen heads おお‐はし for 大嘴／巨嘴鳥; はし is a kun reading of 嘴, so 巨 takes おお (also a KANJIDIC2 name reading). 鳥 is unread and stays with 嘴.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大嘴"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-083",
+      "spelling": "那落迦",
+      "reading": "ならく",
+      "segments": [["那","な"],["落迦","らく"]],
+      "reason": "Transliteration of Sanskrit naraka: な is the on reading of 那, and Wiktionary's table for 奈落 likewise divides な and らく. 迦 has no share of its own here and stays with 落.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/奈落#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-084",
+      "spelling": "内大臣",
+      "reading": "うちのおおおみ",
+      "segments": [["内大","うちのおお"],["臣","おみ"]],
+      "reason": "Wiktionary analyses it as 内 + の + 大臣 (おおおみ), and its reading table for 大臣 gives 大=おお and 臣=おみ. The unwritten の keeps 内 and 大 together.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/内大臣#Japanese"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/大臣#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-085",
+      "spelling": "壱百萬",
+      "reading": "ひゃくまん",
+      "segments": [["壱百","ひゃく"],["萬","まん"]],
+      "reason": "ひゃく and まん are the on readings of 百 and 萬; 壱 is unread and stays with 百.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-086",
+      "spelling": "僵屍",
+      "reading": "キョンシー",
+      "segments": [["僵","キョン"],["屍","シー"]],
+      "reason": "Wiktionary derives キョンシー from Cantonese 殭屍／僵尸 goeng1 si1, one syllable per character (屍 is also shi1 in KANJIDIC2's pinyin).",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/キョンシー#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-087",
+      "spelling": "天照",
+      "reading": "あまてらす",
+      "segments": [["天","あま"],["照","てらす"]],
+      "reason": "Wiktionary's reading table gives 天=あま and 照=てらす; both are kun readings.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/天照#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-088",
+      "spelling": "歌舞人",
+      "reading": "うたまいのひと",
+      "segments": [["歌","うた"],["舞人","まいのひと"]],
+      "reason": "うた and まい are kun readings of 歌 and 舞, and ひと of 人. The unwritten の keeps 舞 and 人 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-089",
+      "spelling": "右衛門",
+      "reading": "えもん",
+      "segments": [["右衛","え"],["門","もん"]],
+      "reason": "Wiktionary's reading table gives 右衛=え and 門=もん (uemon collapsed to emon).",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/右衛門#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-090",
+      "spelling": "紙纏頭",
+      "reading": "かみばな",
+      "segments": [["紙","かみ"],["纏頭","ばな"]],
+      "reason": "Daijisen heads かみ‐ばな【紙花／紙纏＝頭】; かみ is the kun reading of 紙, so the jukujikun 纏頭 takes ばな.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/紙花"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-091",
+      "spelling": "部保留",
+      "reading": "ぶりゅうほ",
+      "segments": [["部","ぶ"],["保留","りゅうほ"]],
+      "reason": "ぶ is the on reading of 部. This spelling carries the reading of 内部留保, so 保留 sits over りゅうほ in reversed order and stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-092",
+      "spelling": "黄色雀蛾",
+      "reading": "きいろすずめ",
+      "segments": [["黄","き"],["色","いろ"],["雀蛾","すずめ"]],
+      "reason": "き, いろ and すずめ are kun readings of 黄, 色 and 雀; 蛾 is unread and stays with 雀.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-093",
+      "spelling": "社会不安性障害",
+      "reading": "しゃかいふあんしょうがい",
+      "segments": [["社","しゃ"],["会","かい"],["不","ふ"],["安","あん"],["性障","しょう"],["害","がい"]],
+      "reason": "On readings throughout. The reading has a single しょう for 性 and 障, either of which reads しょう, so those two stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-094",
+      "spelling": "一昨々年",
+      "reading": "さおととし",
+      "segments": [["一昨々","さおと"],["年","とし"]],
+      "reason": "Daijisen heads the word さ‐おととし, and Wiktionary's reading table for 一昨年 gives 一昨=おと and 年=とし; とし is the kun reading of 年.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨昨年"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/一昨年#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-095",
+      "spelling": "一昨昨年",
+      "reading": "さいととし",
+      "segments": [["一昨昨","さいと"],["年","とし"]],
+      "reason": "A contracted form of さきおととし. Wiktionary's reading table for 一昨年 gives 一昨=おと and 年=とし, and とし is the kun reading of 年.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/一昨年#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-096",
+      "spelling": "鵜松明",
+      "reading": "うだい",
+      "segments": [["鵜","う"],["松明","だい"]],
+      "reason": "う is the kun reading of 鵜, and Daijisen explains the name from the bark's use as torches (松明) for cormorant fishing (鵜飼い), so 松明 takes だい.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/鵜松明樺"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-097",
+      "spelling": "平将門の乱",
+      "reading": "たいらのまさかどのらん",
+      "segments": [["平将","たいらのまさ"],["門","かど"],"の",["乱","らん"]],
+      "reason": "まさ and かど are kun readings of 将 and 門, and らん the on reading of 乱. The unwritten の after たいら keeps 平 and 将 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-098",
+      "spelling": "太政大臣",
+      "reading": "おおきおとど",
+      "segments": [["太政","おおき"],["大臣","おとど"]],
+      "reason": "Daijisen heads the word おおき‐おとど and lists おとど as a reading of 大臣 (おとど【大殿／大臣】), so 太政 takes おおき; Wiktionary's table for 太政官 likewise reads 太 as おおき. Neither side is a KANJIDIC2 reading of a single character.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/太政大臣"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大殿"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/太政官#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-099",
+      "spelling": "太政大臣",
+      "reading": "おおいまつりごとのおおまえつぎみ",
+      "segments": [["太","おおい"],["政大臣","まつりごとのおおまえつぎみ"]],
+      "reason": "Wiktionary's reading table for 太政官 reads 太 as おおい and 政 as まつりごと, the kun reading of 政. The unwritten の keeps 政 and 大臣 together.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/太政官#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/太政大臣"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-100",
+      "spelling": "原手長黄金虫",
+      "reading": "ばるてながこがね",
+      "segments": [["原","ばる"],["手","て"],["長","なが"],["黄","こ"],["金虫","がね"]],
+      "reason": "Wiktionary's reading tables give 原=ばる in 山原 and 黄=こ, 金=がね in 黄金; て and なが are kun readings of 手 and 長. 虫 is unread and stays with 金.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/山原#Japanese"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/黄金#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-101",
+      "spelling": "叩頭虫",
+      "reading": "ぬかつきむし",
+      "segments": [["叩頭","ぬかつき"],["虫","むし"]],
+      "reason": "Daijisen heads the word ぬかずき‐むし (also ぬかつきむし); むし is the kun reading of 虫, so the jukujikun 叩頭 takes ぬかつき.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/叩頭虫"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-102",
+      "spelling": "黒揚羽蝶",
+      "reading": "くろあげは",
+      "segments": [["黒","くろ"],["揚","あげ"],["羽蝶","は"]],
+      "reason": "Wiktionary's reading table for 揚羽蝶 gives 揚=あげ and 羽=は; くろ is the kun reading of 黒. 蝶 is unread and stays with 羽.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/揚羽蝶#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-103",
+      "spelling": "五右衛門",
+      "reading": "ごえもん",
+      "segments": [["五","ご"],["右衛","え"],["門","もん"]],
+      "reason": "Wiktionary's reading table gives 五=ご, 右衛=え and 門=もん.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/五右衛門#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-104",
+      "spelling": "気宇",
+      "reading": "きゅう",
+      "segments": [["気","きゅ"],["宇","う"]],
+      "reason": "Ateji for キュウセン: き and う are the on readings of 気 and 宇, fused きう → きゅう, so 宇 keeps ゅう.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-105",
+      "spelling": "八坂瓊",
+      "reading": "やさかにの",
+      "segments": [["八","や"],["坂瓊","さかにの"]],
+      "reason": "や and さか are kun readings of 八 and 坂. に is not a listed reading of 瓊 and an unwritten の follows it, so 瓊 stays with 坂.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-106",
+      "spelling": "大八島国",
+      "reading": "おおやしまのくに",
+      "segments": [["大","おお"],["八","や"],["島国","しまのくに"]],
+      "reason": "おお and や are kun readings of 大 and 八 (Wiktionary's table for 大八洲 divides the same way). The unwritten の keeps 島 and 国 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/大八洲#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-107",
+      "spelling": "国常立尊",
+      "reading": "くにのとこたちのみこと",
+      "segments": [["国常","くにのとこ"],["立尊","たちのみこと"]],
+      "reason": "とこ is a kun reading of 常 and たち the kun stem of 立, so the reading divides between them. Unwritten の keeps 国 with 常 and 立 with 尊.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-108",
+      "spelling": "血条苔",
+      "reading": "ちすじのり",
+      "segments": [["血","ち"],["条苔","すじのり"]],
+      "reason": "ち and すじ are kun readings of 血 and 条. のり is not a listed reading of 苔, so it stays with 条.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-109",
+      "spelling": "御津柏",
+      "reading": "みつのかしわ",
+      "segments": [["御","み"],["津柏","つのかしわ"]],
+      "reason": "み and つ are kun readings of 御 and 津, and かしわ of 柏. The unwritten の keeps 津 and 柏 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-110",
+      "spelling": "大元帥明王",
+      "reading": "たいげんみょうおう",
+      "segments": [["大","たい"],["元帥","げん"],["明","みょう"],["王","おう"]],
+      "reason": "Wiktionary's reading table gives 元帥=げん (帥 unread), 明=みょう and 王=おう; たい is an on reading of 大.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/大元帥明王#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-111",
+      "spelling": "打目戍",
+      "reading": "うちまも",
+      "segments": [["打","うち"],["目戍","まも"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the verb うち‐まも・る, the latter noting うち is a prefix; うち is the kun reading of 打, so 目戍 takes まも.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/打守る"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-112",
+      "spelling": "大和鞍",
+      "reading": "わぐら",
+      "segments": [["大和","わ"],["鞍","ぐら"]],
+      "reason": "Daijisen heads わ‐ぐら【和鞍】 as another name of 大和鞍; くら is the kun reading of 鞍, voiced by rendaku, and わ the on reading of 和. 大 is unread and stays with 和.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/和鞍"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-113",
+      "spelling": "火結神",
+      "reading": "ほむすびのかみ",
+      "segments": [["火","ほ"],["結神","むすびのかみ"]],
+      "reason": "ほ is a kun reading of 火 and むすび the kun stem of 結. The unwritten の keeps 結 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-114",
+      "spelling": "大己貴神",
+      "reading": "おおなむちのかみ",
+      "segments": [["大","おお"],["己","な"],["貴神","むちのかみ"]],
+      "reason": "おお and な are kun readings of 大 and 己. むち is not a listed reading of 貴 and an unwritten の follows it, so 貴 stays with 神.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-115",
+      "spelling": "大己貴神",
+      "reading": "おおあなむちのかみ",
+      "segments": [["大","おお"],["己貴神","あなむちのかみ"]],
+      "reason": "おお is the kun reading of 大; Daijisen gives 大穴牟遅神 as the other spelling of the name, which writes the rest 穴牟遅. あな is not a reading of 己, so the rest stays together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大己貴神"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-116",
+      "spelling": "大年神",
+      "reading": "おおとしのかみ",
+      "segments": [["大","おお"],["年神","としのかみ"]],
+      "reason": "おお and とし are kun readings of 大 and 年. The unwritten の keeps 年 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-117",
+      "spelling": "長岡京",
+      "reading": "ながおかのみやこ",
+      "segments": [["長","なが"],["岡京","おかのみやこ"]],
+      "reason": "なが and おか are kun readings of 長 and 岡. The unwritten の keeps 岡 and 京 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-118",
+      "spelling": "霹靂神",
+      "reading": "はたはたがみ",
+      "segments": [["霹靂","はたはた"],["神","がみ"]],
+      "reason": "Nihon Kokugo Daijiten heads the word はたはた‐がみ (Daijisen はたた‐がみ); かみ is the kun reading of 神, voiced by rendaku, so the jukujikun 霹靂 takes はたはた.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/霹靂神"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-119",
+      "spelling": "三毬杖",
+      "reading": "さぎちょう",
+      "segments": [["三","さ"],["毬杖","ぎちょう"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word さ‐ぎちょう and derive it from three 毬杖 (ぎっちょう); さ is listed for 三 in KANJIDIC2 as a name reading.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/左義長"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-120",
+      "spelling": "南三角",
+      "reading": "みなみのさんかく",
+      "segments": [["南三","みなみのさん"],["角","かく"]],
+      "reason": "さん and かく are the on readings of 三 and 角. The unwritten の keeps 南 and 三 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-121",
+      "spelling": "漢委奴國王印",
+      "reading": "かんのわのなのこくおういん",
+      "segments": [["漢委奴國","かんのわのなのこく"],["王","おう"],["印","いん"]],
+      "reason": "こく, おう and いん are the on readings of 國, 王 and 印. Unwritten の after 漢, 委 and 奴 keeps the first four characters together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-122",
+      "spelling": "漢委奴國王印",
+      "reading": "かんのわのなのこくおうのいん",
+      "segments": [["漢委奴國","かんのわのなのこく"],["王印","おうのいん"]],
+      "reason": "こく and おう are the on readings of 國 and 王, so the reading divides between them. Unwritten の keeps the first four characters together, and 王 with 印.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-123",
+      "spelling": "黄枇",
+      "reading": "わんぴ",
+      "segments": [["黄","わん"],["枇","ぴ"]],
+      "reason": "Nihon Kokugo Daijiten heads the word わん‐ぴ【黄皮・黄枇】, a tree of southern China; ぴ matches 枇 (pinyin pi2 in KANJIDIC2, on reading ヒ or ビ), so 黄 takes わん.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/黄皮"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-124",
+      "spelling": "斑曹以",
+      "reading": "むらそい",
+      "segments": [["斑","むら"],["曹","そ"],["以","い"]],
+      "reason": "Daijisen lists むら as a reading of 斑 (むら【斑】). そ is the on reading ソウ of 曹 with its vowel shortened and い the on reading of 以, as in 黒曹以.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/斑"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-125",
+      "spelling": "野田藤",
+      "reading": "のだのふじ",
+      "segments": [["野","の"],["田藤","だのふじ"]],
+      "reason": "の is the kun reading of 野, だ the kun reading た of 田 with rendaku, and ふじ the kun reading of 藤. The unwritten の keeps 田 and 藤 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-126",
+      "spelling": "豆腐花",
+      "reading": "トウファ",
+      "segments": [["豆","トウ"],["腐花","ファ"]],
+      "reason": "Chinese loan: トウ matches 豆 (pinyin dou4, and its on reading) and ファ matches 花 (hua1). 腐 has no clear share and stays with 花.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-127",
+      "spelling": "豆腐花",
+      "reading": "トーファー",
+      "segments": [["豆","トー"],["腐花","ファー"]],
+      "reason": "Chinese loan: トー matches 豆 (pinyin dou4, and its on reading トウ) and ファー matches 花 (hua1). 腐 has no clear share and stays with 花.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-128",
+      "spelling": "蕨手刀",
+      "reading": "わらびでのかたな",
+      "segments": [["蕨","わらび"],["手刀","でのかたな"]],
+      "reason": "わらび is the kun reading of 蕨, で the kun reading て of 手 with rendaku, and かたな the kun reading of 刀. The unwritten の keeps 手 and 刀 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-129",
+      "spelling": "蝦夷上溝桜",
+      "reading": "えぞのうわみずざくら",
+      "segments": [["蝦夷上溝","えぞのうわみず"],["桜","ざくら"]],
+      "reason": "Daijisen heads うわみず‐ざくら【上溝桜】; さくら is the kun reading of 桜, voiced by rendaku. An unwritten の keeps 蝦夷 and 上 together, and みず is not a listed reading of 溝.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/上溝桜"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-130",
+      "spelling": "大宰帥",
+      "reading": "だざいのそち",
+      "segments": [["大","だ"],["宰帥","ざいのそち"]],
+      "reason": "Daijisen heads だ‐ざい【大宰】: ざい is the on reading サイ of 宰 with rendaku, and だ is ダイ of 大 shortened. The unwritten の keeps 宰 and 帥 together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大宰"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大宰帥"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-131",
+      "spelling": "鉤手海月",
+      "reading": "かぎのてくらげ",
+      "segments": [["鉤手","かぎのて"],["海月","くらげ"]],
+      "reason": "かぎ and て are kun readings of 鉤 and 手, with an unwritten の between them, and Daijisen lists くらげ as a reading of 海月 (くらげ【水母／海月】).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/水母"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-132",
+      "spelling": "二盃口",
+      "reading": "リャンペーコー",
+      "segments": [["二盃","リャンペー"],["口","コー"]],
+      "reason": "Mahjong term from Chinese: ペー and コー match 盃 (bei1) and 口 (kou3) in KANJIDIC2's pinyin. リャン is Chinese 両 (liang), not a listed reading of 二, so 二 stays with 盃.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-133",
+      "spelling": "薬念",
+      "reading": "ヤンニョン",
+      "segments": [["薬","ヤン"],["念","ニョン"]],
+      "reason": "Wiktionary derives ヤンニョム from Korean 양념 or 약념; KANJIDIC2's Korean readings are yag for 薬 and nyeom for 念, with yag nasalised to yang before n.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/ヤンニョム#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-134",
+      "spelling": "黒曹以",
+      "reading": "くろそい",
+      "segments": [["黒","くろ"],["曹","そ"],["以","い"]],
+      "reason": "くろ is the kun reading of 黒, そ the on reading ソウ of 曹 with its vowel shortened, and い the on reading of 以.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-135",
+      "spelling": "素戔嗚尊",
+      "reading": "すさのおのみこと",
+      "segments": [["素","す"],["戔嗚尊","さのおのみこと"]],
+      "reason": "す is an on reading of 素; Wiktionary's table for the other spelling 須佐之男 gives 須=す, 佐=さ, 之=の, 男=お. The の sounds are unwritten here, so the rest stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/須佐之男#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-136",
+      "spelling": "幸運夫",
+      "reading": "こんぶ",
+      "segments": [["幸運","こん"],["夫","ぶ"]],
+      "reason": "Auspicious ateji for 昆布: ぶ is an on reading of 夫. こう and うん of 幸運 are fused into こん, so those two stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-137",
+      "spelling": "山猟師",
+      "reading": "やまさつ",
+      "segments": [["山","やま"],["猟師","さつ"]],
+      "reason": "やま is the kun reading of 山, and Daijisen gives さつ as a reading of 猟 (さつ‐ひと【猟人】). 師 is unread and stays with 猟.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/猟人"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-138",
+      "spelling": "武者小路",
+      "reading": "むしゃのこうじ",
+      "segments": [["武","む"],["者小路","しゃのこうじ"]],
+      "reason": "む is an on reading of 武. An unwritten の follows 者, and Wiktionary reads 小路 こうじ as a whole (う-onbin of こみち), so the rest stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/小路#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-139",
+      "spelling": "廈門",
+      "reading": "アモイ",
+      "segments": [["廈","ア"],["門","モイ"]],
+      "reason": "Wiktionary derives the reading from Portuguese Amoy, from Hokkien 廈門 Ē-mûi, one syllable per character.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/廈門#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-140",
+      "spelling": "2.5次元",
+      "reading": "にてんごじげん",
+      "segments": [["2.5","にてんご"],["次","じ"],["元","げん"]],
+      "reason": "Wiktionary's reading table gives 2.5=にてんご, 次=じ and 元=げん; じ and げん are on readings.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/2.5次元#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-141",
+      "spelling": "大透翅蛾",
+      "reading": "おおすかしば",
+      "segments": [["大","おお"],["透","すかし"],["翅蛾","ば"]],
+      "reason": "Nihon Kokugo Daijiten heads すかし‐ば【透翅蛾】; おお is the kun reading of 大 and すかし the kun stem of 透. ば is not a listed reading of 翅 and 蛾 is unread, so they stay together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/透翅蛾"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-142",
+      "spelling": "三十一文字",
+      "reading": "みそじひともじ",
+      "segments": [["三十","みそじ"],["一","ひと"],["文","も"],["字","じ"]],
+      "reason": "Wiktionary's reading table for 文字 gives 文=も and 字=じ, and ひと is the kun reading of 一. みそじ ends in an unwritten suffix, so 三十 stays together.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/文字#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-143",
+      "spelling": "十六日祭",
+      "reading": "じゅうるくにちい",
+      "segments": [["十","じゅう"],["六日祭","るくにちい"]],
+      "reason": "じゅう is the on reading of 十. The rest is the Okinawan form of ろくにち with a lengthened ending, whose shares are not listed readings, so it stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-144",
+      "spelling": "狸菖蒲",
+      "reading": "たぬきおやめ",
+      "segments": [["狸","たぬき"],["菖蒲","おやめ"]],
+      "reason": "Wiktionary's reading table divides 狸=たぬき and 菖蒲=あやめ; たぬき is the kun reading of 狸, and おやめ is a variant of あやめ.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/狸菖蒲#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-145",
+      "spelling": "御稜威",
+      "reading": "みいつ",
+      "segments": [["御","み"],["稜威","いつ"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word み‐いつ【御厳／御稜威】, with み a prefix; み is a kun reading of 御 and いつ is listed for 稜.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/御厳"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-146",
+      "spelling": "葡萄透翅蛾",
+      "reading": "ぶどうすかしば",
+      "segments": [["葡","ぶ"],["萄","どう"],["透","すかし"],["翅蛾","ば"]],
+      "reason": "ぶ and どう are the on readings of 葡 and 萄, and すかし the kun stem of 透; Nihon Kokugo Daijiten heads すかし‐ば【透翅蛾】. ば is not a listed reading of 翅 and 蛾 is unread, so they stay together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/透翅蛾"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-147",
+      "spelling": "水繁蔞",
+      "reading": "みずはこべ",
+      "segments": [["水","みず"],["繁蔞","はこべ"]],
+      "reason": "Nihon Kokugo Daijiten heads the word みず‐はこべ【水繁縷】; みず is the kun reading of 水, so the jukujikun 繁蔞 takes はこべ.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/水繁縷"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-148",
+      "spelling": "建御名方神",
+      "reading": "たけみなかたのかみ",
+      "segments": [["建","たけ"],["御","み"],["名","な"],["方神","かたのかみ"]],
+      "reason": "たけ is listed for 建 in KANJIDIC2 as a name reading, and み, な and かた are kun readings of 御, 名 and 方. The unwritten の keeps 方 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-149",
+      "spelling": "雪泥鴻爪",
+      "reading": "せつでいのこうそう",
+      "segments": [["雪","せつ"],["泥鴻","でいのこう"],["爪","そう"]],
+      "reason": "せつ, でい, こう and そう are the on readings. The unwritten の keeps 泥 and 鴻 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-150",
+      "spelling": "性的姿態撮影等処罰法",
+      "reading": "せいてきしたいさつえいとうしょぶんほう",
+      "segments": [["性","せい"],["的","てき"],["姿","し"],["態","たい"],["撮","さつ"],["影","えい"],["等","とう"],["処罰","しょぶん"],["法","ほう"]],
+      "reason": "On readings throughout, except that the record's reading has ぶん where 罰 would be ばつ, so 処罰 stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-151",
+      "spelling": "身拭",
+      "reading": "みのご",
+      "segments": [["身","み"],["拭","のご"]],
+      "reason": "Nihon Kokugo Daijiten heads the word み‐のごい【身拭】; み is the kun reading of 身, so 拭 takes のご (のごう, an old form of ぬぐう).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/身拭"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-152",
+      "spelling": "狗奴国",
+      "reading": "こなのくに",
+      "segments": [["狗","こ"],["奴国","なのくに"]],
+      "reason": "こ is the on reading コウ of 狗 with its vowel shortened. The unwritten の keeps 奴 and 国 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-153",
+      "spelling": "升級",
+      "reading": "ションジー",
+      "segments": [["升","ション"],["級","ジー"]],
+      "reason": "Chinese loan: ション and ジー match the Mandarin readings sheng1 and ji2 that KANJIDIC2 lists for 升 and 級.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-154",
+      "spelling": "帰去来辞",
+      "reading": "ききょらいのじ",
+      "segments": [["帰","き"],["去","きょ"],["来辞","らいのじ"]],
+      "reason": "き, きょ, らい and じ are the on readings. The unwritten の keeps 来 and 辞 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-155",
+      "spelling": "出雲国風土記",
+      "reading": "いずものくにふどき",
+      "segments": [["出","いず"],["雲国","ものくに"],["風","ふ"],["土","ど"],["記","き"]],
+      "reason": "Wiktionary's reading tables give 出=いず, 雲=も for 出雲 and 風=ふ, 土=ど, 記=き for 風土記. The unwritten の keeps 雲 and 国 together.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/出雲#Japanese"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/風土記#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-156",
+      "spelling": "聖霊女子短大",
+      "reading": "みそのじょしたんだい",
+      "segments": [["聖霊","みその"],["女","じょ"],["子","し"],["短","たん"],["大","だい"]],
+      "reason": "じょ, し, たん and だい are the on readings of the last four characters; みその is read over 聖霊 as a name.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-157",
+      "spelling": "天之御中主神",
+      "reading": "あめのみなかぬしのかみ",
+      "segments": [["天","あめ"],["之","の"],["御","み"],["中","なか"],["主神","ぬしのかみ"]],
+      "reason": "あめ, の, み, なか and ぬし are kun readings of 天, 之, 御, 中 and 主. The unwritten の keeps 主 and 神 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-158",
+      "spelling": "播磨国風土記",
+      "reading": "はりまのくにふどき",
+      "segments": [["播","はり"],["磨国","まのくに"],["風","ふ"],["土","ど"],["記","き"]],
+      "reason": "Wiktionary's reading tables give 播=はり, 磨=ま for 播磨 and 風=ふ, 土=ど, 記=き for 風土記. The unwritten の keeps 磨 and 国 together.",
+      "sources": [
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/播磨#Japanese"},
+        {"name":"Wiktionary","url":"https://en.wiktionary.org/wiki/風土記#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-159",
+      "spelling": "女殺油地獄",
+      "reading": "おんなころしあぶらのじごく",
+      "segments": [["女","おんな"],["殺","ころし"],["油地","あぶらのじ"],["獄","ごく"]],
+      "reason": "おんな is the kun reading of 女, ころし the kun stem of 殺, and ごく the on reading of 獄. The unwritten の keeps 油 and 地 together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-160",
+      "spelling": "天児屋根命",
+      "reading": "あめのこやねのみこと",
+      "segments": [["天児","あめのこ"],["屋","や"],["根命","ねのみこと"]],
+      "reason": "や and ね are kun readings of 屋 and 根. Unwritten の keeps 天 with 児 and 根 with 命.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-161",
+      "spelling": "青砥稿花紅彩画",
+      "reading": "あおとぞうしはなのにしきえ",
+      "segments": [["青","あお"],["砥","と"],["稿花紅彩","ぞうしはなのにしき"],["画","え"]],
+      "reason": "あお and と are kun readings of 青 and 砥, and え an on reading of 画. ぞうし over 稿 and にしき over 紅彩 are not listed readings and an unwritten の sits between 花 and 紅, so the middle stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-162",
+      "spelling": "手水",
+      "reading": "ちょうず",
+      "segments": [["手","ちょ"],["水","うず"]],
+      "reason": "Daijisen gives ちょうず〔てうづ〕 as a sound change of てみづ and marks each character as separately read: て is the kun reading of 手, and みづ became うづ by 音便, so てう is now ちょう with the う staying with 水. Wiktionary's table does not divide it (it labels the reading jukujikun).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/手水"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-163",
+      "spelling": "仕様",
+      "reading": "しょー",
+      "segments": [["仕","し"],["様","ょー"]],
+      "reason": "Wiktionary's reading table gives 仕 し and 様 よう (both KANJIDIC2 on readings); しょー is that しよう contracted, し and よ merging into しょ, with the long vowel written ー.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/仕様#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-164",
+      "spelling": "日向",
+      "reading": "ひゅうが",
+      "segments": [["日","ひゅ"],["向","うが"]],
+      "reason": "Wiktionary's etymology derives ひゅうが (historical ひうが) from ひむか, 日 ひ + 向か むか: む became う and ひう became ひゅう, so ひ is the kun reading of 日 and the う stays with 向. Wiktionary's table itself leaves the name undivided as irregular.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/日向#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-165",
+      "spelling": "俯向",
+      "reading": "うつむ",
+      "segments": [["俯","うつ"],["向","む"]],
+      "reason": "Daijisen heads the verbs うつ‐む・く and うつ‐む・ける, and む is the kun reading of 向 (む.く, む.ける); Wiktionary gives the etymology うつ + 向く.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/俯く"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/俯ける"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/俯く#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-166",
+      "spelling": "髪挿",
+      "reading": "かんざし",
+      "segments": [["髪","かん"],["挿","ざし"]],
+      "reason": "Daijisen heads the word かん‐ざし and derives it from かみさし (髪挿し): かん is the kun reading かみ of 髪 with 撥音便, and ざし is さし (挿 さ.す) with rendaku.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/簪"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-167",
+      "spelling": "妓夫",
+      "reading": "ぎゅう",
+      "segments": [["妓","ぎゅ"],["夫","う"]],
+      "reason": "Daijisen gives ぎゅう〔ギフ〕 with each character marked as separately read, and heads the variant ぎ‐ふ: ギ is the on reading of 妓 and フ of 夫. ぎふ is now ぎゅう, with the う staying with 夫.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/妓夫"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-168",
+      "spelling": "ＤｏＳ攻撃",
+      "reading": "ドスこうげき",
+      "segments": [["ＤｏＳ","ドス"],["攻","こう"],["撃","げき"]],
+      "reason": "KANJIDIC2 lists コウ for 攻 and ゲキ for 撃; the acronym ＤｏＳ is read as the word ドス.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-169",
+      "spelling": "磯蚯蚓",
+      "reading": "いそめ",
+      "segments": [["磯","いそ"],["蚯蚓","め"]],
+      "reason": "Nihon Kokugo Daijiten heads the word いそ‐め and Wiktionary's reading table for 磯目 gives 磯 いそ; いそ is the kun reading of 磯, so 蚯蚓 takes め.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/磯目"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/磯目#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-170",
+      "spelling": "鍬形虫",
+      "reading": "くわがた",
+      "segments": [["鍬","くわ"],["形虫","がた"]],
+      "reason": "Daijisen heads くわ‐がた, and Wiktionary's reading table for 鍬形虫 gives 鍬 くわ and 形 がた. In this reading 虫 is written but unread, so it stays with 形.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/鍬形"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/鍬形虫#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-171",
+      "spelling": "欧羅巴",
+      "reading": "ヨオロツパ",
+      "segments": [["欧","ヨオ"],["羅","ロツ"],["巴","パ"]],
+      "reason": "Wiktionary's reading table for 欧羅巴 assigns よー to 欧, ろっ to 羅 and ぱ to 巴. This record writes the same sounds in older orthography (オ for ー, full-size ツ for ッ).",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/欧羅巴#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-172",
+      "spelling": "基地外",
+      "reading": "キチゲェ",
+      "segments": [["基","キ"],["地","チ"],["外","ゲェ"]],
+      "reason": "Wiktionary's reading table gives 基 き, 地 ち, 外 がい (all KANJIDIC2 on readings). ゲェ is the slang vowel fusion of がい and stays with 外.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/基地外#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-173",
+      "spelling": "山女魚",
+      "reading": "やまめ",
+      "segments": [["山","やま"],["女魚","め"]],
+      "reason": "Daijisen heads やま‐め for 山女／山女魚, and Wiktionary's reading table gives 山 やま and 女 め; やま is the kun reading of 山. 魚 is unread and stays with 女.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/山女"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/山女#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-174",
+      "spelling": "壱拾萬",
+      "reading": "じゅうまん",
+      "segments": [["壱拾","じゅう"],["萬","まん"]],
+      "reason": "KANJIDIC2 lists ジュウ for 拾 and マン for 萬. 壱 is written but unread, so it stays with 拾.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-175",
+      "spelling": "水馬",
+      "reading": "あめんぼ",
+      "segments": [["水","あめん"],["馬","ぼ"]],
+      "reason": "Wiktionary's reading table for 水馬 assigns あめん to 水 and ぼ to 馬 (an irregular reading from 飴棒, with 馬 as ateji).",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/水馬#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-176",
+      "spelling": "邪鬼",
+      "reading": "じゃく",
+      "segments": [["邪","じゃ"],["鬼","く"]],
+      "reason": "Wiktionary's reading table for 天邪鬼 あまんじゃく assigns じゃ to 邪 and an irregular く to 鬼; ジャ is the on reading of 邪.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/天邪鬼#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-177",
+      "spelling": "梅雨入",
+      "reading": "つい",
+      "segments": [["梅雨","つ"],["入","い"]],
+      "reason": "Daijisen gives ついり as a sound change of つゆいり and marks only 梅雨 as a jukujikun in 梅雨入り; い is the kun reading of 入 (い.り), and the shortened つ stays with 梅雨.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/入梅"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/梅雨入り#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-178",
+      "spelling": "不承々々",
+      "reading": "ふしょうぶしょう",
+      "segments": [["不","ふ"],["承","しょう"],["々","ぶ"],["々","しょう"]],
+      "reason": "The two 々 repeat 不 and 承 in order: KANJIDIC2 lists フ and ブ for 不 and ショウ for 承.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-179",
+      "spelling": "殭屍",
+      "reading": "キョンシー",
+      "segments": [["殭","キョン"],["屍","シー"]],
+      "reason": "Wiktionary's reading table assigns きょん to 殭 and しー to 屍, matching the Cantonese source goeng1 si1.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/殭屍#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-180",
+      "spelling": "掏児",
+      "reading": "すり",
+      "segments": [["掏","す"],["児","り"]],
+      "reason": "Wiktionary's reading table for 掏児 assigns す to 掏 (its kun reading, す.る) and an irregular り to 児.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/掏児#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-181",
+      "spelling": "口唇",
+      "reading": "くちびる",
+      "segments": [["口","くち"],["唇","びる"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word くち‐びる (the latter glossing it as 口縁 くちべり), and くち is the kun reading of 口.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/唇"}
+      ]
+    },
+    {
+      "id": "SG-182",
+      "spelling": "大神",
+      "reading": "おおみかみ",
+      "segments": [["大","おおみ"],["神","かみ"]],
+      "reason": "Wiktionary's reading table for 天照大神 assigns おおみ to 大 and かみ to 神, and Daijisen heads おおみ‐かみ; かみ is the kun reading of 神. The み is the unwritten 御 of the prefix おおみ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/天照大神#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/大御神"}
+      ]
+    },
+    {
+      "id": "SG-183",
+      "spelling": "轟々",
+      "reading": "ごーごー",
+      "segments": [["轟","ごー"],["々","ごー"]],
+      "reason": "Wiktionary's reading table gives 轟 ごう and 々 ごう (the on reading ゴウ); this record writes the long vowel with ー.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/轟々#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-184",
+      "spelling": "所為",
+      "reading": "せえ",
+      "segments": [["所","せ"],["為","え"]],
+      "reason": "Wiktionary's reading table for せい assigns せ to 所 and い to 為; せえ is the same word with its long vowel written え.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/所為#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-185",
+      "spelling": "御復習",
+      "reading": "おさら",
+      "segments": [["御","お"],["復習","さら"]],
+      "reason": "Nihon Kokugo Daijiten heads the word お‐さらい with お as the prefix; お is the kun reading of 御, and 復習 is a jukujikun for さらい.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/御浚"}
+      ]
+    },
+    {
+      "id": "SG-186",
+      "spelling": "立待",
+      "reading": "たちま",
+      "segments": [["立","たち"],["待","ま"]],
+      "reason": "Daijisen heads たち‐まち; たち is the stem of 立つ (た.ち- in KANJIDIC2) and ま the stem of 待つ (ま.つ).",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/立待ち"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-187",
+      "spelling": "大嘗祭",
+      "reading": "おおにえのまつり",
+      "segments": [["大","おお"],["嘗祭","にえのまつり"]],
+      "reason": "Wiktionary's reading table assigns おお to 大, にえ to 嘗 and まつり to 祭, with an unwritten の between 嘗 and 祭, which keeps those two together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/大嘗祭#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-188",
+      "spelling": "一昨々年",
+      "reading": "さきおととし",
+      "segments": [["一昨々","さきおと"],["年","とし"]],
+      "reason": "Daijisen heads さき‐おととし and おと‐とし (said to be from 遠年 おちとし), and Wiktionary's reading table for 一昨年 gives 年 とし; とし is the kun reading of 年. Wiktionary's table for 一昨昨年 itself is undivided.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨昨年"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨年"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/一昨年#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-189",
+      "spelling": "一昨昨年",
+      "reading": "さおととし",
+      "segments": [["一昨昨","さおと"],["年","とし"]],
+      "reason": "Daijisen heads さ‐おととし and おと‐とし (said to be from 遠年 おちとし), and Wiktionary's reading table for 一昨年 gives 年 とし; とし is the kun reading of 年. Wiktionary's table for 一昨昨年 itself is undivided.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨昨年"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/一昨年"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/一昨年#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-190",
+      "spelling": "千慮一失",
+      "reading": "せんりょのいっしつ",
+      "segments": [["千","せん"],["慮一","りょのいっ"],["失","しつ"]],
+      "reason": "KANJIDIC2 lists セン for 千, リョ for 慮, イツ for 一 (geminated) and シツ for 失. The unwritten の sits between 慮 and 一, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-191",
+      "spelling": "香菜",
+      "reading": "シャンサイ",
+      "segments": [["香","シャン"],["菜","サイ"]],
+      "reason": "Wiktionary's reading table for the Mandarin loan シャンツァイ assigns しゃん to 香 (pinyin xiāng); here 菜 has its on reading サイ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/香菜#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-192",
+      "spelling": "太政大臣",
+      "reading": "おおきまつりごとのおおまえつぎみ",
+      "segments": [["太","おおき"],["政大臣","まつりごとのおおまえつぎみ"]],
+      "reason": "Wiktionary's reading tables for 太政官 おおきまつりごとのつかさ and for 太政大臣 give 太 おお(き) and 政 まつりごと, and まつりごと is the kun reading of 政. The unwritten の keeps 政 with the jukujikun 大臣 おおまえつぎみ.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/太政官#Japanese"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/太政大臣#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-193",
+      "spelling": "罠網",
+      "reading": "わなみ",
+      "segments": [["罠","わな"],["網","み"]],
+      "reason": "KANJIDIC2 lists わな for 罠 and あみ for 網; わなあみ drops the vowel あ, leaving み with 網. No dictionary entry was found for the word itself.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-194",
+      "spelling": "叩頭虫",
+      "reading": "こめつきむし",
+      "segments": [["叩頭","こめつき"],["虫","むし"]],
+      "reason": "Daijisen heads こめつき‐むし for 米搗虫／叩頭虫, and むし is the kun reading of 虫; 叩頭 is a jukujikun for こめつき.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/米搗虫"}
+      ]
+    },
+    {
+      "id": "SG-195",
+      "spelling": "黒鳳蝶",
+      "reading": "くろあげは",
+      "segments": [["黒","くろ"],["鳳蝶","あげは"]],
+      "reason": "くろ is the kun reading of 黒, and Wiktionary's reading table for 黒揚羽 (the same entry's other spelling) gives 黒 くろ. Daijisen and Nihon Kokugo Daijiten give 鳳蝶 as a spelling of 揚羽(蝶), which stays together as あげは.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/黒揚羽#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/揚羽蝶"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-196",
+      "spelling": "没食子蜂",
+      "reading": "ふしばち",
+      "segments": [["没食子","ふし"],["蜂","ばち"]],
+      "reason": "Nihon Kokugo Daijiten heads ふし‐ばち (五倍子蜂), and ばち is the kun reading はち of 蜂 with rendaku; 没食子 is a jukujikun for ふし.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/五倍子蜂"}
+      ]
+    },
+    {
+      "id": "SG-197",
+      "spelling": "八尺瓊曲",
+      "reading": "やさかにのまが",
+      "segments": [["八","や"],["尺","さか"],["瓊曲","にのまが"]],
+      "reason": "Wiktionary's reading table for 八尺瓊勾玉 (which lists 八尺瓊曲玉 as a variant) assigns や to 八, さか to 尺, に to 瓊 and まが to 勾, and Daijisen heads や‐さか and やさか‐に. The unwritten の sits between 瓊 and 曲, which stay together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/八尺瓊勾玉#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/八尺"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/八尺瓊"}
+      ]
+    },
+    {
+      "id": "SG-198",
+      "spelling": "大八嶋国",
+      "reading": "おおやしまのくに",
+      "segments": [["大","おお"],["八","や"],["嶋国","しまのくに"]],
+      "reason": "KANJIDIC2 lists おお for 大, や for 八, しま for 嶋 and くに for 国. The unwritten の sits between 嶋 and 国, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-199",
+      "spelling": "繊蘿蔔",
+      "reading": "せんろふ",
+      "segments": [["繊","せん"],["蘿蔔","ろふ"]],
+      "reason": "Daijisen heads the word せん‐ろふ, and セン is the on reading of 繊. Nothing lists ろ for 蘿 or ふ for 蔔, so 蘿蔔 (the word for daikon, in its 唐音) stays together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/繊蘿蔔"}
+      ]
+    },
+    {
+      "id": "SG-200",
+      "spelling": "太政官",
+      "reading": "おおいまつりごとのつかさ",
+      "segments": [["太","おおい"],["政官","まつりごとのつかさ"]],
+      "reason": "Nihon Kokugo Daijiten heads おおい‐まつりごとのつかさ, and Wiktionary's reading table gives 太 おお(い), 政 まつりごと, 官 つかさ; まつりごと is the kun reading of 政. The unwritten の sits between 政 and 官, which stay together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/太政官"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/太政官#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-201",
+      "spelling": "血筋苔",
+      "reading": "ちすじのり",
+      "segments": [["血","ち"],["筋苔","すじのり"]],
+      "reason": "KANJIDIC2 lists ち for 血 and すじ for 筋, and Wiktionary's reading table for 血筋 gives 血 ち, 筋 すじ. のり is not a listed reading of 苔, so 苔 stays with 筋.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/血筋#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-202",
+      "spelling": "御津柏",
+      "reading": "みつのがしわ",
+      "segments": [["御","み"],["津柏","つのがしわ"]],
+      "reason": "KANJIDIC2 lists み for 御 and つ for 津, a phonetic spelling of みつ (Nihon Kokugo Daijiten cites 美津乃加志波). Daijisen divides the word みつの‐かしわ (三角柏), so the unwritten の is left with 津 and 柏.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/三角柏"}
+      ]
+    },
+    {
+      "id": "SG-203",
+      "spelling": "直日神",
+      "reading": "なおびのかみ",
+      "segments": [["直","なお"],["日神","びのかみ"]],
+      "reason": "KANJIDIC2 lists なお for 直 (なお.す, and as a name reading) and ひ for 日, here with rendaku. The unwritten の sits between 日 and 神, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-204",
+      "spelling": "板間静脈",
+      "reading": "いたのまじょうみゃく",
+      "segments": [["板間","いたのま"],["静","じょう"],["脈","みゃく"]],
+      "reason": "KANJIDIC2 lists ジョウ for 静 and ミャク for 脈. The unwritten の sits between 板 and 間, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-205",
+      "spelling": "五加木",
+      "reading": "ごか",
+      "segments": [["五","ご"],["加木","か"]],
+      "reason": "Daijisen heads ご‐か for 五加, with the on readings ゴ of 五 and カ of 加. 木 is written but unread in this reading, so it stays with 加.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/五加"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-206",
+      "spelling": "右京大夫",
+      "reading": "うきょうのだいぶ",
+      "segments": [["右","う"],["京大","きょうのだい"],["夫","ぶ"]],
+      "reason": "KANJIDIC2 lists ウ for 右, キョウ for 京, ダイ for 大 and ブ for 夫. The unwritten の sits between 京 and 大, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-207",
+      "spelling": "伊弊再尊",
+      "reading": "いざなみのみこと",
+      "segments": [["伊","い"],["弊再尊","ざなみのみこと"]],
+      "reason": "Wiktionary's reading table for 伊弉冉尊 assigns い to 伊, its on reading. 弊再 is a corrupted form of 弉冉 whose shares nothing lists, and an unwritten の precedes 尊, so the rest stays together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/伊弉冉尊#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-208",
+      "spelling": "火産霊神",
+      "reading": "ほむすびのかみ",
+      "segments": [["火","ほ"],["産","むす"],["霊神","びのかみ"]],
+      "reason": "KANJIDIC2 lists ほ for 火 and むす for 産, and Wiktionary's reading table for 産霊 assigns むす to 産 and び to 霊. The unwritten の sits between 霊 and 神, which stay together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/産霊#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-209",
+      "spelling": "大国主命",
+      "reading": "おおくにぬしのみこと",
+      "segments": [["大","おお"],["国","くに"],["主命","ぬしのみこと"]],
+      "reason": "Wiktionary's reading table assigns おお to 大, くに to 国, ぬし to 主 and みこと to 命. The unwritten の sits between 主 and 命, which stay together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/大国主命#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-210",
+      "spelling": "大穴牟遅神",
+      "reading": "おおなむちのかみ",
+      "segments": [["大","おお"],["穴","な"],["牟","む"],["遅神","ちのかみ"]],
+      "reason": "KANJIDIC2 lists おお for 大, な for 穴 (a name reading; あな without its first vowel), ム for 牟 and チ for 遅. The unwritten の sits between 遅 and 神, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-211",
+      "spelling": "大穴牟遅神",
+      "reading": "おおあなむちのかみ",
+      "segments": [["大","おお"],["穴","あな"],["牟","む"],["遅神","ちのかみ"]],
+      "reason": "KANJIDIC2 lists おお for 大, あな for 穴, ム for 牟 and チ for 遅. The unwritten の sits between 遅 and 神, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-212",
+      "spelling": "大歳神",
+      "reading": "おおとしのかみ",
+      "segments": [["大","おお"],["歳神","としのかみ"]],
+      "reason": "KANJIDIC2 lists おお for 大, とし for 歳 and かみ for 神. The unwritten の sits between 歳 and 神, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-213",
+      "spelling": "常御所",
+      "reading": "つねのごしょ",
+      "segments": [["常御","つねのご"],["所","しょ"]],
+      "reason": "KANJIDIC2 lists つね for 常, ゴ for 御 and ショ for 所. The unwritten の sits between 常 and 御, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-214",
+      "spelling": "視告朔",
+      "reading": "こうさく",
+      "segments": [["視告","こう"],["朔","さく"]],
+      "reason": "Daijisen heads こう‐さく〔カウ‐〕 and notes that 視 is by custom unread; サク is the on reading of 朔, so 視告 takes こう.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/視告朔"}
+      ]
+    },
+    {
+      "id": "SG-215",
+      "spelling": "莫告藻",
+      "reading": "なのりそも",
+      "segments": [["莫告","なのりそ"],["藻","も"]],
+      "reason": "Daijisen heads なのりそ‐も, and も is the kun reading of 藻; 莫告 spells な告りそ in kanbun order and stays together.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/莫告藻"}
+      ]
+    },
+    {
+      "id": "SG-216",
+      "spelling": "邇邇芸命",
+      "reading": "ににぎのみこと",
+      "segments": [["邇","に"],["邇","に"],["芸命","ぎのみこと"]],
+      "reason": "KANJIDIC2 lists ニ for 邇, used phonetically twice. The unwritten の sits between 芸 and 命, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-217",
+      "spelling": "漢委奴国王印",
+      "reading": "かんのわのなのこくおういん",
+      "segments": [["漢委奴国","かんのわのなのこく"],["王","おう"],["印","いん"]],
+      "reason": "KANJIDIC2 lists コク for 国, オウ for 王 and イン for 印. Unwritten の sit between 漢, 委, 奴 and 国, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-218",
+      "spelling": "漢委奴国王印",
+      "reading": "かんのわのなのこくおうのいん",
+      "segments": [["漢委奴国","かんのわのなのこく"],["王印","おうのいん"]],
+      "reason": "KANJIDIC2 lists コク for 国 and オウ for 王, so the reading divides between them. Unwritten の sit between 漢, 委, 奴 and 国 and between 王 and 印, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-219",
+      "spelling": "国王印",
+      "reading": "こくおうのいん",
+      "segments": [["国","こく"],["王印","おうのいん"]],
+      "reason": "KANJIDIC2 lists コク for 国, オウ for 王 and イン for 印. The unwritten の sits between 王 and 印, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-220",
+      "spelling": "縞曹以",
+      "reading": "しまそい",
+      "segments": [["縞","しま"],["曹","そ"],["以","い"]],
+      "reason": "KANJIDIC2 lists しま for 縞, ソウ for 曹 and イ for 以: 曹以 spells そい phonetically, with the long vowel of ソウ dropped. No dictionary entry was found for the word itself.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-221",
+      "spelling": "揚羽蝶",
+      "reading": "あげは",
+      "segments": [["揚","あげ"],["羽蝶","は"]],
+      "reason": "Nihon Kokugo Daijiten heads あげ‐は for 揚羽蝶, and Wiktionary's reading table gives 揚 あ(げ) and 羽 は. 蝶 is unread in this reading and stays with 羽.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/揚羽蝶"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/揚羽蝶#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-222",
+      "spelling": "藤原仲麻呂の乱",
+      "reading": "ふじわらのなかまろのらん",
+      "segments": [["藤","ふじ"],["原仲","わらのなか"],["麻","ま"],["呂","ろ"],"の",["乱","らん"]],
+      "reason": "KANJIDIC2 lists ふじ for 藤, わら for 原 (a name reading; Wiktionary's table for 藤原 gives ふじ, わら), なか for 仲, マ for 麻, ロ for 呂 and ラン for 乱. The unwritten の sits between 原 and 仲, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/藤原#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-223",
+      "spelling": "黄斑蝙蝠蛾",
+      "reading": "きまだらこうもり",
+      "segments": [["黄","き"],["斑","まだら"],["蝙蝠蛾","こうもり"]],
+      "reason": "KANJIDIC2 lists き for 黄 and まだら for 斑. 蝙蝠 is a jukujikun for こうもり and 蛾 is unread in this reading, so those three stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-224",
+      "spelling": "虎目石",
+      "reading": "とらのめいし",
+      "segments": [["虎目","とらのめ"],["石","いし"]],
+      "reason": "KANJIDIC2 lists とら for 虎, め for 目 and いし for 石. The unwritten の sits between 虎 and 目, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-225",
+      "spelling": "害児",
+      "reading": "ゲェジ",
+      "segments": [["害","ゲェ"],["児","ジ"]],
+      "reason": "KANJIDIC2 lists ガイ for 害 and ジ for 児. ゲェ is the slang vowel fusion of がい and stays with 害.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-226",
+      "spelling": "邇芸速日命",
+      "reading": "にぎはやひのみこと",
+      "segments": [["邇","に"],["芸","ぎ"],["速","はや"],["日命","ひのみこと"]],
+      "reason": "KANJIDIC2 lists ニ for 邇, ぎ for 芸 (a name reading), はや for 速 and ひ for 日. The unwritten の sits between 日 and 命, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-227",
+      "spelling": "国司舘",
+      "reading": "こくしのたち",
+      "segments": [["国","こく"],["司舘","しのたち"]],
+      "reason": "KANJIDIC2 lists コク for 国, シ for 司 and たち for 舘 (a name reading). The unwritten の sits between 司 and 舘, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-228",
+      "spelling": "海牙",
+      "reading": "ハーグ",
+      "segments": [["海","ハー"],["牙","グ"]],
+      "reason": "Wiktionary's reading table for 海牙 assigns はあ to 海 and ぐ to 牙 (irregular ateji readings).",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/海牙#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-229",
+      "spelling": "環頭大刀",
+      "reading": "かんとうのたち",
+      "segments": [["環","かん"],["頭大刀","とうのたち"]],
+      "reason": "KANJIDIC2 lists カン for 環 and トウ for 頭. The unwritten の sits between 頭 and the jukujikun 大刀 たち, so those three stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-230",
+      "spelling": "知々夫国",
+      "reading": "ちちぶのくに",
+      "segments": [["知","ち"],["々","ち"],["夫国","ぶのくに"]],
+      "reason": "KANJIDIC2 lists チ for 知 (repeated by 々), ブ for 夫 and くに for 国. The unwritten の sits between 夫 and 国, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-231",
+      "spelling": "典薬頭",
+      "reading": "てんやくのかみ",
+      "segments": [["典","てん"],["薬頭","やくのかみ"]],
+      "reason": "KANJIDIC2 lists テン for 典, ヤク for 薬 and かみ for 頭 (a name reading). The unwritten の sits between 薬 and 頭, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-232",
+      "spelling": "八百比",
+      "reading": "おび",
+      "segments": [["八百","お"],["比","び"]],
+      "reason": "Wiktionary's reading table for 比丘尼 assigns び to 比. 八百 (やお, here shortened to お) stays together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/比丘尼#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-233",
+      "spelling": "兵衛",
+      "reading": "ぺえ",
+      "segments": [["兵","ぺ"],["衛","え"]],
+      "reason": "KANJIDIC2 lists へ for 兵 (a name reading, from ヘイ) and エ for 衛; へ becomes ぺ after the geminate っ of 田舎っ兵衛.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-234",
+      "spelling": "松枯葉蛾",
+      "reading": "まつかれは",
+      "segments": [["松","まつ"],["枯","かれ"],["葉蛾","は"]],
+      "reason": "KANJIDIC2 lists まつ for 松, か.れる for 枯 and は for 葉. 蛾 is written but unread in this reading, so it stays with 葉.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-235",
+      "spelling": "御稜威",
+      "reading": "みいず",
+      "segments": [["御","み"],["稜威","いず"]],
+      "reason": "Wiktionary's reading table assigns み to 御 and いつ to 稜威 together, and Daijisen heads み‐いつ (Nihon Kokugo Daijiten: also みいづ) with み as the prefix; み is the kun reading of 御.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/御稜威#Japanese"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/御厳"}
+      ]
+    },
+    {
+      "id": "SG-236",
+      "spelling": "彼方",
+      "reading": "をちかた",
+      "segments": [["彼","をち"],["方","かた"]],
+      "reason": "Daijisen and Nihon Kokugo Daijiten head the word おち‐かた〔をち‐〕, and かた is the kun reading of 方, so 彼 takes をち. (Wiktionary separately lists おち over both characters of 彼方 as a jukujikun.)",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/遠方"}
+      ]
+    },
+    {
+      "id": "SG-237",
+      "spelling": "透菓子麺麭",
+      "reading": "すかしかしぱん",
+      "segments": [["透","すかし"],["菓","か"],["子","し"],["麺麭","ぱん"]],
+      "reason": "KANJIDIC2 lists す.かす for 透 (stem すかし), カ for 菓 and シ for 子. 麺麭 is a jukujikun for パン and stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-238",
+      "spelling": "河原藤木",
+      "reading": "かわらふじのき",
+      "segments": [["河","かわ"],["原","ら"],["藤木","ふじのき"]],
+      "reason": "Wiktionary's reading table for 河原 gives 河 かわ and 原 ら, and KANJIDIC2 lists ふじ for 藤 and き for 木. The unwritten の sits between 藤 and 木, which stay together.",
+      "sources": [
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/河原#Japanese"},
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-239",
+      "spelling": "八坂刀売神",
+      "reading": "やさかとめのかみ",
+      "segments": [["八","や"],["坂","さか"],["刀","と"],["売神","めのかみ"]],
+      "reason": "KANJIDIC2 lists や for 八, さか for 坂, と for 刀 and め for 売 (both name readings). The unwritten の sits between 売 and 神, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-240",
+      "spelling": "無中生有",
+      "reading": "ちゅうしょうゆう",
+      "segments": [["無中","ちゅう"],["生","しょう"],["有","ゆう"]],
+      "reason": "KANJIDIC2 lists チュウ for 中, ショウ for 生 and ユウ for 有. This reading has nothing for 無 (the expected む is missing), so 無 stays with 中.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-241",
+      "spelling": "身拭",
+      "reading": "みのごい",
+      "segments": [["身","み"],["拭","のごい"]],
+      "reason": "Nihon Kokugo Daijiten heads the word み‐のごい, and み is the kun reading of 身; 拭 takes のごい, from のごう, an old form of ぬぐう. The の is not a particle.",
+      "sources": [
+        {"name":"Kotobank","url":"https://kotobank.jp/word/身拭"}
+      ]
+    },
+    {
+      "id": "SG-242",
+      "spelling": "真木撮棒",
+      "reading": "まきざっぱ",
+      "segments": [["真","ま"],["木","き"],["撮棒","ざっぱ"]],
+      "reason": "KANJIDIC2 lists ま for 真 and き for 木, a phonetic spelling of まき (薪; Daijisen heads まき‐ざっぱ). Nothing documents how ざっぱ divides between 撮 and 棒, so they stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"Kotobank","url":"https://kotobank.jp/word/薪雑把"}
+      ]
+    },
+    {
+      "id": "SG-243",
+      "spelling": "翼指竜亜目",
+      "reading": "よくしりゅうるい",
+      "segments": [["翼","よく"],["指","し"],["竜","りゅう"],["亜目","るい"]],
+      "reason": "KANJIDIC2 lists ヨク for 翼, シ for 指 and リュウ for 竜. るい is not a reading of 亜目 (it belongs to the spelling 翼指竜類), so those two stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-244",
+      "spelling": "五輪書",
+      "reading": "ごりんのしょ",
+      "segments": [["五","ご"],["輪書","りんのしょ"]],
+      "reason": "KANJIDIC2 lists ゴ for 五, リン for 輪 and ショ for 書. The unwritten の sits between 輪 and 書, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-245",
+      "spelling": "春風馬堤曲",
+      "reading": "しゅんぷうばていのきょく",
+      "segments": [["春","しゅん"],["風","ぷう"],["馬","ば"],["堤曲","ていのきょく"]],
+      "reason": "KANJIDIC2 lists シュン for 春, フウ for 風 (ぷう after ん), バ for 馬, テイ for 堤 and キョク for 曲. The unwritten の sits between 堤 and 曲, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-246",
+      "spelling": "竹取翁の物語",
+      "reading": "たけとりのおきなのものがたり",
+      "segments": [["竹","たけ"],["取翁","とりのおきな"],"の",["物","もの"],["語","がたり"]],
+      "reason": "KANJIDIC2 lists たけ for 竹, とり for 取, おきな for 翁, もの for 物 and かた.り for 語 (がたり with rendaku). The unwritten の sits between 取 and 翁, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-247",
+      "spelling": "天御中主神",
+      "reading": "あまのみなかぬしのかみ",
+      "segments": [["天御","あまのみ"],["中","なか"],["主神","ぬしのかみ"]],
+      "reason": "KANJIDIC2 lists あま for 天, み for 御, なか for 中, ぬし for 主 and かみ for 神. Unwritten の sit between 天 and 御 and between 主 and 神, so each of those pairs stays together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-248",
+      "spelling": "肥前国風土記",
+      "reading": "ひぜんのくにふどき",
+      "segments": [["肥","ひ"],["前国","ぜんのくに"],["風","ふ"],["土","ど"],["記","き"]],
+      "reason": "KANJIDIC2 lists ヒ for 肥, ゼン for 前, くに for 国, フ for 風, ド for 土 and キ for 記 (Wiktionary's table for 風土記 gives ふ, ど, き). The unwritten の sits between 前 and 国, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"},
+        {"name":"English Wiktionary","url":"https://en.wiktionary.org/wiki/風土記#Japanese"}
+      ]
+    },
+    {
+      "id": "SG-249",
+      "spelling": "令義解",
+      "reading": "りょうのぎげ",
+      "segments": [["令義","りょうのぎ"],["解","げ"]],
+      "reason": "KANJIDIC2 lists りょう for 令 (a name reading), ギ for 義 and ゲ for 解. The unwritten の sits between 令 and 義, which stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-250",
+      "spelling": "春麗",
+      "reading": "チュンリー",
+      "segments": [["春","チュン"],["麗","リー"]],
+      "reason": "A Chinese name read in katakana: KANJIDIC2 lists the Mandarin readings chūn for 春 and lì for 麗.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
+    },
+    {
+      "id": "SG-251",
+      "spelling": "一九八四年",
+      "reading": "せんきゅうひゃくはちじゅうよねん",
+      "segments": [["一九八四","せんきゅうひゃくはちじゅうよ"],["年","ねん"]],
+      "reason": "KANJIDIC2 lists ネン for 年. The digits are read as a number with unwritten 千, 百 and 十, so they stay together.",
+      "sources": [
+        {"name":"KANJIDIC2","url":"https://www.edrdg.org/wiki/index.php/KANJIDIC_Project"}
+      ]
     }
   ]
 }

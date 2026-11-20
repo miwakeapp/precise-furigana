@@ -1,8 +1,9 @@
 // What a release's notes say: the database's statistics and, after the first release, what
 // changed since the one before.
 import type { SourceLock } from "../../src/sources.ts";
-import type { Database, DatabaseRecord, Segment } from "../../src/types.ts";
+import type { Database, DatabaseRecord } from "../../src/types.ts";
 import { compareDatabases, type Change, type SegmentationChange } from "./compare.ts";
+import { ruby } from "./markup.ts";
 
 export interface Statistics {
   entries: number;
@@ -71,15 +72,6 @@ const nouns = (value: number, noun: string, plural = `${noun}s`) =>
   `${count(value)} ${value === 1 ? noun : plural}`;
 const signed = (value: number) =>
   value === 0 ? "" : `${value > 0 ? "+" : "−"}${count(Math.abs(value))}`;
-const escapeHTML = (text: string) => text.replace(/[&<>]/gu, (unit) => `&#${unit.codePointAt(0)};`);
-const ruby = (segments: Segment[]) =>
-  segments
-    .map((segment) =>
-      typeof segment === "string"
-        ? escapeHTML(segment)
-        : `<ruby>${escapeHTML(segment[0])}<rt>${escapeHTML(segment[1])}</ruby>`,
-    )
-    .join("");
 const more = (shown: number, total: number) =>
   total > shown ? [`${count(total - shown)} more`] : [];
 const sentenceList = (items: string[]) =>

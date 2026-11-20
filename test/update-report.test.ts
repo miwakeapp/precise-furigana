@@ -70,17 +70,20 @@ test("an update that only drops synthesized pairs and adds or refines records is
   assert.match(report, /\| Finer \| 1 \|/u);
   assert.match(
     report,
-    /<ruby>山川<rt>やまかわ<\/rt><\/ruby> → <ruby>山<rt>やま<\/rt><\/ruby><ruby>川<rt>かわ<\/rt><\/ruby>/u,
+    /<span lang="ja"><ruby>山川<rt>やまかわ<\/ruby><\/span> → <span lang="ja"><ruby>山<rt>やま<\/ruby><ruby>川<rt>かわ<\/ruby><\/span>/u,
   );
-  assert.match(report, /そっぽ向く read そっぽむく/u);
+  assert.match(
+    report,
+    /<span lang="ja">そっぽ向く<\/span> read <span lang="ja">そっぽむく<\/span>/u,
+  );
   // Every added and removed record is listed, folded away.
   assert.match(
     report,
-    /<details>\n<summary>Added records \(1\)<\/summary>\n\n- <ruby>山<rt>やま<\/rt><\/ruby><ruby>川<rt>かわ<\/rt><\/ruby> \(entry 1\)\n\n<\/details>\n/u,
+    /<details>\n<summary>Added records \(1\)<\/summary>\n\n- <span lang="ja"><ruby>山<rt>やま<\/ruby><ruby>川<rt>かわ<\/ruby><\/span> \(entry 1\)\n\n<\/details>\n/u,
   );
   assert.match(
     report,
-    /<summary>Removed records \(1\)<\/summary>\n\n- <ruby>山川<rt>やまかわ<\/rt><\/ruby> \(entry 1\)\n/u,
+    /<summary>Removed records \(1\)<\/summary>\n\n- <span lang="ja"><ruby>山川<rt>やまかわ<\/ruby><\/span> \(entry 1\)\n/u,
   );
   assert.equal(
     renderCommitMessage(clean),
@@ -128,7 +131,7 @@ test("a new record whose kanji share furigana is listed for review", () => {
   ]);
   assert.match(
     renderReport(needsReview),
-    /### New records with kanji sharing furigana \(1\)\n\n- 山川 \(やまかわ, entry 1\): <ruby>山川<rt>やまかわ<\/rt><\/ruby>\n/u,
+    /### New records with kanji sharing furigana \(1\)\n\n- <span lang="ja">山川<\/span> \(<span lang="ja">やまかわ<\/span>, entry 1\): <span lang="ja"><ruby>山川<rt>やまかわ<\/ruby><\/span>\n/u,
   );
 });
 

@@ -1,8 +1,8 @@
 // Pure helpers for `scripts/update.ts`: what a dictionary update changed, whether it
 // needs a person, and the pull request text that says so.
 import type { SynthesizedPair } from "../../src/pairings.ts";
-import type { Segment } from "../../src/types.ts";
 import type { Change, ChangedRecord, SegmentationChange } from "./compare.ts";
+import { japanese, proseWithJapanese, ruby } from "./markup.ts";
 import { kanjiSharingFurigana } from "./release-notes.ts";
 
 export type ChangeCounts = Record<Change["change"], number>;
@@ -57,15 +57,6 @@ export interface Update extends ChangeSummary {
 const listLimit = 30;
 /** The most characters one folded list may take of the 65,536 a description can hold. */
 const foldedLimit = 20_000;
-const escapeHTML = (text: string) => text.replace(/[&<>]/gu, (unit) => `&#${unit.codePointAt(0)};`);
-const ruby = (segments: Segment[]) =>
-  segments
-    .map((segment) =>
-      typeof segment === "string"
-        ? escapeHTML(segment)
-        : `<ruby>${escapeHTML(segment[0])}<rt>${escapeHTML(segment[1])}</rt></ruby>`,
-    )
-    .join("");
 const pairKey = (item: SynthesizedPair) => `${item.id}\t${item.spelling}\t${item.reading}`;
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
@@ -164,7 +155,7 @@ function changeList(title: string, items: SegmentationChange[]): string[] {
     .slice(0, listLimit)
     .map(
       ({ before, after }) =>
-        `- ${escapeHTML(after.spelling)} (${escapeHTML(after.reading)}, entry ${after.id}): ${ruby(before.segments)} → ${ruby(after.segments)}`,
+        `- ${japanese(after.spelling)} (${japanese(after.reading)}, entry ${after.id}): ${ruby(before.segments)} → ${ruby(after.segments)}`,
     );
   if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
   return [`### ${title} (${items.length})`, "", ...rows, ""];
@@ -202,7 +193,7 @@ function groupedList(items: ChangedRecord[]): string[] {
     .slice(0, listLimit)
     .map(
       (item) =>
-        `- ${escapeHTML(item.spelling)} (${escapeHTML(item.reading)}, entry ${item.id}): ${ruby(item.segments)}`,
+        `- ${japanese(item.spelling)} (${japanese(item.reading)}, entry ${item.id}): ${ruby(item.segments)}`,
     );
   if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
   return [`### New records with kanji sharing furigana (${items.length})`, "", ...rows, ""];
@@ -214,7 +205,7 @@ function synthesizedList(title: string, items: SynthesizedPair[]): string[] {
     .slice(0, listLimit)
     .map(
       (item) =>
-        `- ${escapeHTML(item.spelling)} read ${escapeHTML(item.reading)} (entry ${item.id})${item.unreviewed ? ", unreviewed" : ""}${item.note ? `. ${escapeHTML(item.note)}` : ""}`,
+        `- ${japanese(item.spelling)} read ${japanese(item.reading)} (entry ${item.id})${item.unreviewed ? ", unreviewed" : ""}${item.note ? `. ${proseWithJapanese(item.note)}` : ""}`,
     );
   if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
   return [`### ${title} (${items.length})`, "", ...rows, ""];

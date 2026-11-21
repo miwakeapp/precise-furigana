@@ -23,6 +23,8 @@ Both Wiktionary files keep only readings the source explicitly marks as on or ku
 
 ### Lexical facts
 
+<div lang="ja">
+
 <!-- oxfmt-ignore -->
 ```json
 {
@@ -35,6 +37,8 @@ Both Wiktionary files keep only readings the source explicitly marks as on or ku
 }
 ```
 
+</div>
+
 `id` is the fact's own name, not a JMdict ID. `reason` and `sources` are required. A fact contributes only the cuts inside it.
 
 `reusableSegments` (zero-based segment indices) lets a single-character sound from the fact count as a character reading in other words. The sound never corroborates the fact's own pair, or the entries listed in its optional `jmdictEntries`, which name other entries the evidence came from.
@@ -44,10 +48,10 @@ The facts were compiled from Wiktionary word tables, Kotobank and other dictiona
 A fact needs a source for each boundary it adds. Any of these counts:
 
 - a reading table that assigns the reading to the characters, as Wiktionary's does;
-- a dictionary's kana headword divided where the fact divides it, as in おか‐ぼ for 陸稲, when the part on at least one side of the boundary is a listed reading of its character (おか for 陸). The other side then takes the rest, <ruby>稲<rt>ぼ</rt></ruby>, though no inventory lists it. A dictionary's jukujikun mark does not forbid this: in Daijisen, ＝ between the characters marks a jukujikun and ‐ marks one from the Jōyō table's appendix, but neither says where the reading divides. The fact is not made when neither side is listed, or when a source analyses the spelling another way, as Wiktionary does for 鴛鴦 (おし for both characters, with 鳥 unwritten);
+- a dictionary's kana headword divided where the fact divides it, as in <span lang="ja">おか</span>‐<span lang="ja">ぼ</span> for <span lang="ja">陸稲</span>, when the part on at least one side of the boundary is a listed reading of its character (<span lang="ja">おか</span> for <span lang="ja">陸</span>). The other side then takes the rest, <span lang="ja"><ruby>稲<rt>ぼ</rt></ruby></span>, though no inventory lists it. A dictionary's jukujikun mark does not forbid this: in Daijisen, <span lang="ja">＝</span> between the characters marks a jukujikun and ‐ marks one from the Jōyō table's appendix, but neither says where the reading divides. The fact is not made when neither side is listed, or when a source analyses the spelling another way, as Wiktionary does for <span lang="ja">鴛鴦</span> (<span lang="ja">おし</span> for both characters, with <span lang="ja">鳥</span> unwritten);
 - a reading KANJIDIC2 lists for the character, after at most one ordinary sound change that the reason names.
 
-A character whose share nothing documents stays grouped with a neighbor, as 信楽 does in <ruby>信楽<rt>しがらき</rt></ruby><ruby>焼<rt>やき</rt></ruby>. It is never given the remainder by subtraction.
+A character whose share nothing documents stays grouped with a neighbor, as <span lang="ja">信楽</span> does in <span lang="ja"><ruby>信楽<rt>しがらき</rt></ruby><ruby>焼<rt>やき</rt></ruby></span>. It is never given the remainder by subtraction.
 
 ### Annotations
 

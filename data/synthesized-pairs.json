@@ -210,30 +210,6 @@
     "note": "Kana variant: ず for づ, same pronunciation."
   },
   {
-    "id": "1371290",
-    "spelling": "水さす",
-    "reading": "みずさす",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1371290",
-    "spelling": "水刺す",
-    "reading": "みずさす",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1371290",
-    "spelling": "水差す",
-    "reading": "みずさす",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1371290",
-    "spelling": "水注す",
-    "reading": "みずさす",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
     "id": "1401950",
     "spelling": "草かんむり",
     "reading": "くさかんむり",
@@ -588,34 +564,10 @@
     "note": "Kana variant: ず for づ, same pronunciation."
   },
   {
-    "id": "1861690",
-    "spelling": "縁きる",
-    "reading": "えんきる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1861690",
-    "spelling": "縁切る",
-    "reading": "えんきる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
     "id": "1862380",
     "spelling": "圧しとめる",
     "reading": "おしとめる",
     "note": "JMdict has おしとめる, but restricted to 押し止める、押し留める; search-only spellings take no restrictions."
-  },
-  {
-    "id": "1908670",
-    "spelling": "本腰いれる",
-    "reading": "ほんごしいれる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1908670",
-    "spelling": "本腰入れる",
-    "reading": "ほんごしいれる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
   },
   {
     "id": "1917660",
@@ -628,24 +580,6 @@
     "spelling": "割りのよい",
     "reading": "わりのよい",
     "note": "JMdict has わりのよい, but restricted to 割の良い; search-only spellings take no restrictions."
-  },
-  {
-    "id": "1919400",
-    "spelling": "へそ曲げる",
-    "reading": "へそまげる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1919400",
-    "spelling": "ヘソ曲げる",
-    "reading": "へそまげる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "1919400",
-    "spelling": "臍曲げる",
-    "reading": "へそまげる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
   },
   {
     "id": "1925360",
@@ -828,12 +762,6 @@
     "note": "Loanword kana variant: ドリア for ドーリア."
   },
   {
-    "id": "2073080",
-    "spelling": "往生際悪い",
-    "reading": "おうじょうぎわわるい",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
     "id": "2076970",
     "spelling": "崇ふ",
     "reading": "あがまふ",
@@ -844,24 +772,6 @@
     "spelling": "崇まふ",
     "reading": "あがまふ",
     "note": "Historical kana: the ふ/ひ/へ spelling is pronounced as the existing modern reading."
-  },
-  {
-    "id": "2078980",
-    "spelling": "虚勢張る",
-    "reading": "きょせいはる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "2079440",
-    "spelling": "腹くくる",
-    "reading": "はらくくる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
-  },
-  {
-    "id": "2079440",
-    "spelling": "腹括る",
-    "reading": "はらくくる",
-    "note": "Particle drop: a colloquial form without the particle that people actually say; one reading covers every particle-less spelling in the entry."
   },
   {
     "id": "2083790",
@@ -1048,6 +958,12 @@
     "spelling": "よい所取り",
     "reading": "よいとこどり",
     "note": "JMdict has よいとこどり, but restricted to 良いとこ取り、良い所取り; search-only spellings take no restrictions."
+  },
+  {
+    "id": "2160680",
+    "spelling": "方がよい",
+    "reading": "ほうがよい",
+    "note": "JMdict has ほうがよい, but restricted to 方が良い; search-only spellings take no restrictions."
   },
   {
     "id": "2171110",
@@ -1560,12 +1476,6 @@
     "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
-    "id": "2419680",
-    "spelling": "くそもみそもも一緒",
-    "reading": "くそもみそももいっしょ",
-    "note": "Misspelling: a doubled も, probably a typo in JMdict for くそもみそも一緒."
-  },
-  {
     "id": "2419720",
     "spelling": "聞くは一時の恥聞かぬは末代の恥",
     "reading": "きくはいっときのはじきかぬはまつだいのはじ",
@@ -1738,12 +1648,6 @@
     "spelling": "録りだめる",
     "reading": "とりだめる",
     "note": "JMdict has とりだめる, but restricted to 撮り溜める、録り溜める; search-only spellings take no restrictions."
-  },
-  {
-    "id": "2664080",
-    "spelling": "鳴りをしずめ",
-    "reading": "なりをしずめ",
-    "note": "The spelling looks like a typo for 鳴りをしずめる (missing る); its literal reading is not worth proposing, though the spelling itself may deserve a report."
   },
   {
     "id": "2688140",

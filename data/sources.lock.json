@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "repository": "https://github.com/scriptin/jmdict-simplified",
   "release": {
-    "tag": "3.6.2+20261116213322",
-    "url": "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261116213322",
-    "publishedAt": "2026-11-16T21:33:31Z"
+    "tag": "3.6.2+20261123231529",
+    "url": "https://github.com/scriptin/jmdict-simplified/releases/tag/3.6.2%2B20261123231529",
+    "publishedAt": "2026-11-23T23:15:38Z"
   },
   "license": {
     "id": "CC-BY-SA-4.0",
@@ -14,25 +14,25 @@
   },
   "sources": {
     "jmdict": {
-      "asset": "jmdict-all-3.6.2+20261116213322.json.tgz",
-      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261116213322/jmdict-all-3.6.2%2B20261116213322.json.tgz",
-      "sha256": "46b29b14e2deec40fae8c0020cc694c527dd7594b8a5b8a1db9dac816eec4ef5",
-      "bytes": 25130043,
-      "file": "jmdict-all-3.6.2+20261116213322.json",
-      "jsonSHA256": "5c1f50efc315c69a67acf00bc20cad3e1e05d82451eb36a9a324860ed452e1d4",
+      "asset": "jmdict-all-3.6.2+20261123231529.json.tgz",
+      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261123231529/jmdict-all-3.6.2%2B20261123231529.json.tgz",
+      "sha256": "9027cf942145da7614cf6db83d52ad3e4f781ca8c4c20c5cdb9a0ea442f9e9ac",
+      "bytes": 25143463,
+      "file": "jmdict-all-3.6.2+20261123231529.json",
+      "jsonSHA256": "845960c8396dc2a22b49f30e2b438b9859fecdb1a12d7e86693924534ae684d9",
       "version": "3.6.2",
-      "dictDate": "2026-11-16",
-      "entryCount": 219127
+      "dictDate": "2026-11-23",
+      "entryCount": 219205
     },
     "kanjidic": {
-      "asset": "kanjidic2-all-3.6.2+20261116213322.json.tgz",
-      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261116213322/kanjidic2-all-3.6.2%2B20261116213322.json.tgz",
-      "sha256": "1170e846c4fa6c44bd74c8f6f22920a76d0ebe1a66cc6a4fac679a53bcc13af7",
-      "bytes": 1552913,
-      "file": "kanjidic2-all-3.6.2+20261116213322.json",
-      "jsonSHA256": "b41a5cc78e56505d6b8b20b2a605859111b3e61641bb0acc9222281167031ae9",
+      "asset": "kanjidic2-all-3.6.2+20261123231529.json.tgz",
+      "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20261123231529/kanjidic2-all-3.6.2%2B20261123231529.json.tgz",
+      "sha256": "9a0959ff339d476db82f1d1e164059d0d22d1a9f30450fed770bd561bb8fd6da",
+      "bytes": 1552918,
+      "file": "kanjidic2-all-3.6.2+20261123231529.json",
+      "jsonSHA256": "f3fb19edae763baa5d16629c530d193bc5627cf5291ec11cdf1acd02495566b7",
       "version": "3.6.2",
-      "dictDate": "2026-11-16",
+      "dictDate": "2026-11-23",
       "entryCount": 13108
     }
   },

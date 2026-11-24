@@ -163,7 +163,7 @@ function segmentationChanges(all: Change[]): string[] {
     ruby: [],
   };
   for (const change of all) {
-    if (change.change !== "added" && change.change !== "removed")
+    if (change.change !== "added" && change.change !== "removed" && change.change !== "pairing")
       changes[change.change].push(change);
   }
   const kinds: [kind: SegmentationChange["change"], phrase: string, limit: number][] = [

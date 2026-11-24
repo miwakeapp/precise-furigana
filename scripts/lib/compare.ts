@@ -19,10 +19,27 @@ export interface SegmentationChange {
   after: ChangedRecord;
 }
 
+/** A record present in both databases, with the same segments, whose `pairing` differs. */
+export interface PairingChange {
+  change: "pairing";
+  before: ChangedRecord;
+  after: ChangedRecord;
+}
+
 export type Change =
-  | { change: "added"; after: ChangedRecord }
-  | { change: "removed"; before: ChangedRecord }
-  | SegmentationChange;
+  | {
+      change: "added";
+      after: ChangedRecord;
+      /** Whether its whole entry is new. */ newEntry: boolean;
+    }
+  | {
+      change: "removed";
+      before: ChangedRecord;
+      /** Whether its whole entry is gone. */
+      removedEntry: boolean;
+    }
+  | SegmentationChange
+  | PairingChange;
 
 // Release segments partition the spelling; plain text can be silent, so only
 // spelling positions identify a boundary.
@@ -54,7 +71,7 @@ export function* compareDatabases(
     const previous = old.get(key);
     old.delete(key);
     if (!previous) {
-      yield { change: "added", after: record };
+      yield { change: "added", after: record, newEntry: !Object.hasOwn(before.entries, record.id) };
     } else if (!isDeepStrictEqual(previous.segments, record.segments)) {
       const oldBoundaries = new Set(boundaries(previous.segments));
       const newBoundaries = new Set(boundaries(record.segments));
@@ -68,7 +85,15 @@ export function* compareDatabases(
               ? "coarser"
               : "incompatible";
       yield { change, before: previous, after: record };
+    } else if (previous.pairing !== record.pairing) {
+      yield { change: "pairing", before: previous, after: record };
     }
   }
-  for (const record of old.values()) yield { change: "removed", before: record };
+  for (const record of old.values()) {
+    yield {
+      change: "removed",
+      before: record,
+      removedEntry: !Object.hasOwn(after.entries, record.id),
+    };
+  }
 }

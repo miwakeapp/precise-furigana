@@ -1,19 +1,33 @@
 // Pure helpers for `scripts/update.ts`: what a dictionary update changed, whether it
 // needs a person, and the pull request text that says so.
 import type { SynthesizedPair } from "../../src/pairings.ts";
-import type { Change, ChangedRecord, SegmentationChange } from "./compare.ts";
+import type { Change, ChangedRecord, PairingChange, SegmentationChange } from "./compare.ts";
 import { japanese, proseWithJapanese, ruby } from "./markup.ts";
 import { kanjiSharingFurigana } from "./release-notes.ts";
 
 export type ChangeCounts = Record<Change["change"], number>;
 export type ListedChanges = Record<SegmentationChange["change"], SegmentationChange[]>;
 
+/** One entry, with the records it gained or lost. */
+export interface EntryRecords {
+  id: string;
+  records: ChangedRecord[];
+}
+
 export interface ChangeSummary {
   counts: ChangeCounts;
   listed: ListedChanges;
-  /** The records only the new database has, and those only the old one had. */
-  added: ChangedRecord[];
-  removed: ChangedRecord[];
+  /** Entries the new database adds, and existing entries that gained records. */
+  newEntries: EntryRecords[];
+  grownEntries: EntryRecords[];
+  /** Entries the new database drops, and remaining entries that lost records. */
+  removedEntries: EntryRecords[];
+  shrunkEntries: EntryRecords[];
+  /**
+   * Existing records whose `pairing` changed. A change between synthesized and unmarked is left
+   * out, because the synthesized pairs' own section reports it.
+   */
+  pairingChanges: (SegmentationChange | PairingChange)[];
   /**
    * New records whose kanji share furigana. The generator found nothing that divides them, so
    * each is a word to look up: a split may be documented, and a reviewed fact can then record it.
@@ -55,8 +69,11 @@ export interface Update extends ChangeSummary {
 }
 
 const listLimit = 30;
-/** The most characters one folded list may take of the 65,536 a description can hold. */
-const foldedLimit = 20_000;
+/** The most characters the folded lists may take together of the 65,536 a description can hold. */
+const foldedLimit = 40_000;
+const pairings = ["mispaired", "phonetic", "synthesized"] as const;
+const entryLink = (id: string) =>
+  `[${id}](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=${id})`;
 const pairKey = (item: SynthesizedPair) => `${item.id}\t${item.spelling}\t${item.reading}`;
 const plural = (count: number, noun: string) => `${count} ${noun}${count === 1 ? "" : "s"}`;
 
@@ -74,7 +91,7 @@ export function diffSynthesizedPairs(
   };
 }
 
-/** Count the changes `scripts/compare.ts` wrote, and keep the ones to list. */
+/** Count the changes `scripts/compare.ts` wrote, and arrange the ones to list. */
 export function summarizeChanges(changes: Change[]): ChangeSummary {
   const counts: ChangeCounts = {
     added: 0,
@@ -83,26 +100,53 @@ export function summarizeChanges(changes: Change[]): ChangeSummary {
     coarser: 0,
     incompatible: 0,
     ruby: 0,
+    pairing: 0,
   };
   const listed: ListedChanges = { finer: [], coarser: [], incompatible: [], ruby: [] };
   const grouped: ChangedRecord[] = [];
-  const added: ChangedRecord[] = [],
-    removed: ChangedRecord[] = [];
+  const pairingChanges: ChangeSummary["pairingChanges"] = [];
+  const entries = {
+    newEntries: new Map<string, ChangedRecord[]>(),
+    grownEntries: new Map<string, ChangedRecord[]>(),
+    removedEntries: new Map<string, ChangedRecord[]>(),
+    shrunkEntries: new Map<string, ChangedRecord[]>(),
+  };
+  const collect = (group: keyof typeof entries, record: ChangedRecord) => {
+    const records = entries[group].get(record.id);
+    if (records) records.push(record);
+    else entries[group].set(record.id, [record]);
+  };
   for (const item of changes) {
     ++counts[item.change];
-    if (item.change === "added") added.push(item.after);
-    else if (item.change === "removed") removed.push(item.before);
-    // Added and removed records are only counted; the segmentation changes are listed too.
-    if (item.change !== "added" && item.change !== "removed") listed[item.change].push(item);
-    // A mispaired record's ruby says nothing about its spelling, so it is no candidate.
-    if (
-      item.change === "added" &&
-      item.after.pairing !== "mispaired" &&
-      kanjiSharingFurigana(item.after) > 0
-    )
-      grouped.push(item.after);
+    if (item.change === "added") {
+      collect(item.newEntry ? "newEntries" : "grownEntries", item.after);
+      // A mispaired record's ruby says nothing about its spelling, so it is no candidate.
+      if (item.after.pairing !== "mispaired" && kanjiSharingFurigana(item.after) > 0)
+        grouped.push(item.after);
+    } else if (item.change === "removed") {
+      collect(item.removedEntry ? "removedEntries" : "shrunkEntries", item.before);
+    } else {
+      if (item.change !== "pairing") listed[item.change].push(item);
+      const was = item.before.pairing,
+        is = item.after.pairing;
+      const synthesizedOnly = [was, is].every(
+        (pairing) => pairing === undefined || pairing === "synthesized",
+      );
+      if (was !== is && !synthesizedOnly) pairingChanges.push(item);
+    }
   }
-  return { counts, listed, grouped, added, removed };
+  const grouping = (group: keyof typeof entries): EntryRecords[] =>
+    Array.from(entries[group], ([id, records]) => ({ id, records }));
+  return {
+    counts,
+    listed,
+    newEntries: grouping("newEntries"),
+    grownEntries: grouping("grownEntries"),
+    removedEntries: grouping("removedEntries"),
+    shrunkEntries: grouping("shrunkEntries"),
+    pairingChanges,
+    grouped,
+  };
 }
 
 /**
@@ -149,36 +193,14 @@ export function reviewReasons({
   return reasons;
 }
 
-function changeList(title: string, items: SegmentationChange[]): string[] {
-  if (items.length === 0) return [];
-  const rows = items
-    .slice(0, listLimit)
-    .map(
-      ({ before, after }) =>
-        `- ${japanese(after.spelling)} (${japanese(after.reading)}, entry ${after.id}): ${ruby(before.segments)} → ${ruby(after.segments)}`,
-    );
-  if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
-  return [`### ${title} (${items.length})`, "", ...rows, ""];
-}
-
 /**
- * Every record of one kind, folded away so that the description stays readable. GitHub limits a
- * description's length, so a very long list is cut off with a count of the rest.
+ * A list under a third-level heading, which the reader can fold away. The heading sits in the
+ * fold's summary, so the section still counts in the page's outline. `open` shows it unfolded.
  */
-function foldedList(title: string, items: ChangedRecord[]): string[] {
-  if (items.length === 0) return [];
-  const rows: string[] = [];
-  let length = 0;
-  for (const item of items) {
-    const row = `- ${ruby(item.segments)} (entry ${item.id})`;
-    if (length + row.length > foldedLimit) break;
-    rows.push(row);
-    length += row.length + 1;
-  }
-  if (rows.length < items.length) rows.push(`- …and ${items.length - rows.length} more.`);
+function section(title: string, rows: string[], open: boolean): string[] {
   return [
-    "<details>",
-    `<summary>${title} (${items.length})</summary>`,
+    open ? "<details open>" : "<details>",
+    `<summary><h3>${title}</h3></summary>`,
     "",
     ...rows,
     "",
@@ -187,28 +209,102 @@ function foldedList(title: string, items: ChangedRecord[]): string[] {
   ];
 }
 
+function changeList(title: string, items: SegmentationChange[]): string[] {
+  if (items.length === 0) return [];
+  const rows = items
+    .slice(0, listLimit)
+    .map(
+      ({ before, after }) =>
+        `- ${entryLink(after.id)}: ${ruby(before.segments)} → ${ruby(after.segments)}`,
+    );
+  if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
+  return section(`${title} (${items.length})`, rows, true);
+}
+
+function pairingList(items: ChangeSummary["pairingChanges"]): string[] {
+  if (items.length === 0) return [];
+  const rows = items
+    .slice(0, listLimit)
+    .map(
+      ({ before, after }) =>
+        `- ${entryLink(after.id)}: ${ruby(after.segments)}, ${before.pairing ?? "unmarked"} → ${after.pairing ?? "unmarked"}`,
+    );
+  if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
+  return section(`Pairing changed (${items.length})`, rows, true);
+}
+
+/** One entry's records on one line: the unmarked ones first, then each marked kind by name. */
+function entryLine({ id, records }: EntryRecords): string {
+  const list = (items: ChangedRecord[]) => items.map((item) => ruby(item.segments)).join(", ");
+  const parts = [list(records.filter((record) => record.pairing === undefined))];
+  for (const pairing of pairings) {
+    const marked = records.filter((record) => record.pairing === pairing);
+    if (marked.length > 0) parts.push(`${pairing}: ${list(marked)}`);
+  }
+  return `- ${entryLink(id)}: ${parts.filter((part) => part !== "").join("; ")}`;
+}
+
+/**
+ * Entries of one kind, one line each, folded away so that the description stays readable.
+ * GitHub limits a description's length, so the folded lists share a budget, and a list that
+ * would overrun it is cut off with a count of the rest.
+ */
+function foldedEntries(title: string, entries: EntryRecords[], budget: { left: number }): string[] {
+  if (entries.length === 0) return [];
+  const rows: string[] = [];
+  for (const entry of entries) {
+    const row = entryLine(entry);
+    if (row.length > budget.left) break;
+    rows.push(row);
+    budget.left -= row.length + 1;
+  }
+  if (rows.length < entries.length) {
+    rows.push(`- …and ${entries.length - rows.length} more.`);
+    // A later list must not use what an earlier one could not.
+    budget.left = 0;
+  }
+  // These lists are long and rarely need reading, so they start folded.
+  return section(`${title} (${entries.length})`, rows, false);
+}
+
 function groupedList(items: ChangedRecord[]): string[] {
   if (items.length === 0) return [];
   const rows = items
     .slice(0, listLimit)
-    .map(
-      (item) =>
-        `- ${japanese(item.spelling)} (${japanese(item.reading)}, entry ${item.id}): ${ruby(item.segments)}`,
-    );
+    .map((item) => `- ${entryLink(item.id)}: ${ruby(item.segments)}`);
   if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
-  return [`### New records with kanji sharing furigana (${items.length})`, "", ...rows, ""];
+  return section(`New records with kanji sharing furigana (${items.length})`, rows, true);
 }
 
+/**
+ * Synthesized pairs, one line per entry. Pairs of an entry that share a reading and a note are
+ * named together, since a note usually explains every such spelling at once.
+ */
 function synthesizedList(title: string, items: SynthesizedPair[]): string[] {
   if (items.length === 0) return [];
-  const rows = items
-    .slice(0, listLimit)
-    .map(
-      (item) =>
-        `- ${japanese(item.spelling)} read ${japanese(item.reading)} (entry ${item.id})${item.unreviewed ? ", unreviewed" : ""}${item.note ? `. ${proseWithJapanese(item.note)}` : ""}`,
+  const entries = new Map<string, Map<string, SynthesizedPair[]>>();
+  for (const item of items) {
+    const groups = entries.get(item.id) ?? new Map<string, SynthesizedPair[]>();
+    entries.set(item.id, groups);
+    const key = JSON.stringify([item.reading, item.note, item.unreviewed === true]);
+    const group = groups.get(key);
+    if (group) group.push(item);
+    else groups.set(key, [item]);
+  }
+  const rows = Array.from(entries, ([id, groups]) => {
+    const clauses = Array.from(groups.values(), (pairs) => {
+      const [{ reading, note, unreviewed }] = pairs;
+      return `${pairs.map((pair) => japanese(pair.spelling)).join(", ")} read ${japanese(reading)}${unreviewed ? ", unreviewed" : ""}${note ? `. ${proseWithJapanese(note)}` : ""}`;
+    });
+    // Every clause but the last must end its sentence before the next one starts.
+    const sentences = clauses.map((clause, index) =>
+      index < clauses.length - 1 && !/[.!?]$/u.test(clause) ? `${clause}.` : clause,
     );
-  if (items.length > listLimit) rows.push(`- …and ${items.length - listLimit} more.`);
-  return [`### ${title} (${items.length})`, "", ...rows, ""];
+    return `- ${entryLink(id)}: ${sentences.join(" ")}`;
+  });
+  const shown = rows.slice(0, listLimit);
+  if (rows.length > listLimit) shown.push(`- …and ${rows.length - listLimit} more entries.`);
+  return section(`${title} (${items.length})`, shown, true);
 }
 
 /** The pull request description for an update. */
@@ -219,8 +315,11 @@ export function renderReport(update: Update): string {
     counts,
     listed,
     grouped,
-    added: addedRecords,
-    removed: removedRecords,
+    newEntries,
+    grownEntries,
+    removedEntries,
+    shrunkEntries,
+    pairingChanges,
     synthesized,
     compared,
     build,
@@ -232,32 +331,47 @@ export function renderReport(update: Update): string {
     `Moves the dictionary pin from JMdict ${before.date} to ${after.date} ([jmdict-simplified ${after.tag}](${after.url})).`,
     "",
   ];
+  // The headings follow what a reader asks, in order: does anything need me, did any record I
+  // already rely on change, and what came and went.
   if (reasons.length === 0) {
     lines.push("**Clean.** Nothing here needs review, so this merges once CI passes.", "");
+    if (reviewNotes) lines.push("## Review notes", "", reviewNotes.trim(), "");
   } else {
-    lines.push("**Needs review:**", "", ...reasons.map((reason) => `- ${reason}`), "");
+    lines.push("## Needs review", "", ...reasons.map((reason) => `- ${reason}`), "");
+    if (reviewNotes) lines.push("### Review notes", "", reviewNotes.trim(), "");
   }
-  if (reviewNotes) lines.push("## Review notes", "", reviewNotes.trim(), "");
   if (compared) {
+    const budget = { left: foldedLimit };
+    const records = (entries: EntryRecords[]) =>
+      entries.reduce((sum, entry) => sum + entry.records.length, 0);
     lines.push(
-      "## Segmentation changes",
+      "## Changed records",
       "",
       "| Change | Records |",
-      "| --- | --- |",
-      `| Added | ${counts.added} |`,
-      `| Removed | ${counts.removed} |`,
+      "| --- | ---: |",
       `| Finer | ${counts.finer} |`,
       `| Coarser | ${counts.coarser} |`,
       `| Incompatible | ${counts.incompatible} |`,
       `| Ruby only | ${counts.ruby} |`,
+      `| Pairing changed | ${pairingChanges.length} |`,
       "",
       ...changeList("Incompatible", listed.incompatible),
       ...changeList("Coarser", listed.coarser),
       ...changeList("Finer", listed.finer),
       ...changeList("Ruby only", listed.ruby),
+      ...pairingList(pairingChanges),
+      "## Added and removed records",
+      "",
+      "| | Entries | Records |",
+      "| --- | ---: | ---: |",
+      `| Added | ${newEntries.length} | ${records(newEntries) + records(grownEntries)} |`,
+      `| Removed | ${removedEntries.length} | ${records(removedEntries) + records(shrunkEntries)} |`,
+      "",
       ...groupedList(grouped),
-      ...foldedList("Added records", addedRecords),
-      ...foldedList("Removed records", removedRecords),
+      ...foldedEntries("New entries", newEntries, budget),
+      ...foldedEntries("Entries with new records", grownEntries, budget),
+      ...foldedEntries("Removed entries", removedEntries, budget),
+      ...foldedEntries("Entries with removed records", shrunkEntries, budget),
     );
   }
   const removed = synthesizedList(

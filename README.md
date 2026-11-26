@@ -92,7 +92,7 @@ function findSegmentationForKnownWord(jmdictId, spelling, reading) {
 
 Trying to add precise furigana to a given spelling, without a reading supplied, is not trivial.
 
-First, you need to determine which JMdict entry is being indicated: is <span lang="ja">辛い</span> meant to be [entry 1365850](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365850) ("spicy") or [entry 1365860](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365860) ("painful")? This is out of scope of this project; I suggest using an LLM.
+First, you need to determine which JMdict entry is being indicated: is <span lang="ja">辛い</span> meant to be [entry 1365850](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365850) ("spicy") or [entry 1365860](https://www.edrdg.org/jmwsgi/entr.py?svc=jmdict&g=1365860) ("painful")? This is out of scope of this project. You could use traditional morphological tools like [MeCab](https://taku910.github.io/mecab/) + [UniDic](https://clrd.ninjal.ac.jp/unidic/en/), but even with the old Opus 4.6 / ChatGPT 5.2 generation, [LLMs were better](https://arxiv.org/abs/2606.22009), albeit slower and not free.
 
 Even once you have the JMdict ID in hand, you can still get several possibilities: should you transform <span lang="ja">明日</span> into <span lang="ja"><ruby>明日<rt>あした</ruby></span> or <span lang="ja"><ruby>明<rt>あ</ruby><ruby>日<rt>す</ruby></span> or <span lang="ja"><ruby>明<rt>みょう</ruby><ruby>日<rt>にち</ruby></span>?
 

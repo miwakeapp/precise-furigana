@@ -1,9 +1,15 @@
 // What a release's notes say: the database's statistics and, after the first release, what
 // changed since the one before.
 import type { SourceLock } from "../../src/sources.ts";
-import type { Database, DatabaseRecord } from "../../src/types.ts";
-import { compareDatabases, type Change, type SegmentationChange } from "./compare.ts";
-import { ruby } from "./markup.ts";
+import type { Database } from "../../src/types.ts";
+import {
+  addedAndRemovedSection,
+  changedRecordsSection,
+  kanjiSharingFurigana,
+  summarizeChanges,
+} from "./change-lists.ts";
+import { compareDatabases } from "./compare.ts";
+import { proseWithJapanese } from "./markup.ts";
 
 export interface Statistics {
   entries: number;
@@ -20,17 +26,6 @@ export interface Statistics {
 }
 
 const isKanji = (character: string) => /\p{Script=Han}/u.test(character);
-
-/** How many of a record's kanji sit under furigana that also covers another kanji. */
-export function kanjiSharingFurigana(record: Pick<DatabaseRecord, "segments">): number {
-  let sharing = 0;
-  for (const segment of record.segments) {
-    if (typeof segment === "string") continue;
-    const kanji = Array.from(segment[0]).filter(isKanji).length;
-    if (kanji > 1) sharing += kanji;
-  }
-  return sharing;
-}
 
 export function databaseStatistics(database: Pick<Database, "entries">): Statistics {
   const statistics: Statistics = {
@@ -62,20 +57,27 @@ export function databaseStatistics(database: Pick<Database, "entries">): Statist
   return statistics;
 }
 
-/** How many of each kind of thing to show before summarizing the rest. */
-const exampleLimit = 5;
-/** Changes that could be regressions are listed in full, up to a size the page can hold. */
-const regressionLimit = 100;
+/**
+ * A release's notes can hold 125,000 characters, about twice a pull request description, so the
+ * lists get more room here than in an update's description. They all start folded: the notes
+ * are a record to consult, where an update's description is a list of things to look at.
+ */
+const listLimit = 200;
+const foldedLimit = 80_000;
+/** The most commits to name before giving a count of the rest. */
+const commitLimit = 50;
 
 const count = (value: number) => value.toLocaleString("en-US");
-const nouns = (value: number, noun: string, plural = `${noun}s`) =>
-  `${count(value)} ${value === 1 ? noun : plural}`;
 const signed = (value: number) =>
   value === 0 ? "" : `${value > 0 ? "+" : "−"}${count(Math.abs(value))}`;
-const more = (shown: number, total: number) =>
-  total > shown ? [`${count(total - shown)} more`] : [];
-const sentenceList = (items: string[]) =>
-  items.length <= 2 ? items.join(" and ") : `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
+
+/** A commit made since the previous release, as GitHub's compare API describes it. */
+export interface ReleaseCommit {
+  sha: string;
+  /** The first line of its message. */
+  subject: string;
+  url: string;
+}
 
 function statisticsTable(current: Statistics, previous: Statistics | undefined): string[] {
   const share = ((100 * current.sharingKanji) / current.kanji).toFixed(1);
@@ -123,106 +125,50 @@ function statisticsTable(current: Statistics, previous: Statistics | undefined):
       ];
 }
 
-function dictionaryChanges(previous: Database, current: Database, changes: Change[]): string[] {
-  const addedEntries = Object.keys(current.entries).filter((id) => !(id in previous.entries));
-  const removedEntries = Object.keys(previous.entries).filter((id) => !(id in current.entries));
-  const addedRecords = changes.filter(({ change }) => change === "added").length;
-  const removedRecords = changes.filter(({ change }) => change === "removed").length;
-  const tally = (added: number, removed: number, noun: string, plural: string) =>
-    added > 0 && removed > 0
-      ? `${nouns(added, noun, plural)} added and ${count(removed)} removed`
-      : added > 0
-        ? `${nouns(added, noun, plural)} added`
-        : removed > 0
-          ? `${nouns(removed, noun, plural)} removed`
-          : undefined;
-  const tallies = [
-    tally(addedEntries.length, removedEntries.length, "entry", "entries"),
-    tally(addedRecords, removedRecords, "record", "records"),
-  ].filter((text) => text !== undefined);
-  if (tallies.length === 0) return [];
-  const sentences = [`${tallies.join("; ")}.`.replace(/^./u, (first) => first.toUpperCase())];
-  // Show new words as the database renders them. Kana-only entries have nothing to show.
-  const examples = addedEntries
-    .map((id) => current.entries[id][0])
-    .filter((record) => record.segments.some((segment) => typeof segment !== "string"));
-  if (examples.length > 0) {
-    const shown = examples.slice(0, exampleLimit).map((record) => ruby(record.segments));
-    sentences.push(
-      `New entries include ${sentenceList([...shown, ...more(shown.length, addedEntries.length)])}.`,
+/** The commits between the two releases, oldest first: the reasons for what the lists show. */
+function commitList(commits: ReleaseCommit[]): string[] {
+  if (commits.length === 0) return [];
+  const shown = commits
+    .slice(0, commitLimit)
+    .map(
+      ({ sha, subject, url }) => `- [\`${sha.slice(0, 7)}\`](${url}) ${proseWithJapanese(subject)}`,
     );
-  }
-  return [`**Dictionary.** ${sentences.join(" ")}`, ""];
-}
-
-function segmentationChanges(all: Change[]): string[] {
-  const changes: Record<SegmentationChange["change"], SegmentationChange[]> = {
-    finer: [],
-    coarser: [],
-    incompatible: [],
-    ruby: [],
-  };
-  for (const change of all) {
-    if (change.change !== "added" && change.change !== "removed" && change.change !== "pairing")
-      changes[change.change].push(change);
-  }
-  const kinds: [kind: SegmentationChange["change"], phrase: string, limit: number][] = [
-    ["finer", "divided more finely", exampleLimit],
-    ["coarser", "divided more coarsely", regressionLimit],
-    ["incompatible", "divided differently", regressionLimit],
-    ["ruby", "given different furigana over the same parts", exampleLimit],
-  ];
-  const present = kinds.filter(([kind]) => changes[kind].length > 0);
-  if (present.length === 0) return [];
-  const summary = present.map(([kind, phrase], index) =>
-    index === 0
-      ? `${nouns(changes[kind].length, "existing record is", "existing records are")} ${phrase}`
-      : `${count(changes[kind].length)} ${phrase}`,
-  );
-  // Say outright that nothing got coarser, since that is what a reader checks for.
-  if (changes.coarser.length === 0 && changes.incompatible.length === 0)
-    summary.push("none more coarsely");
-  const lines = [`**Segmentation.** ${sentenceList(summary)}.`, ""];
-  for (const [kind, phrase, limit] of present) {
-    if (present.length > 1)
-      lines.push(`${phrase.replace(/^./u, (first) => first.toUpperCase())}:`, "");
-    const shown = changes[kind].slice(0, limit);
-    lines.push(
-      ...shown.map(({ before, after }) => `- ${ruby(before.segments)} → ${ruby(after.segments)}`),
-      ...more(shown.length, changes[kind].length).map((text) => `- and ${text}`),
-      "",
-    );
-  }
-  return lines;
+  if (commits.length > commitLimit) shown.push(`- …and ${commits.length - commitLimit} more.`);
+  return ["## Commits", "", ...shown, ""];
 }
 
 /**
- * Write a release's notes. `previous` is the database of the release before it; without one, or
- * when its schema differs, the notes give statistics only.
+ * Write a release's notes: the database's statistics and, after the first release, everything
+ * that changed since the release before, in the sections an update's description uses.
+ * `previous` is that release's database; without one, or when its schema differs, the notes give
+ * statistics only. `commits` are the commits made since it.
  */
 export function renderReleaseNotes(
   current: Database,
   lock: Pick<SourceLock, "release">,
   previous?: Database,
   previousURL?: string,
+  commits: ReleaseCommit[] = [],
 ): string {
   const comparable = previous?.schemaVersion === current.schemaVersion ? previous : undefined;
+  const since =
+    comparable === undefined
+      ? ""
+      : ` Changes are since ${previousURL ? `[${comparable.version}](${previousURL})` : comparable.version}.`;
   const lines = [
-    `Furigana for every spelling and reading in JMdict ${current.jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).`,
+    `Furigana for every spelling and reading in JMdict ${current.jmdictDate} ([jmdict-simplified ${lock.release.tag}](${lock.release.url})).${since}`,
     "",
     ...statisticsTable(databaseStatistics(current), comparable && databaseStatistics(comparable)),
     "",
   ];
   if (comparable !== undefined) {
-    const compared = [...compareDatabases(comparable, current)];
-    const changes = [
-      ...dictionaryChanges(comparable, current, compared),
-      ...segmentationChanges(compared),
-    ];
-    if (changes.length > 0) {
-      const name = previousURL ? `[${comparable.version}](${previousURL})` : comparable.version;
-      lines.push(`## Changes since ${name}`, "", ...changes);
-    }
+    const summary = summarizeChanges([...compareDatabases(comparable, current)]);
+    lines.push(
+      ...commitList(commits),
+      // A release has no section of its own for synthesized pairs, so every pairing change is listed.
+      ...changedRecordsSection(summary, summary.pairingChanges, { limit: listLimit, open: false }),
+      ...addedAndRemovedSection(summary, [], foldedLimit),
+    );
   }
   return lines.join("\n").trimEnd() + "\n";
 }

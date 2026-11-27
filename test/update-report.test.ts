@@ -5,8 +5,8 @@ import {
   renderCommitMessage,
   renderReport,
   reviewReasons,
-  summarizeChanges,
 } from "../scripts/lib/update-report.ts";
+import { summarizeChanges } from "../scripts/lib/change-lists.ts";
 import type { ChangedRecord, SegmentationChange } from "../scripts/lib/compare.ts";
 import type { StepResult, Update } from "../scripts/lib/update-report.ts";
 import type { SynthesizedPair } from "../src/pairings.ts";
@@ -199,14 +199,15 @@ test("a changed pairing is listed, except where the synthesized pairs already sa
       after: { ...plain, id: "2", segments: [["山川", "やまかわ"]] },
     },
   ]);
-  assert.equal(summary.pairingChanges.length, 2);
+  // The summary keeps all three; the description leaves out the one between synthesized and unmarked.
+  assert.equal(summary.pairingChanges.length, 3);
   // Listing a change does not by itself make an update need review.
   assert.deepEqual(reviewReasons(update({ ...summary, counts: summarizeChanges([]).counts })), []);
   const report = renderReport(update(summary));
   assert.match(report, /\| Pairing changed \| 2 \|/u);
   assert.match(
     report,
-    /<details open>\n<summary><h3>Pairing changed \(2\)<\/h3><\/summary>\n\n- \[1\]\([^)]+\): <span lang="ja"><ruby>山<rt>やま<\/ruby><ruby>川<rt>かわ<\/ruby><\/span>, unmarked → mispaired\n- \[2\]\([^)]+\): <span lang="ja"><ruby>山川<rt>やまかわ<\/ruby><\/span>, phonetic → unmarked\n/u,
+    /<details open>\n<summary><h3>Pairing changed \(2\)<\/h3><\/summary>\n\n- \[1\]\([^)]+\): <span lang="ja"><ruby>山<rt>やま<\/ruby><ruby>川<rt>かわ<\/ruby><\/span>: unmarked → mispaired\n- \[2\]\([^)]+\): <span lang="ja"><ruby>山川<rt>やまかわ<\/ruby><\/span>: phonetic → unmarked\n/u,
   );
 });
 

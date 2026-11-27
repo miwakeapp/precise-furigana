@@ -3,19 +3,31 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { digest, loadDataset, schemaVersion } from "../src/dataset.ts";
 import { pairKey, recordKey, validateAlignment } from "../src/segments.ts";
+import { makeCharacterReadings, makeNanoriReadings } from "../src/sources.ts";
 import { displaySegments } from "../src/display.ts";
 import {
   contradictionKind,
+  planMispairedPairs,
+  listedReadingTest,
   planSynthesizedPairs,
+  siblingReadingPairs,
+  unrestrictedPairs,
   withoutUnwrittenPunctuation,
 } from "../src/pairings.ts";
-import type { PairingRecord, SynthesizedPair } from "../src/pairings.ts";
+import type {
+  ContradictionKind,
+  MispairedPair,
+  PairingRecord,
+  TaggedPair,
+  SynthesizedPair,
+} from "../src/pairings.ts";
 import type { Database, DatabaseRecord, Segment } from "../src/types.ts";
 import type { ParticleSite } from "../src/variants.ts";
 import {
   databaseFile,
   databaseVersion,
   releaseFiles,
+  reviewCandidatesFile,
   writeDatabase,
 } from "./lib/database-files.ts";
 import type { Manifest } from "./lib/database-files.ts";
@@ -25,9 +37,10 @@ import { parseGeneratorOptions } from "./lib/options.ts";
 const {
   output: outputDirectory,
   configuration,
-  updateSynthesizedPairs,
+  updateReviewedPairs,
 } = parseGeneratorOptions("dist");
 const synthesizedPairsURL = new URL("../data/synthesized-pairs.json", import.meta.url);
+const mispairedPairsURL = new URL("../data/mispaired-pairs.json", import.meta.url);
 const dataset = await loadDataset(configuration);
 const goldText = await readFile(new URL("../test/fixtures/gold.json", import.meta.url), "utf8");
 const evaluation = await evaluateDataset(dataset, goldText);
@@ -46,6 +59,9 @@ const seen = new Set<string>();
 const counts = { entries: 0, pairs: 0, synthesized: 0 };
 const drops = dataset.omittedParticles?.drops ?? new Map<string, ParticleSite[]>();
 const records: PairingRecord[] = [];
+const kinds = new Map<string, ContradictionKind | undefined>();
+const byKey = new Map<string, DatabaseRecord>();
+const tagged: TaggedPair[] = [];
 const siblingReadings = Map.groupBy(
   [...dataset.pairs()].filter((pair) => !pair.readingTags.includes("sk")),
   (pair) => `${pair.id}\t${pair.spelling}`,
@@ -75,8 +91,32 @@ for (const pair of dataset.pairs()) {
     (siblingReadings.get(`${pair.id}\t${pair.spelling}`) ?? []).map((sibling) => sibling.reading),
   );
   if (kind !== undefined) record.pairing = kind;
+  kinds.set(key, kind);
+  byKey.set(key, record);
+  tagged.push(pair);
   (entries[pair.id] ??= []).push(record);
   ++counts.pairs;
+}
+
+// The rules see only kana that contradict a reading. Review found other pairs whose reading
+// belongs to another spelling, and the list of those marks them too.
+const listedMispaired: MispairedPair[] = existsSync(mispairedPairsURL)
+  ? JSON.parse(await readFile(mispairedPairsURL, "utf8"))
+  : [];
+const mispaired = planMispairedPairs(kinds, listedMispaired);
+for (const key of mispaired.keys) byKey.get(key)!.pairing = "mispaired";
+if (updateReviewedPairs) {
+  const kept = listedMispaired.filter((item) => !mispaired.obsolete.includes(item));
+  await writeFile(mispairedPairsURL, JSON.stringify(kept, undefined, 2) + "\n");
+  console.log(
+    `Wrote ${kept.length} mispaired pairs, after dropping ${mispaired.obsolete.length} obsolete`,
+  );
+} else if (mispaired.problems.length) {
+  for (const problem of mispaired.problems) console.error(problem);
+  console.error(
+    "Mispaired pairs need attention; run the build with --update-reviewed-pairs to drop obsolete ones",
+  );
+  process.exitCode = 1;
 }
 
 // Every spelling keeps at least one pair that fits its kana; where JMdict has none, the reviewed list supplies one.
@@ -86,8 +126,8 @@ const reviewed: SynthesizedPair[] = existsSync(synthesizedPairsURL)
 const jmdictPairs = new Set(
   records.map((record) => `${record.id}\t${record.spelling}\t${record.reading}`),
 );
-const plan = planSynthesizedPairs(records, drops, reviewed, jmdictPairs);
-if (updateSynthesizedPairs) {
+const plan = planSynthesizedPairs(records, drops, reviewed, jmdictPairs, mispaired.keys);
+if (updateReviewedPairs) {
   // Keep every listed entry, even one with a problem, unless it is obsolete; problems are fixed by hand.
   const kept = reviewed.filter((item) => !plan.obsolete.includes(item));
   const next = [...kept, ...plan.missing].sort(
@@ -100,7 +140,7 @@ if (updateSynthesizedPairs) {
 } else if (plan.problems.length) {
   for (const problem of plan.problems) console.error(problem);
   console.error(
-    "Synthesized pairs need review; run the build with --update-synthesized-pairs to add missing ones",
+    "Synthesized pairs need review; run the build with --update-reviewed-pairs to add missing ones",
   );
   process.exitCode = 1;
 }
@@ -154,6 +194,34 @@ const files = await writeDatabase(outputDirectory, {
 const evaluationBytes = Buffer.from(JSON.stringify(evaluation, undefined, 2) + "\n");
 await writeFile(join(outputDirectory, "evaluation.json"), evaluationBytes);
 files["evaluation.json"] = { bytes: evaluationBytes.length, sha256: digest(evaluationBytes) };
+// The pairs worth a reviewer's look, so that an update can say which ones are new: those a
+// search-only form leaves open, and ordinary ones whose reading may belong to a sibling spelling.
+const marked = new Set(
+  [...byKey].filter(([, record]) => record.pairing !== undefined).map(([key]) => key),
+);
+const candidate = (kind: "search-only" | "sibling-reading") => (key: string) => {
+  const [id] = JSON.parse(key) as [string, string, string];
+  return { id, ...byKey.get(key)!, kind };
+};
+const candidates = [
+  ...[...unrestrictedPairs(tagged, marked)].map(candidate("search-only")),
+  ...[
+    ...siblingReadingPairs(
+      tagged.map((pair) => ({
+        ...pair,
+        segments: byKey.get(recordKey(pair.id, pair.spelling, pair.reading))!.segments,
+      })),
+      marked,
+      listedReadingTest(
+        makeCharacterReadings(dataset.kanjidic),
+        makeNanoriReadings(dataset.kanjidic),
+      ),
+    ),
+  ].map(candidate("sibling-reading")),
+];
+const candidateBytes = Buffer.from(JSON.stringify(candidates, undefined, 1) + "\n");
+await writeFile(join(outputDirectory, reviewCandidatesFile), candidateBytes);
+files[reviewCandidatesFile] = { bytes: candidateBytes.length, sha256: digest(candidateBytes) };
 const manifest: Manifest = { version, schemaVersion, counts, files };
 await writeFile(
   join(outputDirectory, "manifest.json"),

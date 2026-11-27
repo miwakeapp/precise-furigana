@@ -45,7 +45,8 @@ type Switch = keyof typeof switches;
 export interface GeneratorOptions {
   output: string;
   configuration: Configuration;
-  updateSynthesizedPairs: boolean;
+  /** Rewrite the reviewed pair lists: add missing synthesized pairs and drop obsolete pairs. */
+  updateReviewedPairs: boolean;
 }
 
 export function parseGeneratorOptions(
@@ -56,7 +57,7 @@ export function parseGeneratorOptions(
     args,
     options: {
       output: { type: "string", default: defaultOutput },
-      "update-synthesized-pairs": { type: "boolean", default: false },
+      "update-reviewed-pairs": { type: "boolean", default: false },
       ...(Object.fromEntries(
         Object.keys(switches).map((name) => [name, { type: "boolean", default: false }]),
       ) as Record<Switch, { type: "boolean"; default: false }>),
@@ -69,6 +70,6 @@ export function parseGeneratorOptions(
   return {
     output: values.output,
     configuration,
-    updateSynthesizedPairs: values["update-synthesized-pairs"],
+    updateReviewedPairs: values["update-reviewed-pairs"],
   };
 }

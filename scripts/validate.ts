@@ -16,7 +16,7 @@ import { pairKey, recordKey } from "../src/segments.ts";
 import { deriveOmittedParticles } from "../src/variants.ts";
 import { validateDisplayAlignment } from "../src/display.ts";
 import { contradictionKind, contradictsSpelling } from "../src/pairings.ts";
-import type { SynthesizedPair } from "../src/pairings.ts";
+import type { MispairedPair, SynthesizedPair } from "../src/pairings.ts";
 import { enumeratePairs, loadSources, makeCharacterReadings } from "../src/sources.ts";
 import { isSilentPunctuation, splitGraphemes } from "../src/kana.ts";
 import {
@@ -82,6 +82,13 @@ const synthesized = new Map(
     recordKey(item.id, item.spelling, item.reading),
     item,
   ]),
+);
+const mispaired = new Map(
+  (
+    JSON.parse(
+      await readFile(new URL("../data/mispaired-pairs.json", import.meta.url), "utf8"),
+    ) as MispairedPair[]
+  ).map((item): [string, MispairedPair] => [recordKey(item.id, item.spelling, item.reading), item]),
 );
 const annotations = compileAnnotations(JSON.parse(annotationsText));
 assert.deepEqual(Object.keys(output), ["version", "schemaVersion", "jmdictDate", "entries"]);
@@ -200,18 +207,23 @@ for (const [id, records] of Object.entries(output.entries)) {
       record.segments,
       (siblingReadings.get(`${id}\t${record.spelling}`) ?? []).map((sibling) => sibling.reading),
     );
+    // A reviewed mispaired pair is one the rules cannot see; a pair they do see needs no listing.
+    const listed = mispaired.delete(key);
+    assert.ok(!listed || kind === undefined, `Mispaired pair is already marked by rule: ${key}`);
+    const pairing = listed ? "mispaired" : kind;
     assert.deepEqual(
       Object.keys(record),
-      kind === undefined
+      pairing === undefined
         ? ["spelling", "reading", "segments"]
         : ["spelling", "reading", "segments", "pairing"],
     );
-    assert.equal(record.pairing, kind);
-    if (kind === undefined) fitting.add(`${id}\t${record.spelling}`);
+    assert.equal(record.pairing, pairing);
+    if (pairing === undefined) fitting.add(`${id}\t${record.spelling}`);
     ++count;
   }
 }
 assert.equal(expected.size, 0, "Every permitted JMdict spelling/reading pair is present");
+assert.equal(mispaired.size, 0, "Every reviewed mispaired pair marks a JMdict pair");
 assert.equal(
   synthesized.size,
   0,

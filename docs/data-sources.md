@@ -18,6 +18,7 @@ The build reads only what `npm run fetch` downloads and the files in `data/`. No
 | `lexical-evidence.json`           | Reviewed word-level allocations                                                                                                      | The word, wherever it occurs, including inside longer words |
 | `annotations.json`                | Complete replacement alignments                                                                                                      | One ID, spelling, and reading                               |
 | `synthesized-pairs.json`          | Readings for spellings that JMdict pairs only with contradicting readings                                                            | One added record each                                       |
+| `mispaired-pairs.json`            | JMdict pairs whose reading belongs to another spelling, where no kana shows it                                                       | One record each, marked `"mispaired"`                       |
 
 Both Wiktionary files keep only readings the source explicitly marks as on or kun; historical, nanori, and unmarked forms are excluded, and unmarked kun forms are never guessed to be prefixes. Each file's `source` header says where and when it was extracted. Refreshing them is a separate review, not part of the weekly update.
 
@@ -60,3 +61,17 @@ Same fields as a lexical fact, except that `id` is the JMdict ID and `sources` i
 ### Synthesized pairs
 
 Each entry has `id`, `spelling`, `reading`, and `note`. The note says what kind of reading it is: a spoken form JMdict lacks, a reading JMdict has but restricts to other spellings, or a misspelling, kana variant, or historical spelling read as written. A new entry also has `"unreviewed": true`, which stops the build until someone checks the reading and removes the flag. [Maintenance](maintenance.md#synthesized-pairs) covers keeping it current.
+
+### Mispaired pairs
+
+Each entry has `id`, `spelling`, `reading`, and `note`. These are JMdict pairs whose reading belongs to another spelling of the entry. The build marks such a pair by itself when the spelling's kana disagree with the reading. It cannot when nothing on the page disagrees: <span lang="ja">上口唇</span> is paired with <span lang="ja">じょうしん</span>, the reading of <span lang="ja">上唇</span>, and only knowing that <span lang="ja">口</span> goes unread shows the pair is wrong. Those pairs are listed here, and the build marks each `"mispaired"`.
+
+Most involve a search-only spelling or reading. JMdict records no restrictions for search-only forms, so it pairs such a spelling with every reading of its entry and such a reading with every spelling. The first pairs to consider are therefore the unmarked ones in which a search-only spelling has more than one reading, or a search-only reading more than one spelling.
+
+The rest are ordinary pairs where JMdict lacks a restriction it could have. <span lang="ja">その外</span> is paired with <span lang="ja">そのた</span>, which is <span lang="ja">その他</span> with <span lang="ja">他</span> read <span lang="ja">た</span>; <span lang="ja">外</span> has no such reading. The build looks for that shape: two ordinary spellings that differ in one kanji and share a reading, where KANJIDIC2 lists the reading for one spelling's kanji and not for the other's. Most such pairs are two kanji for one word and are fine, so they are candidates to look up, not pairs to mark. A wrong one is also worth proposing to JMdict as a restriction; once JMdict has it, the pair is gone and its entry here becomes obsolete.
+
+Every build writes both kinds of candidate to `review-candidates.json` beside the database, and a weekly update lists the ones that are new.
+
+List a pair only when the reading cannot be a reading of that spelling: the spelling writes something the reading lacks, or uses characters tied to another of the entry's readings. An old or variant kanji for the same word takes every reading the ordinary spelling takes, and a rare reading is not a wrong one. A wrong listing hides a valid record from every consumer, so when in doubt, leave the pair unlisted. The note names the character or morpheme that settles it, and a dictionary where one was needed.
+
+The build fails when a listed pair is no longer in JMdict, when the build's own rules have come to mark it, or when it has no note. [Maintenance](maintenance.md#synthesized-pairs) covers keeping the list current.

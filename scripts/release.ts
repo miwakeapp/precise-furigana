@@ -21,6 +21,7 @@ import {
 import type { Manifest } from "./lib/database-files.ts";
 import type { Evaluation, EvaluationResult, GoldExample } from "./lib/evaluation.ts";
 import { renderReleaseNotes } from "./lib/release-notes.ts";
+import type { ReleaseCommit } from "./lib/release-notes.ts";
 
 export interface ReleaseDescriptor {
   tag: string;
@@ -50,21 +51,80 @@ export interface GitHubRelease {
 /** The file a stamping run leaves the previous release's database in, for the notes to compare. */
 const previousFile = "previous.json";
 
+/** A comparison of two revisions, as GitHub's API describes it. */
+export interface GitHubComparison {
+  commits: { sha: string; html_url: string; commit: { message: string } }[];
+}
+
 /**
- * A release's tag, title and notes. `previous` is the database of the release before it, and
- * `previousURL` that release's page.
+ * A release's tag, title and notes. `previous` is the database of the release before it,
+ * `previousURL` that release's page, and `commits` the commits made since it.
  */
 export function releaseDescriptor(
   database: Database,
   lock: Pick<SourceLock, "release">,
   previous?: Database,
   previousURL?: string,
+  commits?: ReleaseCommit[],
 ): ReleaseDescriptor {
   return {
     tag: `v${database.version}`,
     title: `Precise Furigana ${database.version}`,
-    notes: renderReleaseNotes(database, lock, previous, previousURL),
+    notes: renderReleaseNotes(database, lock, previous, previousURL, commits),
   };
+}
+
+/**
+ * Whether a commit that changes these files could change the database. The build reads the
+ * generator in `src/`, the data in `data/`, and its own script with the modules that script
+ * imports; a commit that touches none of them leaves the database as it was.
+ */
+export function touchesDatabaseInputs(paths: string[]): boolean {
+  return paths.some(
+    (path) =>
+      /^src\/[^/]+\.ts$/u.test(path) ||
+      /^data\/[^/]+\.json$/u.test(path) ||
+      /^scripts\/(build|lib\/(options|evaluation|database-files|zip))\.ts$/u.test(path),
+  );
+}
+
+/**
+ * Whether a commit is a routine dictionary update: it moves the dictionary pin and changes
+ * nothing outside the data files and regression fixtures, which is all the update workflow
+ * commits. The notes already name the dictionary's date, so such a commit tells a reader nothing.
+ */
+export function isRoutineUpdate(paths: string[]): boolean {
+  return (
+    paths.includes("data/sources.lock.json") &&
+    paths.every((path) => /^(data|test\/fixtures)\//u.test(path))
+  );
+}
+
+/**
+ * Keep the commits that explain a change to the database: those that could have changed it and
+ * are not routine dictionary updates. `changedPaths` gives a commit's files, or nothing when
+ * they cannot be listed in full, in which case the commit is kept.
+ */
+export async function commitsToName(
+  commits: ReleaseCommit[],
+  changedPaths: (sha: string) => Promise<string[] | undefined>,
+): Promise<ReleaseCommit[]> {
+  const kept: ReleaseCommit[] = [];
+  for (const commit of commits) {
+    const paths = await changedPaths(commit.sha).catch(() => undefined);
+    if (paths === undefined || (touchesDatabaseInputs(paths) && !isRoutineUpdate(paths)))
+      kept.push(commit);
+  }
+  return kept;
+}
+
+/** The commits GitHub lists between two revisions, oldest first. */
+export function comparedCommits(comparison: GitHubComparison): ReleaseCommit[] {
+  return comparison.commits.map(({ sha, html_url: url, commit }) => ({
+    sha,
+    subject: commit.message.split("\n", 1)[0],
+    url,
+  }));
 }
 
 /** The revisions already released for a version's schema and dictionary date, from its tags. */
@@ -248,6 +308,30 @@ async function main(): Promise<void> {
   const previous: Database | undefined = existsSync(previousPath)
     ? JSON.parse(await readFile(previousPath, "utf8"))
     : undefined;
+  // The commits since the previous release that could have changed the database, other than
+  // routine dictionary updates, say why it did. They are an aid to the reader, so a failure to
+  // list them is reported and does not stop the release.
+  let commits: ReleaseCommit[] = [];
+  if (previous && process.env.GH_TOKEN && process.env.GITHUB_REPOSITORY && process.env.GITHUB_SHA) {
+    try {
+      commits = await commitsToName(
+        comparedCommits(
+          (await github(
+            `compare/v${previous.version}...${process.env.GITHUB_SHA}`,
+          )) as GitHubComparison,
+        ),
+        async (sha) => {
+          const { files } = (await github(`commits/${sha}`)) as { files?: { filename: string }[] };
+          // GitHub lists at most 300 files here; a longer list is not known in full.
+          return files === undefined || files.length >= 300
+            ? undefined
+            : files.map(({ filename }) => filename);
+        },
+      );
+    } catch (error) {
+      console.warn(`Could not list the commits since v${previous.version}: ${String(error)}`);
+    }
+  }
   const descriptor = releaseDescriptor(
     database,
     lock,
@@ -255,6 +339,7 @@ async function main(): Promise<void> {
     previous && process.env.GITHUB_REPOSITORY
       ? `https://github.com/${process.env.GITHUB_REPOSITORY}/releases/tag/v${previous.version}`
       : undefined,
+    commits,
   );
   const notesPath = join(values.directory, "release-notes.md");
   await writeFile(notesPath, descriptor.notes);

@@ -19,8 +19,8 @@ import {
   renderCommitMessage,
   renderReport,
   reviewReasons,
-  summarizeChanges,
 } from "./lib/update-report.ts";
+import { summarizeChanges } from "./lib/change-lists.ts";
 import type { SynthesizedPair } from "../src/pairings.ts";
 import type { Change } from "./lib/compare.ts";
 import type { DictionaryPin, StepResult, Update } from "./lib/update-report.ts";

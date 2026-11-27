@@ -13,6 +13,10 @@ import {
 } from "../scripts/lib/database-files.ts";
 import { extractZIPMember } from "../scripts/lib/zip.ts";
 import {
+  commitsToName,
+  comparedCommits,
+  isRoutineUpdate,
+  touchesDatabaseInputs,
   releaseDescriptor,
   releasedRevisions,
   verifyEvaluation,
@@ -186,4 +190,75 @@ test("a release is tagged with its version", () => {
   assert.equal(descriptor.tag, "v1.20261116.2");
   assert.equal(descriptor.title, "Precise Furigana 1.20261116.2");
   assert.match(descriptor.notes, /JMdict 2026-11-16/u);
+});
+
+test("the commits since a release are listed by their subject lines", () => {
+  assert.deepEqual(
+    comparedCommits({
+      commits: [
+        {
+          sha: "0123456789abcdef0123456789abcdef01234567",
+          html_url: "https://example.com/commit/0123456",
+          commit: { message: "Update JMdict to 2026-11-23\n\nMoves the dictionary pin." },
+        },
+      ],
+    }),
+    [
+      {
+        sha: "0123456789abcdef0123456789abcdef01234567",
+        subject: "Update JMdict to 2026-11-23",
+        url: "https://example.com/commit/0123456",
+      },
+    ],
+  );
+});
+
+test("only commits that touch what the build reads are named", async () => {
+  assert.ok(touchesDatabaseInputs(["README.md", "src/align.ts"]));
+  assert.ok(touchesDatabaseInputs(["data/sources.lock.json"]));
+  assert.ok(touchesDatabaseInputs(["scripts/build.ts"]));
+  assert.ok(touchesDatabaseInputs(["scripts/lib/database-files.ts"]));
+  // Documentation, tests, workflows and the scripts that only describe a database cannot.
+  assert.ok(
+    !touchesDatabaseInputs([
+      "README.md",
+      "docs/maintenance.md",
+      "test/align.test.ts",
+      "test/fixtures/gold.json",
+      ".github/workflows/update.yml",
+      "scripts/lib/release-notes.ts",
+      "scripts/update.ts",
+      "package.json",
+    ]),
+  );
+  // A routine update moves the pin and touches only what the update workflow commits.
+  assert.ok(isRoutineUpdate(["data/sources.lock.json", "data/synthesized-pairs.json"]));
+  assert.ok(
+    isRoutineUpdate([
+      "data/sources.lock.json",
+      "data/lexical-evidence.json",
+      "test/fixtures/gold.json",
+    ]),
+  );
+  assert.ok(!isRoutineUpdate(["data/synthesized-pairs.json"]));
+  assert.ok(!isRoutineUpdate(["data/sources.lock.json", "src/align.ts"]));
+  const commit = (sha: string) => ({ sha, subject: sha, url: sha });
+  const files: Record<string, string[] | undefined> = {
+    readme: ["README.md"],
+    update: ["data/sources.lock.json", "data/synthesized-pairs.json"],
+    data: ["data/mispaired-pairs.json", "docs/data-sources.md"],
+    huge: undefined,
+  };
+  const named = await commitsToName(
+    ["readme", "update", "data", "huge", "unknown"].map(commit),
+    async (sha) => {
+      if (sha === "unknown") throw new Error("not found");
+      return files[sha];
+    },
+  );
+  // A commit whose files cannot be listed is kept: it may be the cause.
+  assert.deepEqual(
+    named.map(({ sha }) => sha),
+    ["data", "huge", "unknown"],
+  );
 });

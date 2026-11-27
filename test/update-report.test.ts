@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  diffMispairedPairs,
   diffSynthesizedPairs,
   renderCommitMessage,
   renderReport,
@@ -33,6 +34,8 @@ function update(overrides: Partial<Update> = {}): Update {
     after: { tag: "3.6.2+20261012", url: "https://example.test/new", date: "2026-10-12" },
     ...summarizeChanges([]),
     synthesized: diffSynthesizedPairs([], []),
+    mispaired: diffMispairedPairs([], []),
+    candidates: [],
     otherDataChanges: [],
     compared: true,
     build: passed,
@@ -294,6 +297,70 @@ test("the report's headings nest by subject, with each list under the section it
     "## Changed records",
     "## Added and removed records",
   ]);
+});
+
+test("reviewed mispaired pairs are reported in their own section, and an added one needs review", () => {
+  const item = {
+    id: "1",
+    spelling: "山川",
+    reading: "やまかわ",
+    note: "Belongs to another spelling.",
+  };
+  const marked = record([["山川", "やまかわ"]]);
+  const removed = update({
+    ...summarizeChanges([
+      { change: "pairing", before: { ...marked, pairing: "mispaired" }, after: marked },
+    ]),
+    mispaired: diffMispairedPairs([item], []),
+  });
+  // Dropping a pair that no longer applies is the update's own doing.
+  assert.deepEqual(reviewReasons(removed), []);
+  const report = renderReport(removed);
+  assert.match(
+    report,
+    /## Reviewed mispaired pairs\n\n<details open>\n<summary><h3>Removed because JMdict no longer has the pair or a rule now marks it \(1\)<\/h3>/u,
+  );
+  // The record is reported once, there and not under the pairing changes too.
+  assert.match(report, /\| Pairing changed \| 0 \|/u);
+  assert.match(
+    renderCommitMessage(removed),
+    /Removes 1 reviewed mispaired pair that no longer applies\./u,
+  );
+  const added = update({ mispaired: diffMispairedPairs([], [item]) });
+  assert.deepEqual(reviewReasons(added), ["1 pair was newly listed as mispaired; check it."]);
+  // A newly listed pair may be one that JMdict could restrict, and the description says so.
+  assert.match(
+    renderReport(added),
+    /## Reviewed mispaired pairs\n\nWhere neither form .* JMdict lacks a restriction/u,
+  );
+  assert.doesNotMatch(report, /JMdict lacks a restriction/u);
+  assert.match(
+    renderReport(added),
+    /<summary><h3>New \(1\)<\/h3><\/summary>\n\n- \[1\]\([^)]+\): <span lang="ja">山川<\/span> read <span lang="ja">やまかわ<\/span>\. Belongs to another spelling\.\n/u,
+  );
+});
+
+test("new pairs that only review can vouch for are listed without making the update wait", () => {
+  const split = record([
+    ["山", "やま"],
+    ["川", "かわ"],
+  ]);
+  const listed = update({
+    candidates: [
+      { ...split, kind: "search-only" },
+      { ...split, kind: "search-only", reading: "さんせん", segments: [["山川", "さんせん"]] },
+      { ...split, kind: "sibling-reading", id: "2" },
+    ],
+  });
+  assert.deepEqual(reviewReasons(listed), []);
+  assert.match(
+    renderReport(listed),
+    /<summary><h3>New pairs whose reading may belong to a sibling spelling \(1\)<\/h3><\/summary>\n\n- \[2\]\(/u,
+  );
+  assert.match(
+    renderReport(listed),
+    /## Added and removed records\n[^#]*<details open>\n<summary><h3>New pairs of a search-only form with one of several partners \(2\)<\/h3><\/summary>\n\n- \[1\]\([^)]+\): <span lang="ja"><ruby>山<rt>やま<\/ruby><ruby>川<rt>かわ<\/ruby><\/span>, <span lang="ja"><ruby>山川<rt>さんせん<\/ruby><\/span>\n/u,
+  );
 });
 
 test("a failed build is reported with its output and without a comparison", () => {

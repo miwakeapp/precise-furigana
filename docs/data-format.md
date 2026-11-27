@@ -46,8 +46,8 @@ A multi-character ruby group means the characters' individual sounds are unresol
 
 `pairing` is absent for an ordinary JMdict pair.
 
-- `"mispaired"`: a JMdict pair whose reading contradicts its spelling in a way that helps no reader. Never choose one for a spelling; a record that fits always exists. The kinds:
-  - the reading belongs to another spelling in the entry, as in <span lang="ja">気持ちよい</span> read <span lang="ja">きもちいい</span> (<span lang="ja"><ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い</span>). Most involve a search-only (`sK` or `sk`) form, which JMdict cannot restrict;
+- `"mispaired"`: a JMdict pair whose reading does not belong to its spelling, or contradicts it in a way that helps no reader. Never choose one for a spelling; a record that fits always exists. The kinds:
+  - the reading belongs to another spelling in the entry, as in <span lang="ja">気持ちよい</span> read <span lang="ja">きもちいい</span> (<span lang="ja"><ruby>気<rt>き</rt></ruby><ruby>持<rt>も</rt></ruby>ち<ruby>よ<rt>い</rt></ruby>い</span>). Most involve a search-only (`sK` or `sk`) form, which JMdict cannot restrict. The build finds these itself where the kana disagree. Where nothing on the page disagrees, as in <span lang="ja">上口唇</span> read <span lang="ja">じょうしん</span>, which is how <span lang="ja">上唇</span> is read, they come from the reviewed list in [data/mispaired-pairs.json](../data/mispaired-pairs.json);
   - the reading fits only by giving a kanji a sound that belongs to the kana: <span lang="ja">けも耳</span> read <span lang="ja">けものみみ</span> would need <span lang="ja">耳</span> read <span lang="ja">のみみ</span>, and is segmented <span lang="ja">け<ruby>も<rt>もの</rt></ruby><ruby>耳<rt>みみ</rt></ruby></span>;
   - a search-only spelling omits a particle that the reading keeps, as in <span lang="ja">そっぽ向く</span> read <span lang="ja">そっぽをむく</span>;
   - the reading has punctuation the spelling does not write: <span lang="ja">ＳＦ</span> read <span lang="ja">エス・エフ</span> is <span lang="ja"><ruby>Ｓ<rt>エス・</rt></ruby><ruby>Ｆ<rt>エフ</rt></ruby></span>, and the reading to use is <span lang="ja">エスエフ</span>;

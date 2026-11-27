@@ -66,10 +66,10 @@ Non-default configurations cannot be released.
 The build fails when a spelling has no fitting record and no entry in `data/synthesized-pairs.json`, when an entry's reading no longer fits its spelling or is still flagged `"unreviewed"`, when JMdict now has the pair, or when a listed spelling no longer needs one. To fix:
 
 ```sh
-npm run build -- --update-synthesized-pairs
+npm run build -- --update-reviewed-pairs
 ```
 
-This drops obsolete entries and adds new ones, with the reading the spelling's kana imply, flagged `"unreviewed": true`. Check each new reading; the implied reading is only a starting point and can misplace kana where the generator grouped kana with kanji. Then write a short `note` as described in [data sources](data-sources.md#synthesized-pairs), remove the flag, and rebuild.
+This drops obsolete entries and adds new ones, with the reading the spelling's kana imply, flagged `"unreviewed": true`. It also drops the entries of `data/mispaired-pairs.json` that no longer apply, because JMdict has dropped the pair or the build now marks it by rule. Check each new reading; the implied reading is only a starting point and can misplace kana where the generator grouped kana with kanji. Then write a short `note` as described in [data sources](data-sources.md#synthesized-pairs), remove the flag, and rebuild.
 
 ## Weekly update
 
@@ -83,19 +83,23 @@ node scripts/update.ts recheck    # rebuild and report again after editing data
 
 The report compares the database before and after, and is written with a commit message and a status file to `.cache/update/`. The workflow commits the changed data to the `update-dictionaries` branch and opens a pull request with the report as its description. If a pull request is already open, the run continues on its branch, so review work there is kept.
 
-The workflow has two jobs. The first moves the pin and, when the update needs review, runs Claude. That job reads the web, so it holds no credential that can write to the repository. The second job receives only `data/`, `test/fixtures/`, the report and the commit message from the first, and commits them from a checkout of its own using `UPDATE_TOKEN`. Whether an update may merge itself is settled before the review runs, so nothing the review does can make it merge unattended.
+The workflow has two jobs. The first moves the pin and, when the update needs review, runs Claude. That job reads the web, so it holds no credential that can write to the repository. The second job receives only `data/`, `test/fixtures/`, the report and the commit message from the first, and commits them from a checkout of its own using `UPDATE_TOKEN`. An update merges itself only if it was clean before the review ran and the review left it exactly as it was. The first job takes a fingerprint of the data files, the fixtures and the commit message before the review, and the second job compares it with what it is about to commit, so a review can add nothing to an unattended merge.
 
-An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has, makes no existing segmentation coarser or incompatible, and adds no record whose kanji share furigana. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
+An update is clean when it builds and validates, changes only the pin and removes synthesized pairs that JMdict now has and reviewed mispaired pairs that no longer apply, makes no existing segmentation coarser or incompatible, and adds no record whose kanji share furigana. A clean update merges itself once CI passes. Anything else waits for a person: Claude first tries to resolve it, following the next section, and its changes and notes are in the pull request.
+
+New pairs that may be mispaired without any kana showing it do not make an update wait, but they do get looked at: Claude reviews them even when the update is otherwise clean. If it lists none of them, the update still merges itself, with Claude's notes in its description. If it lists one, that is a change to the data, and the update waits for a person.
 
 ### Review a dictionary update
 
-These are the instructions for whoever resolves an update that needs review, in CI or locally. Read `.cache/update/report.md` first. Edit only files in `data/` and `test/fixtures/`. Do not use git or contact GitHub; the workflow commits your changes.
+These are the instructions for whoever reviews an update, in CI or locally. A review runs when an update needs resolving, and also when a clean update brings new pairs worth a look; if the report lists nothing that applies, change nothing. Read `.cache/update/report.md` first. Edit only files in `data/` and `test/fixtures/`. Do not use git or contact GitHub; the workflow commits your changes.
 
 - New synthesized pairs flagged `"unreviewed"` in `data/synthesized-pairs.json`: check each reading against the entry's spellings and readings, correct it if the implied reading misplaced kana, write a `note` as [data sources](data-sources.md#synthesized-pairs) describes, and remove the flag.
 - A stale annotation, whose pair has left JMdict: remove it from `data/annotations.json`, or move it to the pair's new ID or spelling if the entry was only renumbered or respelled.
 - A segmentation that became coarser or incompatible: use `npm run inspect -- <spelling> <reading> --explain` to find out why. If the new result is wrong, fix it with a lexical fact or an annotation as in [Correct an alignment](#correct-an-alignment). If it is right, or you cannot tell, say so in the notes and change nothing.
 - A regression fixture that fails: investigate, but do not edit the fixture unless JMdict removed its pair.
 - New records with kanji sharing furigana: these are words the generator could not divide, and this review is the only time each is looked at. Look each one up, in Kotobank's dictionaries and Wiktionary first. Where a source documents how the reading divides, by the standard in [data sources](data-sources.md#lexical-facts), add a fact to `data/lexical-evidence.json` with the source's URL, giving it an `id` of `U<JMdict date>-<number>`. Leave the word grouped when nothing documents a split, when the group is a single unit such as a jukujikun or a name, or when an unwritten particle sits between the characters. Check a fact's effect with `npm run inspect`, and say in the notes what you decided for each word and why.
+
+- New pairs of a search-only form with one of several partners, and new pairs whose reading may belong to a sibling spelling: JMdict cannot restrict search-only forms, and sometimes lacks a restriction on ordinary ones, so some of these pairs are wrong. For each, decide whether the reading can belong to the spelling, by the standard in [data sources](data-sources.md#mispaired-pairs). Look the ordinary ones up in a dictionary; the characters alone mislead in both directions. When you list a pair in which neither form is search-only, say in the notes that JMdict lacks a restriction there and which one, so that a person can propose it; you cannot submit it yourself. List the ones that cannot in `data/mispaired-pairs.json` with a `note`, and leave a pair alone when in doubt. If that leaves a spelling with no fitting record, the build asks for a synthesized pair for it.
 
 Afterwards run `npm run build` and `npm run validate` until both pass, then write `.cache/update/review.md`: what you changed and why, and anything you were unsure of, for the person who will merge. Keep it short. The notes become part of the pull request's description, under a heading of their own, so use paragraphs and lists and no headings, and wrap Japanese text in `<span lang="ja">`; otherwise some readers' browsers draw its kanji in their Chinese shapes.
 

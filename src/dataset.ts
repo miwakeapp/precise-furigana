@@ -164,6 +164,7 @@ export interface AlignmentPipeline {
 /** A pipeline with the pinned sources it was compiled from and the reviewed annotations. */
 export interface Dataset extends AlignmentPipeline {
   jmdict: JMdict;
+  kanjidic: Kanjidic2;
   lock: SourceLock;
   annotations: Map<string, Annotation>;
   annotationsSHA256: string;
@@ -209,6 +210,11 @@ export async function generatorDigest(): Promise<string> {
     "data/synthesized-pairs.json",
     "\0",
     await readFile(synthesizedPairs).catch(() => ""),
+  );
+  inputs.push(
+    "data/mispaired-pairs.json",
+    "\0",
+    await readFile(new URL("../data/mispaired-pairs.json", import.meta.url)).catch(() => ""),
   );
   const hash = createHash("sha256");
   for (const input of inputs) hash.update(input);
@@ -1116,6 +1122,7 @@ export async function loadDataset(options: PipelineOptions = {}): Promise<Datase
   return {
     ...pipeline,
     jmdict,
+    kanjidic,
     lock,
     annotations,
     annotationsSHA256: digest(annotationsText),

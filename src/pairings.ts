@@ -1,5 +1,5 @@
 import { isKana, isSilentPunctuation, normalizeKana, splitGraphemes } from "./kana.ts";
-import { pairKey, segmentReading, segmentText } from "./segments.ts";
+import { pairKey, recordKey, segmentReading, segmentText } from "./segments.ts";
 import type { Segment } from "./types.ts";
 import type { ParticleSite } from "./variants.ts";
 
@@ -14,6 +14,27 @@ export interface SynthesizedPair {
   note?: string;
   /** Set on a pair the build proposed and nobody has checked. */
   unreviewed?: boolean;
+}
+
+/**
+ * A pair in `data/mispaired-pairs.json`: one JMdict permits, and whose kana do not contradict
+ * each other, but whose reading review found to belong to another spelling.
+ */
+export interface MispairedPair {
+  id: string;
+  spelling: string;
+  reading: string;
+  /** Why the reading does not belong to the spelling. */
+  note: string;
+}
+
+export interface MispairedPairPlan {
+  /** The record keys of the listed pairs to mark. */
+  keys: Set<string>;
+  /** Messages that should stop the build. */
+  problems: string[];
+  /** Listed pairs that no longer have anything to mark. */
+  obsolete: MispairedPair[];
 }
 
 /** A JMdict pair with the generator's segments and, where they are known, the release's. */
@@ -354,11 +375,188 @@ export function impliedReading(
   return parts.join("");
 }
 
+/** A JMdict pair with the tags of its two forms. */
+export interface TaggedPair {
+  id: string;
+  spelling: string;
+  reading: string;
+  spellingTags: string[];
+  readingTags: string[];
+}
+
+/**
+ * The pairs that JMdict had no means to restrict, and that nothing else vouches for. JMdict
+ * records no restrictions for search-only forms, so a search-only spelling is paired with every
+ * reading of its entry, and a search-only reading with every spelling. Where such a form still
+ * has more than one partner once the marked pairs are set aside, any of those pairs may belong
+ * to another form, and only review can tell. `marked` holds the record keys of the pairs that
+ * already have a `pairing`. Returns the record keys of the pairs to review.
+ */
+export function unrestrictedPairs(pairs: TaggedPair[], marked: Set<string>): Set<string> {
+  const partners = new Map<string, number>();
+  const count = (key: string) => partners.set(key, (partners.get(key) ?? 0) + 1);
+  // A spelling without kanji is its own reading, so it has nothing to mispair.
+  const open = pairs.filter(
+    (pair) =>
+      /\p{Script=Han}/u.test(pair.spelling) &&
+      !marked.has(recordKey(pair.id, pair.spelling, pair.reading)),
+  );
+  for (const pair of open) {
+    count(`${pair.id}\tspelling\t${pair.spelling}`);
+    count(`${pair.id}\treading\t${pair.reading}`);
+  }
+  const keys = new Set<string>();
+  for (const pair of open) {
+    if (
+      (pair.spellingTags.includes("sK") &&
+        partners.get(`${pair.id}\tspelling\t${pair.spelling}`)! > 1) ||
+      (pair.readingTags.includes("sk") && partners.get(`${pair.id}\treading\t${pair.reading}`)! > 1)
+    )
+      keys.add(recordKey(pair.id, pair.spelling, pair.reading));
+  }
+  return keys;
+}
+
+/**
+ * Make a test of whether a kanji is listed with a reading, from maps of each character's readings
+ * as KANJIDIC2 writes them. The test allows what compounds do to a reading: rendaku, a geminated
+ * ending, and a long vowel cut short. A character with no listed reading passes, since nothing
+ * is known about it.
+ */
+export function listedReadingTest(
+  ...maps: Map<string, string[]>[]
+): (kanji: string, reading: string) => boolean {
+  const unvoiced = (text: string) =>
+    normalizeKana(text)
+      .normalize("NFD")
+      .replace(/[\u3099\u309a]/gu, "")
+      .normalize("NFC");
+  const listed = new Map<string, Set<string>>();
+  for (const map of maps) {
+    for (const [kanji, readings] of map) {
+      const set = listed.get(kanji) ?? new Set<string>();
+      listed.set(kanji, set);
+      for (const reading of readings) {
+        // A kun reading marks its okurigana with a dot and an affix with a hyphen.
+        const plain = reading.replaceAll("-", "");
+        set.add(unvoiced(plain.split(".")[0]));
+        set.add(unvoiced(plain.replace(".", "")));
+      }
+    }
+  }
+  return (kanji, reading) => {
+    const readings = listed.get(kanji);
+    if (readings === undefined) return true;
+    const want = unvoiced(reading);
+    for (const have of readings) {
+      if (have === want) return true;
+      if (want.endsWith("っ") && have.length === want.length && have.startsWith(want.slice(0, -1)))
+        return true;
+      if (have.startsWith(want) && have.length - want.length === 1 && /[うい]$/u.test(have))
+        return true;
+    }
+    return false;
+  };
+}
+
+/**
+ * Ordinary pairs whose reading looks as if it belongs to a sibling spelling only, which is what
+ * a restriction missing from JMdict produces. Two spellings of an entry, neither search-only,
+ * differ in one kanji and share a reading that is not search-only. In the pair returned, that
+ * kanji's share of the reading is not a listed reading of it, while the sibling's kanji in the
+ * same place is listed with it, and the spelling has another reading that does fit its kanji.
+ * Most such pairs are fine, two kanji for one word, so they are for review and not for marking.
+ * `marked` holds the record keys of the pairs that already have a `pairing`. Returns record keys.
+ */
+export function siblingReadingPairs(
+  pairs: (TaggedPair & { segments: Segment[] })[],
+  marked: Set<string>,
+  lists: (kanji: string, reading: string) => boolean,
+): Set<string> {
+  const entries = new Map<string, (TaggedPair & { segments: Segment[] })[]>();
+  for (const pair of pairs) {
+    if (
+      pair.spellingTags.includes("sK") ||
+      pair.readingTags.includes("sk") ||
+      marked.has(recordKey(pair.id, pair.spelling, pair.reading))
+    )
+      continue;
+    const rows = entries.get(pair.id);
+    if (rows) rows.push(pair);
+    else entries.set(pair.id, [pair]);
+  }
+  const single = (segment: Segment): segment is [string, string] =>
+    typeof segment !== "string" && splitGraphemes(segment[0]).length === 1;
+  const fits = (segment: Segment) => !single(segment) || lists(segment[0], segment[1]);
+  const keys = new Set<string>();
+  for (const rows of entries.values()) {
+    for (const suspect of rows) {
+      const unlisted = suspect.segments.filter((segment) => !fits(segment));
+      if (unlisted.length !== 1) continue;
+      const [odd] = unlisted;
+      const fitsOtherwise = rows.some(
+        (row) =>
+          row.spelling === suspect.spelling &&
+          row.reading !== suspect.reading &&
+          row.segments.every(fits),
+      );
+      if (!fitsOtherwise) continue;
+      const sibling = rows.some(
+        (row) =>
+          row.reading === suspect.reading &&
+          row.spelling !== suspect.spelling &&
+          row.segments.length === suspect.segments.length &&
+          row.segments.every((segment, index) => {
+            const other = suspect.segments[index];
+            if (typeof segment === "string" || typeof other === "string") return segment === other;
+            if (segment[1] !== other[1]) return false;
+            return other === odd
+              ? segment[0] !== other[0] && single(segment) && fits(segment)
+              : segment[0] === other[0];
+          }),
+      );
+      if (sibling) keys.add(recordKey(suspect.id, suspect.spelling, suspect.reading));
+    }
+  }
+  return keys;
+}
+
+/**
+ * Check the reviewed list of mispaired pairs against the build. `kinds` maps the key of every
+ * JMdict pair to how the rules classified it. A listed pair is obsolete when JMdict no longer
+ * has it, or when the rules have come to mark it themselves.
+ */
+export function planMispairedPairs(
+  kinds: Map<string, ContradictionKind | undefined>,
+  reviewed: MispairedPair[],
+): MispairedPairPlan {
+  const keys = new Set<string>(),
+    problems: string[] = [],
+    obsolete: MispairedPair[] = [];
+  for (const item of reviewed) {
+    const key = recordKey(item.id, item.spelling, item.reading);
+    const name = `${item.spelling} read ${item.reading} (${item.id})`;
+    if (keys.has(key)) problems.push(`${name} is listed twice in the mispaired pairs`);
+    else if (!kinds.has(key)) {
+      problems.push(`JMdict no longer pairs ${name}; remove it from the mispaired pairs`);
+      obsolete.push(item);
+    } else if (kinds.get(key) !== undefined) {
+      problems.push(
+        `The rules already mark ${name} as ${kinds.get(key)}; remove it from the mispaired pairs`,
+      );
+      obsolete.push(item);
+    } else if (!item.note) problems.push(`The mispaired pair ${name} needs a note`);
+    else keys.add(key);
+  }
+  return { keys, problems, obsolete };
+}
+
 /**
  * Work out which spellings need a synthesized pair, because none of their JMdict
  * pairs fits, and check them against the reviewed list. `records` lists
  * `{ id, spelling, reading, segments, displaySegments }`, with the generator's
- * segments and the release's.
+ * segments and the release's. `mispaired` holds the record keys of the pairs that review found
+ * mispaired; they fit no better than the pairs whose kana contradict.
  * Returns the synthesized pairs to add and any problems that should stop the build.
  */
 export function planSynthesizedPairs(
@@ -366,6 +564,7 @@ export function planSynthesizedPairs(
   drops: Map<string, ParticleSite[]>,
   reviewed: SynthesizedPair[],
   jmdictPairs: Set<string>,
+  mispaired: Set<string> = new Set(),
 ): SynthesizedPairPlan {
   const bySpelling = new Map<string, PairingRecord[]>();
   for (const record of records) {
@@ -380,13 +579,15 @@ export function planSynthesizedPairs(
     missing: SynthesizedPair[] = [],
     obsolete: SynthesizedPair[] = [];
   for (const [key, spellingRecords] of bySpelling) {
-    const invalid = spellingRecords.filter((record) =>
-      contradictsSpelling(
-        record.spelling,
-        record.reading,
-        drops.get(pairKey(record.spelling, record.reading)),
-        record.displaySegments ?? record.segments,
-      ),
+    const invalid = spellingRecords.filter(
+      (record) =>
+        mispaired.has(recordKey(record.id, record.spelling, record.reading)) ||
+        contradictsSpelling(
+          record.spelling,
+          record.reading,
+          drops.get(pairKey(record.spelling, record.reading)),
+          record.displaySegments ?? record.segments,
+        ),
     );
     if (invalid.length < spellingRecords.length) continue;
     const { id, spelling } = invalid[0];
@@ -398,13 +599,19 @@ export function planSynthesizedPairs(
           )
           .filter((value) => value !== undefined)
           .map((value) => withoutUnwrittenPunctuation(spelling, value))
-          .filter((value) => fitsSpelling(spelling, value)),
+          // A reading that review found mispaired is no reading to propose for the spelling.
+          .filter(
+            (value) =>
+              fitsSpelling(spelling, value) && !mispaired.has(recordKey(id, spelling, value)),
+          ),
       ),
     ];
     // A reading that only needs its unwritten punctuation removed needs no judgment.
     const unpunctuated = invalid
       .map((record) => withoutUnwrittenPunctuation(spelling, record.reading))
-      .find((value) => fitsSpelling(spelling, value));
+      .find(
+        (value) => fitsSpelling(spelling, value) && !mispaired.has(recordKey(id, spelling, value)),
+      );
     const item = listed.get(key);
     listed.delete(key);
     if (item === undefined) {

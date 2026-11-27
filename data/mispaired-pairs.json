@@ -1,0 +1,350 @@
+[
+  {
+    "id": "1005770",
+    "spelling": "皺枯れる",
+    "reading": "かれる",
+    "note": "皺枯れる writes 皺 (しわ) before 枯れる, so it is しわがれる or its contraction しゃがれる; かれる has nothing for 皺 and belongs to 嗄れる."
+  },
+  {
+    "id": "1006900",
+    "spelling": "その外",
+    "reading": "そのた",
+    "note": "そのた is その with 他 read た; 外 has no reading た, and その外 is そのほか. Daijisen lists そのた only as 其の他. A restriction was proposed to JMdict on 2026-11-27 (revision 2383857)."
+  },
+  {
+    "id": "1006900",
+    "spelling": "其の外",
+    "reading": "そのた",
+    "note": "そのた is the reading of その他 (他 read た); 外 has no reading た and 其の外 is read そのほか. Kotobank lists その‐ほか【其外・其他】 but gives 外 no た reading."
+  },
+  {
+    "id": "1151710",
+    "spelling": "悪方",
+    "reading": "あくけい",
+    "note": "あくけい is the game term 悪形, a bad shape, with 形 read けい; 方 has no reading けい, and 悪方 is the kabuki role あくがた. A restriction was proposed to JMdict on 2026-11-27 (revision 2383868)."
+  },
+  {
+    "id": "1156480",
+    "spelling": "意久地",
+    "reading": "いきじ",
+    "note": "意久地 is a phonetic spelling of the changed form いくじ, with 久 standing for く; 久 has no reading き, so いきじ belongs only to 意気地/意氣地."
+  },
+  {
+    "id": "1157650",
+    "spelling": "異句同音",
+    "reading": "いこうどうおん",
+    "note": "いこうどうおん reads the 口 of 異口同音 as こう; 異句同音 is the miswriting that arises from いくどうおん, and 句 is read く, not こう."
+  },
+  {
+    "id": "1172510",
+    "spelling": "うな丼",
+    "reading": "うなぎどん",
+    "note": "うな丼 writes only うな in kana, so nothing in it accounts for the ぎ of うなぎどん; that reading belongs to the spellings that write 鰻 or うなぎ."
+  },
+  {
+    "id": "1188360",
+    "spelling": "何だ彼だ",
+    "reading": "なんだかんだ",
+    "note": "彼 is か, so 何だ彼だ is なんだかだ (Kotobank lists it under that reading); なんだかんだ needs the ん that 何だ彼んだ writes in kana."
+  },
+  {
+    "id": "1227450",
+    "spelling": "仇同士",
+    "reading": "てきどうし",
+    "note": "てき is the on reading of 敵; 仇 is キュウ, あだ or かたき, so 仇同士 is かたきどうし. Nihon Kokugo Daijiten gives てきどうし as a variant under 敵同士 only. A restriction was proposed to JMdict on 2026-11-27 (revision 2383873)."
+  },
+  {
+    "id": "1418890",
+    "spelling": "端初",
+    "reading": "たんちょ",
+    "note": "ちょ is the customary reading of 緒, so たんちょ belongs to 端緒 (Nihon Kokugo Daijiten: 「ちょ」は「緒」の慣用音). 初 is only しょ, so 端初 can only be たんしょ."
+  },
+  {
+    "id": "1524790",
+    "spelling": "幕合",
+    "reading": "まくま",
+    "note": "合 is あい and has no reading ま; まくま comes from reading the 間 of 幕間 as ま, so it cannot belong to 幕合."
+  },
+  {
+    "id": "1525730",
+    "spelling": "繭紬",
+    "reading": "きぬつむぎ",
+    "note": "きぬつむぎ is a kun reading of 絹紬 (絹 is きぬ); 繭 is まゆ or けん, never きぬ, and Kotobank lists きぬ‐つむぎ only as 【絹紬】 while 繭紬 appears only under けんちゅう."
+  },
+  {
+    "id": "1529700",
+    "spelling": "映日果",
+    "reading": "むかか",
+    "note": "むかか is the on reading of 無花果 (無 む, 花 か, 果 か); 映 is えい and 日 is じつ, and 映日果 read by its characters is えいじつか."
+  },
+  {
+    "id": "1574520",
+    "spelling": "冗舌",
+    "reading": "にょうぜつ",
+    "note": "にょう is the go-on reading of 饒 and not a reading of 冗; Nihon Kokugo Daijiten lists にょうぜつ only as 饒舌. A restriction was proposed to JMdict on 2026-11-27 (revision 2383870)."
+  },
+  {
+    "id": "1580410",
+    "spelling": "上口唇",
+    "reading": "じょうしん",
+    "note": "じょうしん is the reading of 上唇; nothing in it accounts for 口, which 上口唇 writes for the くち of うわくちびる."
+  },
+  {
+    "id": "1586170",
+    "spelling": "青桐",
+    "reading": "ごとう",
+    "note": "ごとう is the on reading of 梧桐 (梧 ご + 桐 とう); 青 has no reading ご, and 青桐 is あおぎり. Daijisen and Nihon Kokugo Daijiten list ごとう only as 梧桐. A restriction was proposed to JMdict on 2026-11-27 (revision 2383859)."
+  },
+  {
+    "id": "1586550",
+    "spelling": "後へ引く",
+    "reading": "あとへはひく",
+    "note": "あとへはひく contains the particle は (後へは引く), which 後へ引く does not write; the spelling reads only あとへひく."
+  },
+  {
+    "id": "1586550",
+    "spelling": "後へ退く",
+    "reading": "あとへはひく",
+    "note": "あとへはひく contains the particle は (後へは退く), which 後へ退く does not write; the spelling reads only あとへひく."
+  },
+  {
+    "id": "1612460",
+    "spelling": "止め処無く",
+    "reading": "とどめなく",
+    "note": "The spelling writes め before 処 (ど), but とどめなく has ど before め, so 処 is left with nothing to read; とどめなく is a transposed form of the word that this spelling cannot spell."
+  },
+  {
+    "id": "1642800",
+    "spelling": "寝ぼけまなこ",
+    "reading": "ねとぼけまなこ",
+    "note": "The と of ねとぼけ comes from reading 惚け as とぼけ, as in 寝惚け眼. 寝ぼけまなこ writes ぼけ in kana directly after 寝, and 寝 is not ねと."
+  },
+  {
+    "id": "1643680",
+    "spelling": "お身",
+    "reading": "おんみ",
+    "note": "お身 writes the prefix in kana as お, which leaves nothing for the ん of おんみ; おんみ belongs to 御身 and おん身."
+  },
+  {
+    "id": "1649380",
+    "spelling": "粉灰",
+    "reading": "こっかい",
+    "note": "こっかい is the on reading of 骨灰 (骨 こつ + 灰 かい), the bone-ash fertiliser. 粉 is こ, never こつ; Daijisen and Nihon Kokugo Daijiten give 粉灰 only under こはい and こっぱい."
+  },
+  {
+    "id": "1649380",
+    "spelling": "粉灰",
+    "reading": "こつばい",
+    "note": "こつばい is 骨灰 read 骨 こつ + 灰 はい. 粉 is こ, never こつ; Daijisen and Nihon Kokugo Daijiten give 粉灰 only under こはい and こっぱい."
+  },
+  {
+    "id": "1705830",
+    "spelling": "磨きにしん",
+    "reading": "みかきにしん",
+    "note": "磨き is みがき (磨く is only ever みがく); the unvoiced みかき comes from 身欠き (身 + 欠き), which this spelling does not write."
+  },
+  {
+    "id": "1705830",
+    "spelling": "磨きニシン",
+    "reading": "みかきにしん",
+    "note": "磨き is みがき (磨く is only ever みがく); the unvoiced みかき comes from 身欠き (身 + 欠き), which this spelling does not write."
+  },
+  {
+    "id": "1705830",
+    "spelling": "磨き鰊",
+    "reading": "みかきにしん",
+    "note": "磨き is みがき (磨く is only ever みがく); the unvoiced みかき comes from 身欠き (身 + 欠き), which this spelling does not write."
+  },
+  {
+    "id": "1867250",
+    "spelling": "間、髪を入れず",
+    "reading": "かんぱつをいれず",
+    "note": "The comma separates 間 (かん) from 髪 (はつ) as two words, which is the かんはつをいれず parsing; ぱつ only arises when 間髪 is run together as one compound, and Daijisen notes the phrase is divided 間、髪を容れず with the かんぱつ grouping being an error."
+  },
+  {
+    "id": "1892570",
+    "spelling": "だだ捏ねる",
+    "reading": "だだをこねる",
+    "note": "The reading has the particle を, which だだ捏ねる does not write; this spelling is だだこねる, and 捏 is こ, not をこ."
+  },
+  {
+    "id": "2056310",
+    "spelling": "口ぱく",
+    "reading": "ロパク",
+    "note": "ロパク is a search aid for typing the kanji 口 (くち) as the look-alike katakana ロ; the kanji 口 is never read ろ, so 口ぱく reads only くちぱく."
+  },
+  {
+    "id": "2056310",
+    "spelling": "口パク",
+    "reading": "ロパク",
+    "note": "ロパク is a search aid for typing the kanji 口 (くち) as the look-alike katakana ロ; the kanji 口 is never read ろ, so 口パク reads only くちパク."
+  },
+  {
+    "id": "2122920",
+    "spelling": "性もない",
+    "reading": "しようもない",
+    "note": "性 is read しょう, giving しょうもない; しようもない is the three-mora し・よ・う of 仕様, which 性 cannot write."
+  },
+  {
+    "id": "2129270",
+    "spelling": "穴を捲る",
+    "reading": "しりをまくる",
+    "note": "穴 is read けつ in this expression and has no reading しり; しりをまくる belongs to the spellings with 尻. Daijisen heads the phrase 穴(けつ)を捲る. A restriction was proposed to JMdict on 2026-11-27 (revision 2383864)."
+  },
+  {
+    "id": "2172380",
+    "spelling": "光桃",
+    "reading": "つばきもも",
+    "note": "つばきもも reads 椿 as つばき; 光 has no such reading. Daijisen lists つばきもも only as 椿桃, and gives 光桃 under the changed form つばいもも. A restriction was proposed to JMdict on 2026-11-27 (revision 2383872)."
+  },
+  {
+    "id": "2172380",
+    "spelling": "油桃",
+    "reading": "つばきもも",
+    "note": "つばきもも reads 椿 as つばき; 油 has no such reading. Daijisen lists つばきもも only as 椿桃, and gives 油桃 under the changed form つばいもも. A restriction was proposed to JMdict on 2026-11-27 (revision 2383872)."
+  },
+  {
+    "id": "2245610",
+    "spelling": "庭火",
+    "reading": "ていりょう",
+    "note": "ていりょう is the on reading of 庭燎 (燎 りょう); 火 has no reading りょう, and 庭火 is にわび. Daijisen and Nihon Kokugo Daijiten list ていりょう only as 庭燎. A restriction was proposed to JMdict on 2026-11-27 (revision 2383862)."
+  },
+  {
+    "id": "2432940",
+    "spelling": "大和鞍",
+    "reading": "わぐら",
+    "note": "わぐら is 倭 or 和 read わ, plus 鞍; 大和 is やまと, so 大和鞍 is やまとぐら. Daijisen and Nihon Kokugo Daijiten list わぐら only as 和鞍 and 倭鞍. A restriction was proposed to JMdict on 2026-11-27 (revision 2383866)."
+  },
+  {
+    "id": "2432960",
+    "spelling": "鞍橋",
+    "reading": "あんが",
+    "note": "あんが is the on reading of 鞍瓦 (瓦 が); 橋 has no reading が, and 鞍橋 is くらぼね. Daijisen and Nihon Kokugo Daijiten list あんが only as 鞍瓦. A restriction was proposed to JMdict on 2026-11-27 (revision 2383865)."
+  },
+  {
+    "id": "2432960",
+    "spelling": "鞍骨",
+    "reading": "あんが",
+    "note": "あんが is the on reading of 鞍瓦 (瓦 が); 骨 has no reading が, and 鞍骨 is くらぼね or あんこつ. Daijisen and Nihon Kokugo Daijiten list あんが only as 鞍瓦. A restriction was proposed to JMdict on 2026-11-27 (revision 2383865)."
+  },
+  {
+    "id": "2538260",
+    "spelling": "烏滸言",
+    "reading": "ちげん",
+    "note": "ちげん is the on reading of 痴言 (痴 ち + 言 げん). 烏滸 is おこ, so 烏滸言 is おこごと."
+  },
+  {
+    "id": "2563860",
+    "spelling": "枕籍",
+    "reading": "ちんしゃ",
+    "note": "しゃ is a reading of 藉 and not of 籍, which is only せき; Nihon Kokugo Daijiten lists ちんしゃ only as 枕藉. A restriction was proposed to JMdict on 2026-11-27 (revision 2383869)."
+  },
+  {
+    "id": "2582970",
+    "spelling": "キツネに包まれる",
+    "reading": "きつねにつままれる",
+    "note": "包む is つつむ (or くるむ) and has no reading つまむ; キツネに包まれる is the mistaken form きつねにつつまれる, not つままれる, which is written 摘まれる or 抓まれる."
+  },
+  {
+    "id": "2582970",
+    "spelling": "キツネに包まれる",
+    "reading": "キツネにつままれる",
+    "note": "包む is つつむ (or くるむ) and has no reading つまむ; キツネに包まれる is the mistaken form きつねにつつまれる, not つままれる, which is written 摘まれる or 抓まれる."
+  },
+  {
+    "id": "2582970",
+    "spelling": "狐に包まれる",
+    "reading": "きつねにつままれる",
+    "note": "包む is つつむ (or くるむ) and has no reading つまむ; 狐に包まれる is the mistaken form きつねにつつまれる, not つままれる, which is written 摘まれる or 抓まれる."
+  },
+  {
+    "id": "2582970",
+    "spelling": "狐に包まれる",
+    "reading": "キツネにつままれる",
+    "note": "包む is つつむ (or くるむ) and has no reading つまむ; 狐に包まれる is the mistaken form きつねにつつまれる, not つままれる, which is written 摘まれる or 抓まれる."
+  },
+  {
+    "id": "2592080",
+    "spelling": "地下炉",
+    "reading": "じひろ",
+    "note": "じひろ reads the 火 of 地火炉 as ひ; 下 has no reading ひ. Nihon Kokugo Daijiten lists じひろ only as 地火炉. A restriction was proposed to JMdict on 2026-11-27 (revision 2383871)."
+  },
+  {
+    "id": "2598860",
+    "spelling": "監主",
+    "reading": "かんじ",
+    "note": "かんじ reads the 寺 of 監寺 as じ; 主 has no reading じ. Daijisen and Nihon Kokugo Daijiten list かんじ only as 監寺. A restriction was proposed to JMdict on 2026-11-27 (revision 2383875)."
+  },
+  {
+    "id": "2598860",
+    "spelling": "監守",
+    "reading": "かんじ",
+    "note": "かんじ reads the 寺 of 監寺 as じ; 守 has no reading じ. Daijisen and Nihon Kokugo Daijiten list かんじ only as 監寺. A restriction was proposed to JMdict on 2026-11-27 (revision 2383875)."
+  },
+  {
+    "id": "2736380",
+    "spelling": "河郎",
+    "reading": "かはく",
+    "note": "郎 has no reading はく; かはく belongs to 河伯, and 河郎 is かわろう. Daijisen and Nihon Kokugo Daijiten list かはく only as 河伯. A restriction was proposed to JMdict on 2026-11-27 (revision 2383867)."
+  },
+  {
+    "id": "2742590",
+    "spelling": "酒壜",
+    "reading": "しゅへい",
+    "note": "へい is an on reading of 瓶 and not of 壜, which is ドン, タン or びん. Nihon Kokugo Daijiten gives しゅへい as a variant under 酒瓶 only. The references were sent to JMdict on 2026-11-27 (revision 2383876), but that revision leaves the reading unrestricted, so the restriction has still to be proposed."
+  },
+  {
+    "id": "2789180",
+    "spelling": "香袋",
+    "reading": "こうのう",
+    "note": "のう is the on reading of 嚢 and not a reading of 袋; 香袋 is こうぶくろ. Nihon Kokugo Daijiten lists こうのう only as 香嚢. A restriction was proposed to JMdict on 2026-11-27 (revision 2383877)."
+  },
+  {
+    "id": "2863435",
+    "spelling": "お歌",
+    "reading": "おんうた",
+    "note": "おん is a reading of the kanji 御 (御歌); お歌 writes the prefix in kana as お, so it reads おうた and nothing accounts for the ん."
+  },
+  {
+    "id": "2866280",
+    "spelling": "鷓鴣菜",
+    "reading": "かいにんそう",
+    "note": "かいにんそう is the on reading of 海人草/海仁草 (海 かい + 人/仁 にん + 草 そう). 鷓鴣菜 is the Chinese herbal name, read しゃこさい on its own, and dictionaries list かいにんそう only under 海人草・海仁草."
+  },
+  {
+    "id": "2869531",
+    "spelling": "キャン飯",
+    "reading": "キャンプめし",
+    "note": "キャン飯 writes only キャン before 飯, so it is the clipped form キャンメシ; the プ of キャンプめし is not in the spelling and 飯 is not プめし."
+  },
+  {
+    "id": "2870369",
+    "spelling": "どん屋",
+    "reading": "どんぶりや",
+    "note": "どん屋 writes only どん in kana, so nothing in it accounts for the ぶり of どんぶりや; that reading belongs to 丼屋 and どんぶり屋."
+  },
+  {
+    "id": "2871328",
+    "spelling": "掻い掻い",
+    "reading": "かゆいかゆい",
+    "note": "掻い is かい, from 掻く (to scratch); かゆい is 痒い, a different word and character, and 掻 has no reading かゆ."
+  },
+  {
+    "id": "2871343",
+    "spelling": "降世",
+    "reading": "こうしょう",
+    "note": "しょう is a reading of 生 and not of 世; 降世 is こうせい. Nihon Kokugo Daijiten lists こうしょう only as 降生. A restriction was proposed to JMdict on 2026-11-27 (revision 2383878)."
+  },
+  {
+    "id": "2871343",
+    "spelling": "降世",
+    "reading": "ごうしょう",
+    "note": "しょう is a reading of 生 and not of 世; 降世 is こうせい. Nihon Kokugo Daijiten gives ごうしょう as a variant of こうしょう, which it lists only as 降生. A restriction was proposed to JMdict on 2026-11-27 (revision 2383878)."
+  },
+  {
+    "id": "2872749",
+    "spelling": "ピラハ語",
+    "reading": "ピラハンご",
+    "note": "ピラハ語 writes ピラハ with no ン, so it is ピラハご; ピラハンご belongs to ピラハン語, and 語 is not ンご."
+  }
+]

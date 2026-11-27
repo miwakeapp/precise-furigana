@@ -28,8 +28,10 @@ jobs:
       pull-requests: read
     outputs:
       changed: ${{ steps.update.outputs.changed }}
-      # Whether the update was clean before any review. A reviewed update never merges itself.
+      # Whether the update was clean before any review, and what it then consisted of. An update
+      # merges itself only when it was clean and the review left it exactly as it was.
       clean: ${{ steps.update.outputs.clean }}
+      fingerprint: ${{ steps.fingerprint.outputs.value }}
     steps:
       # The whole history, so that an open update's branch can be merged with the default branch.
       - uses: actions/checkout@v7
@@ -63,23 +65,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Fingerprint the update before any review
+        id: fingerprint
+        if: steps.update.outputs.changed == 'true'
+        run: echo "value=$(sh scripts/update-fingerprint.sh data test/fixtures .cache/update/commit-message.txt)" >> "$GITHUB_OUTPUT"
+
       # Claude edits files in the checkout and reads the web, to look words up in dictionaries.
-      - name: Ask Claude to resolve what needs review
-        if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
+      # It runs when something needs resolving, and also when a clean update brings pairs that
+      # are worth a look.
+      - name: Ask Claude to review
+        if: steps.update.outputs.changed == 'true' && steps.update.outputs.review == 'true'
         continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ github.token }}
           prompt: |
-            A dictionary update needs review. Follow "Review a dictionary update" in
+            A dictionary update is ready for review. Follow "Review a dictionary update" in
             docs/maintenance.md. The report is in .cache/update/report.md.
           claude_args: |
             --max-turns 100
             --allowedTools "Read,Edit,Write,Glob,Grep,WebSearch,WebFetch,Bash(npm run build:*),Bash(npm run validate:*),Bash(npm run inspect:*),Bash(npm run compare:*),Bash(npm test:*),Bash(npm run fmt:*)"
 
       - name: Rebuild after the review
-        if: steps.update.outputs.changed == 'true' && steps.update.outputs.clean != 'true'
+        if: steps.update.outputs.changed == 'true' && steps.update.outputs.review == 'true'
         run: node scripts/update.ts recheck
 
       # Only data crosses to the next job: the files an update may change, and the report.
@@ -118,9 +127,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.UPDATE_TOKEN }}
           CLEAN: ${{ needs.update.outputs.clean }}
+          FINGERPRINT: ${{ needs.update.outputs.fingerprint }}
         run: |
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           update="$RUNNER_TEMP/update"
+          # Taken with this checkout's own script, before any other branch is checked out.
+          received="$(sh scripts/update-fingerprint.sh "$update/data" "$update/fixtures" "$update/commit-message.txt")"
           title="$(head -n 1 "$update/commit-message.txt")"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -143,7 +155,8 @@ jobs:
           else
             gh pr create --head "$BRANCH" --title "$title" --body-file "$update/report.md"
           fi
-          if [ "$CLEAN" = "true" ]; then
+          # Unattended only if the update was clean and is still what it was before the review.
+          if [ "$CLEAN" = "true" ] && [ "$received" = "$FINGERPRINT" ]; then
             gh pr merge "$BRANCH" --auto --squash --delete-branch \
               --subject "$title" --body "$(tail -n +3 "$update/commit-message.txt")"
           else

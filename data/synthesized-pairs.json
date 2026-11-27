@@ -1626,6 +1626,18 @@
     "note": "Punctuation: the entry's reading has punctuation that the spelling does not write."
   },
   {
+    "id": "2582970",
+    "spelling": "キツネに包まれる",
+    "reading": "きつねにつつまれる",
+    "note": "Mistaken form: 包まれる is つつまれる, a mishearing of the idiom's つままれる, which 包 cannot be read as."
+  },
+  {
+    "id": "2582970",
+    "spelling": "狐に包まれる",
+    "reading": "きつねにつつまれる",
+    "note": "Mistaken form: 包まれる is つつまれる, a mishearing of the idiom's つままれる, which 包 cannot be read as."
+  },
+  {
     "id": "2612840",
     "spelling": "甘い顔する",
     "reading": "あまいかおする",

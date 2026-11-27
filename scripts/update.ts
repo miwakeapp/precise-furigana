@@ -8,22 +8,25 @@
 // - `recheck` rebuilds and rewrites the report after someone has edited the data.
 //
 // Everything is written under `.cache/update/`: `report.md`, `commit-message.txt`, and
-// `status.json`. In GitHub Actions the `changed` and `clean` outputs are set too.
+// `status.json`. In GitHub Actions the `changed`, `clean` and `review` outputs are set too.
 import { spawnSync } from "node:child_process";
 import { appendFile, cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import {
+  diffMispairedPairs,
   diffSynthesizedPairs,
   renderCommitMessage,
   renderReport,
   reviewReasons,
 } from "./lib/update-report.ts";
 import { summarizeChanges } from "./lib/change-lists.ts";
-import type { SynthesizedPair } from "../src/pairings.ts";
+import type { MispairedPair, SynthesizedPair } from "../src/pairings.ts";
+import { recordKey } from "../src/segments.ts";
 import type { Change } from "./lib/compare.ts";
-import type { DictionaryPin, StepResult, Update } from "./lib/update-report.ts";
+import { reviewCandidatesFile } from "./lib/database-files.ts";
+import type { DictionaryPin, ReviewCandidate, StepResult, Update } from "./lib/update-report.ts";
 
 /** The parts of `data/sources.lock.json` that say what it pins. */
 interface PinnedLock {
@@ -40,6 +43,8 @@ interface BuildResult extends StepResult {
 interface Outputs {
   changed: boolean;
   clean: boolean;
+  /** Whether there is anything for a reviewer: a reason to wait, or new pairs worth a look. */
+  review: boolean;
   reasons: string[];
 }
 
@@ -49,6 +54,7 @@ const beforeDatabase = join(directory, "before", "precise-furigana.json");
 const afterDatabase = "dist/precise-furigana.json";
 const lockName = "sources.lock.json";
 const synthesizedName = "synthesized-pairs.json";
+const mispairedName = "mispaired-pairs.json";
 const outputTailLines = 40;
 
 const { positionals, values } = parseArgs({
@@ -120,6 +126,18 @@ async function baseline(): Promise<void> {
   for (const [name, path] of await dataFiles()) await cp(path, join(baseDirectory, name));
 }
 
+/** The pairs worth a reviewer's look that the build before the update did not list. */
+async function newReviewCandidates(): Promise<ReviewCandidate[]> {
+  const beforePath = join(directory, "before", reviewCandidatesFile);
+  // A baseline built by an earlier version of the build has no list to compare with.
+  if (!existsSync(beforePath)) return [];
+  const key = (record: ReviewCandidate) =>
+    `${record.kind}\t${recordKey(record.id, record.spelling, record.reading)}`;
+  const old = new Set((await readJSON<ReviewCandidate[]>(beforePath)).map(key));
+  const current = await readJSON<ReviewCandidate[]>(join("dist", reviewCandidatesFile));
+  return current.filter((record) => !old.has(key(record)));
+}
+
 async function report(build: BuildResult): Promise<void> {
   const validate = build.passed ? run("validate") : { passed: false, output: "" };
   let changes: Change[] = [];
@@ -134,7 +152,7 @@ async function report(build: BuildResult): Promise<void> {
   }
   const otherDataChanges: string[] = [];
   for (const [name, path] of await dataFiles()) {
-    if (name === lockName || name === synthesizedName) continue;
+    if (name === lockName || name === synthesizedName || name === mispairedName) continue;
     if ((await readFile(path, "utf8")) !== (await readFile(join(baseDirectory, name), "utf8"))) {
       otherDataChanges.push(name);
     }
@@ -148,6 +166,11 @@ async function report(build: BuildResult): Promise<void> {
       await readJSON<SynthesizedPair[]>(join(baseDirectory, synthesizedName)),
       await readJSON<SynthesizedPair[]>(join("data", synthesizedName)),
     ),
+    mispaired: diffMispairedPairs(
+      await readJSON<MispairedPair[]>(join(baseDirectory, mispairedName)),
+      await readJSON<MispairedPair[]>(join("data", mispairedName)),
+    ),
+    candidates: build.wrote ? await newReviewCandidates() : [],
     otherDataChanges,
     compared: build.wrote,
     build,
@@ -157,7 +180,12 @@ async function report(build: BuildResult): Promise<void> {
   const reasons = reviewReasons(update);
   await writeFile(join(directory, "report.md"), renderReport(update));
   await writeFile(join(directory, "commit-message.txt"), renderCommitMessage(update));
-  await setOutputs({ changed: true, clean: reasons.length === 0, reasons });
+  await setOutputs({
+    changed: true,
+    clean: reasons.length === 0,
+    review: reasons.length > 0 || update.candidates.length > 0,
+    reasons,
+  });
   console.log(`\n${reasons.length === 0 ? "Clean." : `Needs review:\n- ${reasons.join("\n- ")}`}`);
 }
 
@@ -170,13 +198,14 @@ async function update(): Promise<void> {
   if (!fetched.passed) throw new Error("Could not move the dictionary pin");
   if ((await readJSON<PinnedLock>(join("data", lockName))).release.tag === previous) {
     console.log(`\nAlready at ${previous}; nothing to update.`);
-    await setOutputs({ changed: false, clean: true, reasons: [] });
+    await setOutputs({ changed: false, clean: true, review: false, reasons: [] });
     return;
   }
   let result = build();
   if (!result.passed) {
-    // Drop synthesized pairs JMdict now has and add the ones new spellings need, then try again.
-    build(["--update-synthesized-pairs"]);
+    // Drop the reviewed pairs that no longer apply and add the synthesized ones new spellings
+    // need, then try again.
+    build(["--update-reviewed-pairs"]);
     result = build();
   }
   await report(result);

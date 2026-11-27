@@ -35,6 +35,12 @@ export const databaseFile = "precise-furigana.json";
  * and licence. The other is the database alone, as small as it gets, for programs to fetch.
  */
 export const releaseFiles = ["precise-furigana.zip", "precise-furigana.json.zst"];
+/**
+ * A build's list of the pairs worth a reviewer's look, each a record with its entry's ID and the
+ * kind of candidate it is. It is not published; an update compares two of them to find the new
+ * ones.
+ */
+export const reviewCandidatesFile = "review-candidates.json";
 /** What travels with the database in the archive, from the repository root. */
 export const companionFiles = ["schema.json", "NOTICE.md", "LICENSE.md"];
 
